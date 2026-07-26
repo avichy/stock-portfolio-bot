@@ -77,7 +77,7 @@
 
         async function fetchStocks() {
             const { data, error } = await supabaseClient
-                .from('stocks') // שם הטבלה שלך במסד הנתונים
+                .from('portfolio_positions') // שם הטבלה שלך במסד הנתונים
                 .select('*');
 
             if (error) {
