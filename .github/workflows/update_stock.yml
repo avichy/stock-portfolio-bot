@@ -1,9 +1,12 @@
-name: Update Stock Prices
+name: Update Stock Prices & Notifications
 
 on:
-  workflow_dispatch: # מאפשר לך ללחוץ ידנית ולבדוק שזה עובד מתי שתרצה
+  workflow_dispatch:
   schedule:
-    - cron: '0 22 * * 1-5' # רץ אוטומטית כל יום שני-שישי בשעה 22:00
+    - cron: '0 * * * *' # רץ כל שעה עגולה כדי לבדוק אם צריך לשלוח פוש ולעדכן
+
+permissions:
+  contents: write
 
 jobs:
   run-script:
@@ -18,12 +21,18 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: |
-          pip install yfinance supabase
+        run: pip install requests pytz
 
-      - name: Run update script
+      - name: Run update script and check notifications
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
+
+      - name: Commit and push updated data
         run: |
-          python update_data.py
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.io"
+          git add .
+          git commit -m "Auto-update stock prices and portfolio [skip ci]" || echo "No changes to commit"
+          git push
