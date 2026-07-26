@@ -3,7 +3,7 @@ name: Update Stock Prices & Notifications
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # רץ כל שעה עגולה כדי לבדוק אם צריך לשלוח פוש ולעדכן
+    - cron: '0 * * * *' # רץ כל שעה עגולה
 
 permissions:
   contents: write
@@ -23,11 +23,11 @@ jobs:
       - name: Install dependencies
         run: pip install requests pytz
 
-      - name: Run update script and check notifications
+      - name: Run update script
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python main.py
+        run: python update_data.py
 
       - name: Commit and push updated data
         run: |
