@@ -3,13 +3,19 @@ name: Update Stock Prices & Notifications
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 7,13,20 * * *'
+    - cron: '0,30 * * * *'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  run-script:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # הרשאת כתיבה קריטית המאפשרת לסקריפט לבצע Push חזרה לגיטהאב
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,3 +36,12 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python update_data.py
+
+      - name: Upload page artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
