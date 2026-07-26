@@ -1,8 +1,8 @@
 from datetime import datetime
 import os
-import requests
 import re
 import pytz
+import requests
 
 # הגדרת אזור זמן של ישראל
 israel_tz = pytz.timezone('Asia/Jerusalem')
@@ -54,7 +54,7 @@ def send_telegram_push(message):
     print('Telegram credentials missing.')
 
 
-# בדיקה האם השעה הנוכחי תואמת לאחד מיעדי הפוש (בטווח של השעה העגולה)
+# בדיקה האם השעה הנוכחית תואמת לאחד מיעדי הפוש (בטווח של 15 דקות)
 for target_h, target_m in target_times:
   if current_hour == target_h and abs(current_minute - target_m) < 15:
     msg = (
@@ -63,11 +63,9 @@ for target_h, target_m in target_times:
     )
     send_telegram_push(msg)
     break
-try:
-  # שליפת השעה והתאריך המדויקים בישראל בצורה עצמאית
-  israel_tz = pytz.timezone('Asia/Jerusalem')
-  now_il = datetime.now(israel_tz)
 
+# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML
+try:
   date_str = now_il.strftime('%d.%m.%Y')
   time_str = now_il.strftime('%H:%M')
 
