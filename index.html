@@ -23,16 +23,19 @@
             </div>
         </header>
 
-        <!-- תפריט הטאבים (לשוניות ניווט בין שלבי הסקייל) -->
+        <!-- תפריט הטאבים (לשוניות ניווט) -->
         <nav class="flex flex-wrap gap-2 bg-slate-800 p-2 rounded-xl border border-slate-700 shadow">
-            <button onclick="switchTab('tab-portfolio')" id="btn-tab-portfolio" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-bold transition-all bg-emerald-500 text-slate-900 shadow">
-                💼 תיק השקעות (שלב 5)
+            <button onclick="switchTab('tab-market')" id="btn-tab-market" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-bold transition-all bg-emerald-500 text-slate-900 shadow">
+                📊 מצב השוק (ראשי)
             </button>
             <button onclick="switchTab('tab-macro')" id="btn-tab-macro" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-700">
                 🌐 מאקרו וסקטורים (שלבים 1-2)
             </button>
             <button onclick="switchTab('tab-strategy')" id="btn-tab-strategy" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-700">
                 🎯 זרזים ואסטרטגיה (שלבים 3-4)
+            </button>
+            <button onclick="switchTab('tab-portfolio')" id="btn-tab-portfolio" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-700">
+                💼 תיק השקעות חי (שלב 5)
             </button>
             <button onclick="switchTab('tab-risk')" id="btn-tab-risk" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-700">
                 🛡️ סנטימנט וסיכונים (שלבים 6-7)
@@ -44,8 +47,130 @@
 
         <!-- תוכן הטאבים -->
 
-        <!-- טאב 1: תיק השקעות (שלב 5) -->
-        <div id="tab-portfolio" class="tab-content space-y-6">
+        <!-- טאב ראשי: מצב השוק -->
+        <div id="tab-market" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- S&P 500 -->
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
+                    <div class="flex justify-between items-center text-slate-400 text-xs">
+                        <span>S&P 500</span>
+                        <span class="text-emerald-400 font-bold">+0.45%</span>
+                    </div>
+                    <p class="text-2xl font-extrabold mt-2 text-white">5,582.40</p>
+                    <p class="text-xs text-slate-400 mt-1">מגמה: חיובית מתונה</p>
+                </div>
+                <!-- Nasdaq -->
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
+                    <div class="flex justify-between items-center text-slate-400 text-xs">
+                        <span>Nasdaq 100</span>
+                        <span class="text-emerald-400 font-bold">+0.82%</span>
+                    </div>
+                    <p class="text-2xl font-extrabold mt-2 text-white">19,840.10</p>
+                    <p class="text-xs text-slate-400 mt-1">מומנטום טכנולוגי חזק</p>
+                </div>
+                <!-- USD/ILS -->
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
+                    <div class="flex justify-between items-center text-slate-400 text-xs">
+                        <span>שער דולר-שקל ($/₪)</span>
+                        <span class="text-rose-400 font-bold">-0.20%</span>
+                    </div>
+                    <p class="text-2xl font-extrabold mt-2 text-white">3.64 ₪</p>
+                    <p class="text-xs text-slate-400 mt-1">השפעה: ייסוף קל לשקל</p>
+                </div>
+                <!-- Bitcoin & Gold -->
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
+                    <div class="flex justify-between items-center text-slate-400 text-xs">
+                        <span>ביטקוין & זהב</span>
+                        <span class="text-emerald-400 font-bold">פעיל</span>
+                    </div>
+                    <p class="text-lg font-extrabold mt-2 text-white">BTC: $67,400</p>
+                    <p class="text-xs text-slate-400 mt-1">Gold: $2,380 / oz</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
+                <h2 class="text-lg font-bold text-emerald-400">📌 ניתוח מצב השוק ומשמעות עסקית</h2>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    מסך זה ריכז עבורך את תמונת המאקרו-רוחבית של השווקים הפיננסיים בזמן אמת. מעקב אחר המדדים המובילים (S&P 500 ונסדאק) מספק אינדיקציה מיידית לתאבון הסיכון של משקיעים מוסדיים. שער הדולר-שקל נבחן בקפידה כגורם המשפיע ישירות על כדאיות ההמרה והחשיפה המטבעית בתיק, לצד נכסי גידור כמו זהב ומטבעות קריפטו המהווים אלטרנטיבה בתקופות של תנודתיות גיאופוליטית.
+                </p>
+            </div>
+        </div>
+
+        <!-- טאב 2: מאקרו וסקטורים (שלבים 1-2) -->
+        <div id="tab-macro" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm border border-blue-500/30">01</span>
+                        <h3 class="text-lg font-bold text-blue-400">סקירות מאקרו וגיאופוליטיקה</h3>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        ניתוח עומק של סביבת המאקרו-עולמית, תוואי ריבית הבנקים המרכזיים (הפד), נתוני אינפלציה (CPI, PCE), מדדי תעסוקה ומדיניות פיסקלית. הערכת השפעות אירועים גיאופוליטיים רוחביים על תיאבון הסיכון בשווקים והסטת הון בין אפיקים.
+                    </p>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
+                        <div class="font-semibold text-slate-300">פרמטרים למעקב:</div>
+                        <div>• עקום תשואות האג"ח הממשלתיות בארה"ב (2ש' מול 10ש').</div>
+                        <div>• הצהרות פאוול והתאמת ציפיות הריבית בשוק (FedWatch).</div>
+                        <div>• מדדי מנהלי רכש (PMI) גלובליים ונתוני ייצור.</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm border border-cyan-500/30">02</span>
+                        <h3 class="text-lg font-bold text-cyan-400">ניתוח סקטוריאלי (טכנולוגיה ושבבים)</h3>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        מיקוד רוחבי בסקטור הטכנולוגיה והחומרה, עם דגש על מחזוריות תעשיית השבבים העולמית (Semiconductors). מעקב אחר ביקושים למרכזי נתונים, תשתיות ענן, מחשוב קצה ושרשרת האספקה של ענקיות החומרה (כגון AMD, Intel, Micron).
+                    </p>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
+                        <div class="font-semibold text-slate-300">מוקדי עניין בסקטור:</div>
+                        <div>• מגמות היצע וביקוש בשבבי זיכרון (DRAM / NAND).</div>
+                        <div>• השפעות רגולציה טכנולוגית ומסחר בינלאומי.</div>
+                        <div>• עוצמה יחסית של ססקטור השבבים ביחס למדד הרחב.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טאב 3: זרזים ואסטרטגיה (שלבים 3-4) -->
+        <div id="tab-strategy" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm border border-indigo-500/30">03</span>
+                        <h3 class="text-lg font-bold text-indigo-400">זיהוי זרזים מרכזיים (Catalysts)</h3>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        איתור ומיפוי מדויק של אירועים קרובים בעלי פוטנציאל לחולל תנודות חדות בשער המניות. בניית לו"ז זרזים לכל נכס בתיק כדי להיערך מראש לתנועות מחיר קיצוניות או לנצל חלונות הזדמנויות.
+                    </p>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
+                        <div class="font-semibold text-slate-300">סוגי זרזים במעקב:</div>
+                        <div>• פרסום דוחות כספיים רבעוניים (EPS וציפיות קדימה).</div>
+                        <div>• אירועי השקת מוצרים טכנולוגיים ותערוכות תעשייה.</div>
+                        <div>• החלטות משפטיות, פטנטים או אישורים רגולטוריים.</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm border border-purple-500/30">04</span>
+                        <h3 class="text-lg font-bold text-purple-400">אסטרטגיית ליבה מול סווינג</h3>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        הפרדה מוחלטת בניהול ההון: מצד אחד אחזקות ליבה ארוכות טווח (כגון מניות ערך וענקיות קמעונאות יציבות כמו Walmart) לבניית עושר יציב, ומצד שני פוזיציות סווינג אקטיביות וקצרות טווח המנוהלות לפי מומנטום ומבנה מחיר.
+                    </p>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
+                        <div class="font-semibold text-slate-300">עקרונות הפרדה:</div>
+                        <div>• ליבה (Core): נכסים עמידים בירידות, יצירת ערך והגנה.</div>
+                        <div>• סווינג (Swing): ניצול תנודות מחיר מחזוריות, כניסות ויציאות מהירות.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טאב 4: תיק השקעות חי (שלב 5) -->
+        <div id="tab-portfolio" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
                     <h3 class="text-slate-400 text-sm font-medium">שווי תיק כולל</h3>
@@ -88,94 +213,16 @@
             </div>
         </div>
 
-        <!-- טאב 2: מאקרו וסקטורים (שלבים 1-2) -->
-        <div id="tab-macro" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- שלב 1 -->
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm border border-blue-500/30">01</span>
-                        <h3 class="text-lg font-bold text-blue-400">סקירות מאקרו וגיאופוליטיקה</h3>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        ניתוח עומק של סביבת המאקרו-עולמית, תוואי ריבית הבנקים המרכזיים (הפד), נתוני אינפלציה (CPI, PCE), מדדי תעסוקה ומדיניות פיסקלית. הערכת השפעות אירועים גיאופוליטיים רוחביים על תיאבון הסיכון בשווקים והסטת הון בין אפיקים.
-                    </p>
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
-                        <div class="font-semibold text-slate-300">פרמטרים למעקב:</div>
-                        <div>• עקום תשואות האג"ח הממשלתיות בארה"ב (2ש' מול 10ש').</div>
-                        <div>• הצהרות פאוול והתאמת ציפיות הריבית בשוק (FedWatch).</div>
-                        <div>• מדדי מנהלי רכש (PMI) גלובליים ונתוני ייצור.</div>
-                    </div>
-                </div>
-
-                <!-- שלב 2 -->
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm border border-cyan-500/30">02</span>
-                        <h3 class="text-lg font-bold text-cyan-400">ניתוח סקטוריאלי (טכנולוגיה ושבבים)</h3>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        מיקוד רוחבי בסקטור הטכנולוגיה והחומרה, עם דגש על מחזוריות תעשיית השבבים העולמית (Semiconductors). מעקב אחר ביקושים למרכזי נתונים, תשתיות ענן, מחשוב קצה ושרשרת האספקה של ענקיות החומרה (כגון AMD, Intel, Micron).
-                    </p>
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
-                        <div class="font-semibold text-slate-300">מוקדי עניין בסקטור:</div>
-                        <div>• מגמות היצע וביקוש בשבבי זיכרון (DRAM / NAND).</div>
-                        <div>• השפעות רגולציה טכנולוגית ומסחר בינלאומי.</div>
-                        <div>• עוצמה יחסית של ססקטור השבבים ביחס למדד הרחב.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- טאב 3: זרזים ואסטרטגיה (שלבים 3-4) -->
-        <div id="tab-strategy" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- שלב 3 -->
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm border border-indigo-500/30">03</span>
-                        <h3 class="text-lg font-bold text-indigo-400">זיהוי זרזים מרכזיים (Catalysts)</h3>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        איתור ומיפוי מדויק של אירועים קרובים בעלי פוטנציאל לחולל תנודות חדות בשער המניות. בניית לו"ז זרזים לכל נכס בתיק כדי להיערך מראש לתנועות מחיר קיצוניות או לנצל חלונות הזדמנויות.
-                    </p>
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
-                        <div class="font-semibold text-slate-300">סוגי זרזים במעקב:</div>
-                        <div>• פרסום דוחות כספיים רבעוניים (EPS וציפיות קדימה).</div>
-                        <div>• אירועי השקת מוצרים טכנולוגיים ותערוכות תעשייה.</div>
-                        <div>• החלטות משפטיות, פטנטים או אישורים רגולטוריים.</div>
-                    </div>
-                </div>
-
-                <!-- שלב 4 -->
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm border border-purple-500/30">04</span>
-                        <h3 class="text-lg font-bold text-purple-400">אסטרטגיית ליבה מול סווינג</h3>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        הפרדה מוחלטת בניהול ההון: מצד אחד אחזקות ליבה ארוכות טווח (כגון מניות ערך וענקיות קמעונאות יציבות כמו Walmart) לבניית עושר יציב, ומצד שני פוזיציות סווינג אקטיביות וקצרות טווח המנוהלות לפי מומנטום ומבנה מחיר.
-                    </p>
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
-                        <div class="font-semibold text-slate-300">עקרונות הפרדה:</div>
-                        <div>• ליבה (Core): נכסים עמידים בירידות, יצירת ערך והגנה.</div>
-                        <div>• סווינג (Swing): ניצול תנודות מחיר מחזוריות, כניסות ויציאות מהירות.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- טאב 4: סנטימנט וסיכונים (שלבים 6-7) -->
+        <!-- טאב 5: סנטימנט וסיכונים (שלבים 6-7) -->
         <div id="tab-risk" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- שלב 6 -->
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm border border-amber-500/30">06</span>
                         <h3 class="text-lg font-bold text-amber-400">סקירת סנטימנט שוק</h3>
                     </div>
                     <p class="text-sm text-slate-300 leading-relaxed">
-                        ניטור שוטף של פסיכולוגיית ההמונים ותאבון הסיכון בשוק ההון. זיהוי מצבי קיצון של אופטימיות מופרזת (Euphoria) המובילה לבועות, או פאניקה המייצרת הזדמנויות קנייה אטרקטיביות בע이나ות שפל.
+                        ניטור שוטף של פסיכולוגיית ההמונים ותאבון הסיכון בשוק ההון. זיהוי מצבי קיצון של אופטימיות מופרזת (Euphoria) המובילה לבועות, או פאניקה המייצרת הזדמנויות קנייה אטרקטיביות בעונות שפל.
                     </p>
                     <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 space-y-2 text-xs text-slate-400">
                         <div class="font-semibold text-slate-300">מדדי סנטימנט מרכזיים:</div>
@@ -185,7 +232,6 @@
                     </div>
                 </div>
 
-                <!-- שלב 7 -->
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-sm border border-rose-500/30">07</span>
@@ -203,7 +249,7 @@
             </div>
         </div>
 
-        <!-- טאב 5: חדשות ועדכונים (שלב 8) -->
+        <!-- טאב 6: חדשות ועדכונים (שלב 8) -->
         <div id="tab-news" class="tab-content hidden space-y-6">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg space-y-4">
                 <div class="flex items-center gap-3">
