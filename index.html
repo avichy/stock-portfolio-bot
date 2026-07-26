@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דשבורד שוק ההון וניהול תיק</title>
+    <title>מרכז שליטה - סקייל שוק ההון וניהול תיק</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto space-y-8">
+        
         <!-- כותרת ראשית -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-slate-800 p-5 rounded-2xl shadow-xl border border-slate-700 gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-center bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-emerald-400">📈 מרכז שליטה שוק ההון והתיק</h1>
-                <p class="text-sm text-slate-400">מעקב תיק חי + דוחות ניתוח אוטומטיים מ-AI Studio</p>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-emerald-400">📈 מרכז שליטה - סקייל שוק ההון</h1>
+                <p class="text-sm text-slate-400 mt-1">מערכת ניתוח מתקדמת (8 שלבים) + מעקב תיק חי מול Supabase</p>
             </div>
-            <div class="px-3 py-1.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+            <div class="px-4 py-2 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 מערכת מחוברת ופעילה בלייב
             </div>
         </header>
 
-        <!-- נתוני סיכום התיק -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <!-- נתוני סיכום התיק (שלב 5) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">שווי תיק כולל</h3>
-                <p id="total-value" class="text-3xl font-extrabold mt-1 text-white">$0.00</p>
+                <h3 class="text-slate-400 text-sm font-medium">שווי תיק כולל</h3>
+                <p id="total-value" class="text-3xl font-extrabold mt-2 text-white">$0.00</p>
             </div>
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">מצב התיק</h3>
-                <p id="total-profit" class="text-3xl font-extrabold mt-1 text-emerald-400">מעקב פעיל</p>
+                <h3 class="text-slate-400 text-sm font-medium">סטטוס ניהול תיק</h3>
+                <p class="text-xl font-bold mt-2 text-emerald-400">אקטיבי ומנוטר</p>
             </div>
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">עדכון אחרון</h3>
-                <p id="last-update" class="text-sm font-medium mt-2 text-slate-300">טוענת נתונים...</p>
+                <h3 class="text-slate-400 text-sm font-medium">עדכון נתונים אחרון</h3>
+                <p id="last-update" class="text-sm font-medium mt-3 text-slate-300">טוען נתונים...</p>
             </div>
         </div>
 
-        <!-- אזור 1: טבלת האחזקות החיה -->
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden mb-8">
-            <div class="p-4 border-b border-slate-700 bg-slate-850">
-                <h2 class="text-lg font-semibold text-emerald-300">💼 פירוט אחזקות בשצף הנתונים</h2>
+        <!-- שלב 5: טבלת האחזקות החיה -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden">
+            <div class="p-5 border-b border-slate-700 bg-slate-850 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-emerald-300">💼 שלב 5: ניהול תיק השקעות אישי (אחזקות חיות)</h2>
+                <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20">Supabase DB</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse">
@@ -57,36 +59,101 @@
                     </thead>
                     <tbody id="stocks-table-body" class="divide-y divide-slate-700">
                         <tr>
-                            <td colspan="6" class="p-6 text-center text-slate-400">טוען נתונים מ-Supabase...</td>
+                            <td colspan="6" class="p-6 text-center text-slate-400">טוען נתונים ממאגר הנתונים...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- אזור 2: סקירות וניתוחי AI (סקייל ניתוח שוק) -->
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-6">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                <h2 class="text-lg font-semibold text-cyan-400">🤖 דוחות ניתוח מאקרו וסקירות AI</h2>
-                <span class="text-xs text-slate-400">מתעדכן אוטומטית ממודל הניתוח</span>
-            </div>
-            <div id="ai-reports-container" class="space-y-4">
-                <div class="bg-slate-750 p-4 rounded-xl border border-slate-700">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-slate-200">סקירת מאקרו שבועית וניתוח אחזקות (AI Studio Template)</h3>
-                        <span class="text-xs text-slate-400">עדכון אחרון: ליב</span>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        המערכת מוכנה לקליטת דוחות הניתוח האוטומטיים שלך. ניתן לשמור את תוצרי הניתוחים ישירות לטבלה ייעודית ב-Supabase או לעדכן אותם כאן כדי לצפות בהם מכל טלפון ומחשב.
-                    </p>
+        <!-- רשת 8 שלבי הסקייל (שלבים 1-4, 6-8) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- שלב 1 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm border border-blue-500/30">01</span>
+                    <h3 class="text-lg font-bold text-blue-400">סקירות מאקרו וגיאופוליטיקה</h3>
                 </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    ניתוח סביבת המאקרו-עולמית, מדיניות ריבית, נתוני אינפלציה והשפעות גיאופוליטיות רוחביות על השווקים הפיננסיים.
+                </p>
             </div>
+
+            <!-- שלב 2 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm border border-cyan-500/30">02</span>
+                    <h3 class="text-lg font-bold text-cyan-400">ניתוח סקטוריאלי (טכנולוגיה ושבבים)</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    מעקב עמוק אחר סקטור הטכנולוגיה, בדגש מיוחד על יצרניות שבבים, חומרת מחשוב ומגמות ביקוש בתעשייה.
+                </p>
+            </div>
+
+            <!-- שלב 3 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm border border-indigo-500/30">03</span>
+                    <h3 class="text-lg font-bold text-indigo-400">זיהוי זרזים מרכזיים (Catalysts)</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    איתור אירועים קרובים, דוחות כספיים, השקות מוצרים והכרזות מאקרו המהווים טריגר לתנודות חדות בשווי המניות.
+                </p>
+            </div>
+
+            <!-- שלב 4 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm border border-purple-500/30">04</span>
+                    <h3 class="text-lg font-bold text-purple-400">אסטרטגיית ליבה מול סווינג</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    הפרדה ברורה בין אחזקות ליבה לטווח ארוך (כדוגמת מניות ערך וענקיות קמעונאות) לבין פוזיציות מסחר סווינג קצרות טווח.
+                </p>
+            </div>
+
+            <!-- שלב 6 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm border border-amber-500/30">06</span>
+                    <h3 class="text-lg font-bold text-amber-400">סקירת סנטימנט שוק</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    הערכת מצב רוח המשקיעים, מדדי פחד/תאבון סיכון, וניתוח פסיכולוגיית השוק הנוכחית.
+                </p>
+            </div>
+
+            <!-- שלב 7 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-sm border border-rose-500/30">07</span>
+                    <h3 class="text-lg font-bold text-rose-400">ניהול סיכונים והגנות</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    קביעת פרמטרים ברורים לחשיפה, הגדרת נקודות יציאה וכללי בטיחות לשמירה על הון התיק בכל מצב שוק.
+                </p>
+            </div>
+
         </div>
+
+        <!-- שלב 8: עדכונים וחדשות חיים -->
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-sm border border-teal-500/30">08</span>
+                <h3 class="text-lg font-bold text-teal-400">חדשות ועדכונים חיים המקושרים למניות התיק</h3>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed">
+                זרקור שוטף על חדשות ספציפיות שמשפיעות ישירות על הנכסים והחברות הפעילות בתיק ההשקעות שלך.
+            </p>
+        </div>
+
     </div>
 
     <script>
+        // חיבור ל-Supabase
         const SUPABASE_URL = 'https://zdbjxqfmsslqmhdfrvyv.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_Z4zjzbKbnW8U3Jc4EMD6IQ_x2CeCsPD';   
+        const SUPABASE_KEY = 'הדבק_כאן_מחדש_את_המפתח_שלך'; // ודא שהמפתח שלך מושם כאן במדויק
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
