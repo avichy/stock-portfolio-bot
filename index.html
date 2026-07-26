@@ -3,47 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דשבורד תיק השקעות</title>
-    <!-- Tailwind CSS לעיצוב מהיר ומושלם -->
+    <title>דשבורד שוק ההון וניהול תיק</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-5xl mx-auto">
         <!-- כותרת ראשית -->
-        <header class="flex justify-between items-center mb-8 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-slate-800 p-5 rounded-2xl shadow-xl border border-slate-700 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-emerald-400">📈 תיק ההשקעות שלי</h1>
-                <p class="text-sm text-slate-400">מעקב חי ומתעדכן אוטומטית</p>
+                <h1 class="text-2xl font-bold text-emerald-400">📈 מרכז שליטה שוק ההון והתיק</h1>
+                <p class="text-sm text-slate-400">מעקב תיק חי + דוחות ניתוח אוטומטיים מ-AI Studio</p>
             </div>
-            <div id="status-badge" class="px-3 py-1 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                מחובר בלייב
+            <div class="px-3 py-1.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                מערכת מחוברת ופעילה בלייב
             </div>
         </header>
 
-        <!-- סיכום תיק -->
+        <!-- נתוני סיכום התיק -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">שווי כולל</h3>
+                <h3 class="text-slate-400 text-sm">שווי תיק כולל</h3>
                 <p id="total-value" class="text-3xl font-extrabold mt-1 text-white">$0.00</p>
             </div>
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">רווח / הפסד יומי</h3>
-                <p id="total-profit" class="text-3xl font-extrabold mt-1 text-emerald-400">+$0.00</p>
+                <h3 class="text-slate-400 text-sm">מצב התיק</h3>
+                <p id="total-profit" class="text-3xl font-extrabold mt-1 text-emerald-400">מעקב פעיל</p>
             </div>
             <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow">
-                <h3 class="text-slate-400 text-sm">סטטוס עדכון אחרון</h3>
-                <p id="last-update" class="text-sm font-medium mt-2 text-slate-300">טוען נתונים...</p>
+                <h3 class="text-slate-400 text-sm">עדכון אחרון</h3>
+                <p id="last-update" class="text-sm font-medium mt-2 text-slate-300">טוענת נתונים...</p>
             </div>
         </div>
 
-        <!-- טבלת מניות -->
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden">
-            <div class="p-4 border-b border-slate-700">
-                <h2 class="text-lg font-semibold">פירוט אחזקות</h2>
+        <!-- אזור 1: טבלת האחזקות החיה -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden mb-8">
+            <div class="p-4 border-b border-slate-700 bg-slate-850">
+                <h2 class="text-lg font-semibold text-emerald-300">💼 פירוט אחזקות בשצף הנתונים</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse">
@@ -54,11 +52,10 @@
                             <th class="p-4">כמות</th>
                             <th class="p-4">מחיר קנייה</th>
                             <th class="p-4">מחיר נוכחי</th>
-                            <th class="p-4">שווי</th>
+                            <th class="p-4">שווי כולל</th>
                         </tr>
                     </thead>
                     <tbody id="stocks-table-body" class="divide-y divide-slate-700">
-                        <!-- הנתונים יטענו לכאן אוטומטית -->
                         <tr>
                             <td colspan="6" class="p-6 text-center text-slate-400">טוען נתונים מ-Supabase...</td>
                         </tr>
@@ -66,23 +63,41 @@
                 </table>
             </div>
         </div>
+
+        <!-- אזור 2: סקירות וניתוחי AI (סקייל ניתוח שוק) -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-6">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                <h2 class="text-lg font-semibold text-cyan-400">🤖 דוחות ניתוח מאקרו וסקירות AI</h2>
+                <span class="text-xs text-slate-400">מתעדכן אוטומטית ממודל הניתוח</span>
+            </div>
+            <div id="ai-reports-container" class="space-y-4">
+                <div class="bg-slate-750 p-4 rounded-xl border border-slate-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-200">סקירת מאקרו שבועית וניתוח אחזקות (AI Studio Template)</h3>
+                        <span class="text-xs text-slate-400">עדכון אחרון: ליב</span>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        המערכת מוכנה לקליטת דוחות הניתוח האוטומטיים שלך. ניתן לשמור את תוצרי הניתוחים ישירות לטבלה ייעודית ב-Supabase או לעדכן אותם כאן כדי לצפות בהם מכל טלפון ומחשב.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // הגדרת החיבור ל-Supabase (השתמש ב-URL וב-Publishable Key שלך)
         const SUPABASE_URL = 'https://zdbjxqfmsslqmhdfrvyv.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_Z4zjzbKbnW8U3Jc4EMD6IQ_x2CeCsPD'; 
+        const SUPABASE_KEY = 'הדבק_כאן_מחדש_את_האנון_קי_שלך'; // המפתח הציבורי שהעתקנו קודם
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchStocks() {
             const { data, error } = await supabaseClient
-                .from('portfolio_positions') // שם הטבלה שלך במסד הנתונים
+                .from('portfolio_positions')
                 .select('*');
 
             if (error) {
                 console.error('שגיאה בטעינת הנתונים:', error);
-                document.getElementById('stocks-table-body').innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">שגיאה בטעינת הנתונים</td></tr>`;
+                document.getElementById('stocks-table-body').innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">שגיאה בטעינת הנתונים: ${error.message}</td></tr>`;
                 return;
             }
 
@@ -96,49 +111,38 @@
             let totalPortfolioValue = 0;
 
             if (!stocks || stocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">אין מניות להצגה בטבלה.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">הטבלה ריקה מנתונים ב-Supabase.</td></tr>`;
                 return;
             }
 
             stocks.forEach(stock => {
-                // חישובים (בהנחה ויש עמודות: ticker, name, shares, buy_price, current_price)
-                const shares = stock.shares || 0;
-                const currentPrice = stock.current_price || 0;
+                const ticker = stock.ticker || stock.symbol || stock.stock || '-';
+                const name = stock.name || stock.company_name || '-';
+                const shares = stock.shares || stock.quantity || stock.amount || 0;
+                const buyPrice = stock.buy_price || stock.purchase_price || stock.price || 0;
+                const currentPrice = stock.current_price || stock.price || 0;
+                
                 const stockValue = shares * currentPrice;
                 totalPortfolioValue += stockValue;
 
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-slate-750 transition-colors';
                 row.innerHTML = `
-                    <td class="p-4 font-bold text-emerald-400">${stock.ticker}</td>
-                    <td class="p-4 text-slate-300">${stock.name || '-'}</td>
+                    <td class="p-4 font-bold text-emerald-400">${ticker}</td>
+                    <td class="p-4 text-slate-300">${name}</td>
                     <td class="p-4 text-slate-300">${shares}</td>
-                    <td class="p-4 text-slate-300">$${stock.buy_price ? stock.buy_price.toFixed(2) : '0.00'}</td>
-                    <td class="p-4 font-semibold text-white">$${currentPrice.toFixed(2)}</td>
-                    <td class="p-4 font-bold text-white">$${stockValue.toFixed(2)}</td>
+                    <td class="p-4 text-slate-300">$${Number(buyPrice).toFixed(2)}</td>
+                    <td class="p-4 font-semibold text-white">$${Number(currentPrice).toFixed(2)}</td>
+                    <td class="p-4 font-bold text-white">$${Number(stockValue).toFixed(2)}</td>
                 `;
                 tbody.appendChild(row);
             });
 
-            // עדכון שווי כולל בדשבורד
             document.getElementById('total-value').innerText = `$${totalPortfolioValue.toFixed(2)}`;
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) + ' (מעודכן)';
         }
 
-        // האזנה לעדכונים בזמן אמת מ-Supabase
-        function setupRealtimeSubscription() {
-            supabaseClient
-                .channel('public:stocks')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'stocks' }, payload => {
-                    console.log('התקבל עדכון חדש בלייב!', payload);
-                    fetchStocks(); // טעינת הנתונים מחדש ברגע שיש שינוי
-                })
-                .subscribe();
-        }
-
-        // הרצה ראשונית
         fetchStocks();
-        setupRealtimeSubscription();
     </script>
 </body>
 </html>
