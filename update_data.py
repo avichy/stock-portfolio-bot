@@ -113,7 +113,6 @@ try:
       )
       subprocess.run(['git', 'add', 'index.html'], check=True)
 
-      # בדיקה האם יש שינויים שצריך לשלוח
       status = subprocess.run(
           ['git', 'status', '--porcelain'],
           capture_output=True,
@@ -122,7 +121,7 @@ try:
       )
       if 'index.html' in status.stdout:
         subprocess.run(
-            ['git', 'commit', -m, 'Auto-update last-updated time [skip ci]'],
+            ['git', 'commit', '-m', 'Auto-update last-updated time [skip ci]'],
             check=True,
         )
         subprocess.run(['git', 'push'], check=True)
