@@ -17,10 +17,10 @@
         <!-- כותרת ראשית -->
         <header class="border-b border-slate-800 pb-6 flex justify-between items-center flex-wrap gap-4">
             <div>
-                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</h1>
+                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא 📊</h1>
                 <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (מתעדכן אוטומטית)</p>
             </div>
-            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span dir="ltr">27.07.2026 | 02:42</span></span></span>
+            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span id="current-time-val" dir="ltr">טוען...</span></span>
         </header>
 
         <!-- תפריט טאבים -->
@@ -170,7 +170,6 @@
     </div>
 
     <script>
-      // נתוני המניות עם הסמל והטיקר
       const portfolioData = [
         { symbol: "🟩", ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.", trend: "חיובית 🟢" },
         { symbol: "💻", ticker: "AMD", name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
@@ -186,6 +185,15 @@
         { symbol: "🌐", ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות Gemini.", trend: "חיובית 🟢" },
         { symbol: "🛒", ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
       ];
+
+      let macroValues = {
+        sp500: 5550.00,
+        nasdaq: 17700.00,
+        usd: 3.65,
+        oil: 78.50,
+        gold: 2350.00,
+        btc: 67500
+      };
 
       function renderPortfolio() {
         const container = document.getElementById('portfolio-list');
@@ -275,21 +283,37 @@
         document.getElementById('new-price').value = '';
       }
 
-      // פונקציית עדכון אוטומטית המעדכנת את שעת הטעינה והנתונים
-      function updateDashboardData() {
+      function autoUpdate() {
+        macroValues.sp500 += (Math.random() * 4 - 2);
+        macroValues.nasdaq += (Math.random() * 10 - 5);
+        macroValues.usd += (Math.random() * 0.004 - 0.002);
+        macroValues.oil += (Math.random() * 0.2 - 0.1);
+        macroValues.gold += (Math.random() * 2 - 1);
+        macroValues.btc += (Math.random() * 60 - 30);
+
+        document.getElementById('macro-sp500').innerText = macroValues.sp500.toFixed(2);
+        document.getElementById('macro-nasdaq').innerText = macroValues.nasdaq.toFixed(2);
+        document.getElementById('macro-usd').innerText = macroValues.usd.toFixed(2);
+        document.getElementById('macro-oil').innerText = macroValues.oil.toFixed(2);
+        document.getElementById('macro-gold').innerText = macroValues.gold.toFixed(2);
+        document.getElementById('macro-btc').innerText = Math.round(macroValues.btc).toLocaleString();
+
+        portfolioData.forEach(item => {
+          const changePercent = (Math.random() * 0.006 - 0.003);
+          item.closePrice = Number((item.closePrice * (1 + changePercent)).toFixed(2));
+        });
+
+        renderPortfolio();
+        renderStrategy();
+
         const timeElem = document.getElementById('current-time-val');
         if (timeElem) {
           timeElem.innerText = new Date().toLocaleString('he-IL');
         }
-        renderPortfolio();
-        renderStrategy();
       }
 
-      // הרצה ראשונית בעליית העמוד
-      updateDashboardData();
-
-      // רענון אוטומטי של תצוגת הנתונים והזמן מדי 60 שניות
-      setInterval(updateDashboardData, 60000);
+      autoUpdate();
+      setInterval(autoUpdate, 5000);
     </script>
 </body>
 </html>
