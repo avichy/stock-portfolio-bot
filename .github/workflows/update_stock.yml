@@ -3,14 +3,13 @@ name: Update Stock Prices & Notifications
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # רץ כל שעה עגולה
-
-permissions:
-  contents: write
+    - cron: '30 7,13,20 * * *'
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # הרשאת כתיבה קריטית המאפשרת לסקריפט לבצע Push חזרה לגיטהאב
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,18 +20,13 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests pytz
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytz
 
       - name: Run update script
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python update_data.py
-
-      - name: Commit and push updated data
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.io"
-          git add .
-          git commit -m "Auto-update stock prices and portfolio [skip ci]" || echo "No changes to commit"
-          git push
+          python update_data.py
