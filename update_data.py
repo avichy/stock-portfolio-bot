@@ -1,6 +1,5 @@
 from datetime import datetime
 import os
-import re
 import pytz
 import requests
 
@@ -23,11 +22,9 @@ is_transition_period = is_autumn_transition or is_spring_transition
 
 # קביעת שעות הפושים
 if is_transition_period:
-  # תקופת מעבר: 10:30, 15:00, 22:30
   target_times = [(10, 30), (15, 0), (22, 30)]
   period_name = 'תקופת מעבר'
 else:
-  # שעון רגיל: 10:30, 16:00, 23:30
   target_times = [(10, 30), (16, 0), (23, 30)]
   period_name = 'שעון רגיל'
 
@@ -54,7 +51,7 @@ def send_telegram_push(message):
     print('Telegram credentials missing.')
 
 
-# בדיקה האם השעה הנוכחית תואמת לאחד מיעדי הפוש (בטווח של 15 דקות)
+# בדיקה האם השעה הנוכחית תואמת לאחד מיעדי הפוש
 for target_h, target_m in target_times:
   if current_hour == target_h and abs(current_minute - target_m) < 15:
     msg = (
@@ -64,27 +61,43 @@ for target_h, target_m in target_times:
     send_telegram_push(msg)
     break
 
-# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML
+# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML (בשיטה בטוחה ומדויקת)
 try:
   date_str = now_il.strftime('%d.%m.%Y')
   time_str = now_il.strftime('%H:%M')
-
   new_inner_html = f'עדכון אחרון: {date_str}<br>שעה: {time_str}'
 
-  with open('index.html', 'r', encoding='utf-8') as f:
+  with open('index.html', 'r', encoding='utf-8-sig') as f:
     content = f.read()
 
-  # החלפת התוכן בתוך ה-span עם id="last-updated"
-  new_content = re.sub(
-      r'(<span[^>]*id=["\']last-updated["\'][^>]*>)(.*?)(</span>)',
-      r'\1' + new_inner_html + r'\3',
-      content,
-      flags=re.DOTALL,
-  )
+  # חיפוש לפי ה-ID בצורה מדויקת
+  target_id = 'id="last-updated"'
+  if target_id not in content:
+    target_id = "id='last-updated'"
 
-  with open('index.html', 'w', encoding='utf-8') as f:
-    f.write(new_content)
+  if target_id in content:
+    idx_id = content.find(target_id)
+    idx_span_start = content.rfind('<span', 0, idx_id)
+    idx_tag_end = content.find('>', idx_id)
+    idx_span_end = content.find('</span>', idx_tag_end)
 
-  print(f'Successfully updated index.html: {date_str} at {time_str}')
+    if idx_span_start != -1 and idx_tag_end != -1 and idx_span_end != -1:
+      opening_tag = content[idx_span_start : idx_tag_end + 1]
+      content = (
+          content[:idx_span_start]
+          + opening_tag
+          + new_inner_html
+          + content[idx_span_end:]
+      )
+
+      with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+      print(f'Successfully updated index.html with: {date_str} at {time_str}')
+    else:
+      print('Error: Found ID but could not locate span tags.')
+  else:
+    print('Error: id="last-updated" was not found in index.html.')
+
 except Exception as e:
   print(f'Error updating time in HTML: {e}')
