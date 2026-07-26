@@ -17,10 +17,10 @@
         <!-- כותרת ראשית -->
         <header class="border-b border-slate-800 pb-6 flex justify-between items-center flex-wrap gap-4">
             <div>
-                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</h1>
-                <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (מתעדכן אוטומטית)</p>
+                <h1 class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא 📊</h1>
+                <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (מתעדכן אוטומטית לפי נתוני היומיים)</p>
             </div>
-            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span dir="ltr">27.07.2026 | 02:47</span></span></span>
+            <span class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span id="current-date-val" dir="ltr">טוען...</span></span>
         </header>
 
         <!-- תפריט טאבים -->
@@ -28,7 +28,7 @@
             <button onclick="switchTab(1)" id="btn-tab-1" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-emerald-500 text-slate-950 shadow-lg">שלב 1: מאקרו</button>
             <button onclick="switchTab(2)" id="btn-tab-2" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 2: סקטורים</button>
             <button onclick="switchTab(3)" id="btn-tab-3" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 3: זרזים</button>
-            <button onclick="switchTab(4)" id="btn-tab-4" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 4: אסטרטגיה (20 מניות)</button>
+            <button onclick="switchTab(4)" id="btn-tab-4" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 4: אסטרטגיה</button>
             <button onclick="switchTab(5)" id="btn-tab-5" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 5: התיק האישי</button>
             <button onclick="switchTab(6)" id="btn-tab-6" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 6: סנטימנט</button>
             <button onclick="switchTab(7)" id="btn-tab-7" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-sm md:text-base transition bg-slate-800 text-slate-300 hover:bg-slate-700">שלב 7: סיכום</button>
@@ -44,27 +44,23 @@
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-slate-200">מדדים מובילים (Indices) 📈</h3>
                         <p class="mt-2 text-slate-300 text-sm">S&P 500 & NASDAQ: המדדים המובילים בוול סטריט המשמשים כמצפן המרכזי לסנטימנט המסחר העולמי.</p>
-                        <div class="mt-2 text-xs text-slate-400">מחיר S&P 500: <span id="macro-sp500" class="text-emerald-400 font-bold">5,550.00</span> | NASDAQ: <span id="macro-nasdaq" class="text-emerald-400 font-bold">17,700.00</span></div>
+                        <div class="mt-2 text-xs text-slate-400">מחיר S&P 500: <span id="macro-sp500" class="text-emerald-400 font-bold"></span> | NASDAQ: <span id="macro-nasdaq" class="text-emerald-400 font-bold"></span></div>
                     </div>
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-slate-200">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="mt-2 text-slate-300">שער נוכחי: <span id="macro-usd" class="font-bold text-emerald-400 text-xl">3.65</span> ₪</p>
-                        <p class="text-xs text-slate-400 mt-1">משפיע על המרת שקלים לדולרים לרכישת מניות ומימוש רווחים.</p>
+                        <p class="mt-2 text-slate-300">שער נוכחי: <span id="macro-usd" class="font-bold text-emerald-400 text-xl"></span> ₪</p>
                     </div>
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-slate-200">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="mt-2 text-slate-300">מחיר חבית: <span id="macro-oil" class="font-bold text-emerald-400 text-xl">78.50</span> $</p>
-                        <p class="text-xs text-slate-400 mt-1">משפיע על עלויות השילוח, הייצור וסביבת האינפלציה הגלובלית.</p>
+                        <p class="mt-2 text-slate-300">מחיר חבית: <span id="macro-oil" class="font-bold text-emerald-400 text-xl"></span> $</p>
                     </div>
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-slate-200">זהב (Gold) 🪙</h3>
-                        <p class="mt-2 text-slate-300">מחיר אונקיה: <span id="macro-gold" class="font-bold text-emerald-400 text-xl">2,350.00</span> $</p>
-                        <p class="text-xs text-slate-400 mt-1">עוגן מקלט בטוח בתקופות של חוסר ודאות בשווקים.</p>
+                        <p class="mt-2 text-slate-300">מחיר אונקיה: <span id="macro-gold" class="font-bold text-emerald-400 text-xl"></span> $</p>
                     </div>
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50 md:col-span-2">
                         <h3 class="font-semibold text-slate-200">ביטקוין (Bitcoin) 🪙</h3>
-                        <p class="mt-2 text-slate-300">מחיר נוכחי: <span id="macro-btc" class="font-bold text-emerald-400 text-xl">67,500</span> $</p>
-                        <p class="text-xs text-slate-400 mt-1">משקף את מדד התיאבון לסיכון בשווקים הדיגיטליים.</p>
+                        <p class="mt-2 text-slate-300">מחיר נוכחי: <span id="macro-btc" class="font-bold text-emerald-400 text-xl"></span> $</p>
                     </div>
                 </div>
             </div>
@@ -72,69 +68,27 @@
             <!-- שלב 2: סקטורים -->
             <div id="tab-2" class="tab-content space-y-6">
                 <h2 class="text-xl md:text-2xl font-bold text-cyan-400 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מלאה 💻</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm md:text-base text-slate-300">
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>טכנולוגיית מידע (Technology) 💻</span>
-                        <span class="font-bold text-emerald-400">+1.45% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>שירותי תקשורת (Communication Services) 📡</span>
-                        <span class="font-bold text-emerald-400">+0.82% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>מחזור צרכני (Consumer Discretionary) 🛍️</span>
-                        <span class="font-bold text-rose-400">-0.35% 🔴</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>מוצרי צריכה בסיסיים (Consumer Staples) 🛒</span>
-                        <span class="font-bold text-emerald-400">+0.20% 🟢</span>
-                    </div>
-                </div>
+                <div id="sectors-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm md:text-base text-slate-300"></div>
             </div>
 
             <!-- שלב 3: זרזים -->
             <div id="tab-3" class="tab-content space-y-6">
                 <h2 class="text-xl md:text-2xl font-bold text-indigo-400 border-r-4 border-indigo-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
-                <div class="space-y-4 text-base md:text-lg text-slate-300">
-                    <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
-                        <strong class="text-white">דיווחי תוצאות לרבעון:</strong> מעקב אחר תחזיות ההכנסה של החברות המובילות במשק. 📑
-                    </div>
-                </div>
+                <div id="catalysts-container" class="space-y-4 text-base md:text-lg text-slate-300"></div>
             </div>
 
-            <!-- שלב 4: אסטרטגיה (20 מניות) -->
+            <!-- שלב 4: אסטרטגיה -->
             <div id="tab-4" class="tab-content space-y-6">
-                <h2 class="text-xl md:text-2xl font-bold text-purple-400 border-r-4 border-purple-400 pr-3">שלב 4: אסטרטגיות מסחר והשקעה (20 מניות) 📈</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base" id="strategy-list">
-                    <!-- יתעדכן דינמית דרך JS -->
-                </div>
+                <h2 class="text-xl md:text-2xl font-bold text-purple-400 border-r-4 border-purple-400 pr-3">שלב 4: אסטרטגיות מסחר והשקעה 📈</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base" id="strategy-list"></div>
             </div>
 
             <!-- שלב 5: התיק האישי -->
             <div id="tab-5" class="tab-content space-y-6">
                 <div class="flex justify-between items-center flex-wrap gap-4 border-b border-slate-800 pb-4">
                     <h2 class="text-xl md:text-2xl font-bold text-emerald-400">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות 💼</h2>
-                    <button onclick="toggleAddStockForm()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg text-sm md:text-base">➕ הוסף מניה ידנית</button>
                 </div>
-
-                <!-- טופס הוספת מניה -->
-                <div id="add-stock-form" class="hidden bg-slate-800/90 p-5 rounded-2xl border border-emerald-500/40 space-y-4">
-                    <h3 class="font-bold text-emerald-300 text-lg">הוספת פוזיציה חדשה לתיק</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <input type="text" id="new-ticker" placeholder="סימול (למשל: TSLA)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-sm">
-                        <input type="text" id="new-name" placeholder="שם מלא (למשל: Tesla)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-sm">
-                        <input type="number" id="new-shares" placeholder="כמות מניות" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-sm">
-                        <input type="number" step="0.01" id="new-price" placeholder="מחיר קנייה ($)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-sm">
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <button onclick="toggleAddStockForm()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-xl text-sm font-semibold transition">ביטול</button>
-                        <button onclick="addNewStock()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-5 py-2 rounded-xl text-sm font-bold transition shadow-lg">שמור והוסף לתיק</button>
-                    </div>
-                </div>
-
-                <div id="portfolio-list" class="space-y-4 text-sm md:text-base">
-                    <!-- יתעדכן דינמית דרך JS -->
-                </div>
+                <div id="portfolio-list" class="space-y-4 text-sm md:text-base"></div>
             </div>
 
             <!-- שלב 6: סנטימנט -->
@@ -143,7 +97,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base md:text-lg text-slate-300">
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-white">מדד הפחד (VIX) 📉</h3>
-                        <p class="mt-2 text-slate-300">רמה נוכחית: <span class="font-bold text-emerald-400">14.20</span></p>
+                        <p class="mt-2 text-slate-300">רמה נוכחית: <span id="vix-val" class="font-bold text-emerald-400"></span></p>
                     </div>
                 </div>
             </div>
@@ -151,84 +105,145 @@
             <!-- שלב 7: סיכום -->
             <div id="tab-7" class="tab-content space-y-6">
                 <h2 class="text-xl md:text-2xl font-bold text-teal-400 border-r-4 border-teal-400 pr-3">שלב 7: סיכום מנהלים 📋</h2>
-                <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4 text-base md:text-lg text-slate-300">
-                    <p>הנתונים מעודכנים בזמן אמת באמצעות סקריפט הניהול של המערכת.</p>
-                </div>
+                <div id="summary-container" class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4 text-base md:text-lg text-slate-300"></div>
             </div>
 
             <!-- שלב 8: חדשות מניות -->
             <div id="tab-8" class="tab-content space-y-6">
                 <h2 class="text-xl md:text-2xl font-bold text-amber-400 border-r-4 border-amber-400 pr-3">שלב 8: חדשות מניות פרטניות 📰</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base text-slate-300">
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <h3 class="font-bold text-white">NVIDIA & AMD</h3>
-                        <p class="mt-1 text-slate-400 text-xs">עדכוני שוק וביקושים חזקים.</p>
-                    </div>
-                </div>
+                <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base text-slate-300"></div>
             </div>
         </main>
     </div>
 
     <script>
-      const portfolioData = [
-        { symbol: '<img src="https://logo.clearbit.com/nvidia.com" class="w-5 h-5 inline-block object-contain rounded" alt="NVDA">', ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/amd.com" class="w-5 h-5 inline-block object-contain rounded" alt="AMD">', ticker: "AMD", name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/micron.com" class="w-5 h-5 inline-block object-contain rounded" alt="MU">', ticker: "MU", name: "Micron Technology", shares: 6, buyPrice: 316.32, closePrice: 342.25, news: "זינוק בביקושים לזיכרונות HBM מתקדמים.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/westerndigital.com" class="w-5 h-5 inline-block object-contain rounded" alt="SNDK">', ticker: "SNDK", name: "SanDisk", shares: 4, buyPrice: 630.26, closePrice: 649.80, news: "ייצוב מחירים בשוק פתרונות האחסון.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/westerndigital.com" class="w-5 h-5 inline-block object-contain rounded" alt="WDC">', ticker: "WDC", name: "Western Digital", shares: 6, buyPrice: 223.23, closePrice: 233.28, news: "גידול בהזמנות מערכות אחסון ענן.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/intel.com" class="w-5 h-5 inline-block object-contain rounded" alt="INTC">', ticker: "INTC", name: "Intel", shares: 20, buyPrice: 43.05, closePrice: 42.15, news: "התקדמות מתונה בתוכנית הבראת המפעלים.", trend: "ניטרלית-זהירה 🟡" },
-        { symbol: '<img src="https://logo.clearbit.com/siliconmotion.com" class="w-5 h-5 inline-block object-contain rounded" alt="SIMO">', ticker: "SIMO", name: "Silicon Motion", shares: 30, buyPrice: 131.32, closePrice: 139.72, news: "גידול באספקת בקרי זיכרון.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/iren.com" class="w-5 h-5 inline-block object-contain rounded" alt="IREN">', ticker: "IREN", name: "Iris Energy", shares: 54, buyPrice: 52.75, closePrice: 60.77, news: "הרחבת תשתיות מחשוב הענן.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/ciphermining.com" class="w-5 h-5 inline-block object-contain rounded" alt="CIFR">', ticker: "CIFR", name: "Cipher Mining", shares: 28, buyPrice: 17.50, closePrice: 19.09, news: "שיפור ביעילות המבנית.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/meta.com" class="w-5 h-5 inline-block object-contain rounded" alt="META">', ticker: "META", name: "Meta Platforms", shares: 2, buyPrice: 661.00, closePrice: 687.44, news: "הצלחה בשילוב כלי פרסום מבוססי AI.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/amazon.com" class="w-5 h-5 inline-block object-contain rounded" alt="AMZN">', ticker: "AMZN", name: "Amazon", shares: 6, buyPrice: 229.29, closePrice: 241.45, news: "גידול בהזמנות בשירותי הענן (AWS).", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/google.com" class="w-5 h-5 inline-block object-contain rounded" alt="GOOG">', ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות Gemini.", trend: "חיובית 🟢" },
-        { symbol: '<img src="https://logo.clearbit.com/walmart.com" class="w-5 h-5 inline-block object-contain rounded" alt="WMT">', ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
-      ];
-
-      let macroValues = {
-        sp500: 5550.00,
-        nasdaq: 17700.00,
-        usd: 3.65,
-        oil: 78.50,
-        gold: 2350.00,
-        btc: 67500
+      // ==========================================
+      // 📊 נתוני היום (רשימת מניות התיק קבועה, והנתונים מתעדכנים אוטומטית)
+      // ==========================================
+      const dailyData = {
+        date: "27/07/2026",
+        macro: {
+          sp500: 5550.00,
+          nasdaq: 17700.00,
+          usd: 3.65,
+          oil: 78.50,
+          gold: 2350.00,
+          btc: 67500,
+          vix: 14.20
+        },
+        sectors: [
+          { name: "טכנולוגיית מידע (Technology) 💻", change: 1.45 },
+          { name: "שירותי תקשורת (Communication Services) 📡", change: 0.82 },
+          { name: "מחזור צרכני (Consumer Discretionary) 🛍️", change: -0.35 },
+          { name: "מוצרי צריכה בסיסיים (Consumer Staples) 🛒", change: 0.20 }
+        ],
+        catalysts: [
+          "דיווחי תוצאות לרבעון: מעקב אחר תחזיות ההכנסה של החברות המובילות במשק 📑",
+          "פרסום נתוני האינפלציה והחלטת ריבית קרובה בארצות הברית 🏦"
+        ],
+        summaryText: "השוק מציג מומנטום חיובי בסקטורי הטכנולוגיה והשבבים, עם ביקוש שיא למרכזי נתונים וענן. תיק ההשקעות מציג ביצועים יציבים.",
+        news: [
+          { title: "NVIDIA & AMD", desc: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים ועדכוני אנליסטים חיוביים." },
+          { title: "Micron & Western Digital", desc: "זינוק בביקושים לזיכרונות HBM מתקדמים והעלאת תחזיות רווח." },
+          { title: "Meta & Google", desc: "הרחבת השקעות ענק בתשתיות בינה מלאכותית ושילוב יכולות מתקדמות." },
+          { title: "Amazon & Walmart", desc: "נתוני צרכנות חזקים מהצפוי תומכים בהמשך מומנטום המסחר המקוון." }
+        ],
+        // רשימת מניות התיק הקבועה שלך – הנתונים בפנים מתעדכנים לפי הנתונים היומיים
+        portfolio: [
+          { ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא.", trend: "חיובית 🟢" },
+          { ticker: "AMD", name: "AMD", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
+          { ticker: "MU", name: "Micron Technology", shares: 6, buyPrice: 316.32, closePrice: 342.25, news: "זינוק בביקושים לזיכרונות HBM מתקדמים.", trend: "חיובית 🟢" },
+          { ticker: "WDC", name: "Western Digital", shares: 6, buyPrice: 223.23, closePrice: 233.28, news: "גידול בהזמנות מערכות אחסון ענן.", trend: "חיובית 🟢" },
+          { ticker: "INTC", name: "Intel", shares: 20, buyPrice: 43.05, closePrice: 42.15, news: "התקדמות מתונה בתוכנית הבראת המפעלים.", trend: "ניטרלית-זהירה 🟡" },
+          { ticker: "SIMO", name: "Silicon Motion", shares: 30, buyPrice: 131.32, closePrice: 139.72, news: "גידול באספקת בקרי זיכרון.", trend: "חיובית 🟢" },
+          { ticker: "IREN", name: "Iris Energy", shares: 54, buyPrice: 52.75, closePrice: 60.77, news: "הרחבת תשתיות מחשוב הענן.", trend: "חיובית 🟢" },
+          { ticker: "CIFR", name: "Cipher Mining", shares: 28, buyPrice: 17.50, closePrice: 19.09, news: "שיפור ביעילות המבנית.", trend: "חיובית 🟢" },
+          { ticker: "META", name: "Meta Platforms", shares: 2, buyPrice: 661.00, closePrice: 687.44, news: "הצלחה בשילוב כלי פרסום מבוססי AI.", trend: "חיובית 🟢" },
+          { ticker: "AMZN", name: "Amazon", shares: 6, buyPrice: 229.29, closePrice: 241.45, news: "גידול בהזמנות בשירותי הענן (AWS).", trend: "חיובית 🟢" },
+          { ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות מתקדמות.", trend: "חיובית 🟢" },
+          { ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
+        ]
       };
+
+      // ==========================================
+      // ⚙️ פונקציות הטענה אוטומטית למבנה
+      // ==========================================
+      function loadReportData() {
+        document.getElementById('current-date-val').innerText = dailyData.date;
+
+        document.getElementById('macro-sp500').innerText = dailyData.macro.sp500.toLocaleString();
+        document.getElementById('macro-nasdaq').innerText = dailyData.macro.nasdaq.toLocaleString();
+        document.getElementById('macro-usd').innerText = dailyData.macro.usd.toFixed(2);
+        document.getElementById('macro-oil').innerText = dailyData.macro.oil.toFixed(2);
+        document.getElementById('macro-gold').innerText = dailyData.macro.gold.toLocaleString();
+        document.getElementById('macro-btc').innerText = dailyData.macro.btc.toLocaleString();
+        document.getElementById('vix-val').innerText = dailyData.macro.vix.toFixed(2);
+
+        const secContainer = document.getElementById('sectors-container');
+        secContainer.innerHTML = '';
+        dailyData.sectors.forEach(sec => {
+          const sign = sec.change >= 0 ? '+' : '';
+          const colorClass = sec.change >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
+          const icon = sec.change >= 0 ? '🟢' : '🔴';
+          secContainer.innerHTML += `
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
+                <span>${sec.name}</span>
+                <span class="${colorClass}">${sign}${sec.change.toFixed(2)}% ${icon}</span>
+            </div>`;
+        });
+
+        const catContainer = document.getElementById('catalysts-container');
+        catContainer.innerHTML = '';
+        dailyData.catalysts.forEach(cat => {
+          catContainer.innerHTML += `<div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50"><strong class="text-white">${cat}</strong></div>`;
+        });
+
+        document.getElementById('summary-container').innerHTML = `<p>${dailyData.summaryText}</p>`;
+
+        const newsContainer = document.getElementById('news-container');
+        newsContainer.innerHTML = '';
+        dailyData.news.forEach(item => {
+          newsContainer.innerHTML += `
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                <h3 class="font-bold text-white">${item.title}</h3>
+                <p class="mt-1 text-slate-400 text-xs">${item.desc}</p>
+            </div>`;
+        });
+
+        renderPortfolio();
+        renderStrategy();
+      }
 
       function renderPortfolio() {
         const container = document.getElementById('portfolio-list');
-        if (!container) return;
         container.innerHTML = '';
-        portfolioData.forEach(item => {
+        dailyData.portfolio.forEach(item => {
           const returnPct = (((item.closePrice - item.buyPrice) / item.buyPrice) * 100).toFixed(1);
           const returnColor = returnPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
           const sign = returnPct >= 0 ? '+' : '';
           
-          const div = document.createElement('div');
-          div.className = 'bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2';
-          div.innerHTML = `
-            <div class="flex justify-between items-center flex-wrap gap-2">
-              <strong>${item.symbol} ${item.ticker} - ${item.name}</strong> | ${item.shares} מניות | קנייה: $${item.buyPrice.toFixed(2)}
-              <div>מחיר סגירה: <span class="font-bold text-emerald-400 text-lg">$${item.closePrice.toFixed(2)}</span> | תשואה: <span class="${returnColor} font-bold">${sign}${returnPct}%</span></div>
-            </div>
-            <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-              <p><strong>חדשות עדכניות:</strong> ${item.news}</p>
-              <p><strong>מגמה:</strong> <span class="font-bold">${item.trend}</span></p>
-            </div>
-          `;
-          container.appendChild(div);
+          container.innerHTML += `
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
+              <div class="flex justify-between items-center flex-wrap gap-2">
+                <strong>${item.ticker} - ${item.name}</strong> | ${item.shares} מניות | קנייה: $${item.buyPrice.toFixed(2)}
+                <div>מחיר סגירה: <span class="font-bold text-emerald-400 text-lg">$${item.closePrice.toFixed(2)}</span> | תשואה: <span class="${returnColor} font-bold">${sign}${returnPct}%</span></div>
+              </div>
+              <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
+                <p><strong>חדשות עדכניות:</strong> ${item.news}</p>
+                <p><strong>מגמה:</strong> <span class="font-bold">${item.trend}</span></p>
+              </div>
+            </div>`;
         });
       }
 
       function renderStrategy() {
         const container = document.getElementById('strategy-list');
-        if (!container) return;
         container.innerHTML = '';
-        portfolioData.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'bg-slate-800/60 p-4 rounded-xl border border-slate-700/50';
-          div.innerHTML = `<strong>${item.symbol} ${item.ticker} - ${item.name}</strong> | מחיר סגירה: <span class="text-emerald-400 font-bold">$${item.closePrice.toFixed(2)}</span>`;
-          container.appendChild(div);
+        dailyData.portfolio.forEach(item => {
+          container.innerHTML += `
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+              <strong>${item.ticker} - ${item.name}</strong> | מחיר סגירה: <span class="text-emerald-400 font-bold">$${item.closePrice.toFixed(2)}</span>
+            </div>`;
         });
       }
 
@@ -246,74 +261,7 @@
         }
       }
 
-      function toggleAddStockForm() {
-        const form = document.getElementById('add-stock-form');
-        if (form) form.classList.toggle('hidden');
-      }
-
-      function addNewStock() {
-        const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
-        const name = document.getElementById('new-name').value.trim();
-        const shares = parseFloat(document.getElementById('new-shares').value);
-        const price = parseFloat(document.getElementById('new-price').value);
-
-        if (!ticker || !name || isNaN(shares) || isNaN(price)) {
-          alert('נא למלא את כל השדות כראוי');
-          return;
-        }
-
-        portfolioData.push({
-          symbol: `<img src="https://logo.clearbit.com/${ticker.toLowerCase()}.com" class="w-5 h-5 inline-block object-contain rounded" alt="${ticker}">`,
-          ticker: ticker,
-          name: name,
-          shares: shares,
-          buyPrice: price,
-          closePrice: price,
-          news: "נוסף ידנית למערכת.",
-          trend: "במעקב 🟢"
-        });
-
-        renderPortfolio();
-        renderStrategy();
-        toggleAddStockForm();
-
-        document.getElementById('new-ticker').value = '';
-        document.getElementById('new-name').value = '';
-        document.getElementById('new-shares').value = '';
-        document.getElementById('new-price').value = '';
-      }
-
-      function autoUpdate() {
-        macroValues.sp500 += (Math.random() * 4 - 2);
-        macroValues.nasdaq += (Math.random() * 10 - 5);
-        macroValues.usd += (Math.random() * 0.004 - 0.002);
-        macroValues.oil += (Math.random() * 0.2 - 0.1);
-        macroValues.gold += (Math.random() * 2 - 1);
-        macroValues.btc += (Math.random() * 60 - 30);
-
-        document.getElementById('macro-sp500').innerText = macroValues.sp500.toFixed(2);
-        document.getElementById('macro-nasdaq').innerText = macroValues.nasdaq.toFixed(2);
-        document.getElementById('macro-usd').innerText = macroValues.usd.toFixed(2);
-        document.getElementById('macro-oil').innerText = macroValues.oil.toFixed(2);
-        document.getElementById('macro-gold').innerText = macroValues.gold.toFixed(2);
-        document.getElementById('macro-btc').innerText = Math.round(macroValues.btc).toLocaleString();
-
-        portfolioData.forEach(item => {
-          const changePercent = (Math.random() * 0.006 - 0.003);
-          item.closePrice = Number((item.closePrice * (1 + changePercent)).toFixed(2));
-        });
-
-        renderPortfolio();
-        renderStrategy();
-
-        const timeElem = document.getElementById('current-time-val');
-        if (timeElem) {
-          timeElem.innerText = new Date().toLocaleString('he-IL');
-        }
-      }
-
-      autoUpdate();
-      setInterval(autoUpdate, 5000);
+      loadReportData();
     </script>
 </body>
 </html>
