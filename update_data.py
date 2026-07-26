@@ -51,114 +51,131 @@ def send_telegram_push(message):
         print('Telegram credentials missing.')
 
 
+# בדיקה האם הגענו לאחד מזמני היעד לעדכון
+is_target_time = False
+matched_target = None
+
 for target_h, target_m in target_times:
     if current_hour == target_h and abs(current_minute - target_m) < 15:
-        msg = (
-            f'📈 עדכון תיק השקעות ({period_name})!\nהפוש נשלח בשעה'
-            f' {target_h}:{target_m:02d} שעון ישראל.'
-        )
-        send_telegram_push(msg)
+        is_target_time = True
+        matched_target = (target_h, target_m)
         break
 
-# עדכון אוטומטי של הכותרת והשעה בקובץ ה-HTML ושליחה לגיטהאב
-try:
-    date_str = now_il.strftime('%d.%m.%Y')
-    time_str = now_il.strftime('%H:%M')
-
-    new_time_html = (
-        f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>'
+# האתר יתעדכן ויבצע פעולה אך ורק בשעות היעד שהוגדרו! בשאר הזמן הוא לא נוגע בכלום.
+if is_target_time:
+    target_h, target_m = matched_target
+    msg = (
+        f'📈 עדכון תיק השקעות ({period_name})!\nהפוש נשלח בשעה'
+        f' {target_h}:{target_m:02d} שעון ישראל.'
     )
-    # פורמט הכותרת המבוקש עם התאריך והאייקון
-    new_title_text = (
-        f'דו"ח סקייל שוק ההון המלא ליום <span dir="ltr">{date_str}</span> - נתונים'
-        ' מעודכנים 📊'
-    )
+    send_telegram_push(msg)
 
-    with open('index.html', 'r', encoding='utf-8-sig') as f:
-        content = f.read()
+    try:
+        date_str = now_il.strftime('%d.%m.%Y')
+        time_str = now_il.strftime('%H:%M')
 
-    # 1. עדכון הכותרת הראשית (id="report-title")
-    target_title_id = 'id="report-title"'
-    if target_title_id not in content:
-        target_title_id = "id='report-title'"
+        new_time_html = (
+            f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>'
+        )
+        new_title_text = (
+            f'דו"ח סקייל שוק ההון המלא ליום <span dir="ltr">{date_str}</span> - נתונים'
+            ' מעודכנים 📊'
+        )
 
-    if target_title_id in content:
-        idx_id = content.find(target_title_id)
-        idx_tag_end = content.find('>', idx_id)
-        idx_tag_close = content.find('</h1>', idx_tag_end)
+        with open('index.html', 'r', encoding='utf-8-sig') as f:
+            content = f.read()
 
-        if idx_tag_end != -1 and idx_tag_close != -1:
-            content = (
-                content[: idx_tag_end + 1]
-                + new_title_text
-                + content[idx_tag_close:]
-            )
+        # 1. עדכון הכותרת הראשית (id="report-title")
+        target_title_id = 'id="report-title"'
+        if target_title_id not in content:
+            target_title_id = "id='report-title'"
 
-    # 2. עדכון שעת העדכון האחרון (id="last-updated")
-    target_time_id = 'id="last-updated"'
-    if target_time_id not in content:
-        target_time_id = "id='last-updated'"
+        if target_title_id in content:
+            idx_id = content.find(target_title_id)
+            idx_tag_end = content.find('>', idx_id)
+            idx_tag_close = content.find('</h1>', idx_tag_end)
 
-    if target_time_id in content:
-        idx_id = content.find(target_time_id)
-        idx_span_start = content.rfind('<span', 0, idx_id)
-        idx_tag_end = content.find('>', idx_id)
-        idx_span_end = content.find('</span>', idx_tag_end)
+            if idx_tag_end != -1 and idx_tag_close != -1:
+                content = (
+                    content[: idx_tag_end + 1]
+                    + new_title_text
+                    + content[idx_tag_close:]
+                )
 
-        if idx_span_start != -1 and idx_tag_end != -1 and idx_span_end != -1:
-            opening_tag = content[idx_span_start : idx_tag_end + 1]
-            content = (
-                content[:idx_span_start]
-                + opening_tag
-                + new_time_html
-                + content[idx_span_end:]
-            )
+        # 2. עדכון שעת העדכון האחרון (id="last-updated")
+        target_time_id = 'id="last-updated"'
+        if target_time_id not in content:
+            target_time_id = "id='last-updated'"
 
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(content)
+        if target_time_id in content:
+            idx_id = content.find(target_time_id)
+            idx_span_start = content.rfind('<span', 0, idx_id)
+            idx_tag_end = content.find('>', idx_id)
+            idx_span_end = content.find('</span>', idx_tag_end)
 
-    print(
-        f'Successfully updated index.html locally with date: {date_str} at'
-        f' {time_str}'
-    )
+            if (
+                idx_span_start != -1
+                and idx_tag_end != -1
+                and idx_span_end != -1
+            ):
+                opening_tag = content[idx_span_start : idx_tag_end + 1]
+                content = (
+                    content[:idx_span_start]
+                    + opening_tag
+                    + new_time_html
+                    + content[idx_span_end:]
+                )
 
-    # ביצוע Git Commit ו-Push אוטומטיים
-    subprocess.run(
-        ['git', 'config', '--global', 'user.name', 'github-actions[bot]'],
-        check=True,
-    )
-    subprocess.run(
-        [
-            'git',
-            'config',
-            '--global',
-            'user.email',
-            'github-actions[bot]@users.noreply.github.com',
-        ],
-        check=True,
-    )
-    subprocess.run(['git', 'add', 'index.html'], check=True)
+        with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(content)
 
-    status = subprocess.run(
-        ['git', 'status', '--porcelain'],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    if 'index.html' in status.stdout:
+        print(
+            'Successfully updated index.html locally with date:'
+            f' {date_str} at {time_str}'
+        )
+
+        # ביצוע Git Commit ו-Push אוטומטיים
+        subprocess.run(
+            ['git', 'config', '--global', 'user.name', 'github-actions[bot]'],
+            check=True,
+        )
         subprocess.run(
             [
                 'git',
-                'commit',
-                '-m',
-                'Auto-update report title with specific date and icon',
+                'config',
+                '--global',
+                'user.email',
+                'github-actions[bot]@users.noreply.github.com',
             ],
             check=True,
         )
-        subprocess.run(['git', 'push'], check=True)
-        print('Successfully pushed updated index.html to GitHub!')
-    else:
-        print('No changes detected by git.')
+        subprocess.run(['git', 'add', 'index.html'], check=True)
 
-except Exception as e:
-    print(f'Error updating HTML: {e}')
+        status = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        if 'index.html' in status.stdout:
+            subprocess.run(
+                [
+                    'git',
+                    'commit',
+                    '-m',
+                    'Auto-update report title with specific date and icon',
+                ],
+                check=True,
+            )
+            subprocess.run(['git', 'push'], check=True)
+            print('Successfully pushed updated index.html to GitHub!')
+        else:
+            print('No changes detected by git.')
+
+    except Exception as e:
+        print(f'Error updating HTML: {e}')
+else:
+    print(
+        'Not a target update time. Skipping HTML update and git push to'
+        ' maintain last state.'
+    )
