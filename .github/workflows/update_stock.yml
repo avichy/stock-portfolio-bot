@@ -3,13 +3,15 @@ name: Update Stock Prices & Notifications
 on:
   schedule:
     - cron: '0,30 * * * *' # רץ אוטומטית כל חצי שעה
-  workflow_dispatch:      # מאפשר כפתור הפעלה ידנית
+  workflow_dispatch:      # מאפשר גם הפעלה ידנית מתי שתרצה
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  update:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,5 +30,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TRIGGER_EVENT: ${{ github.event_name }} # מעביר לפייתון האם זה ידני או אוטומטי
         run: |
           python update_data.py
+
+      - name: Upload page artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
