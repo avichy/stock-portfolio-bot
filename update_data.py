@@ -121,7 +121,7 @@ try:
       )
       if 'index.html' in status.stdout:
         subprocess.run(
-            ['git', 'commit', '-m', 'Auto-update last-updated time [skip ci]'],
+            ['git', 'commit', '-m', 'Auto-update last-updated time'],
             check=True,
         )
         subprocess.run(['git', 'push'], check=True)
