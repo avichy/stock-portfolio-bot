@@ -63,15 +63,16 @@ for target_h, target_m in target_times:
     )
     send_telegram_push(msg)
     break
-      # 1. שליפת השעה והתאריך המדויקים בישראל
-date_str = now_il.strftime('%d.%m.%Y')
-time_str = now_il.strftime('%H:%M')
-
-# מבנה הטקסט: שורה ראשונה תאריך, שורה שנייה שעה עם <br> באמצע
-new_inner_html = f'עדכון אחרון: {date_str}<br>שעה: {time_str}'
-
-# 2. עדכון אוטומטי בתוך קובץ ה-index.html
 try:
+  # שליפת השעה והתאריך המדויקים בישראל בצורה עצמאית
+  israel_tz = pytz.timezone('Asia/Jerusalem')
+  now_il = datetime.now(israel_tz)
+
+  date_str = now_il.strftime('%d.%m.%Y')
+  time_str = now_il.strftime('%H:%M')
+
+  new_inner_html = f'עדכון אחרון: {date_str}<br>שעה: {time_str}'
+
   with open('index.html', 'r', encoding='utf-8') as f:
     content = f.read()
 
