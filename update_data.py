@@ -66,8 +66,10 @@ for target_h, target_m in target_times:
 try:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
-    # כאן שילבנו גם את התאריך וגם את השעה בצורה ברורה
-    new_inner_html = f'עדכון אחרון: {date_str} | {time_str}'
+    # עטיפת התאריך והשעה ב-dir="ltr" כדי שהדפדפן יציג אותם בצורה מושלמת לצד העברית
+    new_inner_html = (
+        f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>'
+    )
 
     with open('index.html', 'r', encoding='utf-8-sig') as f:
         content = f.read()
