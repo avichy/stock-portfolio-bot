@@ -12,7 +12,7 @@ current_date = now_il.date()
 current_hour = now_il.hour
 current_minute = now_il.minute
 
-# בדיקה האם אנחנו בתקופת מעבר (לפי התאריכים שהגדרת)
+# בדיקה האם אנחנו בתקופת מעבר
 is_autumn_transition = (
     datetime(2026, 10, 25).date() <= current_date <= datetime(2026, 11, 1).date()
 )
@@ -21,7 +21,6 @@ is_spring_transition = (
 )
 is_transition_period = is_autumn_transition or is_spring_transition
 
-# קביעת שעות הפושים
 if is_transition_period:
     target_times = [(10, 30), (15, 0), (22, 30)]
     period_name = 'תקופת מעבר'
@@ -52,7 +51,6 @@ def send_telegram_push(message):
         print('Telegram credentials missing.')
 
 
-# בדיקה האם השעה הנוכחית תואמת לאחד מיעדי הפוש
 for target_h, target_m in target_times:
     if current_hour == target_h and abs(current_minute - target_m) < 15:
         msg = (
@@ -62,25 +60,47 @@ for target_h, target_m in target_times:
         send_telegram_push(msg)
         break
 
-# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML ושליחה לגיטהאב
+# עדכון אוטומטי של הכותרת והשעה בקובץ ה-HTML ושליחה לגיטהאב
 try:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
-    # עטיפת התאריך והשעה ב-dir="ltr" כדי שהדפדפן יציג אותם בצורה מושלמת לצד העברית
-    new_inner_html = (
+
+    new_time_html = (
         f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>'
+    )
+    # פורמט הכותרת המבוקש עם התאריך והאייקון
+    new_title_text = (
+        f'דו"ח סקייל שוק ההון המלא ליום <span dir="ltr">{date_str}</span> - נתונים'
+        ' מעודכנים 📊'
     )
 
     with open('index.html', 'r', encoding='utf-8-sig') as f:
         content = f.read()
 
-    # חיפוש לפי ה-ID בצורה מדויקת
-    target_id = 'id="last-updated"'
-    if target_id not in content:
-        target_id = "id='last-updated'"
+    # 1. עדכון הכותרת הראשית (id="report-title")
+    target_title_id = 'id="report-title"'
+    if target_title_id not in content:
+        target_title_id = "id='report-title'"
 
-    if target_id in content:
-        idx_id = content.find(target_id)
+    if target_title_id in content:
+        idx_id = content.find(target_title_id)
+        idx_tag_end = content.find('>', idx_id)
+        idx_tag_close = content.find('</h1>', idx_tag_end)
+
+        if idx_tag_end != -1 and idx_tag_close != -1:
+            content = (
+                content[: idx_tag_end + 1]
+                + new_title_text
+                + content[idx_tag_close:]
+            )
+
+    # 2. עדכון שעת העדכון האחרון (id="last-updated")
+    target_time_id = 'id="last-updated"'
+    if target_time_id not in content:
+        target_time_id = "id='last-updated'"
+
+    if target_time_id in content:
+        idx_id = content.find(target_time_id)
         idx_span_start = content.rfind('<span', 0, idx_id)
         idx_tag_end = content.find('>', idx_id)
         idx_span_end = content.find('</span>', idx_tag_end)
@@ -90,61 +110,55 @@ try:
             content = (
                 content[:idx_span_start]
                 + opening_tag
-                + new_inner_html
+                + new_time_html
                 + content[idx_span_end:]
             )
 
-            with open('index.html', 'w', encoding='utf-8') as f:
-                f.write(content)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(content)
 
-            print(
-                f'Successfully updated index.html locally: {date_str} at'
-                f' {time_str}'
-            )
+    print(
+        f'Successfully updated index.html locally with date: {date_str} at'
+        f' {time_str}'
+    )
 
-            # ביצוע Git Commit ו-Push אוטומטיים חזרה לגיטהאב
-            subprocess.run(
-                [
-                    'git',
-                    'config',
-                    '--global',
-                    'user.name',
-                    'github-actions[bot]',
-                ],
-                check=True,
-            )
-            subprocess.run(
-                [
-                    'git',
-                    'config',
-                    '--global',
-                    'user.email',
-                    'github-actions[bot]@users.noreply.github.com',
-                ],
-                check=True,
-            )
-            subprocess.run(['git', 'add', 'index.html'], check=True)
+    # ביצוע Git Commit ו-Push אוטומטיים
+    subprocess.run(
+        ['git', 'config', '--global', 'user.name', 'github-actions[bot]'],
+        check=True,
+    )
+    subprocess.run(
+        [
+            'git',
+            'config',
+            '--global',
+            'user.email',
+            'github-actions[bot]@users.noreply.github.com',
+        ],
+        check=True,
+    )
+    subprocess.run(['git', 'add', 'index.html'], check=True)
 
-            status = subprocess.run(
-                ['git', 'status', '--porcelain'],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            if 'index.html' in status.stdout:
-                subprocess.run(
-                    ['git', 'commit', '-m', 'Auto-update last-updated time'],
-                    check=True,
-                )
-                subprocess.run(['git', 'push'], check=True)
-                print('Successfully pushed updated index.html to GitHub!')
-            else:
-                print('No changes detected by git.')
-
-        else:
-            print('Error: Found ID but could not locate span tags.')
+    status = subprocess.run(
+        ['git', 'status', '--porcelain'],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    if 'index.html' in status.stdout:
+        subprocess.run(
+            [
+                'git',
+                'commit',
+                '-m',
+                'Auto-update report title with specific date and icon',
+            ],
+            check=True,
+        )
+        subprocess.run(['git', 'push'], check=True)
+        print('Successfully pushed updated index.html to GitHub!')
     else:
-        print('Error: id="last-updated" was not found in index.html.')
+        print('No changes detected by git.')
 
 except Exception as e:
-    print(f'Error updating time in HTML: {e}')
+    print(f'Error updating HTML: {e}')
