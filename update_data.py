@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import requests
+import re
 import pytz
 
 # הגדרת אזור זמן של ישראל
@@ -62,3 +63,29 @@ for target_h, target_m in target_times:
     )
     send_telegram_push(msg)
     break
+      # 1. שליפת השעה והתאריך המדויקים בישראל
+date_str = now_il.strftime('%d.%m.%Y')
+time_str = now_il.strftime('%H:%M')
+
+# מבנה הטקסט: שורה ראשונה תאריך, שורה שנייה שעה עם <br> באמצע
+new_inner_html = f'עדכון אחרון: {date_str}<br>שעה: {time_str}'
+
+# 2. עדכון אוטומטי בתוך קובץ ה-index.html
+try:
+  with open('index.html', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+  # החלפת התוכן בתוך ה-span עם id="last-updated"
+  new_content = re.sub(
+      r'(<span[^>]*id=["\']last-updated["\'][^>]*>)(.*?)(</span>)',
+      r'\1' + new_inner_html + r'\3',
+      content,
+      flags=re.DOTALL,
+  )
+
+  with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+  print(f'Successfully updated index.html: {date_str} at {time_str}')
+except Exception as e:
+  print(f'Error updating time in HTML: {e}')
