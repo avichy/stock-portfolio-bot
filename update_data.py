@@ -12,6 +12,18 @@ current_date = now_il.date()
 current_hour = now_il.hour
 current_minute = now_il.minute
 
+# מיפוי שמות הימים בעברית
+days_map = {
+    0: 'שני',
+    1: 'שלישי',
+    2: 'רביעי',
+    3: 'חמישי',
+    4: 'שישי',
+    5: 'שבת',
+    6: 'ראשון',
+}
+day_name = days_map[now_il.weekday()]
+
 # בדיקה האם אנחנו בתקופת מעבר
 is_autumn_transition = (
     datetime(2026, 10, 25).date() <= current_date <= datetime(2026, 11, 1).date()
@@ -29,7 +41,8 @@ else:
     period_name = 'שעון רגיל'
 
 print(
-    f'Current Israel Time: {now_il.strftime("%Y-%m-%d %H:%M")} ({period_name})'
+    f'Current Israel Time: {now_il.strftime("%Y-%m-%d %H:%M")} ({period_name}) -'
+    f' Day: {day_name}'
 )
 
 
@@ -61,7 +74,6 @@ for target_h, target_m in target_times:
         matched_target = (target_h, target_m)
         break
 
-# האתר יתעדכן ויבצע פעולה אך ורק בשעות היעד שהוגדרו! בשאר הזמן הוא לא נוגע בכלום.
 if is_target_time:
     target_h, target_m = matched_target
     msg = (
@@ -77,9 +89,9 @@ if is_target_time:
         new_time_html = (
             f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>'
         )
+        # הכותרת החדשה תציג את שם היום בשבוע אוטומטית
         new_title_text = (
-            f'דו"ח סקייל שוק ההון המלא ליום <span dir="ltr">{date_str}</span> - נתונים'
-            ' מעודכנים 📊'
+            f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊'
         )
 
         with open('index.html', 'r', encoding='utf-8-sig') as f:
@@ -130,8 +142,8 @@ if is_target_time:
             f.write(content)
 
         print(
-            'Successfully updated index.html locally with date:'
-            f' {date_str} at {time_str}'
+            'Successfully updated index.html locally with day: '
+            f'{day_name} at {time_str}'
         )
 
         # ביצוע Git Commit ו-Push אוטומטיים
@@ -163,7 +175,7 @@ if is_target_time:
                     'git',
                     'commit',
                     '-m',
-                    'Auto-update report title with specific date and icon',
+                    f'Auto-update report title for day: {day_name}',
                 ],
                 check=True,
             )
