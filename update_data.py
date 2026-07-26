@@ -1,36 +1,64 @@
+from datetime import datetime
 import os
-import yfinance as yf
-from supabase import create_client, Client
+import requests
+import pytz
 
-# הגדרת חיבור למסד הנתונים בעזרת הסודות שהכנסת
-url = os.environ.get("SUPABASE_URL")
-key = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+# הגדרת אזור זמן של ישראל
+israel_tz = pytz.timezone('Asia/Jerusalem')
+now_il = datetime.now(israel_tz)
 
-# רשימת המניות לעדכון
-tickers = ["AMD", "INTC", "MU", "WMT"]
+current_date = now_il.date()
+current_hour = now_il.hour
+current_minute = now_il.minute
 
-def update_market_data():
-    for ticker in tickers:
-        try:
-            # משיכת נתונים מ-Yahoo Finance
-            stock = yf.Ticker(ticker)
-            data = stock.history(period="1d")
-            
-            if not data.empty:
-                # לקיחת המחיר הנוכחי בסגירה
-                current_price = round(data['Close'].iloc[-1], 2)
-                
-                # עדכון הנתון ב-Supabase (בהנחה ששם הטבלה הוא 'stocks')
-                # הקוד מחפש את השורה של המניה לפי הסימול, ומעדכן את מחיר הסגירה
-                supabase.table("stocks").update({"current_price": current_price}).eq("ticker", ticker).execute()
-                
-                print(f"✅ Updated {ticker} to ${current_price}")
-            else:
-                print(f"⚠️ No data found for {ticker}")
-                
-        except Exception as e:
-            print(f"❌ Error updating {ticker}: {e}")
+# בדיקה האם אנחנו בתקופת מעבר (לפי התאריכים שהגדרת)
+is_autumn_transition = (
+    datetime(2026, 10, 25).date() <= current_date <= datetime(2026, 11, 1).date()
+)
+is_spring_transition = (
+    datetime(2027, 3, 14).date() <= current_date <= datetime(2027, 3, 26).date()
+)
+is_transition_period = is_autumn_transition or is_spring_transition
 
-if __name__ == "__main__":
-    update_market_data()
+# קביעת שעות הפושים
+if is_transition_period:
+  # תקופת מעבר: 10:30, 15:00, 22:30
+  target_times = [(10, 30), (15, 0), (22, 30)]
+  period_name = 'תקופת מעבר'
+else:
+  # שעון רגיל: 10:30, 16:00, 23:30
+  target_times = [(10, 30), (16, 0), (23, 30)]
+  period_name = 'שעון רגיל'
+
+print(
+    f'Current Israel Time: {now_il.strftime("%Y-%m-%d %H:%M")} ({period_name})'
+)
+
+
+def send_telegram_push(message):
+  token = os.environ.get('TELEGRAM_BOT_TOKEN')
+  chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+  if token and chat_id:
+    url = f'https://api.telegram.org/bot{token}/sendMessage'
+    payload = {'chat_id': chat_id, 'text': message}
+    try:
+      response = requests.post(url, json=payload)
+      if response.status_code == 200:
+        print('Push sent successfully!')
+      else:
+        print(f'Failed to send push: {response.text}')
+    except Exception as e:
+      print(f'Error sending push: {e}')
+  else:
+    print('Telegram credentials missing.')
+
+
+# בדיקה האם השעה הנוכחי תואמת לאחד מיעדי הפוש (בטווח של השעה העגולה)
+for target_h, target_m in target_times:
+  if current_hour == target_h and abs(current_minute - target_m) < 15:
+    msg = (
+        f'📈 עדכון תיק השקעות ({period_name})!\nהפוש נשלח בשעה'
+        f' {target_h}:{target_m:02d} שעון ישראל.'
+    )
+    send_telegram_push(msg)
+    break
