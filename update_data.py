@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import subprocess
 import pytz
 import requests
 
@@ -61,7 +62,7 @@ for target_h, target_m in target_times:
     send_telegram_push(msg)
     break
 
-# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML (בשיטה בטוחה ומדויקת)
+# עדכון אוטומטי של התאריך והשעה בקובץ ה-HTML ושליחה לגיטהאב
 try:
   date_str = now_il.strftime('%d.%m.%Y')
   time_str = now_il.strftime('%H:%M')
@@ -93,7 +94,42 @@ try:
       with open('index.html', 'w', encoding='utf-8') as f:
         f.write(content)
 
-      print(f'Successfully updated index.html with: {date_str} at {time_str}')
+      print(f'Successfully updated index.html locally: {date_str} at {time_str}')
+
+      # ביצוע Git Commit ו-Push אוטומטיים חזרה לגיטהאב
+      subprocess.run(
+          ['git', 'config', '--global', 'user.name', 'github-actions[bot]'],
+          check=True,
+      )
+      subprocess.run(
+          [
+              'git',
+              'config',
+              '--global',
+              'user.email',
+              'github-actions[bot]@users.noreply.github.com',
+          ],
+          check=True,
+      )
+      subprocess.run(['git', 'add', 'index.html'], check=True)
+
+      # בדיקה האם יש שינויים שצריך לשלוח
+      status = subprocess.run(
+          ['git', 'status', '--porcelain'],
+          capture_output=True,
+          text=True,
+          check=True,
+      )
+      if 'index.html' in status.stdout:
+        subprocess.run(
+            ['git', 'commit', -m, 'Auto-update last-updated time [skip ci]'],
+            check=True,
+        )
+        subprocess.run(['git', 'push'], check=True)
+        print('Successfully pushed updated index.html to GitHub!')
+      else:
+        print('No changes detected by git.')
+
     else:
       print('Error: Found ID but could not locate span tags.')
   else:
