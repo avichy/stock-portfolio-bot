@@ -17,10 +17,10 @@
         <!-- כותרת ראשית -->
         <header class="border-b border-slate-800 pb-6 flex justify-between items-center flex-wrap gap-4">
             <div>
-                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</h1>
+                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא 📊</h1>
                 <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (מתעדכן אוטומטית)</p>
             </div>
-            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span dir="ltr">27.07.2026 | 02:44</span></span></span>
+            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span id="current-time-val" dir="ltr">טוען...</span></span>
         </header>
 
         <!-- תפריט טאבים -->
@@ -171,19 +171,19 @@
 
     <script>
       const portfolioData = [
-        { symbol: "🟩", ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.", trend: "חיובית 🟢" },
-        { symbol: "💻", ticker: "AMD", name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
-        { symbol: "🧠", ticker: "MU", name: "Micron Technology", shares: 6, buyPrice: 316.32, closePrice: 342.25, news: "זינוק בביקושים לזיכרונות HBM מתקדמים.", trend: "חיובית 🟢" },
-        { symbol: "💾", ticker: "SNDK", name: "SanDisk", shares: 4, buyPrice: 630.26, closePrice: 649.80, news: "ייצוב מחירים בשוק פתרונות האחסון.", trend: "חיובית 🟢" },
-        { symbol: "💽", ticker: "WDC", name: "Western Digital", shares: 6, buyPrice: 223.23, closePrice: 233.28, news: "גידול בהזמנות מערכות אחסון ענן.", trend: "חיובית 🟢" },
-        { symbol: "⚡", ticker: "INTC", name: "Intel", shares: 20, buyPrice: 43.05, closePrice: 42.15, news: "התקדמות מתונה בתוכנית הבראת המפעלים.", trend: "ניטרלית-זהירה 🟡" },
-        { symbol: "🔌", ticker: "SIMO", name: "Silicon Motion", shares: 30, buyPrice: 131.32, closePrice: 139.72, news: "גידול באספקת בקרי זיכרון.", trend: "חיובית 🟢" },
-        { symbol: "🌿", ticker: "IREN", name: "Iris Energy", shares: 54, buyPrice: 52.75, closePrice: 60.77, news: "הרחבת תשתיות מחשוב הענן.", trend: "חיובית 🟢" },
-        { symbol: "⛏️", ticker: "CIFR", name: "Cipher Mining", shares: 28, buyPrice: 17.50, closePrice: 19.09, news: "שיפור ביעילות המבנית.", trend: "חיובית 🟢" },
-        { symbol: "👥", ticker: "META", name: "Meta Platforms", shares: 2, buyPrice: 661.00, closePrice: 687.44, news: "הצלחה בשילוב כלי פרסום מבוססי AI.", trend: "חיובית 🟢" },
-        { symbol: "📦", ticker: "AMZN", name: "Amazon", shares: 6, buyPrice: 229.29, closePrice: 241.45, news: "גידול בהזמנות בשירותי הענן (AWS).", trend: "חיובית 🟢" },
-        { symbol: "🌐", ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות Gemini.", trend: "חיובית 🟢" },
-        { symbol: "🛒", ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
+        { symbol: '<img src="https://logo.clearbit.com/nvidia.com" class="w-5 h-5 inline-block object-contain rounded" alt="NVDA">', ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/amd.com" class="w-5 h-5 inline-block object-contain rounded" alt="AMD">', ticker: "AMD", name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/micron.com" class="w-5 h-5 inline-block object-contain rounded" alt="MU">', ticker: "MU", name: "Micron Technology", shares: 6, buyPrice: 316.32, closePrice: 342.25, news: "זינוק בביקושים לזיכרונות HBM מתקדמים.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/westerndigital.com" class="w-5 h-5 inline-block object-contain rounded" alt="SNDK">', ticker: "SNDK", name: "SanDisk", shares: 4, buyPrice: 630.26, closePrice: 649.80, news: "ייצוב מחירים בשוק פתרונות האחסון.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/westerndigital.com" class="w-5 h-5 inline-block object-contain rounded" alt="WDC">', ticker: "WDC", name: "Western Digital", shares: 6, buyPrice: 223.23, closePrice: 233.28, news: "גידול בהזמנות מערכות אחסון ענן.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/intel.com" class="w-5 h-5 inline-block object-contain rounded" alt="INTC">', ticker: "INTC", name: "Intel", shares: 20, buyPrice: 43.05, closePrice: 42.15, news: "התקדמות מתונה בתוכנית הבראת המפעלים.", trend: "ניטרלית-זהירה 🟡" },
+        { symbol: '<img src="https://logo.clearbit.com/siliconmotion.com" class="w-5 h-5 inline-block object-contain rounded" alt="SIMO">', ticker: "SIMO", name: "Silicon Motion", shares: 30, buyPrice: 131.32, closePrice: 139.72, news: "גידול באספקת בקרי זיכרון.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/iren.com" class="w-5 h-5 inline-block object-contain rounded" alt="IREN">', ticker: "IREN", name: "Iris Energy", shares: 54, buyPrice: 52.75, closePrice: 60.77, news: "הרחבת תשתיות מחשוב הענן.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/ciphermining.com" class="w-5 h-5 inline-block object-contain rounded" alt="CIFR">', ticker: "CIFR", name: "Cipher Mining", shares: 28, buyPrice: 17.50, closePrice: 19.09, news: "שיפור ביעילות המבנית.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/meta.com" class="w-5 h-5 inline-block object-contain rounded" alt="META">', ticker: "META", name: "Meta Platforms", shares: 2, buyPrice: 661.00, closePrice: 687.44, news: "הצלחה בשילוב כלי פרסום מבוססי AI.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/amazon.com" class="w-5 h-5 inline-block object-contain rounded" alt="AMZN">', ticker: "AMZN", name: "Amazon", shares: 6, buyPrice: 229.29, closePrice: 241.45, news: "גידול בהזמנות בשירותי הענן (AWS).", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/google.com" class="w-5 h-5 inline-block object-contain rounded" alt="GOOG">', ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות Gemini.", trend: "חיובית 🟢" },
+        { symbol: '<img src="https://logo.clearbit.com/walmart.com" class="w-5 h-5 inline-block object-contain rounded" alt="WMT">', ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
       ];
 
       let macroValues = {
@@ -263,7 +263,7 @@
         }
 
         portfolioData.push({
-          symbol: "📈",
+          symbol: `<img src="https://logo.clearbit.com/${ticker.toLowerCase()}.com" class="w-5 h-5 inline-block object-contain rounded" alt="${ticker}">`,
           ticker: ticker,
           name: name,
           shares: shares,
