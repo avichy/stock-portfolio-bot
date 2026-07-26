@@ -17,10 +17,10 @@
         <!-- כותרת ראשית -->
         <header class="border-b border-slate-800 pb-6 flex justify-between items-center flex-wrap gap-4">
             <div>
-                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</h1>
-                <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
+                <h1 id="report-title" class="text-2xl md:text-5xl font-black text-emerald-400 flex items-center gap-3">דו"ח סקייל שוק ההון המלא 📊</h1>
+                <p class="text-sm text-slate-400 mt-1">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (מתעדכן אוטומטית)</p>
             </div>
-            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span dir="ltr">27.07.2026 | 02:39</span></span></span>
+            <span id="last-updated" class="text-xs text-emerald-300 bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 inline-block text-center leading-tight">עודכן לאחרונה: <span id="current-time-val" dir="ltr">טוען...</span></span>
         </header>
 
         <!-- תפריט טאבים -->
@@ -66,65 +66,28 @@
                         <p class="mt-2 text-slate-300">מחיר נוכחי: <span id="macro-btc" class="font-bold text-emerald-400 text-xl">67,500</span> $</p>
                         <p class="text-xs text-slate-400 mt-1">משקף את מדד התיאבון לסיכון בשווקים הדיגיטליים.</p>
                     </div>
-
-                    <!-- חדשות ועדכונים -->
-                    <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50 md:col-span-2 space-y-3">
-                        <h3 class="font-semibold text-slate-200 text-lg">חדשות ועדכונים (שוק אמריקאי ושוק ישראלי) 📰</h3>
-                        <div class="text-sm md:text-base text-slate-300 space-y-2">
-                            <p>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> אירועים גיאופוליטיים ושרשרת אספקה: שיבושים או אירועים בנתיבי הסחר הקריטיים משפיעים על מחירי האנרגיה, מעסיקים את וול סטריט בנוגע לאינפלציה, ומגבירים את המעקב אחר צעדי הפדרל רזרב. דינמיקה בשווקים: כל התפתחויות בזירות עימות או הסכמים מדיניים מייצרות תנודתיות זמנית או מעבר לנכסים בטוחים (Risk-On / Risk-Off).</p>
-                            <p>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> המצב הביטחוני והמקומי: הבורסה בתל אביב והשקל מגיבים ברגישות לחדשות הכלכליות והביטחוניות. אירועים שונים משפיעים על פרמיית הסיכון של המשק, בעוד שרגעים של רגיעה מביאים לשינויים בשער החליפין, בתשואות האג"ח, ובפעילות הנכסים הפיננסיים בישראל.</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- שלב 2: סקטורים -->
             <div id="tab-2" class="tab-content space-y-6">
-                <h2 class="text-xl md:text-2xl font-bold text-cyan-400 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מלאה (כל סקטורי השוק) 💻</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-cyan-400 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מלאה 💻</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm md:text-base text-slate-300">
                     <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <span>טכנולוגיית מידע (Technology) 💻</span>
-                        <span id="sector-tech" class="font-bold text-emerald-400">+1.45% 🟢</span>
+                        <span class="font-bold text-emerald-400">+1.45% 🟢</span>
                     </div>
                     <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <span>שירותי תקשורת (Communication Services) 📡</span>
-                        <span id="sector-comm" class="font-bold text-emerald-400">+0.82% 🟢</span>
+                        <span class="font-bold text-emerald-400">+0.82% 🟢</span>
                     </div>
                     <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <span>מחזור צרכני (Consumer Discretionary) 🛍️</span>
-                        <span id="sector-disc" class="font-bold text-rose-400">-0.35% 🔴</span>
+                        <span class="font-bold text-rose-400">-0.35% 🔴</span>
                     </div>
                     <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <span>מוצרי צריכה בסיסיים (Consumer Staples) 🛒</span>
-                        <span id="sector-staples" class="font-bold text-emerald-400">+0.20% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>פיננסים (Financials) 🏦</span>
-                        <span id="sector-fin" class="font-bold text-emerald-400">+0.65% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>שירותי בריאות (Health Care) 🏥</span>
-                        <span id="sector-health" class="font-bold text-rose-400">-0.50% 🔴</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>תעשייה (Industrials) ⚙️</span>
-                        <span id="sector-ind" class="font-bold text-emerald-400">+0.40% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>אנרגיה (Energy) 🛢️</span>
-                        <span id="sector-energy" class="font-bold text-rose-400">-1.10% 🔴</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>חומרי גלם (Materials) ⛏️</span>
-                        <span id="sector-mat" class="font-bold text-emerald-400">+0.15% 🟢</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-                        <span>נדל"ן (Real Estate) 🏢</span>
-                        <span id="sector-re" class="font-bold text-rose-400">-0.25% 🔴</span>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center md:col-span-2">
-                        <span>שירותים ציבוריים (Utilities) ⚡</span>
-                        <span id="sector-util" class="font-bold text-emerald-400">+0.30% 🟢</span>
+                        <span class="font-bold text-emerald-400">+0.20% 🟢</span>
                     </div>
                 </div>
             </div>
@@ -136,45 +99,14 @@
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <strong class="text-white">דיווחי תוצאות לרבעון:</strong> מעקב אחר תחזיות ההכנסה של החברות המובילות במשק. 📑
                     </div>
-                    <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
-                        <strong class="text-white">הודעות מדיניות מוניטרית:</strong> נתוני האינפלציה והתעסוקה המשפיעים על תמחור הנכסים. 🏦
-                    </div>
-                    <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
-                        <strong class="text-white">השקות חומרה ועדכוני תוכנה:</strong> אירועי חשיפה של מוצרים חדשים ופלטפורמות טכנולוגיות. 🎮
-                    </div>
                 </div>
             </div>
 
             <!-- שלב 4: אסטרטגיה (20 מניות) -->
             <div id="tab-4" class="tab-content space-y-6">
                 <h2 class="text-xl md:text-2xl font-bold text-purple-400 border-r-4 border-purple-400 pr-3">שלב 4: אסטרטגיות מסחר והשקעה (20 מניות) 📈</h2>
-                
-                <h3 class="text-lg font-bold text-emerald-400 mt-4">קבוצה א': 10 מניות להשקעה ארוכת טווח (Long-Term Core) 🏆</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🟩 NVDA - NVIDIA</strong> | מחיר סגירה: <span id="strat-nvda" class="text-emerald-400 font-bold">$207.82</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>💻 AMD - Advanced Micro Devices</strong> | מחיר סגירה: <span id="strat-amd" class="text-emerald-400 font-bold">$223.60</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🧠 MU - Micron Technology</strong> | מחיר סגירה: <span id="strat-mu" class="text-emerald-400 font-bold">$342.25</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🌐 GOOG - Alphabet / Google</strong> | מחיר סגירה: <span id="strat-goog" class="text-emerald-400 font-bold">$330.00</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>📦 AMZN - Amazon</strong> | מחיר סגירה: <span id="strat-amzn" class="text-emerald-400 font-bold">$241.45</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>👥 META - Meta Platforms</strong> | מחיר סגירה: <span id="strat-meta" class="text-emerald-400 font-bold">$687.44</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>💳 MA - Mastercard</strong> | מחיר סגירה: <span id="strat-ma" class="text-emerald-400 font-bold">$525.10</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🛒 WMT - Walmart</strong> | מחיר סגירה: <span id="strat-wmt" class="text-emerald-400 font-bold">$127.90</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🎮 TTWO - Take-Two Interactive</strong> | מחיר סגירה: <span id="strat-ttwo-long" class="text-emerald-400 font-bold">$242.30</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>💽 WDC - Western Digital</strong> | מחיר סגירה: <span id="strat-wdc" class="text-emerald-400 font-bold">$233.28</span></div>
-                </div>
-
-                <h3 class="text-lg font-bold text-cyan-400 mt-6">קבוצה ב': 10 מניות למסחר סווינג קצר טווח (Swing Trading) 🔄</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>📈 TQQQ - ProShares UltraPro QQQ</strong> | סגירה: <span id="swing-tqqq" class="text-cyan-400 font-bold">$62.07</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>⚡ INTC - Intel</strong> | סגירה: <span id="swing-intc" class="text-cyan-400 font-bold">$42.15</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🌿 IREN - Iris Energy</strong> | סגירה: <span id="swing-iren" class="text-cyan-400 font-bold">$60.77</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>⛏️ CIFR - Cipher Mining</strong> | סגירה: <span id="swing-cifr" class="text-cyan-400 font-bold">$19.09</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🪙 IBIT - iShares Bitcoin Trust</strong> | סגירה: <span id="swing-ibit" class="text-cyan-400 font-bold">$69.43</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🔌 SIMO - Silicon Motion</strong> | סגירה: <span id="swing-simo" class="text-cyan-400 font-bold">$139.72</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>💾 SNDK - SanDisk</strong> | סגירה: <span id="swing-sndk" class="text-cyan-400 font-bold">$649.80</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🎬 NFLX - Netflix</strong> | סגירה: <span id="swing-nflx" class="text-cyan-400 font-bold">$104.84</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🚜 GTEC - Greenland Technologies</strong> | סגירה: <span id="swing-gtec" class="text-cyan-400 font-bold">$1.21</span></div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50"><strong>🎮 TTWO - Take-Two Interactive</strong> | סגירה: <span id="swing-ttwo" class="text-cyan-400 font-bold">$242.30</span></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base" id="strategy-list">
+                    <!-- יתעדכן דינמית דרך JS -->
                 </div>
             </div>
 
@@ -185,7 +117,7 @@
                     <button onclick="toggleAddStockForm()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg text-sm md:text-base">➕ הוסף מניה ידנית</button>
                 </div>
 
-                <!-- טופס הוספת מניה חדשה -->
+                <!-- טופס הוספת מניה -->
                 <div id="add-stock-form" class="hidden bg-slate-800/90 p-5 rounded-2xl border border-emerald-500/40 space-y-4">
                     <h3 class="font-bold text-emerald-300 text-lg">הוספת פוזיציה חדשה לתיק</h3>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -201,214 +133,36 @@
                 </div>
 
                 <div id="portfolio-list" class="space-y-4 text-sm md:text-base">
-                    <!-- NVIDIA -->
-                    <div id="portfolio-nvda" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🟩 NVDA - NVIDIA</strong> | 3 מניות | קנייה: $184.90
-                            <div>מחיר סגירה: <span id="price-close-nvda" class="font-bold text-emerald-400 text-lg">$207.82</span> | תשואה: <span id="return-nvda" class="text-emerald-400 font-bold">+12.4%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (ממשיכה להציג צמיחה חזקה בביקושים)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $210.00</p>
-                        </div>
-                    </div>
-
-                    <!-- AMD -->
-                    <div id="portfolio-amd" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>💻 AMD - Advanced Micro Devices</strong> | 20 מניות | קנייה: $211.34
-                            <div>מחיר סגירה: <span id="price-close-amd" class="font-bold text-emerald-400 text-lg">$223.60</span> | תשואה: <span id="return-amd" class="text-emerald-400 font-bold">+5.8%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> הרחבת נתחי שוק בתחום שבבי ה-AI והשרתים מול מתחרות.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (מומנטום עלייה במגזר השבבים)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $245.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Micron -->
-                    <div id="portfolio-mu" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🧠 MU - Micron Technology</strong> | 6 מניות | קנייה: $316.32
-                            <div>מחיר סגירה: <span id="price-close-mu" class="font-bold text-emerald-400 text-lg">$342.25</span> | תשואה: <span id="return-mu" class="text-emerald-400 font-bold">+8.2%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> זינוק בביקושים לזיכרונות HBM מתקדמים בעקבות כניסת מערכות בינה מלאכותית.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (שיפור במרווחי הרווח)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $350.00</p>
-                        </div>
-                    </div>
-
-                    <!-- SanDisk -->
-                    <div id="portfolio-sndk" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>💾 SNDK - SanDisk</strong> | 4 מניות | קנייה: $630.26
-                            <div>מחיר סגירה: <span id="price-close-sndk" class="font-bold text-emerald-400 text-lg">$649.80</span> | תשואה: <span id="return-sndk" class="text-emerald-400 font-bold">+3.1%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> ייצוב מחירים בשוק פתרונות האחסון והתייעלות תפעולית.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (מגמת התאוששות יציבה)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $680.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Western Digital -->
-                    <div id="portfolio-wdc" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>💽 WDC - Western Digital</strong> | 6 מניות | קנייה: $223.23
-                            <div>מחיר סגירה: <span id="price-close-wdc" class="font-bold text-emerald-400 text-lg">$233.28</span> | תשואה: <span id="return-wdc" class="text-emerald-400 font-bold">+4.5%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> גידול בהזמנות מערכות אחסון ענן ארגוניות.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (עלייה בהיקפי הפעילות)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $250.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Intel -->
-                    <div id="portfolio-intc" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>⚡ INTC - Intel</strong> | 20 מניות | קנייה: $43.05
-                            <div>מחיר סגירה: <span id="price-close-intc" class="font-bold text-emerald-400 text-lg">$42.15</span> | תשואה: <span id="return-intc" class="text-rose-400 font-bold">-2.1%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> התקדמות מתונה בתוכנית הבראת מפעלי הייצור והפיתוח.</p>
-                            <p><strong>מגמה:</strong> <span class="text-yellow-400 font-bold">ניטרלית-זהירה (תנודתיות גבוהה בטווח הקצר)</span> 🟡</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $45.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Silicon Motion -->
-                    <div id="portfolio-simo" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🔌 SIMO - Silicon Motion</strong> | 30 מניות | קנייה: $131.32
-                            <div>מחיר סגירה: <span id="price-close-simo" class="font-bold text-emerald-400 text-lg">$139.72</span> | תשואה: <span id="return-simo" class="text-emerald-400 font-bold">+6.4%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> גידול באספקת בקרי זיכרון עבור שרשרת האספקה העולמית.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (חיזוק השותפויות העסקיות)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $148.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Iris Energy -->
-                    <div id="portfolio-iren" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🌿 IREN - Iris Energy</strong> | 54 מניות | קנייה: $52.75
-                            <div>מחיר סגירה: <span id="price-close-iren" class="font-bold text-emerald-400 text-lg">$60.77</span> | תשואה: <span id="return-iren" class="text-emerald-400 font-bold">+15.2%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> הרחבת תשתיות מחשוב הענן והשמת דגש על מרכזי אנרגיה ירוקה.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (תאוצה עסקית חזקה)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $62.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Cipher Mining -->
-                    <div id="portfolio-cifr" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>⛏️ CIFR - Cipher Mining</strong> | 28 מניות | קנייה: $17.50
-                            <div>מחיר סגירה: <span id="price-close-cifr" class="font-bold text-emerald-400 text-lg">$19.09</span> | תשואה: <span id="return-cifr" class="text-emerald-400 font-bold">+9.1%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> שיפור ביעילות המבנית והגדלת קצב עיבוד הנתונים.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (מגמת התחזקות בתחום התשתיות)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $21.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Meta -->
-                    <div id="portfolio-meta" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>👥 META - Meta Platforms</strong> | 2 מניות | קנייה: $661.00
-                            <div>מחיר סגירה: <span id="price-close-meta" class="font-bold text-emerald-400 text-lg">$687.44</span> | תשואה: <span id="return-meta" class="text-emerald-400 font-bold">+4.0%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> הצלחה בשילוב כלי פרסום מבוססי AI וגידול בהכנסות ממודעות.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (צמיחה מתמשכת ברווחיות)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $720.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Amazon -->
-                    <div id="portfolio-amzn" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>📦 AMZN - Amazon</strong> | 6 מניות | קנייה: $229.29
-                            <div>מחיר סגירה: <span id="price-close-amzn" class="font-bold text-emerald-400 text-lg">$241.45</span> | תשואה: <span id="return-amzn" class="text-emerald-400 font-bold">+5.3%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> גידול בהזמנות בשירותי הענן (AWS) ושיפור יעילות השילוח.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (ביקושים יציבים למרכזי נתונים)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $260.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Google -->
-                    <div id="portfolio-goog" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🌐 GOOG - Alphabet / Google</strong> | 4 מניות | קנייה: $310.50
-                            <div>מחיר סגירה: <span id="price-close-goog" class="font-bold text-emerald-400 text-lg">$330.00</span> | תשואה: <span id="return-goog" class="text-emerald-400 font-bold">+6.3%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> התקדמות בשילוב יכולות Gemini במנוע החיפוש ובשירותי הענן.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (התרחבות בנתחי שוק ה-AI)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $350.00</p>
-                        </div>
-                    </div>
-
-                    <!-- Walmart -->
-                    <div id="portfolio-wmt" class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                        <div class="flex justify-between items-center flex-wrap gap-2">
-                            <strong>🛒 WMT - Walmart</strong> | 16 מניות | קנייה: $118.98
-                            <div>מחיר סגירה: <span id="price-close-wmt" class="font-bold text-emerald-400 text-lg">$127.90</span> | תשואה: <span id="return-wmt" class="text-emerald-400 font-bold">+7.5%</span></div>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-                            <p><strong>חדשות עדכניות:</strong> צמיחה עקבית במכירות אונליין וייעול שרשרת האספקה הקמעונאית.</p>
-                            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">חיובית (חסינות גבוהה בסביבת מאקרו מאתגרת)</span> 🟢</p>
-                            <p><strong>יעד אנליסטים ממוצע:</strong> $135.00</p>
-                        </div>
-                    </div>
+                    <!-- יתעדכן דינמית דרך JS -->
                 </div>
             </div>
 
             <!-- שלב 6: סנטימנט -->
             <div id="tab-6" class="tab-content space-y-6">
-                <h2 class="text-xl md:text-2xl font-bold text-pink-400 border-r-4 border-pink-400 pr-3">שלב 6: מדדי סנטימנט שוק (Market Sentiment) 🎭</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-pink-400 border-r-4 border-pink-400 pr-3">שלב 6: מדדי סנטימנט שוק 🎭</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base md:text-lg text-slate-300">
                     <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
                         <h3 class="font-semibold text-white">מדד הפחד (VIX) 📉</h3>
-                        <p class="mt-2 text-slate-300">רמה נוכחית: <span class="font-bold text-emerald-400">14.20</span> (נמוך / יציב)</p>
-                        <p class="text-xs text-slate-400 mt-1">מעיד על רמת תנודתיות נמוכה יחסית וביטחון משקיעים.</p>
-                    </div>
-                    <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/50">
-                        <h3 class="font-semibold text-white">מדד פחד ותאבון לסיכון (Fear & Greed) 🐂</h3>
-                        <p class="mt-2 text-slate-300">ציון: <span class="font-bold text-emerald-400">68 - חמדנות (Greed)</span></p>
-                        <p class="text-xs text-slate-400 mt-1">המשקיעים נוטים להפגין אופטימיות ולתמחר נכסי סיכון כלפי מעלה.</p>
+                        <p class="mt-2 text-slate-300">רמה נוכחית: <span class="font-bold text-emerald-400">14.20</span></p>
                     </div>
                 </div>
             </div>
 
             <!-- שלב 7: סיכום -->
             <div id="tab-7" class="tab-content space-y-6">
-                <h2 class="text-xl md:text-2xl font-bold text-teal-400 border-r-4 border-teal-400 pr-3">שלב 7: סיכום מנהלים ותוכנית פעולה יומית 📋</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-teal-400 border-r-4 border-teal-400 pr-3">שלב 7: סיכום מנהלים 📋</h2>
                 <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50 space-y-4 text-base md:text-lg text-slate-300">
-                    <p><strong>מגמה כללית בשוק:</strong> סביבת המסחר ממשיכה להציג עוצמה במגזר הטכנולוגיה והשבבים, לצד ביקוש יציב לנכסי ליבה ותשתיות AI.</p>
-                    <p><strong>דגשים לניהול התיק:</strong> מעקב צמוד אחר פוזיציות הסווינג והשקעות הליבה, בחינת נקודות כניסה נוספות בהתאם לתנודות המאקרו, ושמירה על משמעת ניהול סיכונים קפדנית.</p>
+                    <p>הנתונים מעודכנים בזמן אמת באמצעות סקריפט הניהול של המערכת.</p>
                 </div>
             </div>
 
             <!-- שלב 8: חדשות מניות -->
             <div id="tab-8" class="tab-content space-y-6">
-                <h2 class="text-xl md:text-2xl font-bold text-amber-400 border-r-4 border-amber-400 pr-3">שלב 8: חדשות מניות פרטניות (Stock News) 📰</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-amber-400 border-r-4 border-amber-400 pr-3">שלב 8: חדשות מניות פרטניות 📰</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base text-slate-300">
                     <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <h3 class="font-bold text-white">NVIDIA & AMD (שבבים ו-AI)</h3>
-                        <p class="mt-1 text-slate-400 text-xs">המשך השקות מוצרים חדשים וביקושים חזקים מענקיות הענן מבטיחים צמיחה בהכנסות.</p>
-                    </div>
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <h3 class="font-bold text-white">Micron & Western Digital (זיכרון ואחסון)</h3>
-                        <p class="mt-1 text-slate-400 text-xs">עלייה בביקושים לזיכרונות HBM ואחסון ארגוני תומכת בשיפור מרווחי הרווח.</p>
+                        <h3 class="font-bold text-white">NVIDIA & AMD</h3>
+                        <p class="mt-1 text-slate-400 text-xs">עדכוני שוק וביקושים חזקים.</p>
                     </div>
                 </div>
             </div>
@@ -416,6 +170,60 @@
     </div>
 
     <script>
+      // נתוני המניות עם הסמל והטיקר
+      const portfolioData = [
+        { symbol: "🟩", ticker: "NVDA", name: "NVIDIA", shares: 3, buyPrice: 184.90, closePrice: 207.82, news: "ביקוש שיא למעבדי הדור הבא מצד מרכזי נתונים עולמיים.", trend: "חיובית 🟢" },
+        { symbol: "💻", ticker: "AMD", name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, closePrice: 223.60, news: "הרחבת נתחי שוק בתחום שבבי ה-AI.", trend: "חיובית 🟢" },
+        { symbol: "🧠", ticker: "MU", name: "Micron Technology", shares: 6, buyPrice: 316.32, closePrice: 342.25, news: "זינוק בביקושים לזיכרונות HBM מתקדמים.", trend: "חיובית 🟢" },
+        { symbol: "💾", ticker: "SNDK", name: "SanDisk", shares: 4, buyPrice: 630.26, closePrice: 649.80, news: "ייצוב מחירים בשוק פתרונות האחסון.", trend: "חיובית 🟢" },
+        { symbol: "💽", ticker: "WDC", name: "Western Digital", shares: 6, buyPrice: 223.23, closePrice: 233.28, news: "גידול בהזמנות מערכות אחסון ענן.", trend: "חיובית 🟢" },
+        { symbol: "⚡", ticker: "INTC", name: "Intel", shares: 20, buyPrice: 43.05, closePrice: 42.15, news: "התקדמות מתונה בתוכנית הבראת המפעלים.", trend: "ניטרלית-זהירה 🟡" },
+        { symbol: "🔌", ticker: "SIMO", name: "Silicon Motion", shares: 30, buyPrice: 131.32, closePrice: 139.72, news: "גידול באספקת בקרי זיכרון.", trend: "חיובית 🟢" },
+        { symbol: "🌿", ticker: "IREN", name: "Iris Energy", shares: 54, buyPrice: 52.75, closePrice: 60.77, news: "הרחבת תשתיות מחשוב הענן.", trend: "חיובית 🟢" },
+        { symbol: "⛏️", ticker: "CIFR", name: "Cipher Mining", shares: 28, buyPrice: 17.50, closePrice: 19.09, news: "שיפור ביעילות המבנית.", trend: "חיובית 🟢" },
+        { symbol: "👥", ticker: "META", name: "Meta Platforms", shares: 2, buyPrice: 661.00, closePrice: 687.44, news: "הצלחה בשילוב כלי פרסום מבוססי AI.", trend: "חיובית 🟢" },
+        { symbol: "📦", ticker: "AMZN", name: "Amazon", shares: 6, buyPrice: 229.29, closePrice: 241.45, news: "גידול בהזמנות בשירותי הענן (AWS).", trend: "חיובית 🟢" },
+        { symbol: "🌐", ticker: "GOOG", name: "Alphabet / Google", shares: 4, buyPrice: 310.50, closePrice: 330.00, news: "התקדמות בשילוב יכולות Gemini.", trend: "חיובית 🟢" },
+        { symbol: "🛒", ticker: "WMT", name: "Walmart", shares: 16, buyPrice: 118.98, closePrice: 127.90, news: "צמיחה עקבית במכירות אונליין.", trend: "חיובית 🟢" }
+      ];
+
+      function renderPortfolio() {
+        const container = document.getElementById('portfolio-list');
+        if (!container) return;
+        container.innerHTML = '';
+        portfolioData.forEach(item => {
+          const returnPct = (((item.closePrice - item.buyPrice) / item.buyPrice) * 100).toFixed(1);
+          const returnColor = returnPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+          const sign = returnPct >= 0 ? '+' : '';
+          
+          const div = document.createElement('div');
+          div.className = 'bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2';
+          div.innerHTML = `
+            <div class="flex justify-between items-center flex-wrap gap-2">
+              <strong>${item.symbol} ${item.ticker} - ${item.name}</strong> | ${item.shares} מניות | קנייה: $${item.buyPrice.toFixed(2)}
+              <div>מחיר סגירה: <span class="font-bold text-emerald-400 text-lg">$${item.closePrice.toFixed(2)}</span> | תשואה: <span class="${returnColor} font-bold">${sign}${returnPct}%</span></div>
+            </div>
+            <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
+              <p><strong>חדשות עדכניות:</strong> ${item.news}</p>
+              <p><strong>מגמה:</strong> <span class="font-bold">${item.trend}</span></p>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function renderStrategy() {
+        const container = document.getElementById('strategy-list');
+        if (!container) return;
+        container.innerHTML = '';
+        portfolioData.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'bg-slate-800/60 p-4 rounded-xl border border-slate-700/50';
+          div.innerHTML = `<strong>${item.symbol} ${item.ticker} - ${item.name}</strong> | מחיר סגירה: <span class="text-emerald-400 font-bold">$${item.closePrice.toFixed(2)}</span>`;
+          container.appendChild(div);
+        });
+      }
+
       function switchTab(tabNumber) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -424,46 +232,64 @@
         });
         document.getElementById('tab-' + tabNumber).classList.add('active');
         const activeBtn = document.getElementById('btn-tab-' + tabNumber);
-        activeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-        activeBtn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow-lg');
+        if (activeBtn) {
+          activeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+          activeBtn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow-lg');
+        }
       }
 
       function toggleAddStockForm() {
         const form = document.getElementById('add-stock-form');
-        form.classList.toggle('hidden');
+        if (form) form.classList.toggle('hidden');
       }
 
       function addNewStock() {
         const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
         const name = document.getElementById('new-name').value.trim();
-        const shares = document.getElementById('new-shares').value.trim();
-        const price = document.getElementById('new-price').value.trim();
+        const shares = parseFloat(document.getElementById('new-shares').value);
+        const price = parseFloat(document.getElementById('new-price').value);
 
-        if (!ticker || !name || !shares || !price) {
-          alert('נא למלא את כל השדות');
+        if (!ticker || !name || isNaN(shares) || isNaN(price)) {
+          alert('נא למלא את כל השדות כראוי');
           return;
         }
 
-        const portfolioList = document.getElementById('portfolio-list');
-        const newDiv = document.createElement('div');
-        newDiv.className = 'bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-2';
-        newDiv.innerHTML = `
-          <div class="flex justify-between items-center flex-wrap gap-2">
-            <strong>📊 ${ticker} - ${name}</strong> | ${shares} מניות | קנייה: $${price} 📈
-            <div>מחיר סגירה: <span class="font-bold text-emerald-400 text-lg">-</span> | תשואה: <span class="text-emerald-400 font-bold">0.0%</span></div>
-          </div>
-          <div class="text-xs text-slate-300 space-y-1 border-t border-slate-700/40 pt-2">
-            <p><strong>חדשות עדכניות:</strong> נוסף ידנית למערכת.</p>
-            <p><strong>מגמה:</strong> <span class="text-emerald-400 font-bold">במעקב</span> 🟢</p>
-          </div>
-        `;
-        portfolioList.appendChild(newDiv);
+        portfolioData.push({
+          symbol: "📈",
+          ticker: ticker,
+          name: name,
+          shares: shares,
+          buyPrice: price,
+          closePrice: price,
+          news: "נוסף ידנית למערכת.",
+          trend: "במעקב 🟢"
+        });
+
+        renderPortfolio();
+        renderStrategy();
         toggleAddStockForm();
+
         document.getElementById('new-ticker').value = '';
         document.getElementById('new-name').value = '';
         document.getElementById('new-shares').value = '';
         document.getElementById('new-price').value = '';
       }
+
+      // פונקציית עדכון אוטומטית המעדכנת את שעת הטעינה והנתונים
+      function updateDashboardData() {
+        const timeElem = document.getElementById('current-time-val');
+        if (timeElem) {
+          timeElem.innerText = new Date().toLocaleString('he-IL');
+        }
+        renderPortfolio();
+        renderStrategy();
+      }
+
+      // הרצה ראשונית בעליית העמוד
+      updateDashboardData();
+
+      // רענון אוטומטי של תצוגת הנתונים והזמן מדי 60 שניות
+      setInterval(updateDashboardData, 60000);
     </script>
 </body>
 </html>
