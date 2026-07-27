@@ -57,21 +57,27 @@ def fetch_all_data():
             market_data[ticker] = {'price': 0.0, 'change': 0.0}
     return market_data
 
-# נתוני קנייה לפוזיציות בתיק האישי
+# נתוני קנייה ומספר מניות מדויקים (ללא שינוי) עבור שלב 5
 portfolio_buys = {
-    'NVDA': {'shares': 10, 'buy': 120.0, 'target': 150.0},
-    'AMD': {'shares': 16, 'buy': 118.98, 'target': 180.0},
-    'MU': {'shares': 20, 'buy': 90.0, 'target': 120.0},
-    'SNDK': {'shares': 10, 'buy': 50.0, 'target': 70.0},
-    'WDC': {'shares': 12, 'buy': 65.0, 'target': 85.0},
-    'INTC': {'shares': 25, 'buy': 30.0, 'target': 35.0},
-    'SIMO': {'shares': 15, 'buy': 70.0, 'target': 90.0},
-    'IREN': {'shares': 30, 'buy': 8.5, 'target': 14.0},
-    'CIFR': {'shares': 40, 'buy': 4.5, 'target': 8.0},
-    'META': {'shares': 5, 'buy': 450.0, 'target': 550.0},
-    'AMZN': {'shares': 8, 'buy': 175.0, 'target': 210.0},
-    'GOOG': {'shares': 10, 'buy': 160.0, 'target': 195.0},
-    'TTWO': {'shares': 10, 'buy': 145.0, 'target': 180.0},
+    'NVDA': {'shares': 3, 'buy': 184.90, 'target': 220.0},
+    'AMD': {'shares': 20, 'buy': 211.34, 'target': 250.0},
+    'MU': {'shares': 6, 'buy': 316.32, 'target': 350.0},
+    'SNDK': {'shares': 4, 'buy': 630.26, 'target': 700.0},
+    'WDC': {'shares': 6, 'buy': 223.23, 'target': 260.0},
+    'INTC': {'shares': 20, 'buy': 43.05, 'target': 55.0},
+    'SIMO': {'shares': 30, 'buy': 131.32, 'target': 160.0},
+    'IREN': {'shares': 54, 'buy': 52.75, 'target': 70.0},
+    'CIFR': {'shares': 28, 'buy': 17.50, 'target': 25.0},
+    'META': {'shares': 2, 'buy': 661.00, 'target': 750.0},
+    'AMZN': {'shares': 6, 'buy': 229.29, 'target': 270.0},
+    'GOOG': {'shares': 4, 'buy': 317.95, 'target': 360.0},
+    'TTWO': {'shares': 5, 'buy': 235.50, 'target': 280.0},
+    'WMT': {'shares': 16, 'buy': 119.45, 'target': 140.0},
+    'NFLX': {'shares': 14, 'buy': 94.03, 'target': 120.0},
+    'MA': {'shares': 4, 'buy': 503.99, 'target': 580.0},
+    'IBIT': {'shares': 14, 'buy': 60.48, 'target': 75.0},
+    'GTEC': {'shares': 260, 'buy': 1.27, 'target': 2.0},
+    'TQQQ': {'shares': 28, 'buy': 56.53, 'target': 75.0},
 }
 
 # שעות פעילות לעדכון האתר: מ-10:30 בבוקר ועד 23:30 בלילה
@@ -85,7 +91,7 @@ if should_update:
         date_str = now_il.strftime('%d.%m.%Y')
         time_str = now_il.strftime('%H:%M')
 
-        # מיפוי ערכים להזרקה לתוך תבניות ה-{{...}} בקובץ ה-HTML (כולל הכותרת המבוקשת)
+        # מיפוי ערכים להזרקה לתוך תבניות ה-{{...}} בקובץ ה-HTML
         replacements = {
             'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊',
             'LAST_UPDATED': f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>',
@@ -115,7 +121,7 @@ if should_update:
             'CATALYST_MONETARY': 'החלטות ריבית ופרוטוקולים של הבנקים המרכזיים.',
             'CATALYST_HARDWARE': 'השקות מוצרי חומרה, מעבדים ופתרונות ענן מתקדמים.',
             
-            # מחירי מניות
+            # מחירי מניות שלב 4
             'NVDA_PRICE': str(market_data.get('NVDA', {}).get('price', 0)),
             'AMD_PRICE': str(market_data.get('AMD', {}).get('price', 0)),
             'MU_PRICE': str(market_data.get('MU', {}).get('price', 0)),
@@ -147,7 +153,7 @@ if should_update:
             'NEWS_ENERGY_CRYPTO': 'תנודתיות ערה בשוק הקריפטו והאנרגיה לצד מעבר לטכנולוגיות ירוקות.'
         }
 
-        # חישוב דינמי של נתוני התיק האישי
+        # חישוב דינמי של מחירי שלב 5 תוך שמירה מלאה על מספר המניות ומחירי הקנייה שלך
         for ticker, info in portfolio_buys.items():
             curr_p = market_data.get(ticker, {}).get('price', info['buy'])
             ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
@@ -156,11 +162,11 @@ if should_update:
             replacements[f'PORTFOLIO_{ticker}_SHARES'] = str(info['shares'])
             replacements[f'PORTFOLIO_{ticker}_BUY'] = str(info['buy'])
             replacements[f'PORTFOLIO_{ticker}_RETURN'] = ret_str
-            replacements[f'PORTFOLIO_{ticker}_NEWS'] = 'עדכון שוטף: החברה מציגה נתוני פעילות בהתאם לתחזיות.'
-            replacements[f'PORTFOLIO_{ticker}_TREND'] = 'חיובית' if ret >= 0 else 'שלילית'
+            replacements[f'PORTFOLIO_{ticker}_PRICE'] = str(curr_p)
             replacements[f'PORTFOLIO_{ticker}_TARGET'] = str(info['target'])
+            replacements[f'PORTFOLIO_{ticker}_STATUS'] = 'רווח' if ret >= 0 else 'הפסד'
 
-        # קריאת קובץ ה-HTML והחלפת כל התבניות אוטומטית
+        # קריאת קובץ ה-HTML והחלפת התבניות
         with open('index.html', 'r', encoding='utf-8-sig') as f:
             content = f.read()
 
@@ -172,18 +178,6 @@ if should_update:
             f.write(content)
 
         print('Successfully updated index.html template with market data.')
-
-        # שליחת התראת טלגרם
-        token = os.environ.get('TELEGRAM_BOT_TOKEN')
-        chat_id = os.environ.get('TELEGRAM_CHAT_ID')
-        if token and chat_id:
-            msg = f'📈 *עדכון תיק השקעות אוטומטי* - {day_name}, {time_str}\n\n'
-            for ticker, info in market_data.items():
-                if ticker in ['NVDA', 'AMD', 'MU', 'WMT']:
-                    emoji = "🟢" if info['change'] >= 0 else "🔴"
-                    msg += f"🔹 *{ticker}*: `${info['price']}` ({emoji} `{info['change']}%`)\n"
-            
-            requests.post(f'https://api.telegram.org/bot{token}/sendMessage', json={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'})
 
         # ביצוע Git Commit ו-Push אוטומטיים
         subprocess.run(['git', 'config', '--global', 'user.name', 'github-actions[bot]'], check=True)
