@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</title>
+    <title>{{REPORT_TITLE}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Heebo', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+        .tab-btn.active { background-color: #0e7490; color: #ffffff; border-color: #22d3ee; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -16,236 +17,242 @@
         
         <!-- כותרת ראשית -->
         <header class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg text-center space-y-3">
-            <h1 class="text-2xl md:text-4xl font-black text-cyan-400">דו"ח סקייל שוק ההון המלא ליום שני - נתונים מעודכנים 📊</h1>
+            <h1 class="text-2xl md:text-4xl font-black text-cyan-400">{{REPORT_TITLE}}</h1>
             <p class="text-slate-400 text-sm">מערכת מעקב לתיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div id="last-updated" class="inline-block bg-slate-800 text-cyan-300 text-xs px-3 py-1 rounded-full font-mono border border-slate-700">
-                עודכן לאחרונה: <span dir="ltr">27.07.2026 | 03:43</span>
+                {{LAST_UPDATED}}
             </div>
         </header>
 
-        <!-- שלב 1: סקירה מאקרו-כלכלית -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
-                    <h3 class="font-bold text-slate-200">מדדים מובילים (Indices) 📈</h3>
-                    <p class="text-slate-300 mt-1">המדדים המובילים נסחרים בהתאם לנתוני המאקרו האחרונים וציפיות הנזילות בשווקים.</p>
-                </div>
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
-                    <h3 class="font-bold text-slate-200">שער הדולר (USD/ILS) 💵</h3>
-                    <p class="text-slate-300 mt-1">שער נוכחי: <span class="font-mono text-cyan-300 font-bold">3.04</span> ₪</p>
-                </div>
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
-                    <h3 class="font-bold text-slate-200">נפט (Crude Oil / Brent) 🛢️</h3>
-                    <p class="text-slate-300 mt-1">מחיר חבית: <span class="font-mono text-cyan-300 font-bold">$84.52</span></p>
-                </div>
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
-                    <h3 class="font-bold text-slate-200">זהב (Gold) 🪙</h3>
-                    <p class="text-slate-300 mt-1">מחיר אונקיה: <span class="font-mono text-cyan-300 font-bold">$4099.5</span></p>
-                </div>
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 md:col-span-2">
-                    <h3 class="font-bold text-slate-200">ביטקוין (Bitcoin) 🪙</h3>
-                    <p class="text-slate-300 mt-1">מחיר נוכחי: <span class="font-mono text-cyan-300 font-bold">$65,074.05</span></p>
-                </div>
-            </div>
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 space-y-2 text-sm">
-                <h3 class="font-bold text-slate-200">חדשות ועדכונים (שוק אמריקאי וישראלי) 📰</h3>
-                <p class="text-slate-300"><strong>השפעות על השוק האמריקאי:</strong> התפתחויות באינפלציה ובמדיניות הפד ממשיכות להוות את מוקד העניין הראשי בוול סטריט.</p>
-                <p class="text-slate-300"><strong>השפעות על השוק הישראלי:</strong> השוק המקומי מגיב לנתוני המאקרו ולעדכונים הביטחוניים והכלכליים.</p>
-            </div>
-        </section>
+        <!-- סרגל טאבים עליון -->
+        <nav class="flex flex-wrap gap-2 justify-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800 backdrop-blur-md sticky top-4 z-50 shadow-xl">
+            <button onclick="switchTab(1)" id="btn-tab-1" class="tab-btn active px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 1: מאקרו</button>
+            <button onclick="switchTab(2)" id="btn-tab-2" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 2: סקטורים</button>
+            <button onclick="switchTab(3)" id="btn-tab-3" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 3: זרזים</button>
+            <button onclick="switchTab(4)" id="btn-tab-4" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 4: אסטרטגיה (20 מניות)</button>
+            <button onclick="switchTab(5)" id="btn-tab-5" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 5: התיק האישי</button>
+            <button onclick="switchTab(6)" id="btn-tab-6" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 6: סנטימנט וציור</button>
+            <button onclick="switchTab(7)" id="btn-tab-7" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 7: סיכום</button>
+            <button onclick="switchTab(8)" id="btn-tab-8" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 text-slate-300 border border-slate-700 transition-all hover:bg-slate-700">שלב 8: חדשות מניות</button>
+        </nav>
 
-        <!-- אזור הציור / הגרף הוויזואלי -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">תרשים סנטימנט וביצועי סקטורים (ציור מערכת) 📊</h2>
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 relative h-64 flex items-center justify-center">
-                <canvas id="marketChart"></canvas>
-            </div>
-            <div class="text-xs text-slate-400 text-center">מדד פחד וחמדנות נוכחי: <span class="text-cyan-300 font-bold">68</span> - חמדנות מתונה - המשקיעים מפגינים אופטימיות זהירה.</div>
-        </section>
+        <!-- תוכן הטאבים -->
+        
+        <!-- טאב 1: מאקרו -->
+        <div id="content-tab-1" class="tab-content space-y-6">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-slate-200">מדדים מובילים (Indices) 📈</h3>
+                        <p class="text-slate-300 mt-1">{{MACRO_INDICES_DESC}}</p>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-slate-200">שער הדולר (USD/ILS) 💵</h3>
+                        <p class="text-slate-300 mt-1">שער נוכחי: <span class="font-mono text-cyan-300 font-bold">{{USD_ILS}}</span> ₪</p>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-slate-200">נפט (Crude Oil / Brent) 🛢️</h3>
+                        <p class="text-slate-300 mt-1">מחיר חבית: <span class="font-mono text-cyan-300 font-bold">${{OIL_PRICE}}</span></p>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-slate-200">זהב (Gold) 🪙</h3>
+                        <p class="text-slate-300 mt-1">מחיר אונקיה: <span class="font-mono text-cyan-300 font-bold">${{GOLD_PRICE}}</span></p>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 md:col-span-2">
+                        <h3 class="font-bold text-slate-200">ביטקוין (Bitcoin) 🪙</h3>
+                        <p class="text-slate-300 mt-1">מחיר נוכחי: <span class="font-mono text-cyan-300 font-bold">${{BTC_PRICE}}</span></p>
+                    </div>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 space-y-2 text-sm">
+                    <h3 class="font-bold text-slate-200">חדשות ועדכונים (שוק אמריקאי וישראלי) 📰</h3>
+                    <p class="text-slate-300"><strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_MACRO_NEWS}}</p>
+                    <p class="text-slate-300"><strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_MACRO_NEWS}}</p>
+                </div>
+            </section>
+        </div>
 
-        <!-- שלב 2: סקירה סקטוריאלית -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 2: סקירה סקטוריאלית (שבבים, ענן וקריפטו) 💻</h2>
-            <ul class="list-disc list-inside space-y-2 text-sm text-slate-300">
-                <li><strong>סקטור השבבים והחומרה:</strong> מגמות הביקושים לתשתיות עיבוד נתונים, זיכרונות מתקדמים (MU, WDC) ומעבדי AI מובילים (NVDA, AMD, INTC). 🔌</li>
-                <li><strong>תשתיות ענן ובינה מלאכותית:</strong> ענקיות הטכנולוגיה (GOOG, AMZN, META) ממשיכות להשקיע בהרחבת מרכזי הנתונים. ☁️</li>
-                <li><strong>קריפטו ותשתיות דיגיטליות:</strong> מתחם המטבעות ותעודות הסל (IBIT) לצד חברות כרייה ותשתיות (IREN, CIFR). 🔗</li>
-            </ul>
-        </section>
+        <!-- טאב 2: סקטורים -->
+        <div id="content-tab-2" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 2: סקירה סקטוריאלית (שבבים, ענן וקריפטו) 💻</h2>
+                <ul class="list-disc list-inside space-y-2 text-sm text-slate-300">
+                    <li><strong>סקטור השבבים והחומרה:</strong> מגמות הביקושים לתשתיות עיבוד נתונים, זיכרונות מתקדמים (MU, WDC) ומעבדי AI מובילים (NVDA, AMD, INTC). 🔌</li>
+                    <li><strong>תשתיות ענן ובינה מלאכותית:</strong> ענקיות הטכנולוגיה (GOOG, AMZN, META) ממשיכות להשקיע בהרחבת מרכזי הנתונים. ☁️</li>
+                    <li><strong>קריפטו ותשתיות דיגיטליות:</strong> מתחם המטבעות ותעודות הסל (IBIT) לצד חברות כרייה ותשתיות (IREN, CIFR). 🔗</li>
+                </ul>
+            </section>
+        </div>
 
-        <!-- שלב 3: אירועים וזרזים מרכזיים -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
-            <ul class="list-disc list-inside space-y-2 text-sm text-slate-300">
-                <li><strong>דיווחי תוצאות לרבעון:</strong> מעקב אחר תחזיות ההכנסה של החברות המובילות במשק. 📑</li>
-                <li><strong>הודעות מדיניות מוניטרית:</strong> נתוני האינפלציה והתעסוקה המשפיעים על תמחור הנכסים. 🏦</li>
-                <li><strong>השקות חומרה ועדכוני תוכנה:</strong> אירועי חשיפה של מוצרים חדשים (למשל TTWO). 🎮</li>
-            </ul>
-        </section>
+        <!-- טאב 3: זרזים -->
+        <div id="content-tab-3" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
+                <ul class="list-disc list-inside space-y-2 text-sm text-slate-300">
+                    <li><strong>דיווחי תוצאות לרבעון:</strong> מעקב אחר תחזיות ההכנסה של החברות המובילות במשק. 📑</li>
+                    <li><strong>הודעות מדיניות מוניטרית:</strong> נתוני האינפלציה והתעסוקה המשפיעים על תמחור הנכסים. 🏦</li>
+                    <li><strong>השקות חומרה ועדכוני תוכנה:</strong> אירועי חשיפה של מוצרים חדשים (למשל TTWO). 🎮</li>
+                </ul>
+            </section>
+        </div>
 
-        <!-- שלב 4: אסטרטגיות מסחר והשקעה -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 4: אסטרטגיות מסחר והשקעה (20 מניות ליבה וסווינג) 📈</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <!-- קבוצה א -->
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">NVIDIA (NVDA):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
+        <!-- טאב 4: אסטרטגיה (20 מניות) -->
+        <div id="content-tab-4" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 4: אסטרטגיות מסחר והשקעה (20 מניות ליבה וסווינג) 📈</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">NVIDIA (NVDA):</span> מחיר: <span class="font-mono text-cyan-300">${{NVDA_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">AMD (AMD):</span> מחיר: <span class="font-mono text-cyan-300">${{AMD_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Micron (MU):</span> מחיר: <span class="font-mono text-cyan-300">${{MU_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Google (GOOG):</span> מחיר: <span class="font-mono text-cyan-300">${{GOOG_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Amazon (AMZN):</span> מחיר: <span class="font-mono text-cyan-300">${{AMZN_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Meta (META):</span> מחיר: <span class="font-mono text-cyan-300">${{META_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Mastercard (MA):</span> מחיר: <span class="font-mono text-cyan-300">${{MA_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Walmart (WMT):</span> מחיר: <span class="font-mono text-cyan-300">${{WMT_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Take-Two (TTWO):</span> מחיר: <span class="font-mono text-cyan-300">${{TTWO_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-emerald-400">Western Digital (WDC):</span> מחיר: <span class="font-mono text-cyan-300">${{WDC_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">TQQQ:</span> מחיר: <span class="font-mono text-cyan-300">${{TQQQ_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Intel (INTC):</span> מחיר: <span class="font-mono text-cyan-300">${{INTC_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Iris Energy (IREN):</span> מחיר: <span class="font-mono text-cyan-300">${{IREN_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Cipher Mining (CIFR):</span> מחיר: <span class="font-mono text-cyan-300">${{CIFR_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">IBIT:</span> מחיר: <span class="font-mono text-cyan-300">${{IBIT_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Silicon Motion (SIMO):</span> מחיר: <span class="font-mono text-cyan-300">${{SIMO_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">SanDisk (SNDK):</span> מחיר: <span class="font-mono text-cyan-300">${{SNDK_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Netflix (NFLX):</span> מחיר: <span class="font-mono text-cyan-300">${{NFLX_PRICE}}</span></div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800"><span class="font-bold text-amber-400">Greenland Tech (GTEC):</span> מחיר: <span class="font-mono text-cyan-300">${{GTEC_PRICE}}</span></div>
                 </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">AMD (AMD):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Micron (MU):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Google (GOOG):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Amazon (AMZN):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Meta (META):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Mastercard (MA):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Walmart (WMT):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Take-Two (TTWO):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-emerald-400">Western Digital (WDC):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <!-- קבוצה ב -->
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">TQQQ:</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Intel (INTC):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Iris Energy (IREN):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Cipher Mining (CIFR):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">IBIT:</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Silicon Motion (SIMO):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">SanDisk (SNDK):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Netflix (NFLX):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                    <span class="font-bold text-amber-400">Greenland Tech (GTEC):</span> מחיר: <span class="font-mono text-cyan-300">$nan</span>
-                </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
-        <!-- שלב 5: תיק ההשקעות האישי המלא -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות 💼</h2>
-            <div class="space-y-3 text-sm">
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>NVIDIA (NVDA)</strong> | 3 מניות | קנייה: $184.9</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $220.0 | <span class="text-emerald-400">הפסד</span> 🚀</span>
+        <!-- טאב 5: התיק האישי -->
+        <div id="content-tab-5" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות 💼</h2>
+                <div class="space-y-3 text-sm">
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>NVIDIA (NVDA)</strong> | {{PORTFOLIO_NVDA_SHARES}} מניות | קנייה: ${{PORTFOLIO_NVDA_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_NVDA_PRICE}}</span> | יעד: ${{PORTFOLIO_NVDA_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_NVDA_STATUS}}</span> 🚀</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>AMD (AMD)</strong> | {{PORTFOLIO_AMD_SHARES}} מניות | קנייה: ${{PORTFOLIO_AMD_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_AMD_PRICE}}</span> | יעד: ${{PORTFOLIO_AMD_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_AMD_STATUS}}</span> 💻</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Micron (MU)</strong> | {{PORTFOLIO_MU_SHARES}} מניות | קנייה: ${{PORTFOLIO_MU_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_MU_PRICE}}</span> | יעד: ${{PORTFOLIO_MU_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_MU_STATUS}}</span> 🧠</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>SanDisk (SNDK)</strong> | {{PORTFOLIO_SNDK_SHARES}} מניות | קנייה: ${{PORTFOLIO_SNDK_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_SNDK_PRICE}}</span> | יעד: ${{PORTFOLIO_SNDK_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_SNDK_STATUS}}</span> 💾</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Western Digital (WDC)</strong> | {{PORTFOLIO_WDC_SHARES}} מניות | קנייה: ${{PORTFOLIO_WDC_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_WDC_PRICE}}</span> | יעד: ${{PORTFOLIO_WDC_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_WDC_STATUS}}</span> 💽</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Intel (INTC)</strong> | {{PORTFOLIO_INTC_SHARES}} מניות | קנייה: ${{PORTFOLIO_INTC_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_INTC_PRICE}}</span> | יעד: ${{PORTFOLIO_INTC_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_INTC_STATUS}}</span> ⚡</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Silicon Motion (SIMO)</strong> | {{PORTFOLIO_SIMO_SHARES}} מניות | קנייה: ${{PORTFOLIO_SIMO_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_SIMO_PRICE}}</span> | יעד: ${{PORTFOLIO_SIMO_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_SIMO_STATUS}}</span> 🔌</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Iris Energy (IREN)</strong> | {{PORTFOLIO_IREN_SHARES}} מניות | קנייה: ${{PORTFOLIO_IREN_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_IREN_PRICE}}</span> | יעד: ${{PORTFOLIO_IREN_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_IREN_STATUS}}</span> 🌿</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Cipher Mining (CIFR)</strong> | {{PORTFOLIO_CIFR_SHARES}} מניות | קנייה: ${{PORTFOLIO_CIFR_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_CIFR_PRICE}}</span> | יעד: ${{PORTFOLIO_CIFR_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_CIFR_STATUS}}</span> ⛏️</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Meta Platforms (META)</strong> | {{PORTFOLIO_META_SHARES}} מניות | קנייה: ${{PORTFOLIO_META_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_META_PRICE}}</span> | יעד: ${{PORTFOLIO_META_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_META_STATUS}}</span> 👥</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Amazon (AMZN)</strong> | {{PORTFOLIO_AMZN_SHARES}} מניות | קנייה: ${{PORTFOLIO_AMZN_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_AMZN_PRICE}}</span> | יעד: ${{PORTFOLIO_AMZN_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_AMZN_STATUS}}</span> 📦</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Google (GOOG)</strong> | {{PORTFOLIO_GOOG_SHARES}} מניות | קנייה: ${{PORTFOLIO_GOOG_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_GOOG_PRICE}}</span> | יעד: ${{PORTFOLIO_GOOG_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_GOOG_STATUS}}</span> 🌐</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Take-Two (TTWO)</strong> | {{PORTFOLIO_TTWO_SHARES}} מניות | קנייה: ${{PORTFOLIO_TTWO_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_TTWO_PRICE}}</span> | יעד: ${{PORTFOLIO_TTWO_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_TTWO_STATUS}}</span> 🎮</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Walmart (WMT)</strong> | {{PORTFOLIO_WMT_SHARES}} מניות | קנייה: ${{PORTFOLIO_WMT_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_WMT_PRICE}}</span> | יעד: ${{PORTFOLIO_WMT_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_WMT_STATUS}}</span> 🛒</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Netflix (NFLX)</strong> | {{PORTFOLIO_NFLX_SHARES}} מניות | קנייה: ${{PORTFOLIO_NFLX_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_NFLX_PRICE}}</span> | יעד: ${{PORTFOLIO_NFLX_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_NFLX_STATUS}}</span> 🎬</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Mastercard (MA)</strong> | {{PORTFOLIO_MA_SHARES}} מניות | קנייה: ${{PORTFOLIO_MA_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_MA_PRICE}}</span> | יעד: ${{PORTFOLIO_MA_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_MA_STATUS}}</span> 💳</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>iShares Bitcoin Trust (IBIT)</strong> | {{PORTFOLIO_IBIT_SHARES}} מניות | קנייה: ${{PORTFOLIO_IBIT_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_IBIT_PRICE}}</span> | יעד: ${{PORTFOLIO_IBIT_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_IBIT_STATUS}}</span> 🪙</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>Greenland Tech (GTEC)</strong> | {{PORTFOLIO_GTEC_SHARES}} מניות | קנייה: ${{PORTFOLIO_GTEC_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_GTEC_PRICE}}</span> | יעד: ${{PORTFOLIO_GTEC_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_GTEC_STATUS}}</span> 🔋</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
+                        <span><strong>TQQQ</strong> | {{PORTFOLIO_TQQQ_SHARES}} מניות | קנייה: ${{PORTFOLIO_TQQQ_BUY}}</span>
+                        <span>נוכחי: <span class="font-mono text-cyan-300">${{PORTFOLIO_TQQQ_PRICE}}</span> | יעד: ${{PORTFOLIO_TQQQ_TARGET}} | <span class="text-emerald-400">{{PORTFOLIO_TQQQ_STATUS}}</span> 📈</span>
+                    </div>
                 </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>AMD (AMD)</strong> | 20 מניות | קנייה: $211.34</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $250.0 | <span class="text-emerald-400">הפסד</span> 💻</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Micron (MU)</strong> | 6 מניות | קנייה: $316.32</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $350.0 | <span class="text-emerald-400">הפסד</span> 🧠</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>SanDisk (SNDK)</strong> | 4 מניות | קנייה: $630.26</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $700.0 | <span class="text-emerald-400">הפסד</span> 💾</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Western Digital (WDC)</strong> | 6 מניות | קנייה: $223.23</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $260.0 | <span class="text-emerald-400">הפסד</span> 💽</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Intel (INTC)</strong> | 20 מניות | קנייה: $43.05</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $55.0 | <span class="text-emerald-400">הפסד</span> ⚡</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Silicon Motion (SIMO)</strong> | 30 מניות | קנייה: $131.32</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $160.0 | <span class="text-emerald-400">הפסד</span> 🔌</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Iris Energy (IREN)</strong> | 54 מניות | קנייה: $52.75</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $70.0 | <span class="text-emerald-400">הפסד</span> 🌿</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Cipher Mining (CIFR)</strong> | 28 מניות | קנייה: $17.5</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $25.0 | <span class="text-emerald-400">הפסד</span> ⛏️</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Meta Platforms (META)</strong> | 2 מניות | קנייה: $661.0</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $750.0 | <span class="text-emerald-400">הפסד</span> 👥</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Amazon (AMZN)</strong> | 6 מניות | קנייה: $229.29</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $270.0 | <span class="text-emerald-400">הפסד</span> 📦</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Google (GOOG)</strong> | 4 מניות | קנייה: $317.95</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $360.0 | <span class="text-emerald-400">הפסד</span> 🌐</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Take-Two (TTWO)</strong> | 5 מניות | קנייה: $235.5</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $280.0 | <span class="text-emerald-400">הפסד</span> 🎮</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Walmart (WMT)</strong> | 16 מניות | קנייה: $119.45</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $140.0 | <span class="text-emerald-400">הפסד</span> 🛒</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Netflix (NFLX)</strong> | 14 מניות | קנייה: $94.03</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $120.0 | <span class="text-emerald-400">הפסד</span> 🎬</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Mastercard (MA)</strong> | 4 מניות | קנייה: $503.99</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $580.0 | <span class="text-emerald-400">הפסד</span> 💳</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>iShares Bitcoin Trust (IBIT)</strong> | 14 מניות | קנייה: $60.48</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $75.0 | <span class="text-emerald-400">הפסד</span> 🪙</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>Greenland Tech (GTEC)</strong> | 260 מניות | קנייה: $1.27</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $2.0 | <span class="text-emerald-400">הפסד</span> 🔋</span>
-                </div>
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-2">
-                    <span><strong>TQQQ</strong> | 28 מניות | קנייה: $56.53</span>
-                    <span>נוכחי: <span class="font-mono text-cyan-300">$nan</span> | יעד: $75.0 | <span class="text-emerald-400">הפסד</span> 📈</span>
-                </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
-        <!-- שלב 6, 7, 8: סנטימנט, סיכום וחדשות -->
-        <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
-            <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 6, 7 ו-8: סנטימנט, סיכום וחדשות מניות 📰</h2>
-            <div class="space-y-3 text-sm text-slate-300">
-                <p><strong>סנטימנט קהילות המסחר:</strong> מעקב אחר השיח בפורומים ובקבוצות ייעודיות סביב סקטורים שונים וניהול סיכונים בשוק. 💬</p>
-                <p><strong>ניהול סיכונים והמלצות פעולה:</strong> מעקב שוטף אחרי תנועות השוק, תוך שימוש בפקודות הגנה נאותות ובחינת איזון תיק ההשקעות. 🛡️</p>
-            </div>
-        </section>
+        <!-- טאב 6: סנטימנט וציור -->
+        <div id="content-tab-6" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 6: סנטימנט השוק ותרשים ויזואלי 📊</h2>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-800 relative h-64 flex items-center justify-center">
+                    <canvas id="marketChart"></canvas>
+                </div>
+                <div class="text-xs text-slate-400 text-center">מדד פחד וחמדנות נוכחי: <span class="text-cyan-300 font-bold">{{FEAR_GREED_INDEX}}</span> - {{FEAR_GREED_DESC}}</div>
+            </section>
+        </div>
+
+        <!-- טאב 7: סיכום -->
+        <div id="content-tab-7" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 7: סיכום וניהול סיכונים 🛡️</h2>
+                <p class="text-slate-300 text-sm">ניהול סיכונים קפדני ועבודה לפי רמות תמיכה והתנגדות בתיק ההשקעות.</p>
+            </section>
+        </div>
+
+        <!-- טאב 8: חדשות מניות -->
+        <div id="content-tab-8" class="tab-content space-y-6 hidden">
+            <section class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg space-y-3">
+                <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">שלב 8: חדשות מניות ועדכונים 📰</h2>
+                <p class="text-slate-300 text-sm">מעקב אחר חדשות שוטפות ואירועים רוחביים המשפיעים על מניות הליבה והטכנולוגיה.</p>
+            </section>
+        </div>
 
     </div>
 
     <script>
-        // דוגמה להפעלת גרף בסיסי באמצעות Chart.js באזור הציור
+        // פונקציית מעבר בין טאבים
+        function switchTab(tabNumber) {
+            // הסתרת כל התכנים
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // הסרת עיצוב פעיל מכל הכפתורים
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // הצגת הטאב הנבחר
+            document.getElementById('content-tab-' + tabNumber).classList.remove('hidden');
+            // הוספת עיצוב פעיל לכפתור הנבחר
+            document.getElementById('btn-tab-' + tabNumber).classList.add('active');
+        }
+
+        // טעינת גרף Chart.js
         const ctx = document.getElementById('marketChart').getContext('2d');
         const marketChart = new Chart(ctx, {
             type: 'bar',
