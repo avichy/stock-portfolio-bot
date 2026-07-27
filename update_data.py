@@ -57,10 +57,10 @@ def fetch_all_data():
             market_data[ticker] = {'price': 0.0, 'change': 0.0}
     return market_data
 
-# נתוני קנייה לפוזיציות בתיק האישי (ניתן לעדכן כמויות ומחירי קנייה לפי הצורך)
+# נתוני קנייה לפוזיציות בתיק האישי
 portfolio_buys = {
     'NVDA': {'shares': 10, 'buy': 120.0, 'target': 150.0},
-    'AMD': {'shares': 16, 'buy': 118.98, 'target': 180.0}, # מותאם לנתון שלך מהסיכום
+    'AMD': {'shares': 16, 'buy': 118.98, 'target': 180.0},
     'MU': {'shares': 20, 'buy': 90.0, 'target': 120.0},
     'SNDK': {'shares': 10, 'buy': 50.0, 'target': 70.0},
     'WDC': {'shares': 12, 'buy': 65.0, 'target': 85.0},
@@ -85,10 +85,10 @@ if should_update:
         date_str = now_il.strftime('%d.%m.%Y')
         time_str = now_il.strftime('%H:%M')
 
-        # מיפוי ערכים להזרקה לתוך תבניות ה-{{...}} בקובץ ה-HTML
+        # מיפוי ערכים להזרקה לתוך תבניות ה-{{...}} בקובץ ה-HTML (כולל הכותרת המבוקשת)
         replacements = {
-            'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name}',
-            'LAST_UPDATED': f'{date_str} | {time_str}',
+            'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊',
+            'LAST_UPDATED': f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>',
             'MACRO_INDICES_DESC': 'המדדים המובילים נסחרים בהתאם לנתוני המאקרו האחרונים וציפיות הנזילות בשווקים.',
             'USD_ILS': str(market_data.get('USDILS=X', {}).get('price', 3.65)),
             'OIL_PRICE': str(market_data.get('CL=F', {}).get('price', 75.0)),
@@ -115,7 +115,7 @@ if should_update:
             'CATALYST_MONETARY': 'החלטות ריבית ופרוטוקולים של הבנקים המרכזיים.',
             'CATALYST_HARDWARE': 'השקות מוצרי חומרה, מעבדים ופתרונות ענן מתקדמים.',
             
-            # מחירי מניות (שלב 4)
+            # מחירי מניות
             'NVDA_PRICE': str(market_data.get('NVDA', {}).get('price', 0)),
             'AMD_PRICE': str(market_data.get('AMD', {}).get('price', 0)),
             'MU_PRICE': str(market_data.get('MU', {}).get('price', 0)),
@@ -147,7 +147,7 @@ if should_update:
             'NEWS_ENERGY_CRYPTO': 'תנודתיות ערה בשוק הקריפטו והאנרגיה לצד מעבר לטכנולוגיות ירוקות.'
         }
 
-        # חישוב דינמי של נתוני התיק האישי (שלב 5)
+        # חישוב דינמי של נתוני התיק האישי
         for ticker, info in portfolio_buys.items():
             curr_p = market_data.get(ticker, {}).get('price', info['buy'])
             ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
