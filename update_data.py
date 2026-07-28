@@ -474,7 +474,8 @@ if should_update:
             )
 
         for key, val in replacements.items():
-            placeholder = f"{{{{{key}}}}}"
+            # שימוש בשרשור רגיל לחלוטין ללא f-string למניעת שגיאות סוגריים מסולסלים
+            placeholder = "{{" + key + "}}"
             content = content.replace(placeholder, str(val))
 
         # עיצוב מחדש של קבוצה א', קבוצה ב' וסעיף 5 לתצוגת בלוקים (שורה מתחת לשורה) לנוחות קריאה
