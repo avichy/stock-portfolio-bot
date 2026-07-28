@@ -18,7 +18,7 @@
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעת כה מעקב לתיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div class="text-xs text-gray-400 mt-3">
-                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong>{{LAST_UPDATED}}</strong></span>
+                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong>עודכן לאחרונה: <span dir="ltr">28.07.2026 | 05:00</span></strong></span>
             </div>
         </div>
     </header>
@@ -85,13 +85,13 @@
                     
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS}}</strong> שקל לדולר אחד.</p>
+                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>3.05</strong> שקל לדולר אחד.</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> {{USD_ILS_MEANING}}</p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> דולר לחבית על רקע אירועים גיאופוליטיים ומאקרו-כלכליים.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>81.92</strong> דולר לחבית על רקע אירועים גיאופוליטיים ומאקרו-כלכליים.</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> {{OIL_MEANING}}</p>
                     </div>
 
@@ -100,13 +100,13 @@
                         <h3 class="text-base font-bold text-cyan-400 flex items-center gap-1.5">
                             זהב (Gold) 🪙
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> דולר לאונקיה.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>4046.4</strong> דולר לאונקיה.</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> {{GOLD_MEANING}}</p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">ביטקוין (Bitcoin) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> דולר.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>63,162.28</strong> דולר.</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> {{BTC_MEANING}}</p>
                     </div>
 
@@ -121,10 +121,10 @@
                 </h3>
                 <div class="text-sm text-gray-300 space-y-3">
                     <p class="flex items-start gap-2">
-                        <span>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_MACRO_NEWS}}</span>
+                        <span>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> נתוני המאקרו ומדיניות הריבית ממשיכים להוות את מנוע הניווט הראשי בוול סטריט.</span>
                     </p>
                     <p class="flex items-start gap-2">
-                        <span>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_MACRO_NEWS}}</span>
+                        <span>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> השוק המקומי מגיב להתפתחויות הביטחוניות ולנתונים הכלכליים המשקפיים.</span>
                     </p>
                 </div>
             </div>
@@ -201,43 +201,43 @@
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות, נתונים והרציונל המלא 💼</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
-                <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>) | 3 מניות | קנייה: <strong>$184.90</strong> | נוכחי: <strong>{{PORTFOLIO_NVDA_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_NVDA_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_NVDA_TARGET}}</strong> | <strong>{{PORTFOLIO_NVDA_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_NVDA_NEWS}}</span></p>
+                <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>) | 3 מניות | קנייה: <strong>$184.90</strong> | נוכחי: <strong>196.51</strong> | טרום פתיחה: <strong>{{PORTFOLIO_NVDA_PRE}}</strong> | יעד: <strong>220.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_NVDA_NEWS}}</span></p>
 
-                <p>💻 <strong>Advanced Micro Devices</strong> (סמל: <strong>AMD</strong>) | 20 מניות | קנייה: <strong>$211.34</strong> | נוכחי: <strong>{{PORTFOLIO_AMD_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_AMD_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_AMD_TARGET}}</strong> | <strong>{{PORTFOLIO_AMD_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_AMD_NEWS}}</span></p>
+                <p>💻 <strong>Advanced Micro Devices</strong> (סמל: <strong>AMD</strong>) | 20 מניות | קנייה: <strong>$211.34</strong> | נוכחי: <strong>494.95</strong> | טרום פתיחה: <strong>{{PORTFOLIO_AMD_PRE}}</strong> | יעד: <strong>250.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_AMD_NEWS}}</span></p>
 
-                <p>🧠 <strong>Micron Technology</strong> (סמל: <strong>MU</strong>) | 6 מניות | קנייה: <strong>$316.32</strong> | נוכחי: <strong>{{PORTFOLIO_MU_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_MU_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_MU_TARGET}}</strong> | <strong>{{PORTFOLIO_MU_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_MU_NEWS}}</span></p>
+                <p>🧠 <strong>Micron Technology</strong> (סמל: <strong>MU</strong>) | 6 מניות | קנייה: <strong>$316.32</strong> | נוכחי: <strong>900.2</strong> | טרום פתיחה: <strong>{{PORTFOLIO_MU_PRE}}</strong> | יעד: <strong>350.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_MU_NEWS}}</span></p>
 
-                <p>💾 <strong>SanDisk</strong> (סמל: <strong>SNDK</strong>) | 4 מניות | קנייה: <strong>$630.26</strong> | נוכחי: <strong>{{PORTFOLIO_SNDK_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_SNDK_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_SNDK_TARGET}}</strong> | <strong>{{PORTFOLIO_SNDK_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_SNDK_NEWS}}</span></p>
+                <p>💾 <strong>SanDisk</strong> (סמל: <strong>SNDK</strong>) | 4 מניות | קנייה: <strong>$630.26</strong> | נוכחי: <strong>1278.23</strong> | טרום פתיחה: <strong>{{PORTFOLIO_SNDK_PRE}}</strong> | יעד: <strong>700.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_SNDK_NEWS}}</span></p>
 
-                <p>💽 <strong>Western Digital</strong> (סמל: <strong>WDC</strong>) | 6 מניות | קנייה: <strong>$223.23</strong> | נוכחי: <strong>{{PORTFOLIO_WDC_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_WDC_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_WDC_TARGET}}</strong> | <strong>{{PORTFOLIO_WDC_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_WDC_NEWS}}</span></p>
+                <p>💽 <strong>Western Digital</strong> (סמל: <strong>WDC</strong>) | 6 מניות | קנייה: <strong>$223.23</strong> | נוכחי: <strong>497.92</strong> | טרום פתיחה: <strong>{{PORTFOLIO_WDC_PRE}}</strong> | יעד: <strong>260.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_WDC_NEWS}}</span></p>
 
-                <p>⚡ <strong>Intel</strong> (סמל: <strong>INTC</strong>) | 20 מניות | קנייה: <strong>$43.05</strong> | נוכחי: <strong>{{PORTFOLIO_INTC_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_INTC_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_INTC_TARGET}}</strong> | <strong>{{PORTFOLIO_INTC_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_INTC_NEWS}}</span></p>
+                <p>⚡ <strong>Intel</strong> (סמל: <strong>INTC</strong>) | 20 מניות | קנייה: <strong>$43.05</strong> | נוכחי: <strong>91.67</strong> | טרום פתיחה: <strong>{{PORTFOLIO_INTC_PRE}}</strong> | יעד: <strong>55.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_INTC_NEWS}}</span></p>
 
-                <p>🔌 <strong>Silicon Motion</strong> (סמל: <strong>SIMO</strong>) | 30 מניות | קנייה: <strong>$131.32</strong> | נוכחי: <strong>{{PORTFOLIO_SIMO_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_SIMO_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_SIMO_TARGET}}</strong> | <strong>{{PORTFOLIO_SIMO_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_SIMO_NEWS}}</span></p>
+                <p>🔌 <strong>Silicon Motion</strong> (סמל: <strong>SIMO</strong>) | 30 מניות | קנייה: <strong>$131.32</strong> | נוכחי: <strong>244.45</strong> | טרום פתיחה: <strong>{{PORTFOLIO_SIMO_PRE}}</strong> | יעד: <strong>160.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_SIMO_NEWS}}</span></p>
 
-                <p>🌿 <strong>Iris Energy</strong> (סמל: <strong>IREN</strong>) | 54 מניות | קנייה: <strong>$52.75</strong> | נוכחי: <strong>{{PORTFOLIO_IREN_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_IREN_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_IREN_TARGET}}</strong> | <strong>{{PORTFOLIO_IREN_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_IREN_NEWS}}</span></p>
+                <p>🌿 <strong>Iris Energy</strong> (סמל: <strong>IREN</strong>) | 54 מניות | קנייה: <strong>$52.75</strong> | נוכחי: <strong>36.29</strong> | טרום פתיחה: <strong>{{PORTFOLIO_IREN_PRE}}</strong> | יעד: <strong>70.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_IREN_NEWS}}</span></p>
 
-                <p>⛏️ <strong>Cipher Mining</strong> (סמל: <strong>CIFR</strong>) | 28 מניות | קנייה: <strong>$17.50</strong> | נוכחי: <strong>{{PORTFOLIO_CIFR_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_CIFR_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_CIFR_TARGET}}</strong> | <strong>{{PORTFOLIO_CIFR_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_CIFR_NEWS}}</span></p>
+                <p>⛏️ <strong>Cipher Mining</strong> (סמל: <strong>CIFR</strong>) | 28 מניות | קנייה: <strong>$17.50</strong> | נוכחי: <strong>21.65</strong> | טרום פתיחה: <strong>{{PORTFOLIO_CIFR_PRE}}</strong> | יעד: <strong>25.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_CIFR_NEWS}}</span></p>
 
-                <p>👥 <strong>Meta Platforms</strong> (סמל: <strong>META</strong>) | 2 מניות | קנייה: <strong>$661.00</strong> | נוכחי: <strong>{{PORTFOLIO_META_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_META_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_META_TARGET}}</strong> | <strong>{{PORTFOLIO_META_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_META_NEWS}}</span></p>
+                <p>👥 <strong>Meta Platforms</strong> (סמל: <strong>META</strong>) | 2 מניות | קנייה: <strong>$661.00</strong> | נוכחי: <strong>593.87</strong> | טרום פתיחה: <strong>{{PORTFOLIO_META_PRE}}</strong> | יעד: <strong>750.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_META_NEWS}}</span></p>
 
-                <p>📦 <strong>Amazon</strong> (סמל: <strong>AMZN</strong>) | 6 מניות | קנייה: <strong>$229.29</strong> | נוכחי: <strong>{{PORTFOLIO_AMZN_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_AMZN_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_AMZN_TARGET}}</strong> | <strong>{{PORTFOLIO_AMZN_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_AMZN_NEWS}}</span></p>
+                <p>📦 <strong>Amazon</strong> (סמל: <strong>AMZN</strong>) | 6 מניות | קנייה: <strong>$229.29</strong> | נוכחי: <strong>231.39</strong> | טרום פתיחה: <strong>{{PORTFOLIO_AMZN_PRE}}</strong> | יעד: <strong>270.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_AMZN_NEWS}}</span></p>
 
-                <p>🌐 <strong>Alphabet / Google</strong> (סמל: <strong>GOOG</strong>) | 4 מניות | קנייה: <strong>$317.95</strong> | נוכחי: <strong>{{PORTFOLIO_GOOG_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_GOOG_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_GOOG_TARGET}}</strong> | <strong>{{PORTFOLIO_GOOG_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_GOOG_NEWS}}</span></p>
+                <p>🌐 <strong>Alphabet / Google</strong> (סמל: <strong>GOOG</strong>) | 4 מניות | קנייה: <strong>$317.95</strong> | נוכחי: <strong>326.57</strong> | טרום פתיחה: <strong>{{PORTFOLIO_GOOG_PRE}}</strong> | יעד: <strong>360.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_GOOG_NEWS}}</span></p>
 
-                <p>🎮 <strong>Take-Two Interactive</strong> (סמל: <strong>TTWO</strong>) | 5 מניות | קנייה: <strong>$235.50</strong> | נוכחי: <strong>{{PORTFOLIO_TTWO_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_TTWO_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_TTWO_TARGET}}</strong> | <strong>{{PORTFOLIO_TTWO_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_TTWO_NEWS}}</span></p>
+                <p>🎮 <strong>Take-Two Interactive</strong> (סמל: <strong>TTWO</strong>) | 5 מניות | קנייה: <strong>$235.50</strong> | נוכחי: <strong>243.95</strong> | טרום פתיחה: <strong>{{PORTFOLIO_TTWO_PRE}}</strong> | יעד: <strong>280.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_TTWO_NEWS}}</span></p>
 
-                <p>🛒 <strong>Walmart</strong> (סמל: <strong>WMT</strong>) | 16 מניות | קנייה: <strong>$119.45</strong> | נוכחי: <strong>{{PORTFOLIO_WMT_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_WMT_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_WMT_TARGET}}</strong> | <strong>{{PORTFOLIO_WMT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_WMT_NEWS}}</span></p>
+                <p>🛒 <strong>Walmart</strong> (סמל: <strong>WMT</strong>) | 16 מניות | קנייה: <strong>$119.45</strong> | נוכחי: <strong>111.74</strong> | טרום פתיחה: <strong>{{PORTFOLIO_WMT_PRE}}</strong> | יעד: <strong>140.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_WMT_NEWS}}</span></p>
 
-                <p>🎬 <strong>Netflix</strong> (סמל: <strong>NFLX</strong>) | 14 מניות | קנייה: <strong>$94.03</strong> | נוכחי: <strong>{{PORTFOLIO_NFLX_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_NFLX_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_NFLX_TARGET}}</strong> | <strong>{{PORTFOLIO_NFLX_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_NFLX_NEWS}}</span></p>
+                <p>🎬 <strong>Netflix</strong> (סמל: <strong>NFLX</strong>) | 14 מניות | קנייה: <strong>$94.03</strong> | נוכחי: <strong>70.4</strong> | טרום פתיחה: <strong>{{PORTFOLIO_NFLX_PRE}}</strong> | יעד: <strong>120.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_NFLX_NEWS}}</span></p>
 
-                <p>💳 <strong>Mastercard</strong> (סמל: <strong>MA</strong>) | 4 מניות | קנייה: <strong>$503.99</strong> | נוכחי: <strong>{{PORTFOLIO_MA_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_MA_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_MA_TARGET}}</strong> | <strong>{{PORTFOLIO_MA_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_MA_NEWS}}</span></p>
+                <p>💳 <strong>Mastercard</strong> (סמל: <strong>MA</strong>) | 4 מניות | קנייה: <strong>$503.99</strong> | נוכחי: <strong>551.71</strong> | טרום פתיחה: <strong>{{PORTFOLIO_MA_PRE}}</strong> | יעד: <strong>580.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_MA_NEWS}}</span></p>
 
-                <p>🪙 <strong>iShares Bitcoin Trust</strong> (סמל: <strong>IBIT</strong>) | 14 מניות | קנייה: <strong>$60.48</strong> | נוכחי: <strong>{{PORTFOLIO_IBIT_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_IBIT_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_IBIT_TARGET}}</strong> | <strong>{{PORTFOLIO_IBIT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_IBIT_NEWS}}</span></p>
+                <p>🪙 <strong>iShares Bitcoin Trust</strong> (סמל: <strong>IBIT</strong>) | 14 מניות | קנייה: <strong>$60.48</strong> | נוכחי: <strong>36.77</strong> | טרום פתיחה: <strong>{{PORTFOLIO_IBIT_PRE}}</strong> | יעד: <strong>75.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_IBIT_NEWS}}</span></p>
 
-                <p>🔋 <strong>Greenland Technologies</strong> (סמל: <strong>GTEC</strong>) | 260 מניות | קנייה: <strong>$1.27</strong> | נוכחי: <strong>{{PORTFOLIO_GTEC_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_GTEC_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_GTEC_TARGET}}</strong> | <strong>{{PORTFOLIO_GTEC_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_GTEC_NEWS}}</span></p>
+                <p>🔋 <strong>Greenland Technologies</strong> (סמל: <strong>GTEC</strong>) | 260 מניות | קנייה: <strong>$1.27</strong> | נוכחי: <strong>0.53</strong> | טרום פתיחה: <strong>{{PORTFOLIO_GTEC_PRE}}</strong> | יעד: <strong>2.0</strong> | <strong>הפסד</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_GTEC_NEWS}}</span></p>
 
-                <p>📈 <strong>ProShares UltraPro QQQ</strong> (סמל: <strong>TQQQ</strong>) | 28 מניות | קנייה: <strong>$56.53</strong> | נוכחי: <strong>{{PORTFOLIO_TQQQ_PRICE}}</strong> | טרום פתיחה: <strong>{{PORTFOLIO_TQQQ_PRE}}</strong> | יעד: <strong>{{PORTFOLIO_TQQQ_TARGET}}</strong> | <strong>{{PORTFOLIO_TQQQ_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_TQQQ_NEWS}}</span></p>
+                <p>📈 <strong>ProShares UltraPro QQQ</strong> (סמל: <strong>TQQQ</strong>) | 28 מניות | קנייה: <strong>$56.53</strong> | נוכחי: <strong>63.4</strong> | טרום פתיחה: <strong>{{PORTFOLIO_TQQQ_PRE}}</strong> | יעד: <strong>75.0</strong> | <strong>רווח</strong><br><span class="text-gray-400">חדשות ורציונל: {{PORTFOLIO_TQQQ_NEWS}}</span></p>
             </div>
         </div>
 
