@@ -147,7 +147,6 @@ def generate_ai_insights(market_data):
         print("No GEMINI_API_KEY found. Skipping AI generation.")
         return {}
 
-    # פרומפט מקיף המבקש מילון JSON מלא לכלל חלקי המערכת
     prompt = f"""
     אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:
     {json.dumps(market_data, ensure_ascii=False)}
@@ -182,10 +181,9 @@ def generate_ai_insights(market_data):
     - ACTION_RECOMMENDATIONS_TEXT
 
     וכמו כן, עבור כל אחד מהסימולים הבאים ({', '.join(all_strategy_tickers)}), הוסף שלושה מפתחות מדויקים:
-    1. [TICKER]_RATIONALE (הסבר אנליטי עדכני על מצב המניה)
-    2. [TICKER]_SWING_TEXT (תחזית או מומנטום קצר טווח)
-    3. PORTFOLIO_[TICKER]_NEWS (חדשות ועדכון ספציפי עבור תיק ההשקעות האישי)
-    (החלף את [TICKER] בשם הסימול בדיוק, למשל: NVDA_RATIONALE, NVDA_SWING_TEXT, PORTFOLIO_NVDA_NEWS).
+    1. [TICKER]_RATIONALE
+    2. [TICKER]_SWING_TEXT
+    3. PORTFOLIO_[TICKER]_NEWS
     """
 
     payload = {
@@ -203,6 +201,17 @@ def generate_ai_insights(market_data):
                 text_response = (
                     res_data["candidates"][0]["content"]["parts"][0]["text"]
                 )
+                
+                # ניקוי מעטפות Markdown אם התקבלו בטעות
+                text_response = text_response.strip()
+                if text_response.startswith("```json"):
+                    text_response = text_response[7:]
+                if text_response.startswith("```"):
+                    text_response = text_response[3:]
+                if text_response.endswith("```"):
+                    text_response = text_response[:-3]
+                text_response = text_response.strip()
+
                 print(
                     f"Successfully generated full dynamic AI insights using API Key #{i}"
                 )
@@ -210,10 +219,7 @@ def generate_ai_insights(market_data):
 
             error_code = res_data.get("error", {}).get("code")
             if error_code == 429:
-                print(
-                    f"API Key #{i} exceeded quota (429). Switching to next"
-                    " key..."
-                )
+                print(f"API Key #{i} exceeded quota (429). Switching to next key...")
                 continue
             else:
                 print(f"API Key #{i} Error Response: {res_data}")
@@ -244,123 +250,132 @@ if should_update:
         vix = market_data.get("^VIX", {})
         dxy = market_data.get("USDILS=X", {})
 
-        # בסיס החלפות תבניות כלליות
+        # מיפוי כפול (Aliases) כדי לתפוס גם SNP וגם SP500 בכל וריאציה אפשרית בתבנית ה-HTML
+        sp500_price = format_num(sp500.get("price", 0))
+        sp500_change = f"{sp500.get('change', 0)}%"
+        sp500_meaning = ai_insights.get("SNP_500_MEANING", "המדד משקף את מצב השוק הרחב.")
+
+        nasdaq_price = format_num(nasdaq.get("price", 0))
+        nasdaq_change = f"{nasdaq.get('change', 0)}%"
+        nasdaq_meaning = ai_insights.get("NASDAQ_MEANING", "משקף את סקטור הטכנולוגיה.")
+
+        dji_price = format_num(dji.get("price", 0))
+        dji_change = f"{dji.get('change', 0)}%"
+        dji_meaning = ai_insights.get("DJI_MEANING", "משקף חברות תעשייתיות מסורתיות.")
+
+        vix_price = format_num(vix.get("price", 0))
+        vix_change = f"{vix.get('change', 0)}%"
+        vix_meaning = ai_insights.get("VIX_MEANING", "רמת התנודתיות והחשש בשוק.")
+
+        dxy_price = format_num(dxy.get("price", 0))
+        dxy_change = f"{dxy.get('change', 0)}%"
+        dxy_meaning = ai_insights.get("DXY_MEANING", "חוזק הדולר מול סל המטבעות.")
+
+        usd_ils_price = format_num(market_data.get("USDILS=X", {}).get("price", 3.65))
+        usd_ils_change = f"{market_data.get('USDILS=X', {}).get('change', 0)}%"
+        usd_ils_meaning = ai_insights.get("USD_ILS_MEANING", "השפעה על תיק השקעות.")
+
+        oil_price = format_num(market_data.get("CL=F", {}).get("price", 75.0))
+        oil_change = f"{market_data.get('CL=F', {}).get('change', 0)}%"
+        oil_meaning = ai_insights.get("OIL_MEANING", "השפעה על עלויות אנרגיה.")
+
+        gold_price = format_num(market_data.get("GC=F", {}).get("price", 2350.0))
+        gold_change = f"{market_data.get('GC=F', {}).get('change', 0)}%"
+        gold_meaning = ai_insights.get("GOLD_MEANING", "גידור מפני אי-יציבות.")
+
+        btc_price = format_num(market_data.get("BTC-USD", {}).get("price", 65000.0))
+        btc_change = f"{market_data.get('BTC-USD', {}).get('change', 0)}%"
+        btc_meaning = ai_insights.get("BTC_MEANING", "אינדיקטור לסנטימנט סיכון.")
+
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
-            "SNP_500_LEVEL": format_num(sp500.get("price", 0)),
-            "SNP_500_CHANGE": f"{sp500.get('change', 0)}%",
-            "SNP_500_MEANING": ai_insights.get(
-                "SNP_500_MEANING", "המדד משקף את מצב השוק הרחב."
-            ),
-            "NASDAQ_LEVEL": format_num(nasdaq.get("price", 0)),
-            "NASDAQ_CHANGE": f"{nasdaq.get('change', 0)}%",
-            "NASDAQ_MEANING": ai_insights.get(
-                "NASDAQ_MEANING", "משקף את סקטור הטכנולוגיה."
-            ),
-            "DJI_LEVEL": format_num(dji.get("price", 0)),
-            "DJI_CHANGE": f"{dji.get('change', 0)}%",
-            "DJI_MEANING": ai_insights.get(
-                "DJI_MEANING", "משקף חברות תעשייתיות מסורתיות."
-            ),
-            "VIX_LEVEL": format_num(vix.get("price", 0)),
-            "VIX_CHANGE": f"{vix.get('change', 0)}%",
-            "VIX_MEANING": ai_insights.get(
-                "VIX_MEANING", "רמת התנודתיות והחשש בשוק."
-            ),
-            "DXY_LEVEL": format_num(dxy.get("price", 0)),
-            "DXY_CHANGE": f"{dxy.get('change', 0)}%",
-            "DXY_MEANING": ai_insights.get(
-                "DXY_MEANING", "חוזק הדולר מול סל המטבעות."
-            ),
-            "USD_ILS": format_num(
-                market_data.get("USDILS=X", {}).get("price", 3.65)
-            ),
-            "USD_ILS_MEANING": ai_insights.get(
-                "USD_ILS_MEANING", "השפעה על תיק השקעות."
-            ),
-            "OIL_PRICE": format_num(
-                market_data.get("CL=F", {}).get("price", 75.0)
-            ),
-            "OIL_MEANING": ai_insights.get(
-                "OIL_MEANING", "השפעה על עלויות אנרגיה."
-            ),
-            "GOLD_PRICE": format_num(
-                market_data.get("GC=F", {}).get("price", 2350.0)
-            ),
-            "GOLD_MEANING": ai_insights.get(
-                "GOLD_MEANING", "גידור מפני אי-יציבות."
-            ),
-            "BTC_PRICE": format_num(
-                market_data.get("BTC-USD", {}).get("price", 65000.0)
-            ),
-            "BTC_MEANING": ai_insights.get(
-                "BTC_MEANING", "אינדיקטור לסנטימנט סיכון."
-            ),
+            
+            # S&P 500 Aliases
+            "SNP_500_LEVEL": sp500_price,
+            "SP500_PRICE": sp500_price,
+            "SP500_LEVEL": sp500_price,
+            "SNP_500_CHANGE": sp500_change,
+            "SP500_CHANGE": sp500_change,
+            "SNP_500_MEANING": sp500_meaning,
+            "SP500_MEANING": sp500_meaning,
+
+            # NASDAQ Aliases
+            "NASDAQ_LEVEL": nasdaq_price,
+            "NASDAQ_PRICE": nasdaq_price,
+            "NASDAQ_CHANGE": nasdaq_change,
+            "NASDAQ_MEANING": nasdaq_meaning,
+
+            # DJI Aliases
+            "DJI_LEVEL": dji_price,
+            "DJI_PRICE": dji_price,
+            "DJI_CHANGE": dji_change,
+            "DJI_MEANING": dji_meaning,
+
+            # VIX Aliases
+            "VIX_LEVEL": vix_price,
+            "VIX_PRICE": vix_price,
+            "VIX_CHANGE": vix_change,
+            "VIX_MEANING": vix_meaning,
+
+            # DXY Aliases
+            "DXY_LEVEL": dxy_price,
+            "DXY_PRICE": dxy_price,
+            "DXY_CHANGE": dxy_change,
+            "DXY_MEANING": dxy_meaning,
+
+            # USD/ILS Aliases
+            "USD_ILS": usd_ils_price,
+            "USD_ILS_PRICE": usd_ils_price,
+            "USD_ILS_CHANGE": usd_ils_change,
+            "USD_ILS_MEANING": usd_ils_meaning,
+
+            # Commodities & Crypto
+            "OIL_PRICE": oil_price,
+            "OIL_CHANGE": oil_change,
+            "OIL_MEANING": oil_meaning,
+
+            "GOLD_PRICE": gold_price,
+            "GOLD_CHANGE": gold_change,
+            "GOLD_MEANING": gold_meaning,
+
+            "BTC_PRICE": btc_price,
+            "BTC_CHANGE": btc_change,
+            "BTC_MEANING": btc_meaning,
+
+            # Macro & Sectors
             "US_MARKET_MACRO_NEWS": f"🇺🇸 השפעות על השוק האמריקאי: {ai_insights.get('US_MARKET_MACRO_NEWS', 'נתוני המאקרו ממשיכים להוות מנוע ניווט.')}",
             "IL_MARKET_MACRO_NEWS": f"🇮🇱 השפעות על השוק הישראלי: {ai_insights.get('IL_MARKET_MACRO_NEWS', 'השוק המקומי מגיב להתפתחויות.')}",
-            "SECTOR_CHIPS_TEXT": ai_insights.get(
-                "SECTOR_CHIPS_TEXT", "ביקושים חזקים לשבבים."
-            ),
-            "SECTOR_CLOUD_TEXT": ai_insights.get(
-                "SECTOR_CLOUD_TEXT", "צמיחה במרכזי נתונים."
-            ),
-            "SECTOR_CRYPTO_TEXT": ai_insights.get(
-                "SECTOR_CRYPTO_TEXT", "תנודתיות בקריפטו."
-            ),
-            "SECTOR_CHIPS_VAL": format_num(
-                ai_insights.get("SECTOR_CHIPS_VAL", 2.0)
-            ),
-            "SECTOR_CLOUD_VAL": format_num(
-                ai_insights.get("SECTOR_CLOUD_VAL", 1.5)
-            ),
-            "SECTOR_CRYPTO_VAL": format_num(
-                ai_insights.get("SECTOR_CRYPTO_VAL", 0.5)
-            ),
-            "CATALYST_EARNINGS": ai_insights.get(
-                "CATALYST_EARNINGS", "מעקב אחר דוחות."
-            ),
-            "CATALYST_MONETARY": ai_insights.get(
-                "CATALYST_MONETARY", "החלטות ריבית ובנקים מרכזיים."
-            ),
-            "CATALYST_HARDWARE": ai_insights.get(
-                "CATALYST_HARDWARE", "השקות טכנולוגיות."
-            ),
-            "COMMUNITY_SENTIMENT_TEXT": ai_insights.get(
-                "COMMUNITY_SENTIMENT_TEXT", "אופטימיות זהירה בשווקים."
-            ),
-            "ANALYST_FORECAST_1": ai_insights.get(
-                "ANALYST_FORECAST_1", "המשך תנודתיות."
-            ),
-            "ANALYST_FORECAST_2": ai_insights.get(
-                "ANALYST_FORECAST_2", "התמקדות בחברות איכותיות."
-            ),
-            "RISK_MANAGEMENT_TEXT": ai_insights.get(
-                "RISK_MANAGEMENT_TEXT", "ניהול סיכונים באמצעות סטופ-לוס."
-            ),
-            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
-                "ACTION_RECOMMENDATIONS_TEXT", "בחינה מדודה של פוזיציות."
-            ),
+            "SECTOR_CHIPS_TEXT": ai_insights.get("SECTOR_CHIPS_TEXT", "ביקושים חזקים לשבבים."),
+            "SECTOR_CLOUD_TEXT": ai_insights.get("SECTOR_CLOUD_TEXT", "צמיחה במרכזי נתונים."),
+            "SECTOR_CRYPTO_TEXT": ai_insights.get("SECTOR_CRYPTO_TEXT", "תנודתיות בקריפטו."),
+            "SECTOR_CHIPS_VAL": format_num(ai_insights.get("SECTOR_CHIPS_VAL", 2.0)),
+            "SECTOR_CLOUD_VAL": format_num(ai_insights.get("SECTOR_CLOUD_VAL", 1.5)),
+            "SECTOR_CRYPTO_VAL": format_num(ai_insights.get("SECTOR_CRYPTO_VAL", 0.5)),
+            "CATALYST_EARNINGS": ai_insights.get("CATALYST_EARNINGS", "מעקב אחר דוחות."),
+            "CATALYST_MONETARY": ai_insights.get("CATALYST_MONETARY", "החלטות ריבית ובנקים מרכזיים."),
+            "CATALYST_HARDWARE": ai_insights.get("CATALYST_HARDWARE", "השקות טכנולוגיות."),
+            "COMMUNITY_SENTIMENT_TEXT": ai_insights.get("COMMUNITY_SENTIMENT_TEXT", "אופטימיות זהירה בשווקים."),
+            "ANALYST_FORECAST_1": ai_insights.get("ANALYST_FORECAST_1", "המשך תנודתיות."),
+            "ANALYST_FORECAST_2": ai_insights.get("ANALYST_FORECAST_2", "התמקדות בחברות איכותיות."),
+            "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", "ניהול סיכונים באמצעות סטופ-לוס."),
+            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "בחינה מדודה של פוזיציות."),
         }
 
-        # מילוי דינמי מלא לכל מניות הליבה והסווינג בהתבסס על ה-AI
+        # מילוי דינמי מלא לכל מניות הליבה והסווינג
         for ticker in all_strategy_tickers:
             p_data = market_data.get(ticker, {})
-            replacements[f"{ticker}_PRICE"] = format_num(
-                p_data.get("price", 0.0)
-            )
-            replacements[f"{ticker}_PRE"] = format_num(p_data.get("price", 0.0))
-            replacements[f"{ticker}_PCT"] = f"{p_data.get('change', 0.0)}%"
-            replacements[f"{ticker}_TARGET"] = format_num(
-                portfolio_buys.get(ticker, {}).get("target", 0.0)
-            )
-            replacements[f"{ticker}_RATIONALE"] = ai_insights.get(
-                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
-            )
-            replacements[f"{ticker}_SWING_TEXT"] = ai_insights.get(
-                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן..."
-            )
+            price_val = format_num(p_data.get("price", 0.0))
+            pct_val = f"{p_data.get('change', 0.0)}%"
+            target_val = format_num(portfolio_buys.get(ticker, {}).get("target", 0.0))
 
-        # מילוי דינמי לתיק האישי בסעיף 5 (כולל מחיר קנייה וכמות מניות שנשארים קבועים לפי בקשתך)
+            replacements[f"{ticker}_PRICE"] = price_val
+            replacements[f"{ticker}_PRE"] = price_val
+            replacements[f"{ticker}_PCT"] = pct_val
+            replacements[f"{ticker}_TARGET"] = target_val
+            replacements[f"{ticker}_RATIONALE"] = ai_insights.get(f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע...")
+            replacements[f"{ticker}_SWING_TEXT"] = ai_insights.get(f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן...")
+
+        # מילוי דינמי לתיק האישי בסעיף 5
         for ticker, info in portfolio_buys.items():
             curr_p = market_data.get(ticker, {}).get("price", info["buy"])
             ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
@@ -368,16 +383,9 @@ if should_update:
 
             replacements[f"PORTFOLIO_{ticker}_PRICE"] = format_num(curr_p)
             replacements[f"PORTFOLIO_{ticker}_PRE"] = format_num(curr_p)
-            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(
-                info["target"]
-            )
-            replacements[f"PORTFOLIO_{ticker}_STATUS"] = (
-                f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
-            )
-            replacements[f"PORTFOLIO_{ticker}_NEWS"] = ai_insights.get(
-                f"PORTFOLIO_{ticker}_NEWS",
-                "עדכון פוזיציה שוטף מבוסס ביצועי שוק.",
-            )
+            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(info["target"])
+            replacements[f"PORTFOLIO_{ticker}_STATUS"] = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+            replacements[f"PORTFOLIO_{ticker}_NEWS"] = ai_insights.get(f"PORTFOLIO_{ticker}_NEWS", "עדכון פוזיציה שוטף מבוסס ביצועי שוק.")
 
         # קריאת התבנית וכתיבת הקובץ המעודכן
         with open("index.template.html", "r", encoding="utf-8-sig") as f:
@@ -393,41 +401,13 @@ if should_update:
         print("Successfully updated index.html with live AI injection data.")
 
         # ביצוע Git Commit ו-Push
-        subprocess.run(
-            ["git", "config", "--global", "user.name", "github-actions[bot]"],
-            check=True,
-        )
-        subprocess.run(
-            [
-                "git",
-                "config",
-                "--global",
-                "user.email",
-                "github-actions[bot]@users.noreply.github.com",
-            ],
-            check=True,
-        )
+        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
+        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         subprocess.run(["git", "add", "index.html"], check=True)
 
-        status = subprocess.run(
-            ["git", "status", "--porcelain"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
+        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if "index.html" in status.stdout:
-            subprocess.run(
-                [
-                    "git",
-                    "commit",
-                    "-m",
-                    (
-                        "Auto-update full dynamic AI injection report for"
-                        f" {day_name} at {time_str}"
-                    ),
-                ],
-                check=True,
-            )
+            subprocess.run(["git", "commit", "-m", f"Auto-update full dynamic AI injection report for {day_name} at {time_str}"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Changes committed and pushed successfully.")
         else:
