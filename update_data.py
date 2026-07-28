@@ -203,27 +203,11 @@ def generate_ai_insights(market_data):
                     text_response = text_response[:-3]
                 text_response = text_response.strip()
 
-                print(
-                    f"Successfully generated full dynamic AI insights using API Key #{i}"
-                )
                 return json.loads(text_response)
-
-            error_code = res_data.get("error", {}).get("code")
-            if error_code == 429:
-                print(
-                    f"API Key #{i} exceeded quota (429). Switching to next"
-                    " key..."
-                )
-                continue
-            else:
-                print(f"API Key #{i} Error Response: {res_data}")
-                continue
-
+            continue
         except Exception as e:
-            print(f"Error calling Gemini API with key #{i}: {e}")
             continue
 
-    print("All API keys failed or exceeded quota.")
     return {}
 
 
@@ -246,37 +230,28 @@ if should_update:
 
         sp500_price = format_num(sp500.get("price", 0))
         sp500_change = f"{sp500.get('change', 0)}%"
-
         nasdaq_price = format_num(nasdaq.get("price", 0))
         nasdaq_change = f"{nasdaq.get('change', 0)}%"
-
         dji_price = format_num(dji.get("price", 0))
         dji_change = f"{dji.get('change', 0)}%"
-
         vix_price = format_num(vix.get("price", 0))
         vix_change = f"{vix.get('change', 0)}%"
-
         dxy_price = format_num(dxy.get("price", 0))
         dxy_change = f"{dxy.get('change', 0)}%"
 
-        oil_ticker = "CL=F"
-        gold_ticker = "GC=F"
-        btc_ticker = "BTC-USD"
-        fx_ticker = "USDILS=X"
-
-        oil_data = market_data.get(oil_ticker, {})
+        oil_data = market_data.get("CL=F", {})
         oil_price = format_num(oil_data.get("price", 75.0))
         oil_change = f"{oil_data.get('change', 0)}%"
 
-        gold_data = market_data.get(gold_ticker, {})
+        gold_data = market_data.get("GC=F", {})
         gold_price = format_num(gold_data.get("price", 2350.0))
         gold_change = f"{gold_data.get('change', 0)}%"
 
-        btc_data = market_data.get(btc_ticker, {})
+        btc_data = market_data.get("BTC-USD", {})
         btc_price = format_num(btc_data.get("price", 65000.0))
         btc_change = f"{btc_data.get('change', 0)}%"
 
-        fx_data = market_data.get(fx_ticker, {})
+        fx_data = market_data.get("USDILS=X", {})
         usd_ils_price = format_num(fx_data.get("price", 3.65))
         usd_ils_change = f"{fx_data.get('change', 0)}%"
 
@@ -444,7 +419,9 @@ if should_update:
         content = content.replace("IL:", "🇮🇱")
 
         for ticker in all_strategy_tickers:
-            bad_link_pattern = "קישור למקור: " + ticker + "/{{" + ticker + "_NEWS_LINK}}"
+            bad_link_pattern = (
+                "קישור למקור: " + ticker + "/{{" + ticker + "_NEWS_LINK}}"
+            )
             good_link_html = (
                 'קישור למקור: <a href="{{'
                 + ticker
@@ -455,12 +432,7 @@ if should_update:
             content = content.replace(bad_link_pattern, good_link_html)
 
             double_bad_pattern = (
-                ticker
-                + "/{{"
-                + ticker
-                + "_NEWS_LINK}}/{{"
-                + ticker
-                + "_NEWS_LINK}}"
+                ticker + "/{{" + ticker + "_NEWS_LINK}}/{{" + ticker + "_NEWS_LINK}}"
             )
             content = content.replace(
                 double_bad_pattern,
@@ -474,11 +446,10 @@ if should_update:
             )
 
         for key, val in replacements.items():
-            # שימוש בשרשור רגיל לחלוטין ללא f-string למניעת שגיאות סוגריים מסולסלים
             placeholder = "{{" + key + "}}"
             content = content.replace(placeholder, str(val))
 
-        # עיצוב מחדש של קבוצה א', קבוצה ב' וסעיף 5 לתצוגת בלוקים (שורה מתחת לשורה) לנוחות קריאה
+        # עיצוב מחדש של קבוצה א', קבוצה ב' וסעיף 5 לתצוגת בלוקים (שורה מתחת לשורה)
         for class_name in [
             "long-item",
             "swing-item",
