@@ -3,7 +3,7 @@ name: Update Stock Prices & Notifications
 on:
   schedule:
     - cron: '0,30 * * * *' # רץ אוטומטית כל חצי שעה
-  workflow_dispatch:      # מאפשר גם הפעלה ידנית מתי שתרצה
+  workflow_dispatch:       # מאפשר גם הפעלה ידנית מתי שתרצה
 
 permissions:
   contents: write
@@ -34,6 +34,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TRIGGER_EVENT: ${{ github.event_name }}
         run: |
           python update_data.py
