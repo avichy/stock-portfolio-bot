@@ -92,9 +92,7 @@ def fetch_all_data():
       hist = stock.history(period='2d')
       if not hist.empty:
         current_price = round(hist['Close'].iloc[-1], 2)
-        prev_close = (
-            hist['Close'].iloc[-2] if len(hist) > 1 else current_price
-        )
+        prev_close = hist['Close'].iloc[-2] if len(hist) > 1 else current_price
         change = round(((current_price - prev_close) / prev_close) * 100, 2)
         market_data[ticker] = {'price': current_price, 'change': change}
       else:
@@ -362,8 +360,8 @@ if should_update:
           f'PORTFOLIO_{ticker}_NEWS', 'ביצועים בהתאם לציפיות השוק.'
       )
 
-    # טעינת index.html והחלפת התבניות
-    with open('index.html', 'r', encoding='utf-8-sig') as f:
+    # טעינת התבנית והחלפת התבניות (קורא מ-index.template.html ושומר ל-index.html)
+    with open('index.template.html', 'r', encoding='utf-8-sig') as f:
       content = f.read()
 
     for key, val in replacements.items():
