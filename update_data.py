@@ -81,6 +81,8 @@ def fetch_all_data():
         )
         change = round(((current_price - prev_close) / prev_close) * 100, 2)
         market_data[ticker] = {'price': current_price, 'change': change}
+      else:
+        market_data[ticker] = {'price': 0.0, 'change': 0.0}
     except Exception as e:
       print(f'Error fetching {ticker}: {e}')
       market_data[ticker] = {'price': 0.0, 'change': 0.0}
@@ -112,7 +114,7 @@ portfolio_buys = {
 
 
 def generate_ai_insights(market_data):
-  """פונה ל-Gemini API להפקת ניתוח דינמי, חדשות ומניות מומלצות לשלב 4"""
+  """פונה ל-Gemini API להפקת ניתוח דינמי, חדשות והסברים לשלב 1-8"""
   api_key = os.environ.get('GEMINI_API_KEY')
   if not api_key:
     print('No GEMINI_API_KEY found. Skipping AI generation.')
@@ -125,23 +127,33 @@ def generate_ai_insights(market_data):
         {json.dumps(market_data, ensure_ascii=False)}
 
         החזר JSON בלבד עם המפתחות הבאים בעברית מקצועית:
-        - US_MARKET_MACRO_NEWS: תמצית חדשות מאקרו ארה"ב והפד (1-2 משפטים)
-        - IL_MARKET_MACRO_NEWS: תמצית חדשות שוק ההון בישראל (1-2 משפטים)
-        - EXECUTIVE_SUMMARY_1: דגש מרכזי 1 לניהול התיק
-        - EXECUTIVE_SUMMARY_2: דגש מרכזי 2 לניהול סיכונים
-        - EXECUTIVE_SUMMARY_3: הזדמנות טכנולוגית/סווינג
-        - NEWS_CHIPS_CLOUD: עדכון קצר על מניות שבבים וענן (NVDA, AMD, MU, GOOGL וכו')
-        - NEWS_ENERGY_CRYPTO: עדכון קצר על קריפטו, ביטקוין ונפט
-        - FEAR_GREED_INDEX: מספר הערכה למדד הפחד והחמדנות (למשל 65)
-        - FEAR_GREED_DESC: תיאור קצר של המדד (למשל: חמדנות מתונה)
-        - INSTITUTIONAL_SENTIMENT: תיאור פעילות גופים מוסדיים
-        - DYNAMIC_STOCKS: רשימה של 4 מניות סווינג/צמיחה מעניינות להיום בפורמט מערך:
-          [
-            {{"ticker": "NVDA", "name": "אנבידיה", "reason": "מובילת ה-AI בפריצה טכנית", "action": "סווינג / מעקב"}},
-            {{"ticker": "AMD", "name": "אי-אמ-די", "reason": "גידול בנתח שוק המעבדים", "action": "קנייה במדרגות"}},
-            {{"ticker": "PLTR", "name": "פלאנטיר", "reason": "מומנטום חיובי בחוזים ממשלתיים", "action": "מעקב צמוד"}},
-            {{"ticker": "AVGO", "name": "ברודקום", "reason": "ביקוש חזק לשבבי תקשורת וענן", "action": "איסוף שקט"}}
-          ]
+        - US_MARKET_MACRO_NEWS: תמצית חדשות מאקרו ארה"ב והפד
+        - IL_MARKET_MACRO_NEWS: תמצית חדשות שוק ההון בישראל
+        - SNP_500_MEANING: מה משמעות מצב מדד S&P 500 כרגע
+        - NASDAQ_MEANING: מה משמעות מצב מדד הנאסד"ק כרגע
+        - DJI_MEANING: מה משמעות מצב מדד דאו ג'ונס כרגע
+        - VIX_MEANING: מה משמעות מדד הפחד כרגע
+        - DXY_MEANING: מה משמעות מדד הדולר העולמי כרגע
+        - USD_ILS_MEANING: מה המשמעות של שער הדולר-שקל
+        - OIL_MEANING: משמעות מחירי הנפט
+        - GOLD_MEANING: משמעות מחירי הזהב
+        - BTC_MEANING: משמעות מחיר הביטקוין
+        - SECTOR_CHIPS_TEXT: ניתוח סקטור השבבים
+        - SECTOR_CLOUD_TEXT: ניתוח סקטור הענן וה-AI
+        - SECTOR_CRYPTO_TEXT: ניתוח סקטור הקריפטו
+        - SECTOR_CHIPS_VAL: ערך מספרי לגרף סקטור השבבים (למשל 2.5)
+        - SECTOR_CLOUD_VAL: ערך מספרי לגרף סקטור הענן (למשל 1.8)
+        - SECTOR_CRYPTO_VAL: ערך מספרי לגרף קריפטו (למשל -0.5)
+        - CATALYST_EARNINGS: דיווחי תוצאות לרבעון
+        - CATALYST_MONETARY: הודעות מדיניות מוניטרית
+        - CATALYST_HARDWARE: השקות חומרה
+        - מילוי לכל מניות הליבה באסטרטגיה (יעדים ורציונל כגון: NVDA_TARGET, NVDA_RATIONALE, AMD_TARGET, AMD_RATIONALE וכו' עבור כל 10 מניות הליבה ו-10 מניות הסווינג).
+        - COMMUNITY_SENTIMENT_TEXT: סנטימנט קהילות המסחר
+        - ANALYST_FORECAST_1: תחזית אנליסטים 1
+        - ANALYST_FORECAST_2: תחזית אנליסטים 2
+        - RISK_MANAGEMENT_TEXT: ניהול סיכונים
+        - ACTION_RECOMMENDATIONS_TEXT: המלצות פעולה
+        - חדשות מניות נבחרות (NVDA_NEWS_LINK, NVDA_NEWS_TITLE, NVDA_NEWS_CONTENT, NVDA_NEWS_IMPACT, AMD_NEWS_LINK, AMD_NEWS_TITLE, AMD_NEWS_CONTENT, AMD_NEWS_IMPACT)
         """
 
     payload = {
@@ -170,112 +182,160 @@ if should_update:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
 
-    # בניית כרטיסיות ה-HTML הדינמיות עבור שלב 4 (מניות AI)
-    dynamic_stocks = ai_insights.get('DYNAMIC_STOCKS', [])
-    dynamic_cards_html = ''
+    # שליפת נתוני מדדים
+    sp500 = market_data.get('^GSPC', {})
+    nasdaq = market_data.get('^IXIC', {})
+    dji = market_data.get('^DJI', {})
+    vix = market_data.get('^VIX', {})
+    dxy = market_data.get('USDILS=X', {})  # או מדד דולר מתאים
 
-    for stock_info in dynamic_stocks:
-      ticker = stock_info.get('ticker', '')
-      company_name = stock_info.get('name', ticker)
-      reason = stock_info.get('reason', '')
-      action = stock_info.get('action', 'מעקב')
-
-      # משיכת נתוני מחיר עדכניים עבור מניות ה-AI הדינמיות
-      price = 0.0
-      change = 0.0
-      try:
-        yf_stock = yf.Ticker(ticker)
-        hist = yf_stock.history(period='2d')
-        if not hist.empty:
-          price = round(hist['Close'].iloc[-1], 2)
-          prev_close = hist['Close'].iloc[-2] if len(hist) > 1 else price
-          change = round(((price - prev_close) / prev_close) * 100, 2)
-      except Exception as e:
-        print(f'Error fetching dynamic stock {ticker}: {e}')
-
-      change_color = '#00e676' if change >= 0 else '#ff5252'
-      change_str = f'+{change}%' if change >= 0 else f'{change}%'
-
-      dynamic_cards_html += f"""
-            <div class="stock-card" style="background: #1a2238; border: 1px solid #2a365c; padding: 16px; border-radius: 12px; margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="background: #2a3b63; color: #00d2ff; padding: 3px 8px; border-radius: 6px; font-size: 0.8em; font-weight: bold;">{action}</span>
-                        <h3 style="margin: 8px 0 4px 0; color: #ffffff; font-size: 1.2em;">{company_name} <span style="color: #8a99ad;">({ticker})</span></h3>
-                        <p style="margin: 0; font-size: 0.9em; color: #b0bec5;">{reason}</p>
-                    </div>
-                    <div style="text-align: left; min-width: 90px;">
-                        <div style="font-size: 1.3em; font-weight: bold; color: #ffffff;">${price}</div>
-                        <div style="color: {change_color}; font-weight: bold; font-size: 0.95em;">{change_str}</div>
-                    </div>
-                </div>
-            </div>
-            """
-
-    # מילון החלפות התבניות של ה-HTML
+    # מילון החלפות התבניות המלא עבור ה-HTML
     replacements = {
-        'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - מותאם אישית 📊',
-        'LAST_UPDATED': (
-            'עודכן לאחרונה:'
-            f' <span dir="ltr">{date_str} | {time_str}</span>'
+        'LAST_UPDATED': f'{date_str} | {time_str}',
+        # מדדים מובילים
+        'SNP_500_LEVEL': str(sp500.get('price', 0)),
+        'SNP_500_CHANGE': f"{sp500.get('change', 0)}%",
+        'SNP_500_MEANING': ai_insights.get(
+            'SNP_500_MEANING', 'המדד משקף את מצב השוק הרחב.'
         ),
+        'NASDAQ_LEVEL': str(nasdaq.get('price', 0)),
+        'NASDAQ_CHANGE': f"{nasdaq.get('change', 0)}%",
+        'NASDAQ_MEANING': ai_insights.get(
+            'NASDAQ_MEANING', 'משקף את סקטור הטכנולוגיה והצמיחה.'
+        ),
+        'DJI_LEVEL': str(dji.get('price', 0)),
+        'DJI_CHANGE': f"{dji.get('change', 0)}%",
+        'DJI_MEANING': ai_insights.get(
+            'DJI_MEANING', 'משקף את החברות התעשייתיות המסורתיות.'
+        ),
+        'VIX_LEVEL': str(vix.get('price', 0)),
+        'VIX_CHANGE': f"{vix.get('change', 0)}%",
+        'VIX_MEANING': ai_insights.get(
+            'VIX_MEANING', 'רמת התנודתיות והחשש בשוק.'
+        ),
+        'DXY_LEVEL': str(dxy.get('price', 0)),
+        'DXY_CHANGE': f"{dxy.get('change', 0)}%",
+        'DXY_MEANING': ai_insights.get(
+            'DXY_MEANING', 'חוזק הדולר מול סל המטבעות.'
+        ),
+        # סחורות ומטבעות
         'USD_ILS': str(market_data.get('USDILS=X', {}).get('price', 3.65)),
+        'USD_ILS_MEANING': ai_insights.get(
+            'USD_ILS_MEANING', 'השפעה על תיק השקעות דולרי מול שקל.'
+        ),
         'OIL_PRICE': str(market_data.get('CL=F', {}).get('price', 75.0)),
+        'OIL_MEANING': ai_insights.get(
+            'OIL_MEANING', 'השפעה על עלויות אנרגיה ואינפלציה.'
+        ),
         'GOLD_PRICE': str(market_data.get('GC=F', {}).get('price', 2350.0)),
+        'GOLD_MEANING': ai_insights.get(
+            'GOLD_MEANING', 'גידור מפני אי-יציבות כלכלית.'
+        ),
         'BTC_PRICE': f"{market_data.get('BTC-USD', {}).get('price', 65000.0):,}",
+        'BTC_MEANING': ai_insights.get(
+            'BTC_MEANING', 'אינדיקטור לסנטימנט סיכון ונכסים דיגיטליים.'
+        ),
+        # חדשות מאקרו
         'US_MARKET_MACRO_NEWS': ai_insights.get(
             'US_MARKET_MACRO_NEWS',
-            'נתוני המאקרו ומדיניות הריבית ממשיכים להוות את מנוע הניווט הראשי'
-            ' בוול סטריט.',
+            'נתוני המאקרו ממשיכים להוות מנוע ניווט ראשי בוול סטריט.',
         ),
         'IL_MARKET_MACRO_NEWS': ai_insights.get(
             'IL_MARKET_MACRO_NEWS',
-            'השוק המקומי מגיב להתפתחויות הביטחוניות ולנתונים הכלכליים המשקפיים.',
+            'השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות.',
         ),
-        'EXECUTIVE_SUMMARY_1': ai_insights.get(
-            'EXECUTIVE_SUMMARY_1',
-            'התמקדות בחברות ליבה בעלות יתרון תחרותי חזק וביקושים מוכחים.',
+        # סקטורים וגרפים
+        'SECTOR_CHIPS_TEXT': ai_insights.get(
+            'SECTOR_CHIPS_TEXT', 'ביקושים חזקים לשבבי AI.'
         ),
-        'EXECUTIVE_SUMMARY_2': ai_insights.get(
-            'EXECUTIVE_SUMMARY_2',
-            'ניהול סיכונים קפדני ועבודה לפי רמות תמיכה והתנגדות.',
+        'SECTOR_CLOUD_TEXT': ai_insights.get(
+            'SECTOR_CLOUD_TEXT', 'צמיחה במרכזי נתונים.'
         ),
-        'EXECUTIVE_SUMMARY_3': ai_insights.get(
-            'EXECUTIVE_SUMMARY_3',
-            'בחינת הזדמנויות סווינג בסקטורים המחזוריים והטכנולוגיים.',
+        'SECTOR_CRYPTO_TEXT': ai_insights.get(
+            'SECTOR_CRYPTO_TEXT', 'תנודתיות ערה בנכסים דיגיטליים.'
         ),
-        'NEWS_CHIPS_CLOUD': ai_insights.get(
-            'NEWS_CHIPS_CLOUD',
-            'ביקוש יציב לשבבי עיבוד ומרכזי נתונים תומך בהמשך המגמה החיובית.',
+        'SECTOR_CHIPS_VAL': str(ai_insights.get('SECTOR_CHIPS_VAL', 2.0)),
+        'SECTOR_CLOUD_VAL': str(ai_insights.get('SECTOR_CLOUD_VAL', 1.5)),
+        'SECTOR_CRYPTO_VAL': str(ai_insights.get('SECTOR_CRYPTO_VAL', 0.5)),
+        # קטליזטורים
+        'CATALYST_EARNINGS': ai_insights.get(
+            'CATALYST_EARNINGS', 'מעקב אחר דוחות כספיים רבעוניים.'
         ),
-        'NEWS_ENERGY_CRYPTO': ai_insights.get(
-            'NEWS_ENERGY_CRYPTO',
-            'תנודתיות ערה בשוק הקריפטו והאנרגיה לצד מעבר לטכנולוגיות ירוקות.',
+        'CATALYST_MONETARY': ai_insights.get(
+            'CATALYST_MONETARY', 'החלטות ריבית והצהרות הבנקים המרכזיים.'
         ),
-        'FEAR_GREED_INDEX': str(ai_insights.get('FEAR_GREED_INDEX', '65')),
-        'FEAR_GREED_DESC': ai_insights.get(
-            'FEAR_GREED_DESC', 'חמדנות מתונה - סנטימנט חיובי בזהירות'
+        'CATALYST_HARDWARE': ai_insights.get(
+            'CATALYST_HARDWARE', 'השקות מעבדים וכרטיסי מסך חדשים.'
         ),
-        'INSTITUTIONAL_SENTIMENT': ai_insights.get(
-            'INSTITUTIONAL_SENTIMENT',
-            'הגופים המוסדיים שומרים על חשיפה גבוהה לטכנולוגיה ולשבבים.',
+        # סנטימנט וניהול סיכונים
+        'COMMUNITY_SENTIMENT_TEXT': ai_insights.get(
+            'COMMUNITY_SENTIMENT_TEXT', 'אופטימיות זהירה בקרב סוחרים.'
         ),
-        'DYNAMIC_STOCKS_SECTION_4': dynamic_cards_html,
+        'ANALYST_FORECAST_1': ai_insights.get(
+            'ANALYST_FORECAST_1', 'המשך תנודתיות בסړ ירוק/אדום.'
+        ),
+        'ANALYST_FORECAST_2': ai_insights.get(
+            'ANALYST_FORECAST_2', 'התמקדות בחברות בעלות תזרים מזומנים חזק.'
+        ),
+        'RISK_MANAGEMENT_TEXT': ai_insights.get(
+            'RISK_MANAGEMENT_TEXT', 'עבודה עם פקודות סטופ-לוס וגיוון תיק.'
+        ),
+        'ACTION_RECOMMENDATIONS_TEXT': ai_insights.get(
+            'ACTION_RECOMMENDATIONS_TEXT', 'התנהלות מדודה ואיסוף מניות ליבה.'
+        ),
     }
 
-    # עדכון נתוני התיק האישי בשלב 5
+    # מילוי דינמי למניות הליבה והסווינג באסטרטגיה (שלב 4)
+    all_strategy_tickers = [
+        'NVDA',
+        'AMD',
+        'MU',
+        'GOOG',
+        'AMZN',
+        'META',
+        'MA',
+        'WMT',
+        'TTWO',
+        'WDC',
+        'TQQQ',
+        'INTC',
+        'IREN',
+        'CIFR',
+        'IBIT',
+        'SIMO',
+        'SNDK',
+        'NFLX',
+        'GTEC',
+    ]
+    for ticker in all_strategy_tickers:
+      p_data = market_data.get(ticker, {})
+      replacements[f'{ticker}_PRICE'] = str(p_data.get('price', 0.0))
+      replacements[f'{ticker}_PRE'] = str(p_data.get('price', 0.0))
+      replacements[f'{ticker}_PCT'] = f"{p_data.get('change', 0.0)}%"
+      replacements[f'{ticker}_TARGET'] = str(
+          portfolio_buys.get(ticker, {}).get('target', 0.0)
+      )
+      replacements[f'{ticker}_RATIONALE'] = ai_insights.get(
+          f'{ticker}_RATIONALE', 'הובלה טכנולוגית וביקושים יציבים.'
+      )
+      replacements[f'{ticker}_SWING_TEXT'] = ai_insights.get(
+          f'{ticker}_SWING_TEXT', 'פוטנציאל למומנטום קצר טווח.'
+      )
+
+    # מילוי נתוני התיק האישי (שלב 5)
     for ticker, info in portfolio_buys.items():
       curr_p = market_data.get(ticker, {}).get('price', info['buy'])
       ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
       ret_str = f'+{ret}%' if ret >= 0 else f'{ret}%'
 
-      replacements[f'PORTFOLIO_{ticker}_SHARES'] = str(info['shares'])
-      replacements[f'PORTFOLIO_{ticker}_BUY'] = str(info['buy'])
-      replacements[f'PORTFOLIO_{ticker}_RETURN'] = ret_str
       replacements[f'PORTFOLIO_{ticker}_PRICE'] = str(curr_p)
+      replacements[f'PORTFOLIO_{ticker}_PRE'] = str(curr_p)
       replacements[f'PORTFOLIO_{ticker}_TARGET'] = str(info['target'])
       replacements[f'PORTFOLIO_{ticker}_STATUS'] = (
-          'רווח' if ret >= 0 else 'הפסד'
+          f'רווח {ret_str}' if ret >= 0 else f'הפסד {ret_str}'
+      )
+      replacements[f'PORTFOLIO_{ticker}_NEWS'] = ai_insights.get(
+          f'PORTFOLIO_{ticker}_NEWS', 'ביצועים בהתאם לציפיות השוק.'
       )
 
     # טעינת index.html והחלפת התבניות
