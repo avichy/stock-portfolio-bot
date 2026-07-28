@@ -139,8 +139,8 @@ def generate_ai_insights(market_data):
         {json.dumps(market_data, ensure_ascii=False)}
 
         החזר JSON בלבד עם המפתחות הבאים בעברית מקצועית:
-        - US_MARKET_MACRO_NEWS: תמצית חדשות מאקרו ארה"ב והפד
-        - IL_MARKET_MACRO_NEWS: תמצית חדשות שוק ההון בישראל
+        - US_MARKET_MACRO_NEWS: תמצית חדשות מאקרו ארה"ב והפד (1-2 משפטים מעודכנים להיום)
+        - IL_MARKET_MACRO_NEWS: תמצית חדשות שוק ההון בישראל (1-2 משפטים מעודכנים להיום)
         - SNP_500_MEANING: מה משמעות מצב מדד S&P 500 כרגע
         - NASDAQ_MEANING: מה משמעות מצב מדד הנאסד"ק כרגע
         - DJI_MEANING: מה משמעות מצב מדד דאו ג'ונס כרגע
@@ -153,13 +153,12 @@ def generate_ai_insights(market_data):
         - SECTOR_CHIPS_TEXT: ניתוח סקטור השבבים
         - SECTOR_CLOUD_TEXT: ניתוח סקטור הענן וה-AI
         - SECTOR_CRYPTO_TEXT: ניתוח סקטור הקריפטו
-        - SECTOR_CHIPS_VAL: ערך מספרי לגרף סקטור השבבים (למשל 2.5)
-        - SECTOR_CLOUD_VAL: ערך מספרי לגרף סקטור הענן (למשל 1.8)
-        - SECTOR_CRYPTO_VAL: ערך מספרי לגרף קריפטו (למשל -0.5)
+        - SECTOR_CHIPS_VAL: ערך מספרי לגרף סקטור השבבים
+        - SECTOR_CLOUD_VAL: ערך מספרי לגרף סקטור הענן
+        - SECTOR_CRYPTO_VAL: ערך מספרי לגרף קריפטו
         - CATALYST_EARNINGS: דיווחי תוצאות לרבעון
         - CATALYST_MONETARY: הודעות מדיניות מוניטרית
         - CATALYST_HARDWARE: השקות חומרה
-        - מילוי לכל מניות הליבה באסטרטגיה (יעדים ורציונל כגון: NVDA_TARGET, NVDA_RATIONALE, AMD_TARGET, AMD_RATIONALE וכו' עבור כל מניות הליבה והסווינג).
         - COMMUNITY_SENTIMENT_TEXT: סנטימנט קהילות המסחר
         - ANALYST_FORECAST_1: תחזית אנליסטים 1
         - ANALYST_FORECAST_2: תחזית אנליסטים 2
@@ -200,7 +199,7 @@ if should_update:
     vix = market_data.get('^VIX', {})
     dxy = market_data.get('USDILS=X', {})
 
-    # מילון החלפות התבניות המלא עבור ה-HTML (כולל פורמט פסיקים)
+    # מילון החלפות התבניות המלא עבור ה-HTML
     replacements = {
         'LAST_UPDATED': f'{date_str} | {time_str}',
         # מדדים מובילים
@@ -254,7 +253,7 @@ if should_update:
         'BTC_MEANING': ai_insights.get(
             'BTC_MEANING', 'אינדיקטור לסנטימנט סיכון ונכסים דיגיטליים.'
         ),
-        # חדשות מאקרו
+        # חדשות מאקרו מעודכנות מה-AI
         'US_MARKET_MACRO_NEWS': ai_insights.get(
             'US_MARKET_MACRO_NEWS',
             'נתוני המאקרו ממשיכים להוות מנוע ניווט ראשי בוול סטריט.',
