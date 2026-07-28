@@ -434,6 +434,10 @@ if should_update:
         with open("index.template.html", "r", encoding="utf-8-sig") as f:
             content = f.read()
 
+        # החלפת תגיות ה-US וה-IL בדגלים לבקשתך
+        content = content.replace("US השפעות", "🇺🇸 השפעות")
+        content = content.replace("IL השפעות", "🇮🇱 השפעות")
+
         for key, val in replacements.items():
             placeholder = f"{{{{{key}}}}}"
             content = content.replace(placeholder, str(val))
