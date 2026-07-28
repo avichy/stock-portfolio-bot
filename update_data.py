@@ -259,23 +259,27 @@ if should_update:
         dxy_price = format_num(dxy.get("price", 0))
         dxy_change = f"{dxy.get('change', 0)}%"
 
-        usd_ils_price = format_num(
-            market_data.get("USDILS=X", {}).get("price", 3.65)
-        )
-        usd_ils_change = f"{market_data.get('USDILS=X', {}).get('change', 0)}%"
+        # שימוש במשתנים בטוחים כדי למנוע חיתוך תווים בדפדפן
+        oil_ticker = "CL=F"
+        gold_ticker = "GC=F"
+        btc_ticker = "BTC-USD"
+        fx_ticker = "USDILS=X"
 
-        oil_price = format_num(market_data.get("CL=F", {}).get("price", 75.0))
-        oil_change = f"{market_data.get('CL=F', {}).get('change', 0)}%"
+        oil_data = market_data.get(oil_ticker, {})
+        oil_price = format_num(oil_data.get("price", 75.0))
+        oil_change = f"{oil_data.get('change', 0)}%"
 
-        gold_price = format_num(
-            market_data.get("GC=F", {}).get("price", 2350.0)
-        )
-        gold_change = f"{market_data.get('GC=F', {}).get('change', 0)}%"
+        gold_data = market_data.get(gold_ticker, {})
+        gold_price = format_num(gold_data.get("price", 2350.0))
+        gold_change = f"{gold_data.get('change', 0)}%"
 
-        btc_price = format_num(
-            market_data.get("BTC-USD", {}).get("price", 65000.0)
-        )
-        btc_change = f"{market_data.get('BTC-USD', {}).get('change', 0)}%"
+        btc_data = market_data.get(btc_ticker, {})
+        btc_price = format_num(btc_data.get("price", 65000.0))
+        btc_change = f"{btc_data.get('change', 0)}%"
+
+        fx_data = market_data.get(fx_ticker, {})
+        usd_ils_price = format_num(fx_data.get("price", 3.65))
+        usd_ils_change = f"{fx_data.get('change', 0)}%"
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
