@@ -147,38 +147,36 @@ def generate_ai_insights(market_data):
         print("No GEMINI_API_KEY found. Skipping AI generation.")
         return {}
 
-    prompt = f"""
-    אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:
-    {json.dumps(market_data, ensure_ascii=False)}
-
-    **כללים קשיחים לחובה:**
-    1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.
-    2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).
-    
-    החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:
-    - US_MARKET_MACRO_NEWS
-    - IL_MARKET_MACRO_NEWS
-    - SECTOR_CHIPS_DESC
-    - SECTOR_CLOUD_DESC
-    - SECTOR_CRYPTO_DESC
-    - CATALYST_EARNINGS
-    - CATALYST_MONETARY
-    - CATALYST_HARDWARE
-    - COMMUNITY_SENTIMENT
-    - ANALYST_POINT_1
-    - ANALYST_POINT_2
-    - RISK_MANAGEMENT_TEXT
-    - ACTION_RECOMMENDATIONS_TEXT
-
-    וכמו כן, עבור כל אחד מהסימולים הבאים ({', '.join(all_strategy_tickers)}), הוסף מפתחות ניתוח וחדשות:
-    1. [TICKER]_RATIONALE
-    2. [TICKER]_SWING_TEXT
-    3. [TICKER]_NEWS_TITLE
-    4. [TICKER]_NEWS_CONTENT
-    5. [TICKER]_NEWS_IMPACT
-    6. [TICKER]_NEWS_LINK
-    7. [TICKER]_PORT_NOTE
-    """
+    prompt = (
+        "אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:\n"
+        + json.dumps(market_data, ensure_ascii=False)
+        + "\n\n"
+        "**כללים קשיחים לחובה:**\n"
+        "1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.\n"
+        "2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n\n"
+        "החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:\n"
+        "- US_MARKET_MACRO_NEWS\n"
+        "- IL_MARKET_MACRO_NEWS\n"
+        "- SECTOR_CHIPS_DESC\n"
+        "- SECTOR_CLOUD_DESC\n"
+        "- SECTOR_CRYPTO_DESC\n"
+        "- CATALYST_EARNINGS\n"
+        "- CATALYST_MONETARY\n"
+        "- CATALYST_HARDWARE\n"
+        "- COMMUNITY_SENTIMENT\n"
+        "- ANALYST_POINT_1\n"
+        "- ANALYST_POINT_2\n"
+        "- RISK_MANAGEMENT_TEXT\n"
+        "- ACTION_RECOMMENDATIONS_TEXT\n\n"
+        + f"וכמו כן, עבור כל אחד מהסימולים הבאים ({', '.join(all_strategy_tickers)}), הוסף מפתחות ניתוח וחדשות:\n"
+        "1. [TICKER]_RATIONALE\n"
+        "2. [TICKER]_SWING_TEXT\n"
+        "3. [TICKER]_NEWS_TITLE\n"
+        "4. [TICKER]_NEWS_CONTENT\n"
+        "5. [TICKER]_NEWS_IMPACT\n"
+        "6. [TICKER]_NEWS_LINK\n"
+        "7. [TICKER]_PORT_NOTE"
+    )
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -196,7 +194,6 @@ def generate_ai_insights(market_data):
                     res_data["candidates"][0]["content"]["parts"][0]["text"]
                 )
 
-                # ניקוי מעטפות Markdown
                 text_response = text_response.strip()
                 if text_response.startswith("```json"):
                     text_response = text_response[7:]
@@ -282,7 +279,6 @@ if should_update:
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
-            # שלב 1: מאקרו, מדדים, סחורות וקריפטו
             "SNP_500_LEVEL": sp500_price,
             "SP500_PRICE": sp500_price,
             "SP500_LEVEL": sp500_price,
@@ -324,7 +320,6 @@ if should_update:
             "IL_MARKET_NEWS": ai_insights.get(
                 "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
             ),
-            # שלב 2: סקטורים
             "SECTOR_CHIPS_DESC": ai_insights.get(
                 "SECTOR_CHIPS_DESC",
                 "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.",
@@ -337,7 +332,6 @@ if should_update:
                 "SECTOR_CRYPTO_DESC",
                 "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.",
             ),
-            # שלב 3: אירועים וזרמים (Catalysts)
             "CATALYST_EARNINGS": ai_insights.get(
                 "CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים."
             ),
@@ -348,7 +342,6 @@ if should_update:
             "CATALYST_HARDWARE": ai_insights.get(
                 "CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה."
             ),
-            # שלב 6: סנטימנט ואנליסטים
             "COMMUNITY_SENTIMENT": ai_insights.get(
                 "COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות."
             ),
@@ -360,10 +353,137 @@ if should_update:
                 "ANALYST_POINT_2",
                 "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.",
             ),
-            # שלב 7: סיכון ואסטרטגיה
             "RISK_MANAGEMENT_TEXT": ai_insights.get(
                 "RISK_MANAGEMENT_TEXT",
                 "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
             ),
             "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
-                "ACTION_RECOMM
+                "ACTION_RECOMMENDATIONS_TEXT",
+                "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
+            ),
+        }
+
+        for ticker in all_strategy_tickers:
+            p_data = market_data.get(ticker, {})
+            price_val = format_num(p_data.get("price", 0.0))
+            pct_val = f"{p_data.get('change', 0.0)}%"
+            target_val = format_num(
+                portfolio_buys.get(ticker, {}).get("target", 0.0)
+            )
+            rationale_val = ai_insights.get(
+                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
+            )
+            swing_val = ai_insights.get(
+                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
+            )
+
+            for prefix in [
+                f"{ticker}_LONG",
+                f"{ticker}_SWING",
+                ticker,
+            ]:
+                replacements[f"{prefix}_PRICE"] = price_val
+                replacements[f"{prefix}_PRE"] = price_val
+                replacements[f"{prefix}_PCT"] = pct_val
+                replacements[f"{prefix}_TARGET"] = target_val
+                replacements[f"{prefix}_RATIONALE"] = rationale_val
+                replacements[f"{prefix}_TEXT"] = swing_val
+
+            replacements[f"{ticker}_SWING_TEXT_2"] = (
+                f"עדכון מומנטום נוסף עבור {ticker}."
+            )
+
+        for ticker, info in portfolio_buys.items():
+            curr_p = market_data.get(ticker, {}).get("price", info["buy"])
+            ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
+            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
+            status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+
+            replacements[f"{ticker}_PORT_STATUS"] = status_str
+            replacements[f"{ticker}_PORT_TARGET"] = format_num(info["target"])
+            replacements[f"{ticker}_PORT_PRE"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_CURRENT"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
+                f"{ticker}_PORT_NOTE",
+                "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
+            )
+
+            replacements[f"PORTFOLIO_{ticker}_PRICE"] = format_num(curr_p)
+            replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
+            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(
+                info["target"]
+            )
+            replacements[f"PORTFOLIO_{ticker}_PRE"] = format_num(curr_p)
+
+        for ticker in all_strategy_tickers:
+            replacements[f"{ticker}_NEWS_LINK"] = (
+                f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){ticker}"
+            )
+            replacements[f"{ticker}_NEWS_TITLE"] = ai_insights.get(
+                f"{ticker}_NEWS_TITLE", f"עדכון שוק מרכזי עבור מניית {ticker}"
+            )
+            replacements[f"{ticker}_NEWS_CONTENT"] = ai_insights.get(
+                f"{ticker}_NEWS_CONTENT",
+                f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {ticker}.",
+            )
+            replacements[f"{ticker}_NEWS_IMPACT"] = ai_insights.get(
+                f"{ticker}_NEWS_IMPACT",
+                "השפעה חיובית ומתונה על תיק ההשקעות והמגמה הראשית.",
+            )
+
+        with open("index.template.html", "r", encoding="utf-8-sig") as f:
+            content = f.read()
+
+        for key, val in replacements.items():
+            placeholder = f"{{{{{key}}}}}"
+            content = content.replace(placeholder, str(val))
+
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print("Successfully updated index.html with live AI injection data.")
+
+        subprocess.run(
+            ["git", "config", "--global", "user.name", "github-actions[bot]"],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "config",
+                "--global",
+                "user.email",
+                "github-actions[bot]@users.noreply.github.com",
+            ],
+            check=True,
+        )
+        subprocess.run(["git", "add", "index.html"], check=True)
+
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        if "index.html" in status.stdout:
+            subprocess.run(
+                [
+                    "git",
+                    "commit",
+                    "-m",
+                    (
+                        "Auto-update full dynamic AI injection report for"
+                        f" {day_name} at {time_str}"
+                    ),
+                ],
+                check=True,
+            )
+            subprocess.run(["git", "push"], check=True)
+            print("Changes committed and pushed successfully.")
+        else:
+            print("No changes in index.html to commit.")
+
+    except Exception as e:
+        print(f"Error updating file: {e}")
+else:
+    print("Outside active automated hours. Skipping scheduled run.")
