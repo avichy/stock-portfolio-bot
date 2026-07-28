@@ -153,11 +153,9 @@ if should_update:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
 
-    # ערכי ברירת מחדל או ערכי ה-AI המעודכנים
+# ערכי ברירת מחדל או ערכי ה-AI המעודכנים
     replacements = {
-        'REPORT_TITLE': (
-            f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊'
-        ),
+        'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - מותאם אישית 📊',
         'LAST_UPDATED': (
             'עודכן לאחרונה:'
             f' <span dir="ltr">{date_str} | {time_str}</span>'
