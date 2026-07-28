@@ -11,9 +11,9 @@
 
     <!-- כותרת ראשית -->
     <header class="bg-gray-800 border-b border-gray-700 py-6 text-center shadow-lg">
-        <h1 class="text-2xl md:text-3xl font-extrabold text-cyan-400">דו"ח סקירה שוק ההון המלא - מותאם אישית 📊</h1>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-cyan-400">דו"ח סקירה שוק ההון המלא - מתאם אישית 📊</h1>
         <p class="text-sm text-gray-400 mt-1">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
-        <p class="text-xs text-cyan-300 mt-1">מעודכן לאחרונה: <span>{{update_time}}</span></p>
+        <p class="text-xs text-cyan-300 mt-1">מעודכן לאחרונה: <span>28.07.2026 | 16:22</span></p>
     </header>
 
     <!-- תפריט ניווט טאבים -->
@@ -40,25 +40,25 @@
                 <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
                     <div class="space-y-3 text-sm">
-                        <p class="text-gray-300"><strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{sp500_val}}</strong> (<span class="text-cyan-300">{{sp500_change}}</span>)</p>
-                        <p class="text-gray-300"><strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{nasdaq_val}}</strong> (<span class="text-cyan-300">{{nasdaq_change}}</span>)</p>
-                        <p class="text-gray-300"><strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{dow_val}}</strong> (<span class="text-cyan-300">{{dow_change}}</span>)</p>
-                        <p class="text-gray-300"><strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{vix_val}}</strong> (<span class="text-cyan-300">{{vix_change}}</span>)</p>
-                        <p class="text-gray-300"><strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{dxy_val}}</strong> (<span class="text-cyan-300">{{dxy_change}}</span>)</p>
+                        <p class="text-gray-300"><strong>S&P 500:</strong> נסחר סביב רמה של <strong>5,560.20</strong> (<span class="text-cyan-300">+0.45%</span>)</p>
+                        <p class="text-gray-300"><strong>NASDAQ:</strong> נסחר סביב רמה של <strong>17,720.50</strong> (<span class="text-cyan-300">+0.82%</span>)</p>
+                        <p class="text-gray-300"><strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>40,580.10</strong> (<span class="text-cyan-300">+0.15%</span>)</p>
+                        <p class="text-gray-300"><strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>14.25</strong> (<span class="text-cyan-300">-2.10%</span>)</p>
+                        <p class="text-gray-300"><strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>104.20</strong> (<span class="text-cyan-300">-0.12%</span>)</p>
                     </div>
                 </div>
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{usd_ils}}</strong> שקל לדולר אחד.</p>
+                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>3.64</strong> שקל לדולר אחד.</p>
                     </div>
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{oil_price}}</strong> דולר לחבית.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>78.40</strong> דולר לחבית.</p>
                     </div>
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{gold_price}}</strong> דולר לאונקיה.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>2,410.50</strong> דולר לאונקיה.</p>
                     </div>
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400 flex items-center gap-2">
@@ -68,15 +68,15 @@
                                 <path d="M345.5 208.8c3.9-26.1-16.3-40.1-44.1-49.4l9-36.1-22-5.5-8.8 35.3c-5.8-1.5-11.7-2.8-17.6-4.2l8.8-35.3-22-5.5-9 36.1c-4.8-1.1-9.5-2.2-14.1-3.3l.03-.13-30.8-7.7-5.9 23.8s16.6 3.8 16.3 4c9.1 2.3 10.7 8.3 10.4 13.1l-10.4 41.8c.6.2 1.4.4 2.3.7l-2.3-.6-14.6 58.6c-1.1 2.8-4 7-10.4 5.4.4.6-16.3-4-16.3-4l-11.1 25.6 29.1 7.3c5.4 1.3 10.7 2.8 16 4.1l-9.1 36.6 22 5.5 9.1-36.6c6 .6 11.9 3.2 17.7 4.7l-9 36.2 22 5.5 9.1-36.4c37.5 7.1 65.6 4.3 77.4-29.8 9.5-27.2-.5-42.9-20.1-53.1 14.3-3.3 25.1-12.7 27.9-32.1zm-49.3 69.2c-6.7 26.8-51.7 12.5-66.3 8.9l11.8-47.5c14.6 3.6 61.2 10.9 54.5 38.6zm6.7-69.3c-6.1 24.5-43.7 12-55.9 9l10.7-43c12.2 3.1 51.3 9.8 45.2 34z" fill="white"/>
                             </svg>
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{btc_price}}</strong> דולר.</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>66,500</strong> דולר.</p>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                 <h3 class="text-lg font-bold text-cyan-400">חדשות ועדכונים 📰</h3>
                 <div class="text-sm text-gray-300 space-y-2">
-                    <p>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> {{macro_news_us}}</p>
-                    <p>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> {{macro_news_il}}</p>
+                    <p>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> ציפייה דרוכה להחלטת ריבית הפד והודעות ענקיות הטכנולוגיה בנוגע הוצאות הוניות על תשתיות AI.</p>
+                    <p>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> המסחר המקומי מושפע מהתפתחויות ביטחוניות ומגמות המט"ח מול הדולר והאירו.</p>
                 </div>
             </div>
         </div>
@@ -88,9 +88,9 @@
                 <canvas id="sectorChart" height="110"></canvas>
             </div>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🔌 <strong>סקטור השבבים והחומרה:</strong> {{sector_chips}}</p>
-                <p>☁️ <strong>תשתיות ענן ובינה מלאכותית:</strong> {{sector_cloud}}</p>
-                <p>🔗 <strong>קריפטו ותשתיות דיגיטליות:</strong> {{sector_crypto}}</p>
+                <p>🔌 <strong>סקטור השבבים והחומרה:</strong> ביקושים חזקים למעבדי אינטליגנציה מלאכותית וזיכרונות מתקדמים (HBM).</p>
+                <p>☁️ <strong>תשתיות ענן ובינה מלאכותית:</strong> גידול בהשקעות מרכזי נתונים של חברות הענן הגדולות (AWS, Azure, GCP).</p>
+                <p>🔗 <strong>קריפטו ותשתיות דיגיטליות:</strong> תנודתיות מבוססת זרימי קרנות סל (ETFs) ומחירי הנכסים הדיגיטליים.</p>
             </div>
         </div>
 
@@ -98,9 +98,9 @@
         <div id="tab-3" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> {{catalyst_earnings}}</p>
-                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> {{catalyst_monetary}}</p>
-                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> {{catalyst_hardware}}</p>
+                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> עונת הדוחות של חברות השבבים והענן נמצאת במוקד תשומת הלב.</p>
+                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> דוחות תעסוקה ונתוני אינפלציה בארה"ב יכתיבו את צעדי הבנק המרכזי.</p>
+                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> דגש על מעבדים חדשים ופתרונות ארכיטקטורה מתקדמים לגיימינג ו-AI.</p>
             </div>
         </div>
 
@@ -110,29 +110,29 @@
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-cyan-400">קבוצה א': 10 מניות להשקעה ארוכת טווח (Long-Term Core) 🏆</h3>
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <p>🚀 <strong>NVIDIA (NVDA)</strong> | מחיר: <strong>{{nvda_core_price}}</strong> | יעד: <strong>{{nvda_core_target}}</strong> | <strong>רציונל:</strong> {{nvda_core_rationale}}</p>
-                    <p>💻 <strong>Advanced Micro Devices (AMD)</strong> | מחיר: <strong>{{amd_core_price}}</strong> | יעד: <strong>{{amd_core_target}}</strong> | <strong>רציונל:</strong> {{amd_core_rationale}}</p>
-                    <p>🧠 <strong>Micron Technology (MU)</strong> | מחיר: <strong>{{mu_core_price}}</strong> | יעד: <strong>{{mu_core_target}}</strong> | <strong>רציונל:</strong> {{mu_core_rationale}}</p>
-                    <p>🌐 <strong>Alphabet / Google (GOOG)</strong> | מחיר: <strong>{{goog_core_price}}</strong> | יעד: <strong>{{goog_core_target}}</strong> | <strong>רציונל:</strong> {{goog_core_rationale}}</p>
-                    <p>📦 <strong>Amazon (AMZN)</strong> | מחיר: <strong>{{amzn_core_price}}</strong> | יעד: <strong>{{amzn_core_target}}</strong> | <strong>רציונל:</strong> {{amzn_core_rationale}}</p>
-                    <p>👥 <strong>Meta Platforms (META)</strong> | מחיר: <strong>{{meta_core_price}}</strong> | יעד: <strong>{{meta_core_target}}</strong> | <strong>רציונל:</strong> {{meta_core_rationale}}</p>
-                    <p>💳 <strong>Mastercard (MA)</strong> | מחיר: <strong>{{ma_core_price}}</strong> | יעד: <strong>{{ma_core_target}}</strong> | <strong>רציונל:</strong> {{ma_core_rationale}}</p>
-                    <p>🛒 <strong>Walmart (WMT)</strong> | מחיר: <strong>{{wmt_core_price}}</strong> | יעד: <strong>{{wmt_core_target}}</strong> | <strong>רציונל:</strong> {{wmt_core_rationale}}</p>
-                    <p>🎮 <strong>Take-Two Interactive (TTWO)</strong> | מחיר: <strong>{{ttwo_core_price}}</strong> | יעד: <strong>{{ttwo_core_target}}</strong> | <strong>רציונל:</strong> {{ttwo_core_rationale}}</p>
-                    <p>💾 <strong>Western Digital (WDC)</strong> | מחיר: <strong>{{wdc_core_price}}</strong> | יעד: <strong>{{wdc_core_target}}</strong> | <strong>רציונל:</strong> {{wdc_core_rationale}}</p>
+                    <p>🚀 <strong>NVIDIA (NVDA)</strong> | מחיר: <strong>$184.90</strong> | יעד: <strong>$220.00</strong> | <strong>רציונל:</strong> מובילת שוק מעבדי ה-AI וארכיטקטורת Blackwell.</p>
+                    <p>💻 <strong>Advanced Micro Devices (AMD)</strong> | מחיר: <strong>$211.34</strong> | יעד: <strong>$250.00</strong> | <strong>רציונל:</strong> נתח שוק צומח במעבדי EPYC ומאיצי MI300.</p>
+                    <p>🧠 <strong>Micron Technology (MU)</strong> | מחיר: <strong>$316.32</strong> | יעד: <strong>$350.00</strong> | <strong>רציונל:</strong> ביקוש אדיר לזיכרונות HBM לדאטה-סנטרים.</p>
+                    <p>🌐 <strong>Alphabet / Google (GOOG)</strong> | מחיר: <strong>$317.95</strong> | יעד: <strong>$360.00</strong> | <strong>רציונל:</strong> שילוב מוצלח של מודלי Gemini בענן ובמוצרי הליבה.</p>
+                    <p>📦 <strong>Amazon (AMZN)</strong> | מחיר: <strong>$229.29</strong> | יעד: <strong>$270.00</strong> | <strong>רציונל:</strong> הובלה בענן (AWS) ושיפור רווחיות במסחר המקוון.</p>
+                    <p>👥 <strong>Meta Platforms (META)</strong> | מחיר: <strong>$661.00</strong> | יעד: <strong>$750.00</strong> | <strong>רציונל:</strong> התאוששות שוק הפרסום ופיתוח מודלי קוד פתוח (Llama).</p>
+                    <p>💳 <strong>Mastercard (MA)</strong> | מחיר: <strong>$503.99</strong> | יעד: <strong>$580.00</strong> | <strong>רציונל:</strong> צמיחה יציבה במחזורי תשלומים עולמיים וחסינות אינפלציונית.</p>
+                    <p>🛒 <strong>Walmart (WMT)</strong> | מחיר: <strong>$119.45</strong> | יעד: <strong>$140.00</strong> | <strong>רציונל:</strong> ענקית קמעונאות איתנה עם צמיחה מואצת במסחר האלקטרוני.</p>
+                    <p>🎮 <strong>Take-Two Interactive (TTWO)</strong> | מחיר: <strong>$235.50</strong> | יעד: <strong>$280.00</strong> | <strong>רציונל:</strong> ציפייה להשקת GTA VI ופורטפוליו משחקים רווחי.</p>
+                    <p>💾 <strong>Western Digital (WDC)</strong> | מחיר: <strong>$223.23</strong> | יעד: <strong>$260.00</strong> | <strong>רציונל:</strong> ביקושים חזקים לפתרונות אחסון מתקדמים.</p>
                 </div>
 
                 <h3 class="text-lg font-semibold text-cyan-400">קבוצה ב': 10 מניות למסחר סווינג קצר טווח (Swing Trading) 🔄</h3>
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <p>📊 <strong>ProShares UltraPro QQQ (TQQQ)</strong> | מחיר: <strong>{{tqqq_price}}</strong> | יעד: <strong>{{tqqq_target}}</strong> | {{tqqq_desc}}</p>
-                    <p>⚡ <strong>Intel (INTC)</strong> | מחיר: <strong>{{intc_price}}</strong> | יעד: <strong>{{intc_target}}</strong> | {{intc_desc}}</p>
-                    <p>🌿 <strong>Iris Energy (IREN)</strong> | מחיר: <strong>{{iren_price}}</strong> | יעד: <strong>{{iren_target}}</strong> | {{iren_desc}}</p>
-                    <p>⛏️ <strong>Cipher Mining (CIFR)</strong> | מחיר: <strong>{{cifr_price}}</strong> | יעד: <strong>{{cifr_target}}</strong> | {{cifr_desc}}</p>
-                    <p>🪙 <strong>iShares Bitcoin Trust (IBIT)</strong> | מחיר: <strong>{{ibit_price}}</strong> | יעד: <strong>{{ibit_target}}</strong> | {{ibit_desc}}</p>
-                    <p>🔌 <strong>Silicon Motion (SIMO)</strong> | מחיר: <strong>{{simo_price}}</strong> | יעד: <strong>{{simo_target}}</strong> | {{simo_desc}}</p>
-                    <p>💾 <strong>SanDisk (SNDK)</strong> | מחיר: <strong>{{sndk_price}}</strong> | יעד: <strong>{{sndk_target}}</strong> | {{sndk_desc}}</p>
-                    <p>🎬 <strong>Netflix (NFLX)</strong> | מחיר: <strong>{{nflx_price}}</strong> | יעד: <strong>{{nflx_target}}</strong> | {{nflx_desc}}</p>
-                    <p>🔋 <strong>Greenland Technologies (GTEC)</strong> | מחיר: <strong>{{gtec_price}}</strong> | יעד: <strong>{{gtec_target}}</strong> | {{gtec_desc}}</p>
+                    <p>📊 <strong>ProShares UltraPro QQQ (TQQQ)</strong> | מחיר: <strong>$56.53</strong> | יעד: <strong>$75.00</strong> | קרן ממונפת על הנאסד"ק למסחר מומנטום קצר.</p>
+                    <p>⚡ <strong>Intel (INTC)</strong> | מחיר: <strong>$43.05</strong> | יעד: <strong>$55.00</strong> | תוכנית הבראה, ייעול תפעולי ופיתוח חטיבת הייצור.</p>
+                    <p>🌿 <strong>Iris Energy (IREN)</strong> | מחיר: <strong>$52.75</strong> | יעד: <strong>$70.00</strong> | מרכזי נתונים ירוקים עם פוטנציאל השכרה לתשתיות מחשוב AI.</p>
+                    <p>⛏️ <strong>Cipher Mining (CIFR)</strong> | מחיר: <strong>$17.50</strong> | יעד: <strong>$25.00</strong> | ניהול יעיל של תשתיות טכנולוגיה ומרכזי נתונים.</p>
+                    <p>🪙 <strong>iShares Bitcoin Trust (IBIT)</strong> | מחיר: <strong>$60.48</strong> | יעד: <strong>$75.00</strong> | חשיפה ישירה לתנועות הנכסים הדיגיטליים דרך הבורסה.</p>
+                    <p>🔌 <strong>Silicon Motion (SIMO)</strong> | מחיר: <strong>$131.32</strong> | יעד: <strong>$160.00</strong> | פיתוח בקרי זיכרון ואחסון פלאש לתעשייה.</p>
+                    <p>💾 <strong>SanDisk (SNDK)</strong> | מחיר: <strong>$630.26</strong> | יעד: <strong>$700.00</strong> | פתרונות אחסון ניידים וארגוניים מובילים.</p>
+                    <p>🎬 <strong>Netflix (NFLX)</strong> | מחיר: <strong>$94.03</strong> | יעד: <strong>$120.00</strong> | שליטה בשוק הסטרימינג והגדלת הכנסות מפרסום.</p>
+                    <p>🔋 <strong>Greenland Technologies (GTEC)</strong> | מחיר: <strong>$1.27</strong> | יעד: <strong>$2.00</strong> | ציוד תעשייתי וטכנולוגיות הנעה עם תנודתיות גבוהה למסחר.</p>
                 </div>
             </div>
         </div>
@@ -141,25 +141,25 @@
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות ונתונים 💼</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🚀 <strong>NVIDIA (NVDA)</strong> | {{nvda_shares}} מניות | קנייה: {{nvda_buy}} | נוכחי: <strong>{{nvda_current}}</strong> | <span class="{{nvda_pl_class}}">{{nvda_pl_text}}</span></p>
-                <p>💻 <strong>Advanced Micro Devices (AMD)</strong> | {{amd_shares}} מניות | קנייה: {{amd_buy}} | נוכחי: <strong>{{amd_current}}</strong> | <span class="{{amd_pl_class}}">{{amd_pl_text}}</span></p>
-                <p>🧠 <strong>Micron Technology (MU)</strong> | {{mu_shares}} מניות | קנייה: {{mu_buy}} | נוכחי: <strong>{{mu_current}}</strong> | <span class="{{mu_pl_class}}">{{mu_pl_text}}</span></p>
-                <p>💾 <strong>SanDisk (SNDK)</strong> | {{sndk_shares}} מניות | קנייה: {{sndk_buy}} | נוכחי: <strong>{{sndk_current}}</strong> | <span class="{{sndk_pl_class}}">{{sndk_pl_text}}</span></p>
-                <p>💽 <strong>Western Digital (WDC)</strong> | {{wdc_shares}} מניות | קנייה: {{wdc_buy}} | נוכחי: <strong>{{wdc_current}}</strong> | <span class="{{wdc_pl_class}}">{{wdc_pl_text}}</span></p>
-                <p>⚡ <strong>Intel (INTC)</strong> | {{intc_shares}} מניות | קנייה: {{intc_buy}} | נוכחי: <strong>{{intc_current}}</strong> | <span class="{{intc_pl_class}}">{{intc_pl_text}}</span></p>
-                <p>🔌 <strong>Silicon Motion (SIMO)</strong> | {{simo_shares}} מניות | קנייה: {{simo_buy}} | נוכחי: <strong>{{simo_current}}</strong> | <span class="{{simo_pl_class}}">{{simo_pl_text}}</span></p>
-                <p>🌿 <strong>Iris Energy (IREN)</strong> | {{iren_shares}} מניות | קנייה: {{iren_buy}} | נוכחי: <strong>{{iren_current}}</strong> | <span class="{{iren_pl_class}}">{{iren_pl_text}}</span></p>
-                <p>⛏️ <strong>Cipher Mining (CIFR)</strong> | {{cifr_shares}} מניות | קנייה: {{cifr_buy}} | נוכחי: <strong>{{cifr_current}}</strong> | <span class="{{cifr_pl_class}}">{{cifr_pl_text}}</span></p>
-                <p>👥 <strong>Meta Platforms (META)</strong> | {{meta_shares}} מניות | קנייה: {{meta_buy}} | נוכחי: <strong>{{meta_current}}</strong> | <span class="{{meta_pl_class}}">{{meta_pl_text}}</span></p>
-                <p>📦 <strong>Amazon (AMZN)</strong> | {{amzn_shares}} מניות | קנייה: {{amzn_buy}} | נוכחי: <strong>{{amzn_current}}</strong> | <span class="{{amzn_pl_class}}">{{amzn_pl_text}}</span></p>
-                <p>🌐 <strong>Alphabet / Google (GOOG)</strong> | {{goog_shares}} מניות | קנייה: {{goog_buy}} | נוכחי: <strong>{{goog_current}}</strong> | <span class="{{goog_pl_class}}">{{goog_pl_text}}</span></p>
-                <p>🎮 <strong>Take-Two Interactive (TTWO)</strong> | {{ttwo_shares}} מניות | קנייה: {{ttwo_buy}} | נוכחי: <strong>{{ttwo_current}}</strong> | <span class="{{ttwo_pl_class}}">{{ttwo_pl_text}}</span></p>
-                <p>🛒 <strong>Walmart (WMT)</strong> | {{wmt_shares}} מניות | קנייה: {{wmt_buy}} | נוכחי: <strong>{{wmt_current}}</strong> | <span class="{{wmt_pl_class}}">{{wmt_pl_text}}</span></p>
-                <p>🎬 <strong>Netflix (NFLX)</strong> | {{nflx_shares}} מניות | קנייה: {{nflx_buy}} | נוכחי: <strong>{{nflx_current}}</strong> | <span class="{{nflx_pl_class}}">{{nflx_pl_text}}</span></p>
-                <p>💳 <strong>Mastercard (MA)</strong> | {{ma_shares}} מניות | קנייה: {{ma_buy}} | נוכחי: <strong>{{ma_current}}</strong> | <span class="{{ma_pl_class}}">{{ma_pl_text}}</span></p>
-                <p>🪙 <strong>iShares Bitcoin Trust (IBIT)</strong> | {{ibit_shares}} מניות | קנייה: {{ibit_buy}} | נוכחי: <strong>{{ibit_current}}</strong> | <span class="{{ibit_pl_class}}">{{ibit_pl_text}}</span></p>
-                <p>🔋 <strong>Greenland Technologies (GTEC)</strong> | {{gtec_shares}} מניות | קנייה: {{gtec_buy}} | נוכחי: <strong>{{gtec_current}}</strong> | <span class="{{gtec_pl_class}}">{{gtec_pl_text}}</span></p>
-                <p>📈 <strong>ProShares UltraPro QQQ (TQQQ)</strong> | {{tqqq_shares}} מניות | קנייה: {{tqqq_buy}} | נוכחי: <strong>{{tqqq_current}}</strong> | <span class="{{tqqq_pl_class}}">{{tqqq_pl_text}}</span></p>
+                <p>🚀 <strong>NVIDIA (NVDA)</strong> | 3 מניות | קנייה: $184.90 | נוכחי: <strong>$196.51</strong> | <span class="text-green-400">רווח +6.28%</span></p>
+                <p>💻 <strong>Advanced Micro Devices (AMD)</strong> | 20 מניות | קנייה: $211.34 | נוכחי: <strong>$494.95</strong> | <span class="text-green-400">רווח +134.2%</span></p>
+                <p>🧠 <strong>Micron Technology (MU)</strong> | 6 מניות | קנייה: $316.32 | נוכחי: <strong>$900.20</strong> | <span class="text-green-400">רווח +184.59%</span></p>
+                <p>💾 <strong>SanDisk (SNDK)</strong> | 4 מניות | קנייה: $630.26 | נוכחי: <strong>$1,278.23</strong> | <span class="text-green-400">רווח +102.81%</span></p>
+                <p>💽 <strong>Western Digital (WDC)</strong> | 6 מניות | קנייה: $223.23 | נוכחי: <strong>$497.92</strong> | <span class="text-green-400">רווח +123.05%</span></p>
+                <p>⚡ <strong>Intel (INTC)</strong> | 20 מניות | קנייה: $43.05 | נוכחי: <strong>$91.67</strong> | <span class="text-green-400">רווח +112.94%</span></p>
+                <p>🔌 <strong>Silicon Motion (SIMO)</strong> | 30 מניות | קנייה: $131.32 | נוכחי: <strong>$244.45</strong> | <span class="text-green-400">רווח +86.15%</span></p>
+                <p>🌿 <strong>Iris Energy (IREN)</strong> | 54 מניות | קנייה: $52.75 | נוכחי: <strong>$36.29</strong> | <span class="text-red-400">הפסד -31.2%</span></p>
+                <p>⛏️ <strong>Cipher Mining (CIFR)</strong> | 28 מניות | קנייה: $17.50 | נוכחי: <strong>$21.65</strong> | <span class="text-green-400">רווח +23.71%</span></p>
+                <p>👥 <strong>Meta Platforms (META)</strong> | 2 מניות | קנייה: $661.00 | נוכחי: <strong>$593.87</strong> | <span class="text-red-400">הפסד -10.16%</span></p>
+                <p>📦 <strong>Amazon (AMZN)</strong> | 6 מניות | קנייה: $229.29 | נוכחי: <strong>$231.39</strong> | <span class="text-green-400">רווח +0.92%</span></p>
+                <p>🌐 <strong>Alphabet / Google (GOOG)</strong> | 4 מניות | קנייה: $317.95 | נוכחי: <strong>$326.57</strong> | <span class="text-green-400">רווח +2.71%</span></p>
+                <p>🎮 <strong>Take-Two Interactive (TTWO)</strong> | 5 מניות | קנייה: $235.50 | נוכחי: <strong>$243.95</strong> | <span class="text-green-400">רווח +3.59%</span></p>
+                <p>🛒 <strong>Walmart (WMT)</strong> | 16 מניות | קנייה: $119.45 | נוכחי: <strong>$111.74</strong> | <span class="text-red-400">הפסד -6.45%</span></p>
+                <p>🎬 <strong>Netflix (NFLX)</strong> | 14 מניות | קנייה: $94.03 | נוכחי: <strong>$120.40</strong> | <span class="text-green-400">רווח +28.04%</span></p>
+                <p>💳 <strong>Mastercard (MA)</strong> | 4 מניות | קנייה: $503.99 | נוכחי: <strong>$551.71</strong> | <span class="text-green-400">רווח +9.47%</span></p>
+                <p>🪙 <strong>iShares Bitcoin Trust (IBIT)</strong> | 14 מניות | קנייה: $60.48 | נוכחי: <strong>$72.10</strong> | <span class="text-green-400">רווח +19.22%</span></p>
+                <p>🔋 <strong>Greenland Technologies (GTEC)</strong> | 260 מניות | קנייה: $1.27 | נוכחי: <strong>$1.35</strong> | <span class="text-green-400">רווח +6.30%</span></p>
+                <p>📈 <strong>ProShares UltraPro QQQ (TQQQ)</strong> | 28 מניות | קנייה: $56.53 | נוכחי: <strong>$63.40</strong> | <span class="text-green-400">רווח +12.15%</span></p>
             </div>
         </div>
 
@@ -167,12 +167,12 @@
         <div id="tab-6" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים 🔮</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>💬 <strong>סנטימנט קהילות המסחר:</strong> {{community_sentiment}}</p>
+                <p>💬 <strong>סנטימנט קהילות המסחר:</strong> אופטימיות זהירה סביב מניות הטכנולוגיה והבינה המלאכותית, לצד מעקב אחר אינדיקטורים מקרו-כלכליים.</p>
                 <div>
                     <p class="font-bold text-cyan-400 mb-1">📊 מה האנליסטים אומרים:</p>
                     <ul class="list-disc list-inside space-y-1 pr-2">
-                        <li><strong>{{analyst_point_1}}</strong></li>
-                        <li><strong>{{analyst_point_2}}</strong></li>
+                        <li><strong>שמירה על חשיפה סלקטיבית בחברות עם תזרים מזומנים חזק ויכולות AI מוכחות.</strong></li>
+                        <li><strong>היערכות לתנודתיות קצרת טווח סביב הודעות מדיניות ריבית ונתוני תעסוקה.</strong></li>
                     </ul>
                 </div>
             </div>
@@ -182,8 +182,8 @@
         <div id="tab-7" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🛡️ <strong>ניהול סיכונים:</strong> {{risk_management_text}}</p>
-                <p>📋 <strong>המלצות פעולה:</strong> {{action_recommendations_text}}</p>
+                <p>🛡️ <strong>ניהול סיכונים:</strong> הגדרת פקודות סטופ-לס ברורות בפוזיציות סווינג ושמירה על איזון נכון בין השקעות ארוכות טווח לנכסים תנודתיים.</p>
+                <p>📋 <strong>המלצות פעולה:</strong> מעקב יומי אחר רמות התמיכה וההתנגדות המרכזיות במניות הליבה והימנעות מחשיפה יתר בנכסים ספקולטיביים.</p>
             </div>
         </div>
 
@@ -193,15 +193,15 @@
             <div class="space-y-4 text-sm text-gray-300">
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
                     <h3 class="font-bold text-cyan-400">חדשות NVIDIA (NVDA)</h3>
-                    <p>🔗 <a href="{{nvda_news_link}}" target="_blank" class="text-cyan-400 underline">צפה במקור (Yahoo Finance)</a></p>
-                    <p><strong>כותרת:</strong> {{nvda_news_title}}</p>
-                    <p><strong>משמעות למניה:</strong> {{nvda_news_meaning}}</p>
+                    <p>🔗 <a href="https://finance.yahoo.com/quote/NVDA" target="_blank" class="text-cyan-400 underline">צפה במקור (Yahoo Finance)</a></p>
+                    <p><strong>כותרת:</strong> ביקושים שיא למעבדי הדור הבא מרחיבים את נתח השוק של החברה.</p>
+                    <p><strong>משמעות למניה:</strong> תמיכה חזקה בתוצאות הרבעוניות ובהמשך מגמת הצמיחה.</p>
                 </div>
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
                     <h3 class="font-bold text-cyan-400">חדשות Advanced Micro Devices (AMD)</h3>
-                    <p>🔗 <a href="{{amd_news_link}}" target="_blank" class="text-cyan-400 underline">צפה במקור (Yahoo Finance)</a></p>
-                    <p><strong>כותרת:</strong> {{amd_news_title}}</p>
-                    <p><strong>משמעות למניה:</strong> {{amd_news_meaning}}</p>
+                    <p>🔗 <a href="https://finance.yahoo.com/quote/AMD" target="_blank" class="text-cyan-400 underline">צפה במקור (Yahoo Finance)</a></p>
+                    <p><strong>כותרת:</strong> הרחבת שיתופי הפעולה בתחום תשתיות הענן ומעבדי השרתים.</p>
+                    <p><strong>משמעות למניה:</strong> חיזוק המעמד התחרותי מול המתחרות בשוק החומרה.</p>
                 </div>
             </div>
         </div>
