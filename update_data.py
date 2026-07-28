@@ -255,56 +255,178 @@ if should_update:
         usd_ils_price = format_num(fx_data.get("price", 3.65))
         usd_ils_change = f"{fx_data.get('change', 0)}%"
 
-        # מילון החלפות המגשר בין כל וריאציות השמות האפשריות בקובץ ה-HTML
-        replacements = {
-            "update_time": f"{date_str} | {time_str}",
-            "LAST_UPDATED": f"{date_str} | {time_str}",
-            
-            # S&P 500
-            "sp500_val": sp500_price,
-            "SP500_PRICE": sp500_price,
-            "SP500_LEVEL": sp500_price,
-            "SNP_500_LEVEL": sp500_price,
-            "sp500_change": sp500_change,
-            "SP500_CHANGE": sp500_change,
-            "SP500_PCT": sp500_change,
-            "SNP_500_CHANGE": sp500_change,
+        # מילון החלפות בטוח ונקי משגיאות תחביר
+        replacements = {}
+        replacements["update_time"] = f"{date_str} | {time_str}"
+        replacements["LAST_UPDATED"] = f"{date_str} | {time_str}"
 
-            # Nasdaq
-            "nasdaq_val": nasdaq_price,
-            "NASDAQ_PRICE": nasdaq_price,
-            "NASDAQ_LEVEL": nasdaq_price,
-            "nasdaq_change": nasdaq_change,
-            "NASDAQ_CHANGE": nasdaq_change,
-            "NASDAQ_PCT": nasdaq_change,
+        # S&P 500
+        replacements["sp500_val"] = sp500_price
+        replacements["SP500_PRICE"] = sp500_price
+        replacements["SP500_LEVEL"] = sp500_price
+        replacements["SNP_500_LEVEL"] = sp500_price
+        replacements["sp500_change"] = sp500_change
+        replacements["SP500_CHANGE"] = sp500_change
+        replacements["SP500_PCT"] = sp500_change
+        replacements["SNP_500_CHANGE"] = sp500_change
 
-            # Dow Jones / DJI
-            "dow_val": dji_price,
-            "DJI_PRICE": dji_price,
-            "DJI_LEVEL": dji_price,
-            "DOW_PRICE": dji_price,
-            "dow_change": dji_change,
-            "DJI_CHANGE": dji_change,
-            "DJI_PCT": dji_change,
-            "DOW_PCT": dji_change,
+        # Nasdaq
+        replacements["nasdaq_val"] = nasdaq_price
+        replacements["NASDAQ_PRICE"] = nasdaq_price
+        replacements["NASDAQ_LEVEL"] = nasdaq_price
+        replacements["nasdaq_change"] = nasdaq_change
+        replacements["NASDAQ_CHANGE"] = nasdaq_change
+        replacements["NASDAQ_PCT"] = nasdaq_change
 
-            # VIX
-            "vix_val": vix_price,
-            "VIX_PRICE": vix_price,
-            "VIX_LEVEL": vix_price,
-            "vix_change": vix_change,
-            "VIX_CHANGE": vix_change,
-            "VIX_PCT": vix_change,
+        # Dow Jones / DJI
+        replacements["dow_val"] = dji_price
+        replacements["DJI_PRICE"] = dji_price
+        replacements["DJI_LEVEL"] = dji_price
+        replacements["DOW_PRICE"] = dji_price
+        replacements["dow_change"] = dji_change
+        replacements["DJI_CHANGE"] = dji_change
+        replacements["DJI_PCT"] = dji_change
+        replacements["DOW_PCT"] = dji_change
 
-            # DXY / USDILS
-            "dxy_val": dxy_price,
-            "DXY_PRICE": dxy_price,
-            "DXY_LEVEL": dxy_price,
-            "dxy_change": dxy_change,
-            "DXY_CHANGE": dxy_change,
-            "DXY_PCT": dxy_change,
-            "usd_ils": usd_ils_price,
-            "USD_ILS": usd_ils_price,
-            "USD_ILS_PRICE": usd_ils_price,
-            "USD_ILS_RATE": usd_ils_price,
-            "USD_ILS_CHANGE": usd_
+        # VIX
+        replacements["vix_val"] = vix_price
+        replacements["VIX_PRICE"] = vix_price
+        replacements["VIX_LEVEL"] = vix_price
+        replacements["vix_change"] = vix_change
+        replacements["VIX_CHANGE"] = vix_change
+        replacements["VIX_PCT"] = vix_change
+
+        # DXY / USDILS
+        replacements["dxy_val"] = dxy_price
+        replacements["DXY_PRICE"] = dxy_price
+        replacements["DXY_LEVEL"] = dxy_price
+        replacements["dxy_change"] = dxy_change
+        replacements["DXY_CHANGE"] = dxy_change
+        replacements["DXY_PCT"] = dxy_change
+        replacements["usd_ils"] = usd_ils_price
+        replacements["USD_ILS"] = usd_ils_price
+        replacements["USD_ILS_PRICE"] = usd_ils_price
+        replacements["USD_ILS_RATE"] = usd_ils_price
+        replacements["USD_ILS_CHANGE"] = usd_ils_change
+
+        # סחורות וקריפטו
+        replacements["oil_price"] = oil_price
+        replacements["OIL_PRICE"] = oil_price
+        replacements["OIL_CHANGE"] = oil_change
+        replacements["gold_price"] = gold_price
+        replacements["GOLD_PRICE"] = gold_price
+        replacements["GOLD_CHANGE"] = gold_change
+        replacements["btc_price"] = btc_price
+        replacements["BTC_PRICE"] = btc_price
+        replacements["BTC_CHANGE"] = btc_change
+
+        # חדשות ומאקרו
+        replacements["macro_news_us"] = ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.")
+        replacements["US_MARKET_NEWS"] = ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.")
+        replacements["macro_news_il"] = ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות.")
+        replacements["IL_MARKET_NEWS"] = ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות.")
+
+        # סקטורים
+        replacements["sector_chips"] = ai_insights.get("SECTOR_CHIPS_DESC", "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.")
+        replacements["SECTOR_CHIPS_DESC"] = ai_insights.get("SECTOR_CHIPS_DESC", "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.")
+        replacements["sector_cloud"] = ai_insights.get("SECTOR_CLOUD_DESC", "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבוסס ענן.")
+        replacements["SECTOR_CLOUD_DESC"] = ai_insights.get("SECTOR_CLOUD_DESC", "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבוסס ענן.")
+        replacements["sector_crypto"] = ai_insights.get("SECTOR_CRYPTO_DESC", "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.")
+        replacements["SECTOR_CRYPTO_DESC"] = ai_insights.get("SECTOR_CRYPTO_DESC", "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.")
+
+        # קטליסטים וניתוחים
+        replacements["catalyst_earnings"] = ai_insights.get("CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים.")
+        replacements["CATALYST_EARNINGS"] = ai_insights.get("CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים.")
+        replacements["catalyst_monetary"] = ai_insights.get("CATALYST_MONETARY", "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.")
+        replacements["CATALYST_MONETARY"] = ai_insights.get("CATALYST_MONETARY", "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.")
+        replacements["catalyst_hardware"] = ai_insights.get("CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה.")
+        replacements["CATALYST_HARDWARE"] = ai_insights.get("CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה.")
+        replacements["community_sentiment"] = ai_insights.get("COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות.")
+        replacements["COMMUNITY_SENTIMENT"] = ai_insights.get("COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות.")
+        replacements["analyst_point_1"] = ai_insights.get("ANALYST_POINT_1", "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.")
+        replacements["ANALYST_POINT_1"] = ai_insights.get("ANALYST_POINT_1", "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.")
+        replacements["analyst_point_2"] = ai_insights.get("ANALYST_POINT_2", "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.")
+        replacements["ANALYST_POINT_2"] = ai_insights.get("ANALYST_POINT_2", "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.")
+        replacements["risk_management_text"] = ai_insights.get("RISK_MANAGEMENT_TEXT", "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.")
+        replacements["RISK_MANAGEMENT_TEXT"] = ai_insights.get("RISK_MANAGEMENT_TEXT", "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.")
+        replacements["action_recommendations_text"] = ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.")
+        replacements["ACTION_RECOMMENDATIONS_TEXT"] = ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.")
+
+        for ticker in all_strategy_tickers:
+            p_data = market_data.get(ticker, {})
+            price_val = format_num(p_data.get("price", 0.0))
+            pct_val = f"{p_data.get('change', 0.0)}%"
+            target_val = format_num(
+                portfolio_buys.get(ticker, {}).get("target", 0.0)
+            )
+            rationale_val = ai_insights.get(
+                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
+            )
+            swing_val = ai_insights.get(
+                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
+            )
+
+            for prefix in [
+                f"{ticker}_LONG",
+                f"{ticker}_SWING",
+                ticker,
+            ]:
+                replacements[f"{prefix}_PRICE"] = price_val
+                replacements[f"{prefix}_PRE"] = price_val
+                replacements[f"{prefix}_PCT"] = pct_val
+                replacements[f"{prefix}_TARGET"] = target_val
+                replacements[f"{prefix}_RATIONALE"] = rationale_val
+                replacements[f"{prefix}_TEXT"] = swing_val
+
+            replacements[f"{ticker}_SWING_TEXT_2"] = (
+                f"עדכון מומנטום נוסף עבור {ticker}."
+            )
+
+        for ticker, info in portfolio_buys.items():
+            curr_p = market_data.get(ticker, {}).get("price", info["buy"])
+            ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
+            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
+            status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+
+            replacements[f"{ticker}_PORT_STATUS"] = status_str
+            replacements[f"{ticker}_PORT_TARGET"] = format_num(info["target"])
+            replacements[f"{ticker}_PORT_PRE"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_CURRENT"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
+                f"{ticker}_PORT_NOTE",
+                "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
+            )
+
+            replacements[f"PORTFOLIO_{ticker}_PRICE"] = format_num(curr_p)
+            replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
+            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(
+                info["target"]
+            )
+            replacements[f"PORTFOLIO_{ticker}_PRE"] = format_num(curr_p)
+
+        for ticker in all_strategy_tickers:
+            replacements[f"{ticker}_NEWS_LINK"] = (
+                f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){ticker}"
+            )
+            replacements[f"{ticker}_NEWS_TITLE"] = ai_insights.get(
+                f"{ticker}_NEWS_TITLE", f"עדכון שוק מרכזי עבור מניית {ticker}"
+            )
+            replacements[f"{ticker}_NEWS_CONTENT"] = ai_insights.get(
+                f"{ticker}_NEWS_CONTENT",
+                f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {ticker}.",
+            )
+            replacements[f"{ticker}_NEWS_IMPACT"] = ai_insights.get(
+                f"{ticker}_NEWS_IMPACT",
+                "השפעה חיובית ומתונה על תיק ההשקעות והמגמה הראשית.",
+            )
+
+        with open("index.template.html", "r", encoding="utf-8-sig") as f:
+            content = f.read()
+
+        content = content.replace("US השפעות", "🇺🇸 השפעות")
+        content = content.replace("IL השפעות", "🇮🇱 השפעות")
+        content = content.replace("US:", "🇺🇸")
+        content = content.replace("IL:", "🇮🇱")
+
+        for ticker in all_strategy_tickers:
+            bad_link_pattern = (
