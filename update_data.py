@@ -156,7 +156,6 @@ if should_update:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
 
-    # ערכי ברירת מחדל או ערכי ה-AI המעודכנים
     replacements = {
         'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - מותאם אישית 📊',
         'LAST_UPDATED': (
@@ -180,7 +179,6 @@ if should_update:
             'IL_MARKET_MACRO_NEWS',
             'השוק המקומי מגיב לנתוני המאקרו ולעדכונים הביטחוניים והכלכליים.',
         ),
-        # סקטורים
         'SECTOR_TECH_PERF': '+1.4%',
         'SECTOR_COMM_PERF': '+0.8%',
         'SECTOR_CONS_DISC_PERF': '-0.5%',
@@ -192,7 +190,6 @@ if should_update:
         'SECTOR_MAT_PERF': '+0.4%',
         'SECTOR_RE_PERF': '-0.7%',
         'SECTOR_UTIL_PERF': '+0.2%',
-        # זרזים
         'CATALYST_EARNINGS': (
             'דוחות כספיים עונתיים של חברות הטכנולוגיה והשבבים.'
         ),
@@ -200,7 +197,6 @@ if should_update:
         'CATALYST_HARDWARE': (
             'השקות מוצרי חומרה, מעבדים ופתרונות ענן מתקדמים.'
         ),
-        # מחירי מניות שלב 4
         'NVDA_PRICE': str(market_data.get('NVDA', {}).get('price', 0)),
         'AMD_PRICE': str(market_data.get('AMD', {}).get('price', 0)),
         'MU_PRICE': str(market_data.get('MU', {}).get('price', 0)),
@@ -220,7 +216,6 @@ if should_update:
         'SNDK_PRICE': str(market_data.get('SNDK', {}).get('price', 0)),
         'NFLX_PRICE': str(market_data.get('NFLX', {}).get('price', 0)),
         'GTEC_PRICE': str(market_data.get('GTEC', {}).get('price', 0)),
-        # סנטימנט וסיכום מנהלים מתקדמים מ-AI
         'FEAR_GREED_INDEX': '68',
         'FEAR_GREED_DESC': (
             'חמדנות מתונה - המשקיעים מפגינים אופטימיות זהירה.'
