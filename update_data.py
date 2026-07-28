@@ -2,7 +2,6 @@ from datetime import datetime
 import json
 import os
 import subprocess
-from google import genai
 import pytz
 import requests
 import yfinance as yf
@@ -108,14 +107,14 @@ portfolio_buys = {
 
 
 def generate_ai_insights(market_data):
-  """פונה ל-Gemini API להפקת ניתוח דינמי בעברית עבור הדו"ח"""
+  """פונה ל-Gemini API באופן ישיר דרך requests להפקת ניתוח דינמי בעברית"""
   api_key = os.environ.get('GEMINI_API_KEY')
   if not api_key:
     print('No GEMINI_API_KEY found. Skipping AI dynamic texts.')
     return {}
 
   try:
-    client = genai.Client(api_key=api_key)
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
     prompt = f"""
         אתה אנליסט ראשי בשוק ההון. הנה הנתונים העדכניים של השוק והמניות:
         {json.dumps(market_data, ensure_ascii=False)}
@@ -130,12 +129,16 @@ def generate_ai_insights(market_data):
         - NEWS_ENERGY_CRYPTO: עדכון קצר על קריפטו ואנרגיה
         """
 
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=prompt,
-        config={'response_mime_type': 'application/json'},
-    )
-    return json.loads(response.text)
+    payload = {
+        'contents': [{'parts': [{'text': prompt}]}],
+        'generationConfig': {'response_mime_type': 'application/json'},
+    }
+
+    res = requests.post(url, json=payload, timeout=30)
+    res_data = res.json()
+
+    text_response = res_data['candidates'][0]['content']['parts'][0]['text']
+    return json.loads(text_response)
   except Exception as e:
     print(f'Error calling Gemini API: {e}')
     return {}
@@ -153,7 +156,7 @@ if should_update:
     date_str = now_il.strftime('%d.%m.%Y')
     time_str = now_il.strftime('%H:%M')
 
-# ערכי ברירת מחדל או ערכי ה-AI המעודכנים
+    # ערכי ברירת מחדל או ערכי ה-AI המעודכנים
     replacements = {
         'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - מותאם אישית 📊',
         'LAST_UPDATED': (
