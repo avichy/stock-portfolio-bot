@@ -151,7 +151,9 @@ def generate_ai_insights(market_data):
     אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:
     {json.dumps(market_data, ensure_ascii=False)}
 
-    **כלל קשיח ביותר:** כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).
+    **כללים קשיחים לחובה:**
+    1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.
+    2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).
     
     החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:
     - US_MARKET_MACRO_NEWS
@@ -344,3 +346,79 @@ if should_update:
                 "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.",
             ),
             "CATALYST_HARDWARE": ai_insights.get(
+                "CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה."
+            ),
+            # שלב 6: סנטימנט ואנליסטים
+            "COMMUNITY_SENTIMENT": ai_insights.get(
+                "COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות."
+            ),
+            "ANALYST_POINT_1": ai_insights.get(
+                "ANALYST_POINT_1",
+                "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.",
+            ),
+            "ANALYST_POINT_2": ai_insights.get(
+                "ANALYST_POINT_2",
+                "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.",
+            ),
+            # שלב 7: סיכון ואסטרטגיה
+            "RISK_MANAGEMENT_TEXT": ai_insights.get(
+                "RISK_MANAGEMENT_TEXT",
+                "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
+            ),
+            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
+                "ACTION_RECOMMENDATIONS_TEXT",
+                "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
+            ),
+        }
+
+        # מילוי דינמי מלא לכל מניות הליבה והסווינג (שלב 4)
+        for ticker in all_strategy_tickers:
+            p_data = market_data.get(ticker, {})
+            price_val = format_num(p_data.get("price", 0.0))
+            pct_val = f"{p_data.get('change', 0.0)}%"
+            target_val = format_num(
+                portfolio_buys.get(ticker, {}).get("target", 0.0)
+            )
+            rationale_val = ai_insights.get(
+                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
+            )
+            swing_val = ai_insights.get(
+                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
+            )
+
+            for prefix in [
+                f"{ticker}_LONG",
+                f"{ticker}_SWING",
+                ticker,
+            ]:
+                replacements[f"{prefix}_PRICE"] = price_val
+                replacements[f"{prefix}_PRE"] = price_val
+                replacements[f"{prefix}_PCT"] = pct_val
+                replacements[f"{prefix}_TARGET"] = target_val
+                replacements[f"{prefix}_RATIONALE"] = rationale_val
+                replacements[f"{prefix}_TEXT"] = swing_val
+
+            replacements[f"{ticker}_SWING_TEXT_2"] = (
+                f"עדכון מומנטום נוסף עבור {ticker}."
+            )
+
+        # מילוי דינמי לתיק האישי בסעיף 5
+        for ticker, info in portfolio_buys.items():
+            curr_p = market_data.get(ticker, {}).get("price", info["buy"])
+            ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
+            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
+            status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+
+            replacements[f"{ticker}_PORT_STATUS"] = status_str
+            replacements[f"{ticker}_PORT_TARGET"] = format_num(info["target"])
+            replacements[f"{ticker}_PORT_PRE"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_CURRENT"] = format_num(curr_p)
+            replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
+                f"{ticker}_PORT_NOTE",
+                "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
+            )
+
+            replacements[f"PORTFOLIO_{ticker}_PRICE"] = format_num(curr_p)
+            replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
+            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(
+                info["target"]
