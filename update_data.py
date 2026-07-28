@@ -27,8 +27,12 @@ current_hour = now_il.hour
 current_minute = now_il.minute
 current_total_minutes = current_hour * 60 + current_minute
 
-# זיהוי אירוע ההפעלה ב-GitHub Actions
-trigger_event = os.environ.get('TRIGGER_EVENT', 'schedule')
+# זיהוי אירוע ההפעלה מול GitHub Actions (תומך גם ב-workflow_dispatch ידני וגם ב-schedule)
+trigger_event = (
+    os.environ.get('GITHUB_EVENT_NAME')
+    or os.environ.get('TRIGGER_EVENT')
+    or 'schedule'
+)
 
 # מיפוי שמות הימים בעברית
 days_map = {
@@ -182,7 +186,7 @@ def generate_ai_insights(market_data):
     return {}
 
 
-# בדיקת שעות פעילות לעדכון (10:30 עד 23:30) או הפעלה ידנית
+# תנאי עדכון: אם ההפעלה ידנית (workflow_dispatch) – תתבצע תמיד מיד. אם אוטומטית (schedule) – רק בשעות הפעילות (10:30 עד 23:30)
 is_within_auto_hours = 630 <= current_total_minutes <= 1410
 should_update = (trigger_event == 'workflow_dispatch') or is_within_auto_hours
 
@@ -412,4 +416,4 @@ if should_update:
   except Exception as e:
     print(f'Error updating file: {e}')
 else:
-  print('Outside active automated hours. Skipping run.')
+  print('Outside active automated hours. Skipping scheduled run.')
