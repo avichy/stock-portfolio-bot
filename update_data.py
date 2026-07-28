@@ -253,4 +253,58 @@ if should_update:
 
         fx_data = market_data.get("USDILS=X", {})
         usd_ils_price = format_num(fx_data.get("price", 3.65))
-        usd_ils_change = f"{fx_data.get('change', 0
+        usd_ils_change = f"{fx_data.get('change', 0)}%"
+
+        # מילון החלפות המגשר בין כל וריאציות השמות האפשריות בקובץ ה-HTML
+        replacements = {
+            "update_time": f"{date_str} | {time_str}",
+            "LAST_UPDATED": f"{date_str} | {time_str}",
+            
+            # S&P 500
+            "sp500_val": sp500_price,
+            "SP500_PRICE": sp500_price,
+            "SP500_LEVEL": sp500_price,
+            "SNP_500_LEVEL": sp500_price,
+            "sp500_change": sp500_change,
+            "SP500_CHANGE": sp500_change,
+            "SP500_PCT": sp500_change,
+            "SNP_500_CHANGE": sp500_change,
+
+            # Nasdaq
+            "nasdaq_val": nasdaq_price,
+            "NASDAQ_PRICE": nasdaq_price,
+            "NASDAQ_LEVEL": nasdaq_price,
+            "nasdaq_change": nasdaq_change,
+            "NASDAQ_CHANGE": nasdaq_change,
+            "NASDAQ_PCT": nasdaq_change,
+
+            # Dow Jones / DJI
+            "dow_val": dji_price,
+            "DJI_PRICE": dji_price,
+            "DJI_LEVEL": dji_price,
+            "DOW_PRICE": dji_price,
+            "dow_change": dji_change,
+            "DJI_CHANGE": dji_change,
+            "DJI_PCT": dji_change,
+            "DOW_PCT": dji_change,
+
+            # VIX
+            "vix_val": vix_price,
+            "VIX_PRICE": vix_price,
+            "VIX_LEVEL": vix_price,
+            "vix_change": vix_change,
+            "VIX_CHANGE": vix_change,
+            "VIX_PCT": vix_change,
+
+            # DXY / USDILS
+            "dxy_val": dxy_price,
+            "DXY_PRICE": dxy_price,
+            "DXY_LEVEL": dxy_price,
+            "dxy_change": dxy_change,
+            "DXY_CHANGE": dxy_change,
+            "DXY_PCT": dxy_change,
+            "usd_ils": usd_ils_price,
+            "USD_ILS": usd_ils_price,
+            "USD_ILS_PRICE": usd_ils_price,
+            "USD_ILS_RATE": usd_ils_price,
+            "USD_ILS_CHANGE": usd_
