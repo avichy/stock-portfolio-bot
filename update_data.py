@@ -259,7 +259,6 @@ if should_update:
         dxy_price = format_num(dxy.get("price", 0))
         dxy_change = f"{dxy.get('change', 0)}%"
 
-        # שימוש במשתנים בטוחים כדי למנוע חיתוך תווים בדפדפן
         oil_ticker = "CL=F"
         gold_ticker = "GC=F"
         btc_ticker = "BTC-USD"
@@ -445,16 +444,33 @@ if should_update:
         content = content.replace("IL:", "🇮🇱")
 
         for ticker in all_strategy_tickers:
-            bad_link_pattern = (
-                f"קישור למקור: {ticker}/{{{{{ticker}}_NEWS_LINK}}}"
+            bad_link_pattern = "קישור למקור: " + ticker + "/{{" + ticker + "_NEWS_LINK}}"
+            good_link_html = (
+                'קישור למקור: <a href="{{'
+                + ticker
+                + '_NEWS_LINK}}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: bold;">מעבר לאתר החדשות של '
+                + ticker
+                + '</a>'
             )
-            good_link_html = f'קישור למקור: <a href="{{{{{ticker}}_NEWS_LINK}}}}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: bold;">מעבר לאתר החדשות של {ticker}</a>'
             content = content.replace(bad_link_pattern, good_link_html)
 
-            double_bad_pattern = f"{ticker}/{{{{{ticker}}_NEWS_LINK}}}/{{{{{ticker}}_NEWS_LINK}}}"
+            double_bad_pattern = (
+                ticker
+                + "/{{"
+                + ticker
+                + "_NEWS_LINK}}/{{"
+                + ticker
+                + "_NEWS_LINK}}"
+            )
             content = content.replace(
                 double_bad_pattern,
-                f'<a href="{{{{{ticker}}_NEWS_LINK}}}}" target="_blank" style="color: #38bdf8; text-decoration: underline;">{ticker}</a>',
+                (
+                    '<a href="{{'
+                    + ticker
+                    + '_NEWS_LINK}}" target="_blank" style="color: #38bdf8; text-decoration: underline;">'
+                    + ticker
+                    + "</a>"
+                ),
             )
 
         for key, val in replacements.items():
