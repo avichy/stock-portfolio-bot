@@ -44,10 +44,39 @@
         <div id="tab-1" class="tab-content space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
                 
-                <!-- מדדים מובילים (עודכן עם S&P500, NASDAQ, DJI, VIX, DXY) -->
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
+                <!-- צד ימין: דולר, נפט, זהב, ביטקוין בכרטיסים קומפקטיים לפי גודל הטקסט -->
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
+                        <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
+                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של [שער חליפין נוכחי] שקל לדולר אחד.</p>
+                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> עבורך כמשקיע שקונה מניות בארה"ב, שער זה משפיע על המרת שקלים לדולרים לצורך רכישת מניות חדשות. מנגד, בעת מימוש רווחים והמרתם חזרה לשקלים, הרווח השקלי משתנה בהתאם לשער החליפין.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
+                        <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב [מחיר חבית] דולר לחבית על רקע אירועים גיאופוליטיים ומאקרו-כלכליים.</p>
+                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> שינויים במחירי האנרגיה משפיעים על עלויות השילוח והייצור הגלובליות, משפיעים על סביבת האינפלציה, ויכולים לאלץ את הבנקים המרכזיים לשמור על מדיניות ריבית משתנה המשפיעה על נכסים עתירי סיכון.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
+                        <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב [מחיר אונקיה] דולר לאונקיה.</p>
+                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> הזהב משמש כעוגן מקלט בטוח בתקופות של חוסר ודאות בשווקים. מחירו מושפע מהמתח שבין הביקוש המוסדי לבין הציפיות לגבי תשואות האג"ח.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
+                        <h3 class="text-base font-bold text-cyan-400">ביטקוין (Bitcoin) 🪙</h3>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-[מחיר ביטקוין] דולר.</p>
+                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> משקף את מדד התיאבון לסיכון בשווקים הדיגיטליים. תנועות המחיר שלו מונעות משינויי נזילות ומסנטימנט המשקיעים לגבי נכסים אלטרנטיביים.</p>
+                    </div>
+
+                </div>
+
+                <!-- צד שמאל: מדדים מובילים -->
+                <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
                     
                     <div class="space-y-2 text-sm">
@@ -78,29 +107,6 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
-                    <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                    <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של [שער חליפין נוכחי] שקל לדולר אחד.</p>
-                    <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> עבורך כמשקיע שקונה מניות בארה"ב, שער זה משפיע על המרת שקלים לדולרים לצורך רכישת מניות חדשות. מנגד, בעת מימוש רווחים והמרתם חזרה לשקלים, הרווח השקלי משתנה בהתאם לשער החליפין.</p>
-                </div>
-
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
-                    <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                    <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב [מחיר חבית] דולר לחבית על רקע אירועים גיאופוליטיים ומאקרו-כלכליים.</p>
-                    <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> שינויים במחירי האנרגיה משפיעים על עלויות השילוח והייצור הגלובליות, משפיעים על סביבת האינפלציה, ויכולים לאלץ את הבנקים המרכזיים לשמור על מדיניות ריבית משתנה המשפיעה על נכסים עתירי סיכון.</p>
-                </div>
-
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
-                    <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                    <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב [מחיר אונקיה] דולר לאונקיה.</p>
-                    <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> הזהב משמש כעוגן מקלט בטוח בתקופות של חוסר ודאות בשווקים. מחירו מושפע מהמתח שבין הביקוש המוסדי לבין הציפיות לגבי תשואות האג"ח.</p>
-                </div>
-
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
-                    <h3 class="text-base font-bold text-cyan-400">ביטקוין (Bitcoin) 🪙</h3>
-                    <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-[מחיר ביטקוין] דולר.</p>
-                    <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> משקף את מדד התיאבון לסיכון בשווקים הדיגיטליים. תנועות המחיר שלו מונעות משינויי נזילות ומסנטימנט המשקיעים לגבי נכסים אלטרנטיביים.</p>
-                </div>
             </div>
 
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
