@@ -2,7 +2,7 @@ name: Update Stock Prices & Notifications
 
 on:
   schedule:
-    - cron: '0,30 * * * *' # רץ אוטומטית כל חצי שעה
+    - cron: '0,30 * * * *' # רץ אוטומטית כל חצי שעה ומכסה את כל הטווח מ-10:30 ועד 23:30
   workflow_dispatch:        # מאפשר גם הפעלה ידנית מתי שתרצה
 
 permissions:
