@@ -6,6 +6,18 @@ import pytz
 import requests
 import yfinance as yf
 
+
+def format_num(val, decimals=2):
+  """מפרמט מספר עם פסיקים לאלפים ומספר ספרות אחרי הנקודה"""
+  try:
+    num = float(val)
+    if decimals == 0:
+      return f'{num:,.0f}'
+    return f'{num:,.{decimals}f}'
+  except (ValueError, TypeError):
+    return str(val)
+
+
 # הגדרת אזור זמן של ישראל
 israel_tz = pytz.timezone('Asia/Jerusalem')
 now_il = datetime.now(israel_tz)
@@ -147,13 +159,12 @@ def generate_ai_insights(market_data):
         - CATALYST_EARNINGS: דיווחי תוצאות לרבעון
         - CATALYST_MONETARY: הודעות מדיניות מוניטרית
         - CATALYST_HARDWARE: השקות חומרה
-        - מילוי לכל מניות הליבה באסטרטגיה (יעדים ורציונל כגון: NVDA_TARGET, NVDA_RATIONALE, AMD_TARGET, AMD_RATIONALE וכו' עבור כל 10 מניות הליבה ו-10 מניות הסווינג).
+        - מילוי לכל מניות הליבה באסטרטגיה (יעדים ורציונל כגון: NVDA_TARGET, NVDA_RATIONALE, AMD_TARGET, AMD_RATIONALE וכו' עבור כל מניות הליבה והסווינג).
         - COMMUNITY_SENTIMENT_TEXT: סנטימנט קהילות המסחר
         - ANALYST_FORECAST_1: תחזית אנליסטים 1
         - ANALYST_FORECAST_2: תחזית אנליסטים 2
         - RISK_MANAGEMENT_TEXT: ניהול סיכונים
         - ACTION_RECOMMENDATIONS_TEXT: המלצות פעולה
-        - חדשות מניות נבחרות (NVDA_NEWS_LINK, NVDA_NEWS_TITLE, NVDA_NEWS_CONTENT, NVDA_NEWS_IMPACT, AMD_NEWS_LINK, AMD_NEWS_TITLE, AMD_NEWS_CONTENT, AMD_NEWS_IMPACT)
         """
 
     payload = {
@@ -187,51 +198,59 @@ if should_update:
     nasdaq = market_data.get('^IXIC', {})
     dji = market_data.get('^DJI', {})
     vix = market_data.get('^VIX', {})
-    dxy = market_data.get('USDILS=X', {})  # או מדד דולר מתאים
+    dxy = market_data.get('USDILS=X', {})
 
-    # מילון החלפות התבניות המלא עבור ה-HTML
+    # מילון החלפות התבניות המלא עבור ה-HTML (כולל פורמט פסיקים)
     replacements = {
         'LAST_UPDATED': f'{date_str} | {time_str}',
         # מדדים מובילים
-        'SNP_500_LEVEL': str(sp500.get('price', 0)),
+        'SNP_500_LEVEL': format_num(sp500.get('price', 0)),
         'SNP_500_CHANGE': f"{sp500.get('change', 0)}%",
         'SNP_500_MEANING': ai_insights.get(
             'SNP_500_MEANING', 'המדד משקף את מצב השוק הרחב.'
         ),
-        'NASDAQ_LEVEL': str(nasdaq.get('price', 0)),
+        'NASDAQ_LEVEL': format_num(nasdaq.get('price', 0)),
         'NASDAQ_CHANGE': f"{nasdaq.get('change', 0)}%",
         'NASDAQ_MEANING': ai_insights.get(
             'NASDAQ_MEANING', 'משקף את סקטור הטכנולוגיה והצמיחה.'
         ),
-        'DJI_LEVEL': str(dji.get('price', 0)),
+        'DJI_LEVEL': format_num(dji.get('price', 0)),
         'DJI_CHANGE': f"{dji.get('change', 0)}%",
         'DJI_MEANING': ai_insights.get(
             'DJI_MEANING', 'משקף את החברות התעשייתיות המסורתיות.'
         ),
-        'VIX_LEVEL': str(vix.get('price', 0)),
+        'VIX_LEVEL': format_num(vix.get('price', 0)),
         'VIX_CHANGE': f"{vix.get('change', 0)}%",
         'VIX_MEANING': ai_insights.get(
             'VIX_MEANING', 'רמת התנודתיות והחשש בשוק.'
         ),
-        'DXY_LEVEL': str(dxy.get('price', 0)),
+        'DXY_LEVEL': format_num(dxy.get('price', 0)),
         'DXY_CHANGE': f"{dxy.get('change', 0)}%",
         'DXY_MEANING': ai_insights.get(
             'DXY_MEANING', 'חוזק הדולר מול סל המטבעות.'
         ),
         # סחורות ומטבעות
-        'USD_ILS': str(market_data.get('USDILS=X', {}).get('price', 3.65)),
+        'USD_ILS': format_num(
+            market_data.get('USDILS=X', {}).get('price', 3.65)
+        ),
         'USD_ILS_MEANING': ai_insights.get(
             'USD_ILS_MEANING', 'השפעה על תיק השקעות דולרי מול שקל.'
         ),
-        'OIL_PRICE': str(market_data.get('CL=F', {}).get('price', 75.0)),
+        'OIL_PRICE': format_num(
+            market_data.get('CL=F', {}).get('price', 75.0)
+        ),
         'OIL_MEANING': ai_insights.get(
             'OIL_MEANING', 'השפעה על עלויות אנרגיה ואינפלציה.'
         ),
-        'GOLD_PRICE': str(market_data.get('GC=F', {}).get('price', 2350.0)),
+        'GOLD_PRICE': format_num(
+            market_data.get('GC=F', {}).get('price', 2350.0)
+        ),
         'GOLD_MEANING': ai_insights.get(
             'GOLD_MEANING', 'גידור מפני אי-יציבות כלכלית.'
         ),
-        'BTC_PRICE': f"{market_data.get('BTC-USD', {}).get('price', 65000.0):,}",
+        'BTC_PRICE': format_num(
+            market_data.get('BTC-USD', {}).get('price', 65000.0)
+        ),
         'BTC_MEANING': ai_insights.get(
             'BTC_MEANING', 'אינדיקטור לסנטימנט סיכון ונכסים דיגיטליים.'
         ),
@@ -254,9 +273,15 @@ if should_update:
         'SECTOR_CRYPTO_TEXT': ai_insights.get(
             'SECTOR_CRYPTO_TEXT', 'תנודתיות ערה בנכסים דיגיטליים.'
         ),
-        'SECTOR_CHIPS_VAL': str(ai_insights.get('SECTOR_CHIPS_VAL', 2.0)),
-        'SECTOR_CLOUD_VAL': str(ai_insights.get('SECTOR_CLOUD_VAL', 1.5)),
-        'SECTOR_CRYPTO_VAL': str(ai_insights.get('SECTOR_CRYPTO_VAL', 0.5)),
+        'SECTOR_CHIPS_VAL': format_num(
+            ai_insights.get('SECTOR_CHIPS_VAL', 2.0)
+        ),
+        'SECTOR_CLOUD_VAL': format_num(
+            ai_insights.get('SECTOR_CLOUD_VAL', 1.5)
+        ),
+        'SECTOR_CRYPTO_VAL': format_num(
+            ai_insights.get('SECTOR_CRYPTO_VAL', 0.5)
+        ),
         # קטליזטורים
         'CATALYST_EARNINGS': ai_insights.get(
             'CATALYST_EARNINGS', 'מעקב אחר דוחות כספיים רבעוניים.'
@@ -272,7 +297,7 @@ if should_update:
             'COMMUNITY_SENTIMENT_TEXT', 'אופטימיות זהירה בקרב סוחרים.'
         ),
         'ANALYST_FORECAST_1': ai_insights.get(
-            'ANALYST_FORECAST_1', 'המשך תנודתיות בסړ ירוק/אדום.'
+            'ANALYST_FORECAST_1', 'המשך תנודתיות בסקטור ירוק/אדום.'
         ),
         'ANALYST_FORECAST_2': ai_insights.get(
             'ANALYST_FORECAST_2', 'התמקדות בחברות בעלות תזרים מזומנים חזק.'
@@ -285,7 +310,7 @@ if should_update:
         ),
     }
 
-    # מילוי דינמי למניות הליבה והסווינג באסטרטגיה (שלב 4)
+    # מילוי דינמי למניות הליבה והסווינג באסטרטגיה
     all_strategy_tickers = [
         'NVDA',
         'AMD',
@@ -309,10 +334,10 @@ if should_update:
     ]
     for ticker in all_strategy_tickers:
       p_data = market_data.get(ticker, {})
-      replacements[f'{ticker}_PRICE'] = str(p_data.get('price', 0.0))
-      replacements[f'{ticker}_PRE'] = str(p_data.get('price', 0.0))
+      replacements[f'{ticker}_PRICE'] = format_num(p_data.get('price', 0.0))
+      replacements[f'{ticker}_PRE'] = format_num(p_data.get('price', 0.0))
       replacements[f'{ticker}_PCT'] = f"{p_data.get('change', 0.0)}%"
-      replacements[f'{ticker}_TARGET'] = str(
+      replacements[f'{ticker}_TARGET'] = format_num(
           portfolio_buys.get(ticker, {}).get('target', 0.0)
       )
       replacements[f'{ticker}_RATIONALE'] = ai_insights.get(
@@ -322,15 +347,15 @@ if should_update:
           f'{ticker}_SWING_TEXT', 'פוטנציאל למומנטום קצר טווח.'
       )
 
-    # מילוי נתוני התיק האישי (שלב 5)
+    # מילוי נתוני התיק האישי
     for ticker, info in portfolio_buys.items():
       curr_p = market_data.get(ticker, {}).get('price', info['buy'])
       ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
       ret_str = f'+{ret}%' if ret >= 0 else f'{ret}%'
 
-      replacements[f'PORTFOLIO_{ticker}_PRICE'] = str(curr_p)
-      replacements[f'PORTFOLIO_{ticker}_PRE'] = str(curr_p)
-      replacements[f'PORTFOLIO_{ticker}_TARGET'] = str(info['target'])
+      replacements[f'PORTFOLIO_{ticker}_PRICE'] = format_num(curr_p)
+      replacements[f'PORTFOLIO_{ticker}_PRE'] = format_num(curr_p)
+      replacements[f'PORTFOLIO_{ticker}_TARGET'] = format_num(info['target'])
       replacements[f'PORTFOLIO_{ticker}_STATUS'] = (
           f'רווח {ret_str}' if ret >= 0 else f'הפסד {ret_str}'
       )
