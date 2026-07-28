@@ -1,6 +1,8 @@
 from datetime import datetime
+import json
 import os
 import subprocess
+from google import genai
 import pytz
 import requests
 import yfinance as yf
@@ -36,28 +38,52 @@ print(
 
 # רשימת כל הסימולים שצריך למשוך עבור התיק, המדדים והסחורות
 tickers_to_fetch = [
-    'NVDA', 'AMD', 'MU', 'GOOG', 'AMZN', 'META', 'MA', 'WMT', 'TTWO', 'WDC',
-    'TQQQ', 'INTC', 'IREN', 'CIFR', 'IBIT', 'SIMO', 'SNDK', 'NFLX', 'GTEC',
-    'GC=F', 'CL=F', 'BTC-USD', 'USDILS=X'
+    'NVDA',
+    'AMD',
+    'MU',
+    'GOOG',
+    'AMZN',
+    'META',
+    'MA',
+    'WMT',
+    'TTWO',
+    'WDC',
+    'TQQQ',
+    'INTC',
+    'IREN',
+    'CIFR',
+    'IBIT',
+    'SIMO',
+    'SNDK',
+    'NFLX',
+    'GTEC',
+    'GC=F',
+    'CL=F',
+    'BTC-USD',
+    'USDILS=X',
 ]
 
-def fetch_all_data():
-    market_data = {}
-    for ticker in tickers_to_fetch:
-        try:
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period='2d')
-            if not hist.empty:
-                current_price = round(hist['Close'].iloc[-1], 2)
-                prev_close = hist['Close'].iloc[-2] if len(hist) > 1 else current_price
-                change = round(((current_price - prev_close) / prev_close) * 100, 2)
-                market_data[ticker] = {'price': current_price, 'change': change}
-        except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
-            market_data[ticker] = {'price': 0.0, 'change': 0.0}
-    return market_data
 
-# נתוני קנייה ומספר מניות מדויקים (ללא שינוי) עבור שלב 5
+def fetch_all_data():
+  market_data = {}
+  for ticker in tickers_to_fetch:
+    try:
+      stock = yf.Ticker(ticker)
+      hist = stock.history(period='2d')
+      if not hist.empty:
+        current_price = round(hist['Close'].iloc[-1], 2)
+        prev_close = (
+            hist['Close'].iloc[-2] if len(hist) > 1 else current_price
+        )
+        change = round(((current_price - prev_close) / prev_close) * 100, 2)
+        market_data[ticker] = {'price': current_price, 'change': change}
+    except Exception as e:
+      print(f'Error fetching {ticker}: {e}')
+      market_data[ticker] = {'price': 0.0, 'change': 0.0}
+  return market_data
+
+
+# נתוני קנייה ומספר מניות מדויקים עבור שלב 5
 portfolio_buys = {
     'NVDA': {'shares': 3, 'buy': 184.90, 'target': 220.0},
     'AMD': {'shares': 20, 'buy': 211.34, 'target': 250.0},
@@ -80,119 +106,216 @@ portfolio_buys = {
     'TQQQ': {'shares': 28, 'buy': 56.53, 'target': 75.0},
 }
 
+
+def generate_ai_insights(market_data):
+  """פונה ל-Gemini API להפקת ניתוח דינמי בעברית עבור הדו"ח"""
+  api_key = os.environ.get('GEMINI_API_KEY')
+  if not api_key:
+    print('No GEMINI_API_KEY found. Skipping AI dynamic texts.')
+    return {}
+
+  try:
+    client = genai.Client(api_key=api_key)
+    prompt = f"""
+        אתה אנליסט ראשי בשוק ההון. הנה הנתונים העדכניים של השוק והמניות:
+        {json.dumps(market_data, ensure_ascii=False)}
+
+        צור ניתוח תמציתי בעברית בפורמט JSON בלבד, המכיל את המפתחות הבאים:
+        - US_MARKET_MACRO_NEWS: ניתוח מאקרו ארה"ב (1-2 משפטים)
+        - IL_MARKET_MACRO_NEWS: ניתוח השוק המקומי (1-2 משפטים)
+        - EXECUTIVE_SUMMARY_1: דגש מרכזי 1 לניהול התיק
+        - EXECUTIVE_SUMMARY_2: דגש מרכזי 2 לניהול סיכונים
+        - EXECUTIVE_SUMMARY_3: הזדמנות טכנולוגית/סווינג
+        - NEWS_CHIPS_CLOUD: עדכון קצר על שבבים ותשתיות ענן
+        - NEWS_ENERGY_CRYPTO: עדכון קצר על קריפטו ואנרגיה
+        """
+
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=prompt,
+        config={'response_mime_type': 'application/json'},
+    )
+    return json.loads(response.text)
+  except Exception as e:
+    print(f'Error calling Gemini API: {e}')
+    return {}
+
+
 # שעות פעילות לעדכון האתר: מ-10:30 בבוקר ועד 23:30 בלילה
 is_within_auto_hours = 630 <= current_total_minutes <= 1410
 should_update = (trigger_event == 'workflow_dispatch') or is_within_auto_hours
 
 if should_update:
-    market_data = fetch_all_data()
-    
-    try:
-        date_str = now_il.strftime('%d.%m.%Y')
-        time_str = now_il.strftime('%H:%M')
+  market_data = fetch_all_data()
+  ai_insights = generate_ai_insights(market_data)
 
-        # מיפוי ערכים להזרקה לתוך תבניות ה-{{...}} בקובץ ה-HTML
-        replacements = {
-            'REPORT_TITLE': f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊',
-            'LAST_UPDATED': f'עודכן לאחרונה: <span dir="ltr">{date_str} | {time_str}</span>',
-            'MACRO_INDICES_DESC': 'המדדים המובילים נסחרים בהתאם לנתוני המאקרו האחרונים וציפיות הנזילות בשווקים.',
-            'USD_ILS': str(market_data.get('USDILS=X', {}).get('price', 3.65)),
-            'OIL_PRICE': str(market_data.get('CL=F', {}).get('price', 75.0)),
-            'GOLD_PRICE': str(market_data.get('GC=F', {}).get('price', 2350.0)),
-            'BTC_PRICE': f"{market_data.get('BTC-USD', {}).get('price', 65000.0):,}",
-            'US_MARKET_MACRO_NEWS': 'התפתחויות באינפלציה ובמדיניות הפד ממשיכות להוות את מוקד העניין הראשי בוול סטריט.',
-            'IL_MARKET_MACRO_NEWS': 'השוק המקומי מגיב לנתוני המאקרו ולעדכונים הביטחוניים והכלכליים.',
-            
-            # סקטורים
-            'SECTOR_TECH_PERF': '+1.4%',
-            'SECTOR_COMM_PERF': '+0.8%',
-            'SECTOR_CONS_DISC_PERF': '-0.5%',
-            'SECTOR_CONS_STAPLES_PERF': '+0.3%',
-            'SECTOR_FIN_PERF': '+0.9%',
-            'SECTOR_HEALTH_PERF': '-0.2%',
-            'SECTOR_IND_PERF': '+0.6%',
-            'SECTOR_ENERGY_PERF': '-1.1%',
-            'SECTOR_MAT_PERF': '+0.4%',
-            'SECTOR_RE_PERF': '-0.7%',
-            'SECTOR_UTIL_PERF': '+0.2%',
-            
-            # זרזים
-            'CATALYST_EARNINGS': 'דוחות כספיים עונתיים של חברות הטכנולוגיה והשבבים.',
-            'CATALYST_MONETARY': 'החלטות ריבית ופרוטוקולים של הבנקים המרכזיים.',
-            'CATALYST_HARDWARE': 'השקות מוצרי חומרה, מעבדים ופתרונות ענן מתקדמים.',
-            
-            # מחירי מניות שלב 4
-            'NVDA_PRICE': str(market_data.get('NVDA', {}).get('price', 0)),
-            'AMD_PRICE': str(market_data.get('AMD', {}).get('price', 0)),
-            'MU_PRICE': str(market_data.get('MU', {}).get('price', 0)),
-            'GOOG_PRICE': str(market_data.get('GOOG', {}).get('price', 0)),
-            'AMZN_PRICE': str(market_data.get('AMZN', {}).get('price', 0)),
-            'META_PRICE': str(market_data.get('META', {}).get('price', 0)),
-            'MA_PRICE': str(market_data.get('MA', {}).get('price', 0)),
-            'WMT_PRICE': str(market_data.get('WMT', {}).get('price', 0)),
-            'TTWO_PRICE': str(market_data.get('TTWO', {}).get('price', 0)),
-            'WDC_PRICE': str(market_data.get('WDC', {}).get('price', 0)),
-            'TQQQ_PRICE': str(market_data.get('TQQQ', {}).get('price', 0)),
-            'INTC_PRICE': str(market_data.get('INTC', {}).get('price', 0)),
-            'IREN_PRICE': str(market_data.get('IREN', {}).get('price', 0)),
-            'CIFR_PRICE': str(market_data.get('CIFR', {}).get('price', 0)),
-            'IBIT_PRICE': str(market_data.get('IBIT', {}).get('price', 0)),
-            'SIMO_PRICE': str(market_data.get('SIMO', {}).get('price', 0)),
-            'SNDK_PRICE': str(market_data.get('SNDK', {}).get('price', 0)),
-            'NFLX_PRICE': str(market_data.get('NFLX', {}).get('price', 0)),
-            'GTEC_PRICE': str(market_data.get('GTEC', {}).get('price', 0)),
-            
-            # סנטימנט וסיכום מנהלים
-            'FEAR_GREED_INDEX': '68',
-            'FEAR_GREED_DESC': 'חמדנות מתונה - המשקיעים מפגינים אופטימיות זהירה.',
-            'INSTITUTIONAL_SENTIMENT': 'הגופים המוסדיים ממשיכים לתמוך בסקטורי הצמיחה והטכנולוגיה המובילים.',
-            'EXECUTIVE_SUMMARY_1': 'התמקדות בחברות ליבה בעלות יתרון תחרותי חזק וביקושים מוכחים.',
-            'EXECUTIVE_SUMMARY_2': 'ניהול סיכונים קפדני ועבודה לפי רמות תמיכה והתנגדות.',
-            'EXECUTIVE_SUMMARY_3': 'בחינת הזדמנויות סווינג בסקטורים המחזוריים והטכנולוגיים.',
-            'NEWS_CHIPS_CLOUD': 'ביקוש יציב לשבבי עיבוד ומרכזי נתונים תומך בהמשך המגמה החיובית.',
-            'NEWS_ENERGY_CRYPTO': 'תנודתיות ערה בשוק הקריפטו והאנרגיה לצד מעבר לטכנולוגיות ירוקות.'
-        }
+  try:
+    date_str = now_il.strftime('%d.%m.%Y')
+    time_str = now_il.strftime('%H:%M')
 
-        # חישוב דינמי של מחירי שלב 5 תוך שמירה מלאה על מספר המניות ומחירי הקנייה שלך
-        for ticker, info in portfolio_buys.items():
-            curr_p = market_data.get(ticker, {}).get('price', info['buy'])
-            ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
-            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
-            
-            replacements[f'PORTFOLIO_{ticker}_SHARES'] = str(info['shares'])
-            replacements[f'PORTFOLIO_{ticker}_BUY'] = str(info['buy'])
-            replacements[f'PORTFOLIO_{ticker}_RETURN'] = ret_str
-            replacements[f'PORTFOLIO_{ticker}_PRICE'] = str(curr_p)
-            replacements[f'PORTFOLIO_{ticker}_TARGET'] = str(info['target'])
-            replacements[f'PORTFOLIO_{ticker}_STATUS'] = 'רווח' if ret >= 0 else 'הפסד'
+    # ערכי ברירת מחדל או ערכי ה-AI המעודכנים
+    replacements = {
+        'REPORT_TITLE': (
+            f'דו"ח סקייל שוק ההון המלא ליום {day_name} - נתונים מעודכנים 📊'
+        ),
+        'LAST_UPDATED': (
+            'עודכן לאחרונה:'
+            f' <span dir="ltr">{date_str} | {time_str}</span>'
+        ),
+        'MACRO_INDICES_DESC': (
+            'המדדים המובילים נסחרים בהתאם לנתוני המאקרו האחרונים וציפיות'
+            ' הנזילות בשווקים.'
+        ),
+        'USD_ILS': str(market_data.get('USDILS=X', {}).get('price', 3.65)),
+        'OIL_PRICE': str(market_data.get('CL=F', {}).get('price', 75.0)),
+        'GOLD_PRICE': str(market_data.get('GC=F', {}).get('price', 2350.0)),
+        'BTC_PRICE': f"{market_data.get('BTC-USD', {}).get('price', 65000.0):,}",
+        'US_MARKET_MACRO_NEWS': ai_insights.get(
+            'US_MARKET_MACRO_NEWS',
+            'התפתחויות באינפלציה ובמדיניות הפד ממשיכות להוות את מוקד העניין'
+            ' הראשי בוול סטריט.',
+        ),
+        'IL_MARKET_MACRO_NEWS': ai_insights.get(
+            'IL_MARKET_MACRO_NEWS',
+            'השוק המקומי מגיב לנתוני המאקרו ולעדכונים הביטחוניים והכלכליים.',
+        ),
+        # סקטורים
+        'SECTOR_TECH_PERF': '+1.4%',
+        'SECTOR_COMM_PERF': '+0.8%',
+        'SECTOR_CONS_DISC_PERF': '-0.5%',
+        'SECTOR_CONS_STAPLES_PERF': '+0.3%',
+        'SECTOR_FIN_PERF': '+0.9%',
+        'SECTOR_HEALTH_PERF': '-0.2%',
+        'SECTOR_IND_PERF': '+0.6%',
+        'SECTOR_ENERGY_PERF': '-1.1%',
+        'SECTOR_MAT_PERF': '+0.4%',
+        'SECTOR_RE_PERF': '-0.7%',
+        'SECTOR_UTIL_PERF': '+0.2%',
+        # זרזים
+        'CATALYST_EARNINGS': (
+            'דוחות כספיים עונתיים של חברות הטכנולוגיה והשבבים.'
+        ),
+        'CATALYST_MONETARY': 'החלטות ריבית ופרוטוקולים של הבנקים המרכזיים.',
+        'CATALYST_HARDWARE': (
+            'השקות מוצרי חומרה, מעבדים ופתרונות ענן מתקדמים.'
+        ),
+        # מחירי מניות שלב 4
+        'NVDA_PRICE': str(market_data.get('NVDA', {}).get('price', 0)),
+        'AMD_PRICE': str(market_data.get('AMD', {}).get('price', 0)),
+        'MU_PRICE': str(market_data.get('MU', {}).get('price', 0)),
+        'GOOG_PRICE': str(market_data.get('GOOG', {}).get('price', 0)),
+        'AMZN_PRICE': str(market_data.get('AMZN', {}).get('price', 0)),
+        'META_PRICE': str(market_data.get('META', {}).get('price', 0)),
+        'MA_PRICE': str(market_data.get('MA', {}).get('price', 0)),
+        'WMT_PRICE': str(market_data.get('WMT', {}).get('price', 0)),
+        'TTWO_PRICE': str(market_data.get('TTWO', {}).get('price', 0)),
+        'WDC_PRICE': str(market_data.get('WDC', {}).get('price', 0)),
+        'TQQQ_PRICE': str(market_data.get('TQQQ', {}).get('price', 0)),
+        'INTC_PRICE': str(market_data.get('INTC', {}).get('price', 0)),
+        'IREN_PRICE': str(market_data.get('IREN', {}).get('price', 0)),
+        'CIFR_PRICE': str(market_data.get('CIFR', {}).get('price', 0)),
+        'IBIT_PRICE': str(market_data.get('IBIT', {}).get('price', 0)),
+        'SIMO_PRICE': str(market_data.get('SIMO', {}).get('price', 0)),
+        'SNDK_PRICE': str(market_data.get('SNDK', {}).get('price', 0)),
+        'NFLX_PRICE': str(market_data.get('NFLX', {}).get('price', 0)),
+        'GTEC_PRICE': str(market_data.get('GTEC', {}).get('price', 0)),
+        # סנטימנט וסיכום מנהלים מתקדמים מ-AI
+        'FEAR_GREED_INDEX': '68',
+        'FEAR_GREED_DESC': (
+            'חמדנות מתונה - המשקיעים מפגינים אופטימיות זהירה.'
+        ),
+        'INSTITUTIONAL_SENTIMENT': (
+            'הגופים המוסדיים ממשיכים לתמוך בסקטורי הצמיחה והטכנולוגיה המובילים.'
+        ),
+        'EXECUTIVE_SUMMARY_1': ai_insights.get(
+            'EXECUTIVE_SUMMARY_1',
+            'התמקדות בחברות ליבה בעלות יתרון תחרותי חזק וביקושים מוכחים.',
+        ),
+        'EXECUTIVE_SUMMARY_2': ai_insights.get(
+            'EXECUTIVE_SUMMARY_2',
+            'ניהול סיכונים קפדני ועבודה לפי רמות תמיכה והתנגדות.',
+        ),
+        'EXECUTIVE_SUMMARY_3': ai_insights.get(
+            'EXECUTIVE_SUMMARY_3',
+            'בחינת הזדמנויות סווינג בסקטורים המחזוריים והטכנולוגיים.',
+        ),
+        'NEWS_CHIPS_CLOUD': ai_insights.get(
+            'NEWS_CHIPS_CLOUD',
+            'ביקוש יציב לשבבי עיבוד ומרכזי נתונים תומך בהמשך המגמה החיובית.',
+        ),
+        'NEWS_ENERGY_CRYPTO': ai_insights.get(
+            'NEWS_ENERGY_CRYPTO',
+            'תנודתיות ערה בשוק הקריפטו והאנרגיה לצד מעבר לטכנולוגיות ירוקות.',
+        ),
+    }
 
-        # קריאת קובץ ה-HTML והחלפת התבניות
-        with open('index.html', 'r', encoding='utf-8-sig') as f:
-            content = f.read()
+    # חישוב דינמי של מחירי שלב 5
+    for ticker, info in portfolio_buys.items():
+      curr_p = market_data.get(ticker, {}).get('price', info['buy'])
+      ret = round(((curr_p - info['buy']) / info['buy']) * 100, 2)
+      ret_str = f'+{ret}%' if ret >= 0 else f'{ret}%'
 
-        for key, val in replacements.items():
-            placeholder = f"{{{{{key}}}}}"
-            content = content.replace(placeholder, str(val))
+      replacements[f'PORTFOLIO_{ticker}_SHARES'] = str(info['shares'])
+      replacements[f'PORTFOLIO_{ticker}_BUY'] = str(info['buy'])
+      replacements[f'PORTFOLIO_{ticker}_RETURN'] = ret_str
+      replacements[f'PORTFOLIO_{ticker}_PRICE'] = str(curr_p)
+      replacements[f'PORTFOLIO_{ticker}_TARGET'] = str(info['target'])
+      replacements[f'PORTFOLIO_{ticker}_STATUS'] = (
+          'רווח' if ret >= 0 else 'הפסד'
+      )
 
-        with open('index.html', 'w', encoding='utf-8') as f:
-            f.write(content)
+    # קריאת קובץ ה-HTML והחלפת התבניות
+    with open('index.html', 'r', encoding='utf-8-sig') as f:
+      content = f.read()
 
-        print('Successfully updated index.html template with market data.')
+    for key, val in replacements.items():
+      placeholder = f'{{{{{key}}}}}'
+      content = content.replace(placeholder, str(val))
 
-        # ביצוע Git Commit ו-Push אוטומטיים
-        subprocess.run(['git', 'config', '--global', 'user.name', 'github-actions[bot]'], check=True)
-        subprocess.run(['git', 'config', '--global', 'user.email', 'github-actions[bot]@users.noreply.github.com'], check=True)
-        subprocess.run(['git', 'add', 'index.html'], check=True)
+    with open('index.html', 'w', encoding='utf-8') as f:
+      f.write(content)
 
-        status = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True, check=True)
-        if 'index.html' in status.stdout:
-            subprocess.run(['git', 'commit', '-m', f'Update market data template for {day_name} at {time_str}'], check=True)
-            subprocess.run(['git', 'push'], check=True)
-            print('Successfully pushed updated index.html to GitHub!')
-        else:
-            print('No changes detected by git.')
+    print('Successfully updated index.html template with market data.')
 
-    except Exception as e:
-        print(f'Error updating HTML template: {e}')
+    # ביצוע Git Commit ו-Push אוטומטיים
+    subprocess.run(
+        ['git', 'config', '--global', 'user.name', 'github-actions[bot]'],
+        check=True,
+    )
+    subprocess.run(
+        [
+            'git',
+            'config',
+            '--global',
+            'user.email',
+            'github-actions[bot]@users.noreply.github.com',
+        ],
+        check=True,
+    )
+    subprocess.run(['git', 'add', 'index.html'], check=True)
+
+    status = subprocess.run(
+        ['git', 'status', '--porcelain'],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    if 'index.html' in status.stdout:
+      subprocess.run(
+          [
+              'git',
+              'commit',
+              '-m',
+              f'Update market data template for {day_name} at {time_str}',
+          ],
+          check=True,
+      )
+      subprocess.run(['git', 'push'], check=True)
+      print('Successfully pushed updated index.html to GitHub!')
+    else:
+      print('No changes detected by git.')
+
+  except Exception as e:
+    print(f'Error updating HTML template: {e}')
 else:
-    print('Outside active auto-update hours. Skipping update.')
+  print('Outside active auto-update hours. Skipping update.')
