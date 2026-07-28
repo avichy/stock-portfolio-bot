@@ -264,4 +264,8 @@ if should_update:
         )
         usd_ils_change = f"{market_data.get('USDILS=X', {}).get('change', 0)}%"
 
-        oil_price = format_num(market_data.get("
+        oil_price = format_num(market_data.get("CL=F", {}).get("price", 75.0))
+        oil_change = f"{market_data.get('CL=F', {}).get('change', 0)}%"
+
+        gold_price = format_num(
+            market_data.get("GC=
