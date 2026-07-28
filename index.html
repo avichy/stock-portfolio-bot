@@ -45,9 +45,37 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
-                    <h3 class="text-base font-bold text-cyan-400">מדדים מובילים (Indices) 📈</h3>
-                    <p class="text-sm text-gray-300"><strong>[שם מדד 1] & [שם מדד 2]:</strong> המדדים המובילים בוול סטריט שמשמשים כמצפן המרכזי לסנטימנט המסחר העולמי, ומושפעים ישירות מהציפיות הכלכליות ומהחלטות הבנקים המרכזיים.</p>
+                
+                <!-- מדדים מובילים (עודכן עם S&P500, NASDAQ, DJI, VIX, DXY) -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
+                    <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
+                    
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-300">
+                            <strong>S&P 500:</strong> נסחר סביב רמה של [רמת S&P 500] ([שינוי %])<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> המדד המרכזי של הכלכלה האמריקאית (500 החברות הגדולות). עליות מצביעות על צמיחה וסנטימנט חיובי בשוק הרחב; ירידות מעידות על חששות מאינפלציה, ריבית או האטה כלכלית.</span>
+                        </p>
+
+                        <p class="text-gray-300">
+                            <strong>NASDAQ:</strong> נסחר סביב רמה של [רמת NASDAQ] ([שינוי %])<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> מדד עתיר טכנולוגיה. עליות משקפות תיאבון לסיכון ומומנטום חיובי בסקטור השבבים וה-AI; ירידות מגיעות לרוב מעליית תשואות האג"ח או מימוש רווחים בחברות הצמיחה.</span>
+                        </p>
+
+                        <p class="text-gray-300">
+                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של [רמת DJI] ([שינוי %])<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> מדד 30 חברות התעשייה והערך הגדולות בארה"ב. עליות מעידות על חוזק של הכלכלה המסורתית; ירידות מצביעות על חולשה בצריכה הפרטית ובתעשייה הכבדה.</span>
+                        </p>
+
+                        <p class="text-gray-300">
+                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של [רמת VIX] ([שינוי %])<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> מודד את תנודתיות השוק והחשש של המשקיעים. עליות ב-VIX מסמנות עלייה בלחץ, אי-ודאות וסיכון למימושים בשווקים; ירידות מצביעות על יציבות ורגיעה.</span>
+                        </p>
+
+                        <p class="text-gray-300">
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של [רמת DXY] ([שינוי %])<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> מודד את חוזק הדולר מול סל המטבעות העולמי. עלייה מעידה על בריחת כספים לנכסים בטוחים או ציפייה לריבית גבוהה (ומכבידה על נכסי סיכון); ירידה מקילה על השווקים הגלובליים.</span>
+                        </p>
+                    </div>
                 </div>
 
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2">
