@@ -184,5 +184,4 @@ if should_update:
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    sp500 = market_data.get("^GSPC", {})
-    nasdaq = market_data.
+    sp500 = market_data.
