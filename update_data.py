@@ -253,8 +253,3 @@ if should_update:
     nasdaq = market_data.get("^IXIC", {})
     dji = market_data.get("^DJI", {})
     vix = market_data.get("^VIX", {})
-    dxy = market_data.get("USDILS=X", {})
-
-    sp500_price = format_num(sp500.get("price", 0))
-    sp500_change = f"{sp500.get('change', 0)}%"
-    nas
