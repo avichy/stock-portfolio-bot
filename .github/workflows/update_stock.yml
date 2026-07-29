@@ -2,7 +2,7 @@ name: Update Stock Prices & Notifications
 
 on:
   schedule:
-    - cron: '0,30 7-22 * * *' # רץ אוטומטית כל חצי שעה בין 07:00 ל-22:00 UTC (מכסה אוטומטית את טווח השעות 10:30 עד 23:30 שעון ישראל גם בקיץ וגם בחורף)
+    - cron: '0,30 7-22 * * *' # רץ אוטומטית כל חצי שעה בין 07:00 ל-22:00 UTC
   workflow_dispatch:          # מאפשר גם הפעלה ידנית מתי שתרצה
 
 permissions:
@@ -40,6 +40,12 @@ jobs:
           TRIGGER_EVENT: ${{ github.event_name }}
         run: |
           python update_data.py
+
+      - name: Commit and push updated index.html
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update index.html with latest market data"
+          file_pattern: index.html
 
       - name: Upload page artifact
         uses: actions/upload-pages-artifact@v3
