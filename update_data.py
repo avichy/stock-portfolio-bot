@@ -1,11 +1,9 @@
 from datetime import datetime
 import json
 import os
-import re
-import subprocess
 import pytz
-import requests
 import yfinance as yf
+import requests
 
 def format_num(val, decimals=2):
     try:
@@ -26,31 +24,12 @@ current_total_minutes = current_hour * 60 + current_minute
 
 trigger_event = os.environ.get("GITHUB_EVENT_NAME") or os.environ.get("TRIGGER_EVENT") or "schedule"
 
-days_map = {
-    0: "שני",
-    1: "שלישי",
-    2: "רביעי",
-    3: "חמישי",
-    4: "שישי",
-    5: "שבת",
-    6: "ראשון"
-}
-day_name = days_map[now_il.weekday()]
-
-print(f"Current Israel Time: {now_il.strftime('%Y-%m-%d %H:%M')} - Day: {day_name} - Event: {trigger_event}")
+print(f"Current Israel Time: {now_il.strftime('%Y-%m-%d %H:%M')} - Event: {trigger_event}")
 
 all_strategy_tickers = [
     "NVDA", "AMD", "MU", "GOOG", "AMZN", "META", "MA", "WMT", "TTWO", "WDC", 
     "TQQQ", "INTC", "IREN", "CIFR", "IBIT", "SIMO", "SNDK", "NFLX", "GTEC"
 ]
-
-company_names = {
-    "NVDA": "NVIDIA", "AMD": "AMD", "MU": "Micron", "GOOG": "Google",
-    "AMZN": "Amazon", "META": "Meta", "MA": "Mastercard", "WMT": "Walmart",
-    "TTWO": "Take-Two", "WDC": "Western Digital", "TQQQ": "TQQQ", "INTC": "Intel",
-    "IREN": "Iren", "CIFR": "Cipher Mining", "IBIT": "iShares Bitcoin",
-    "SIMO": "Silicon Motion", "SNDK": "SanDisk", "NFLX": "Netflix", "GTEC": "GreenPower"
-}
 
 tickers_to_fetch = all_strategy_tickers + ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "^GSPC", "^IXIC", "^DJI", "^VIX"]
 
@@ -102,7 +81,6 @@ def generate_ai_insights(market_data):
         os.environ.get("GEMINI_API_KEY_2")
     ]
     valid_keys = [k for k in api_keys if k]
-    
     if not valid_keys:
         print("No GEMINI_API_KEY found. Skipping AI generation.")
         return {}
@@ -110,16 +88,15 @@ def generate_ai_insights(market_data):
     prompt = f"""אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:
 {json.dumps(market_data, ensure_ascii=False)}
 
-**כללים קשיחים לחובה:**
-1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.
-2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).
-
-החזר אובייקט JSON תקף בלבד הכולל את כל המפתחות הבאים בעברית מקצועית:
+החזר אובייקט JSON תקף בלבד הכולל את המפתחות הבאים בעברית מקצועית:
 - US_MARKET_MACRO_NEWS
 - IL_MARKET_MACRO_NEWS
 - SECTOR_CHIPS_DESC
 - SECTOR_CLOUD_DESC
 - SECTOR_CRYPTO_DESC
+- SECTOR_CHIP_PERF
+- SECTOR_CLOUD_PERF
+- SECTOR_CRYPTO_PERF
 - CATALYST_EARNINGS
 - CATALYST_MONETARY
 - CATALYST_HARDWARE
@@ -129,53 +106,38 @@ def generate_ai_insights(market_data):
 - RISK_MANAGEMENT_TEXT
 - ACTION_RECOMMENDATIONS_TEXT
 
-וכמו כן, עבור כל אחד מהסימולים הבאים ({', '.join(all_strategy_tickers)}), הוסף מפתחות ניתוח וחדשות:
-1. [TICKER]_RATIONALE
-2. [TICKER]_SWING_TEXT
-3. [TICKER]_NEWS_TITLE
-4. [TICKER]_NEWS_CONTENT
-5. [TICKER]_NEWS_IMPACT
-6. [TICKER]_NEWS_LINK
-7. [TICKER]_PORT_NOTE"""
+וכמו כן, עבור כל סמל ({', '.join(all_strategy_tickers)}), הוסף מפתחות:
+- [TICKER]_RATIONALE
+- [TICKER]_SWING_TEXT
+- [TICKER]_NEWS_TITLE
+- [TICKER]_NEWS_CONTENT
+- [TICKER]_NEWS_IMPACT
+- [TICKER]_NEWS_LINK
+- [TICKER]_PORT_NOTE"""
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"response_mime_type": "application/json"}
     }
 
-    for i, api_key in enumerate(valid_keys):
+    for api_key in valid_keys:
         try:
-            print(f"Attempting connection to Gemini API with key index {i}...")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
             res = requests.post(url, json=payload, timeout=40)
             res_data = res.json()
-            
             if "candidates" in res_data:
-                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"]
-                text_response = text_response.strip()
-                if text_response.startswith("```json"):
-                    text_response = text_response[7:]
-                if text_response.startswith("```"):
-                    text_response = text_response[3:]
-                if text_response.endswith("```"):
-                    text_response = text_response[:-3]
-            
-                parsed_json = json.loads(text_response.strip())
-                print("Gemini API data received and parsed successfully.")
-                return parsed_json
-            else:
-                print(f"Gemini API returned error response for key {i}: {res_data}")
+                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                if text_response.startswith("```json"): text_response = text_response[7:]
+                if text_response.startswith("```"): text_response = text_response[3:]
+                if text_response.endswith("```"): text_response = text_response[:-3]
+                return json.loads(text_response.strip())
         except Exception as e:
-            print(f"Error calling Gemini API with key {i}: {e}")
+            print(f"Error calling Gemini API: {e}")
             continue
-
-    print("All Gemini API keys failed. Returning empty insights.")
     return {}
 
 is_within_auto_hours = 630 <= current_total_minutes <= 1415
 should_update = (trigger_event == "workflow_dispatch") or is_within_auto_hours
-
-print(f"Should update? {should_update} (Trigger: {trigger_event}, Within Auto Hours: {is_within_auto_hours})")
 
 if should_update:
     market_data = fetch_all_data()
@@ -183,6 +145,7 @@ if should_update:
 
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
+    full_date_str = f"{date_str} בשעה {time_str}"
 
     sp500 = market_data.get("^GSPC", {})
     nasdaq = market_data.get("^IXIC", {})
@@ -191,79 +154,110 @@ if should_update:
     dxy = market_data.get("USDILS=X", {})
 
     sp500_price = format_num(sp500.get("price", 0))
-    sp500_change = f"{sp500.get('change', 0)}%"
+    sp500_change = f"{sp500.get('change', 0):+.2f}%"
     nasdaq_price = format_num(nasdaq.get("price", 0))
-    nasdaq_change = f"{nasdaq.get('change', 0)}%"
+    nasdaq_change = f"{nasdaq.get('change', 0):+.2f}%"
     dji_price = format_num(dji.get("price", 0))
-    dji_change = f"{dji.get('change', 0)}%"
+    dji_change = f"{dji.get('change', 0):+.2f}%"
     vix_price = format_num(vix.get("price", 0))
-    vix_change = f"{vix.get('change', 0)}%"
+    vix_change = f"{vix.get('change', 0):+.2f}%"
     dxy_price = format_num(dxy.get("price", 0))
-    dxy_change = f"{dxy.get('change', 0)}%"
+    dxy_change = f"{dxy.get('change', 0):+.2f}%"
+    usd_ils_rate = format_num(dxy.get("price", 3.08))
 
     oil_data = market_data.get("CL=F", {})
     oil_price = format_num(oil_data.get("price", 75.0))
-    oil_change = f"{oil_data.get('change', 0)}%"
-
+    
     gold_data = market_data.get("GC=F", {})
     gold_price = format_num(gold_data.get("price", 2350.0))
-    gold_change = f"{gold_data.get('change', 0)}%"
-
+    
     btc_data = market_data.get("BTC-USD", {})
     btc_price_val = format_num(btc_data.get("price", 65000.0))
-    btc_change = f"{btc_data.get('change', 0)}%"
 
+    template_path = "template.html"
+  
     html_path = "index.html"
-    if os.path.exists(html_path):
-        with open(html_path, "r", encoding="utf-8") as f:
+    source_path = template_path if os.path.exists(template_path) else html_path
+
+    if os.path.exists(source_path):
+        with open(source_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
-        html_content = html_content.replace("LAST_UPDATE_DATE", date_str)
-        html_content = html_content.replace("LAST_UPDATE_TIME", time_str)
+        # החלפת תאריך ושערים כלליים
+        html_content = html_content.replace("{{LAST_UPDATED}}", full_date_str)
+        html_content = html_content.replace("{{SP500_PRICE}}", sp500_price)
+        html_content = html_content.replace("{{SP500_PCT}}", sp500_change)
+        html_content = html_content.replace("{{NASDAQ_PRICE}}", nasdaq_price)
+        html_content = html_content.replace("{{NASDAQ_PCT}}", nasdaq_change)
+        html_content = html_content.replace("{{DOW_PRICE}}", dji_price)
+        html_content = html_content.replace("{{DOW_PCT}}", dji_change)
+        html_content = html_content.replace("{{VIX_PRICE}}", vix_price)
+        html_content = html_content.replace("{{VIX_PCT}}", vix_change)
+        html_content = html_content.replace("{{DXY_PRICE}}", dxy_price)
+        html_content = html_content.replace("{{DXY_PCT}}", dxy_change)
+        html_content = html_content.replace("{{USD_ILS_RATE}}", usd_ils_rate)
+        html_content = html_content.replace("{{OIL_PRICE}}", oil_price)
+        html_content = html_content.replace("{{GOLD_PRICE}}", gold_price)
+        html_content = html_content.replace("{{BTC_PRICE}}", btc_price_val)
 
-        html_content = html_content.replace("SP500_PRICE", sp500_price)
-        html_content = html_content.replace("SP500_CHANGE", sp500_change)
-        html_content = html_content.replace("NASDAQ_PRICE", nasdaq_price)
-        html_content = html_content.replace("NASDAQ_CHANGE", nasdaq_change)
-        html_content = html_content.replace("DJI_PRICE", dji_price)
-        html_content = html_content.replace("DJI_CHANGE", dji_change)
-        html_content = html_content.replace("VIX_PRICE", vix_price)
-        html_content = html_content.replace("VIX_CHANGE", vix_change)
-        html_content = html_content.replace("DXY_PRICE", dxy_price)
-        html_content = html_content.replace("DXY_CHANGE", dxy_change)
-        html_content = html_content.replace("OIL_PRICE", oil_price)
-        html_content = html_content.replace("OIL_CHANGE", oil_change)
-        html_content = html_content.replace("GOLD_PRICE", gold_price)
-        html_content = html_content.replace("GOLD_CHANGE", gold_change)
-        html_content = html_content.replace("BTC_PRICE", btc_price_val)
-        html_content = html_content.replace("BTC_CHANGE", btc_change)
+        # חדשות מאקרו וסקטורים
+        html_content = html_content.replace("{{US_MARKET_NEWS}}", str(ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.")))
+        html_content = html_content.replace("{{IL_MARKET_NEWS}}", str(ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות.")))
+        html_content = html_content.replace("{{SECTOR_CHIPS_DESC}}", str(ai_insights.get("SECTOR_CHIPS_DESC", "")))
+        html_content = html_content.replace("{{SECTOR_CLOUD_DESC}}", str(ai_insights.get("SECTOR_CLOUD_DESC", "")))
+        html_content = html_content.replace("{{SECTOR_CRYPTO_DESC}}", str(ai_insights.get("SECTOR_CRYPTO_DESC", "")))
+        html_content = html_content.replace("{{SECTOR_CHIP_PERF}}", str(ai_insights.get("SECTOR_CHIP_PERF", "2.5")))
+        html_content = html_content.replace("{{SECTOR_CLOUD_PERF}}", str(ai_insights.get("SECTOR_CLOUD_PERF", "1.5")))
+        html_content = html_content.replace("{{SECTOR_CRYPTO_PERF}}", str(ai_insights.get("SECTOR_CRYPTO_PERF", "3.0")))
 
+        # זרזים וסנטימנט
+        html_content = html_content.replace("{{CATALYST_EARNINGS}}", str(ai_insights.get("CATALYST_EARNINGS", "")))
+        html_content = html_content.replace("{{CATALYST_MONETARY}}", str(ai_insights.get("CATALYST_MONETARY", "")))
+        html_content = html_content.replace("{{CATALYST_HARDWARE}}", str(ai_insights.get("CATALYST_HARDWARE", "")))
+        html_content = html_content.replace("{{COMMUNITY_SENTIMENT}}", str(ai_insights.get("COMMUNITY_SENTIMENT", "")))
+        html_content = html_content.replace("{{ANALYST_POINT_1}}", str(ai_insights.get("ANALYST_POINT_1", "")))
+        html_content = html_content.replace("{{ANALYST_POINT_2}}", str(ai_insights.get("ANALYST_POINT_2", "")))
+        html_content = html_content.replace("{{RISK_MANAGEMENT_TEXT}}", str(ai_insights.get("RISK_MANAGEMENT_TEXT", "")))
+        html_content = html_content.replace("{{ACTION_RECOMMENDATIONS_TEXT}}", str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")))
+
+        # לולאה דינמית לכל מניות התיק והמעקב (LONG, SWING, PORT, NEWS)
         for ticker in all_strategy_tickers:
             t_data = market_data.get(ticker, {})
             t_price = format_num(t_data.get("price", 0))
-            t_change = f"{t_data.get('change', 0)}%"
+            t_change = f"{t_data.get('change', 0):+.2f}%"
 
-            html_content = html_content.replace(f"{ticker}_PRICE", t_price)
-            html_content = html_content.replace(f"{ticker}_CHANGE", t_change)
+            # Long Term
+            html_content = html_content.replace(f"{{{{{ticker}_LONG_PRICE}}}}", t_price)
+            html_content = html_content.replace(f"{{{{{ticker}_LONG_PRE}}}}", t_price)
+            html_content = html_content.replace(f"{{{{{ticker}_LONG_PCT}}}}", t_change)
+            html_content = html_content.replace(f"{{{{{ticker}_LONG_TARGET}}}}", str(portfolio_buys.get(ticker, {}).get("target", 0)))
+            html_content = html_content.replace(f"{{{{{ticker}_LONG_RATIONALE}}}}", str(ai_insights.get(f"{ticker}_RATIONALE", "מעקב שוטף אחר ביצועי החברה.")))
 
-            for key_suffix in ["RATIONALE", "SWING_TEXT", "NEWS_TITLE", "NEWS_CONTENT", "NEWS_IMPACT", "NEWS_LINK", "PORT_NOTE"]:
-                ai_key = f"{ticker}_{key_suffix}"
-                if ai_key in ai_insights:
-                    html_content = html_content.replace(ai_key, str(ai_insights[ai_key]))
+            # Swing
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_PRICE}}}}", t_price)
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_PRE}}}}", t_price)
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_PCT}}}}", t_change)
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_TARGET}}}}", str(portfolio_buys.get(ticker, {}).get("target", 0)))
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_TEXT}}}}", str(ai_insights.get(f"{ticker}_SWING_TEXT", "תנועת מחיר במעקב.")))
+            html_content = html_content.replace(f"{{{{{ticker}_SWING_TEXT_2}}}}", str(ai_insights.get(f"{ticker}_SWING_TEXT", "תנועת מחיר במעקב.")))
 
-        for general_key in [
-            "US_MARKET_MACRO_NEWS", "IL_MARKET_MACRO_NEWS", "SECTOR_CHIPS_DESC",
-            "SECTOR_CLOUD_DESC", "SECTOR_CRYPTO_DESC", "CATALYST_EARNINGS",
-            "CATALYST_MONETARY", "CATALYST_HARDWARE", "COMMUNITY_SENTIMENT",
-            "ANALYST_POINT_1", "ANALYST_POINT_2", "RISK_MANAGEMENT_TEXT", "ACTION_RECOMMENDATIONS_TEXT"
-        ]:
-            if general_key in ai_insights:
-                html_content = html_content.replace(general_key, str(ai_insights[general_key]))
+            # Portfolio Personal
+            html_content = html_content.replace(f"{{{{{ticker}_PORT_CURRENT}}}}", f"${t_price}")
+            html_content = html_content.replace(f"{{{{{ticker}_PORT_PRE}}}}", f"${t_price}")
+            html_content = html_content.replace(f"{{{{{ticker}_PORT_TARGET}}}}", f"${portfolio_buys.get(ticker, {}).get('target', 0)}")
+            html_content = html_content.replace(f"{{{{{ticker}_PORT_STATUS}}}}", "במעקב פעיל")
+            html_content = html_content.replace(f"{{{{{ticker}_PORT_NOTE}}}}", str(ai_insights.get(f"{ticker}_PORT_NOTE", "פוזיציה מנוהלת בהתאם לאסטרטגיה.")))
+
+            # News Tab 8
+            html_content = html_content.replace(f"{{{{{ticker}_NEWS_LINK}}}}", str(ai_insights.get(f"{ticker}_NEWS_LINK", "לא זמין כרגע")))
+            html_content = html_content.replace(f"{{{{{ticker}_NEWS_TITLE}}}}", str(ai_insights.get(f"{ticker}_NEWS_TITLE", f"עדכון שוק עבור {ticker}")))
+            html_content = html_content.replace(f"{{{{{ticker}_NEWS_CONTENT}}}}", str(ai_insights.get(f"{ticker}_NEWS_CONTENT", "אין חדשות דרמטיות כרגע.")))
+            html_content = html_content.replace(f"{{{{{ticker}_NEWS_IMPACT}}}}", str(ai_insights.get(f"{ticker}_NEWS_IMPACT", "השפעה נייטרלית על המגמה.")))
 
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
-        print("index.html updated successfully.")
+        print("index.html updated successfully from template with matching placeholders.")
     else:
-        print("index.html not found in workspace!")
+        print("Template file not found!")
 else:
     print("Skipping update based on schedule hours.")
