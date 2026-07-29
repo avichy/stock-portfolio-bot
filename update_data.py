@@ -1,7 +1,9 @@
 from datetime import datetime
+from functools import wraps
 import json
 import os
 import subprocess
+import time
 import pytz
 import requests
 import yfinance as yf
@@ -16,6 +18,35 @@ def format_num(val, decimals=2):
         return f"{num:,.{decimals}f}"
     except (ValueError, TypeError):
         return str(val)
+
+
+def retry_with_backoff(retries=3, initial_delay=2, backoff_factor=2):
+    """דקורטור לביצוע חוזר של פונקציות במקרה של תקלת תקשורת או עומס"""
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            delay = initial_delay
+            for attempt in range(1, retries + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == retries:
+                        print(
+                            f"כל {retries} הנסיונות נכשלו עבור הפונקציה"
+                            f" '{func.__name__}'. שגיאה סופית: {e}"
+                        )
+                        raise
+                    print(
+                        f"ניסיון {attempt} מתוך {retries} נכשל ({e}). מנסה שוב"
+                        f" בעוד {delay} שניות..."
+                    )
+                    time.sleep(delay)
+                    delay *= backoff_factor
+
+        return wrapper
+
+    return decorator
 
 
 # הגדרת אזור זמן של ישראל
@@ -84,13 +115,19 @@ tickers_to_fetch = all_strategy_tickers + [
 ]
 
 
+@retry_with_backoff(retries=3, initial_delay=2)
+def fetch_ticker_history(ticker):
+    """שליפת היסטוריה עבור סימול בודד עם מנגנון נסיונות חוזרים"""
+    stock = yf.Ticker(ticker)
+    return stock.history(period="2d")
+
+
 def fetch_all_data():
-    """מושך נתוני מחיר ושינוי יומי מ-yfinance"""
+    """מושך נתוני מחיר ושינוי יומי מ-yfinance עם חסינות לתקלות"""
     market_data = {}
     for ticker in tickers_to_fetch:
         try:
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period="2d")
+            hist = fetch_ticker_history(ticker)
             if not hist.empty:
                 current_price = round(hist["Close"].iloc[-1], 2)
                 prev_close = (
@@ -106,12 +143,12 @@ def fetch_all_data():
             else:
                 market_data[ticker] = {"price": 0.0, "change": 0.0}
         except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+            print(f"Error fetching {ticker} after retries: {e}")
             market_data[ticker] = {"price": 0.0, "change": 0.0}
     return market_data
 
 
-# נתוני קנייה ומחיר יעד של התיק בסעיף 5
+# נתוני קנייה ומחיר יעד של התיק
 portfolio_buys = {
     "NVDA": {"shares": 3, "buy": 184.90, "target": 220.0},
     "AMD": {"shares": 20, "buy": 211.34, "target": 250.0},
@@ -136,7 +173,7 @@ portfolio_buys = {
 
 
 def generate_ai_insights(market_data):
-    """פונה ל-Gemini API עם מנגנון גיבוי ומייצר את כל הטקסטים הדינמיים למערכת"""
+    """פונה ל-Gemini API עם מנגנון גיבוי למפתחות ומייצר את כל הטקסטים הדינמיים"""
     api_keys = [
         os.environ.get("GEMINI_API_KEY_1") or os.environ.get("GEMINI_API_KEY"),
         os.environ.get("GEMINI_API_KEY_2"),
@@ -153,16 +190,13 @@ def generate_ai_insights(market_data):
         + "\n\n"
         "**כללים קשיחים לחובה:**\n"
         "1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.\n"
-        "2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n\n"
+        "2. פורמט מספרים: כל מספר מעל 1000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n\n"
         "החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:\n"
         "- US_MARKET_MACRO_NEWS\n"
         "- IL_MARKET_MACRO_NEWS\n"
         "- SECTOR_CHIPS_DESC\n"
         "- SECTOR_CLOUD_DESC\n"
         "- SECTOR_CRYPTO_DESC\n"
-        "- SECTOR_CHIP_PERF\n"
-        "- SECTOR_CLOUD_PERF\n"
-        "- SECTOR_CRYPTO_PERF\n"
         "- CATALYST_EARNINGS\n"
         "- CATALYST_MONETARY\n"
         "- CATALYST_HARDWARE\n"
@@ -193,9 +227,9 @@ def generate_ai_insights(market_data):
             res_data = res.json()
 
             if "candidates" in res_data:
-                text_response = (
-                    res_data["candidates"][0]["content"]["parts"][0]["text"]
-                )
+                text_response = res_data["candidates"][0]["content"]["parts"][
+                    0
+                ]["text"]
 
                 text_response = text_response.strip()
                 if text_response.startswith("```json"):
@@ -214,8 +248,7 @@ def generate_ai_insights(market_data):
             error_code = res_data.get("error", {}).get("code")
             if error_code == 429:
                 print(
-                    f"API Key #{i} exceeded quota (429). Switching to next"
-                    " key..."
+                    f"API Key #{i} exceeded quota (429). Switching to next key..."
                 )
                 continue
             else:
@@ -230,4 +263,18 @@ def generate_ai_insights(market_data):
     return {}
 
 
-is_within_auto_hours = 630
+is_within_auto_hours = 630 <= current_total_minutes <= 1410
+should_update = (trigger_event == "workflow_dispatch") or is_within_auto_hours
+
+if should_update:
+    market_data = fetch_all_data()
+    ai_insights = generate_ai_insights(market_data)
+
+    try:
+        date_str = now_il.strftime("%d.%m.%Y")
+        time_str = now_il.strftime("%H:%M")
+
+        sp500 = market_data.get("^GSPC", {})
+        nasdaq = market_data.get("^IXIC", {})
+        dji = market_data.get("^DJI", {})
+        vix = market_data.get("^VIX", {})
