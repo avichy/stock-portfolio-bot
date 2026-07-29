@@ -184,4 +184,86 @@ if should_update:
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    sp500 = market_data.
+    sp500 = market_data.get("^GSPC", {})
+    nasdaq = market_data.get("^IXIC", {})
+    dji = market_data.get("^DJI", {})
+    vix = market_data.get("^VIX", {})
+    dxy = market_data.get("USDILS=X", {})
+
+    sp500_price = format_num(sp500.get("price", 0))
+    sp500_change = f"{sp500.get('change', 0)}%"
+    nasdaq_price = format_num(nasdaq.get("price", 0))
+    nasdaq_change = f"{nasdaq.get('change', 0)}%"
+    dji_price = format_num(dji.get("price", 0))
+    dji_change = f"{dji.get('change', 0)}%"
+    vix_price = format_num(vix.get("price", 0))
+    vix_change = f"{vix.get('change', 0)}%"
+    dxy_price = format_num(dxy.get("price", 0))
+    dxy_change = f"{dxy.get('change', 0)}%"
+
+    oil_data = market_data.get("CL=F", {})
+    oil_price = format_num(oil_data.get("price", 75.0))
+    oil_change = f"{oil_data.get('change', 0)}%"
+
+    gold_data = market_data.get("GC=F", {})
+    gold_price = format_num(gold_data.get("price", 2350.0))
+    gold_change = f"{gold_data.get('change', 0)}%"
+
+    btc_data = market_data.get("BTC-USD", {})
+    btc_price_val = format_num(btc_data.get("price", 65000.0))
+    btc_change = f"{btc_data.get('change', 0)}%"
+
+    html_path = "index.html"
+    if os.path.exists(html_path):
+        with open(html_path, "r", encoding="utf-8") as f:
+            html_content = f.read()
+
+        html_content = html_content.replace("LAST_UPDATE_DATE", date_str)
+        html_content = html_content.replace("LAST_UPDATE_TIME", time_str)
+
+        html_content = html_content.replace("SP500_PRICE", sp500_price)
+        html_content = html_content.replace("SP500_CHANGE", sp500_change)
+        html_content = html_content.replace("NASDAQ_PRICE", nasdaq_price)
+        html_content = html_content.replace("NASDAQ_CHANGE", nasdaq_change)
+        html_content = html_content.replace("DJI_PRICE", dji_price)
+        html_content = html_content.replace("DJI_CHANGE", dji_change)
+        html_content = html_content.replace("VIX_PRICE", vix_price)
+        html_content = html_content.replace("VIX_CHANGE", vix_change)
+        html_content = html_content.replace("DXY_PRICE", dxy_price)
+        html_content = html_content.replace("DXY_CHANGE", dxy_change)
+        html_content = html_content.replace("OIL_PRICE", oil_price)
+        html_content = html_content.replace("OIL_CHANGE", oil_change)
+        html_content = html_content.replace("GOLD_PRICE", gold_price)
+        html_content = html_content.replace("GOLD_CHANGE", gold_change)
+        html_content = html_content.replace("BTC_PRICE", btc_price_val)
+        html_content = html_content.replace("BTC_CHANGE", btc_change)
+
+        for ticker in all_strategy_tickers:
+            t_data = market_data.get(ticker, {})
+            t_price = format_num(t_data.get("price", 0))
+            t_change = f"{t_data.get('change', 0)}%"
+
+            html_content = html_content.replace(f"{ticker}_PRICE", t_price)
+            html_content = html_content.replace(f"{ticker}_CHANGE", t_change)
+
+            for key_suffix in ["RATIONALE", "SWING_TEXT", "NEWS_TITLE", "NEWS_CONTENT", "NEWS_IMPACT", "NEWS_LINK", "PORT_NOTE"]:
+                ai_key = f"{ticker}_{key_suffix}"
+                if ai_key in ai_insights:
+                    html_content = html_content.replace(ai_key, str(ai_insights[ai_key]))
+
+        for general_key in [
+            "US_MARKET_MACRO_NEWS", "IL_MARKET_MACRO_NEWS", "SECTOR_CHIPS_DESC",
+            "SECTOR_CLOUD_DESC", "SECTOR_CRYPTO_DESC", "CATALYST_EARNINGS",
+            "CATALYST_MONETARY", "CATALYST_HARDWARE", "COMMUNITY_SENTIMENT",
+            "ANALYST_POINT_1", "ANALYST_POINT_2", "RISK_MANAGEMENT_TEXT", "ACTION_RECOMMENDATIONS_TEXT"
+        ]:
+            if general_key in ai_insights:
+                html_content = html_content.replace(general_key, str(ai_insights[general_key]))
+
+        with open(html_path, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        print("index.html updated successfully.")
+    else:
+        print("index.html not found in workspace!")
+else:
+    print("Skipping update based on schedule hours.")
