@@ -253,45 +253,4 @@ if should_update:
         sp500 = market_data.get("^GSPC", {})
         nasdaq = market_data.get("^IXIC", {})
         dji = market_data.get("^DJI", {})
-        vix = market_data.get("^VIX", {})
-        dxy = market_data.get("USDILS=X", {})
-
-        sp500_price = format_num(sp500.get("price", 0))
-        sp500_change = f"{sp500.get('change', 0)}%"
-        nasdaq_price = format_num(nasdaq.get("price", 0))
-        nasdaq_change = f"{nasdaq.get('change', 0)}%"
-        dji_price = format_num(dji.get("price", 0))
-        dji_change = f"{dji.get('change', 0)}%"
-        vix_price = format_num(vix.get("price", 0))
-        vix_change = f"{vix.get('change', 0)}%"
-        dxy_price = format_num(dxy.get("price", 0))
-        dxy_change = f"{dxy.get('change', 0)}%"
-
-        oil_data = market_data.get("CL=F", {})
-        oil_price = format_num(oil_data.get("price", 75.0))
-        oil_change = f"{oil_data.get('change', 0)}%"
-
-        gold_data = market_data.get("GC=F", {})
-        gold_price = format_num(gold_data.get("price", 2350.0))
-        gold_change = f"{gold_data.get('change', 0)}%"
-
-        btc_data = market_data.get("BTC-USD", {})
-        btc_price_val = format_num(btc_data.get("price", 65000.0))
-        btc_change = f"{btc_data.get('change', 0)}%"
-
-        fx_data = market_data.get("USDILS=X", {})
-        usd_ils_price = format_num(fx_data.get("price", 3.65))
-        usd_ils_change = f"{fx_data.get('change', 0)}%"
-
-        replacements = {}
-        replacements["update_time"] = f"{date_str} | {time_str}"
-        replacements["LAST_UPDATED"] = f"{date_str} | {time_str}"
-
-        replacements["sp500_val"] = sp500_price
-        replacements["SP500_PRICE"] = sp500_price
-        replacements["SP500_LEVEL"] = sp500_price
-        replacements["SNP_500_LEVEL"] = sp500_price
-        replacements["sp500_change"] = sp500_change
-        replacements["SP500_CHANGE"] = sp500_change
-        replacements["SP500_PCT"] = sp500_change
-        replacements["SNP_500_CHANGE"] = sp500_change
+        vix = market
