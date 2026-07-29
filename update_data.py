@@ -175,7 +175,6 @@ if should_update:
     btc_price_val = format_num(btc_data.get("price", 65000.0))
 
     template_path = "template.html"
-  
     html_path = "index.html"
     source_path = template_path if os.path.exists(template_path) else html_path
 
@@ -183,7 +182,6 @@ if should_update:
         with open(source_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
-        # החלפת תאריך ושערים כלליים
         html_content = html_content.replace("{{LAST_UPDATED}}", full_date_str)
         html_content = html_content.replace("{{SP500_PRICE}}", sp500_price)
         html_content = html_content.replace("{{SP500_PCT}}", sp500_change)
@@ -200,7 +198,6 @@ if should_update:
         html_content = html_content.replace("{{GOLD_PRICE}}", gold_price)
         html_content = html_content.replace("{{BTC_PRICE}}", btc_price_val)
 
-        # חדשות מאקרו וסקטורים
         html_content = html_content.replace("{{US_MARKET_NEWS}}", str(ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.")))
         html_content = html_content.replace("{{IL_MARKET_NEWS}}", str(ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות.")))
         html_content = html_content.replace("{{SECTOR_CHIPS_DESC}}", str(ai_insights.get("SECTOR_CHIPS_DESC", "")))
@@ -210,7 +207,6 @@ if should_update:
         html_content = html_content.replace("{{SECTOR_CLOUD_PERF}}", str(ai_insights.get("SECTOR_CLOUD_PERF", "1.5")))
         html_content = html_content.replace("{{SECTOR_CRYPTO_PERF}}", str(ai_insights.get("SECTOR_CRYPTO_PERF", "3.0")))
 
-        # זרזים וסנטימנט
         html_content = html_content.replace("{{CATALYST_EARNINGS}}", str(ai_insights.get("CATALYST_EARNINGS", "")))
         html_content = html_content.replace("{{CATALYST_MONETARY}}", str(ai_insights.get("CATALYST_MONETARY", "")))
         html_content = html_content.replace("{{CATALYST_HARDWARE}}", str(ai_insights.get("CATALYST_HARDWARE", "")))
@@ -220,20 +216,17 @@ if should_update:
         html_content = html_content.replace("{{RISK_MANAGEMENT_TEXT}}", str(ai_insights.get("RISK_MANAGEMENT_TEXT", "")))
         html_content = html_content.replace("{{ACTION_RECOMMENDATIONS_TEXT}}", str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")))
 
-        # לולאה דינמית לכל מניות התיק והמעקב (LONG, SWING, PORT, NEWS)
         for ticker in all_strategy_tickers:
             t_data = market_data.get(ticker, {})
             t_price = format_num(t_data.get("price", 0))
             t_change = f"{t_data.get('change', 0):+.2f}%"
 
-            # Long Term
             html_content = html_content.replace(f"{{{{{ticker}_LONG_PRICE}}}}", t_price)
             html_content = html_content.replace(f"{{{{{ticker}_LONG_PRE}}}}", t_price)
             html_content = html_content.replace(f"{{{{{ticker}_LONG_PCT}}}}", t_change)
             html_content = html_content.replace(f"{{{{{ticker}_LONG_TARGET}}}}", str(portfolio_buys.get(ticker, {}).get("target", 0)))
             html_content = html_content.replace(f"{{{{{ticker}_LONG_RATIONALE}}}}", str(ai_insights.get(f"{ticker}_RATIONALE", "מעקב שוטף אחר ביצועי החברה.")))
 
-            # Swing
             html_content = html_content.replace(f"{{{{{ticker}_SWING_PRICE}}}}", t_price)
             html_content = html_content.replace(f"{{{{{ticker}_SWING_PRE}}}}", t_price)
             html_content = html_content.replace(f"{{{{{ticker}_SWING_PCT}}}}", t_change)
@@ -241,14 +234,12 @@ if should_update:
             html_content = html_content.replace(f"{{{{{ticker}_SWING_TEXT}}}}", str(ai_insights.get(f"{ticker}_SWING_TEXT", "תנועת מחיר במעקב.")))
             html_content = html_content.replace(f"{{{{{ticker}_SWING_TEXT_2}}}}", str(ai_insights.get(f"{ticker}_SWING_TEXT", "תנועת מחיר במעקב.")))
 
-            # Portfolio Personal
             html_content = html_content.replace(f"{{{{{ticker}_PORT_CURRENT}}}}", f"${t_price}")
             html_content = html_content.replace(f"{{{{{ticker}_PORT_PRE}}}}", f"${t_price}")
             html_content = html_content.replace(f"{{{{{ticker}_PORT_TARGET}}}}", f"${portfolio_buys.get(ticker, {}).get('target', 0)}")
             html_content = html_content.replace(f"{{{{{ticker}_PORT_STATUS}}}}", "במעקב פעיל")
             html_content = html_content.replace(f"{{{{{ticker}_PORT_NOTE}}}}", str(ai_insights.get(f"{ticker}_PORT_NOTE", "פוזיציה מנוהלת בהתאם לאסטרטגיה.")))
 
-            # News Tab 8
             html_content = html_content.replace(f"{{{{{ticker}_NEWS_LINK}}}}", str(ai_insights.get(f"{ticker}_NEWS_LINK", "לא זמין כרגע")))
             html_content = html_content.replace(f"{{{{{ticker}_NEWS_TITLE}}}}", str(ai_insights.get(f"{ticker}_NEWS_TITLE", f"עדכון שוק עבור {ticker}")))
             html_content = html_content.replace(f"{{{{{ticker}_NEWS_CONTENT}}}}", str(ai_insights.get(f"{ticker}_NEWS_CONTENT", "אין חדשות דרמטיות כרגע.")))
