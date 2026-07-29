@@ -246,11 +246,15 @@ if should_update:
     market_data = fetch_all_data()
     ai_insights = generate_ai_insights(market_data)
 
-    try:
-        date_str = now_il.strftime("%d.%m.%Y")
-        time_str = now_il.strftime("%H:%M")
+    date_str = now_il.strftime("%d.%m.%Y")
+    time_str = now_il.strftime("%H:%M")
 
-        sp500 = market_data.get("^GSPC", {})
-        nasdaq = market_data.get("^IXIC", {})
-        dji = market_data.get("^DJI", {})
-        vix = market
+    sp500 = market_data.get("^GSPC", {})
+    nasdaq = market_data.get("^IXIC", {})
+    dji = market_data.get("^DJI", {})
+    vix = market_data.get("^VIX", {})
+    dxy = market_data.get("USDILS=X", {})
+
+    sp500_price = format_num(sp500.get("price", 0))
+    sp500_change = f"{sp500.get('change', 0)}%"
+    nas
