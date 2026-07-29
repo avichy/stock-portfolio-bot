@@ -277,4 +277,19 @@ if should_update:
 
         btc_data = market_data.get("BTC-USD", {})
         btc_price_val = format_num(btc_data.get("price", 65000.0))
-        btc_change = f"{btc_data.get('change',
+        btc_change = f"{btc_data.get('change', 0)}%"
+
+        fx_data = market_data.get("USDILS=X", {})
+        usd_ils_price = format_num(fx_data.get("price", 3.65))
+        usd_ils_change = f"{fx_data.get('change', 0)}%"
+
+        replacements = {}
+        replacements["update_time"] = f"{date_str} | {time_str}"
+        replacements["LAST_UPDATED"] = f"{date_str} | {time_str}"
+
+        replacements["sp500_val"] = sp500_price
+        replacements["SP500_PRICE"] = sp500_price
+        replacements["SP500_LEVEL"] = sp500_price
+        replacements["SNP_500_LEVEL"] = sp500_price
+        replacements["sp500_change"] = sp500_change
+        replacements["SP500_CHANGE"] = sp5
