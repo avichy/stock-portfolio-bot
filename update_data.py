@@ -9,7 +9,6 @@ import yfinance as yf
 
 
 def format_num(val, decimals=2):
-    """מפרמט מספר עם פסיקים לאלפים ומספר ספרות אחרי הנקודה"""
     try:
         num = float(val)
         if decimals == 0:
@@ -19,7 +18,6 @@ def format_num(val, decimals=2):
         return str(val)
 
 
-# הגדרת אזור זמן של ישראל
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
 
@@ -50,7 +48,6 @@ print(
     f" {day_name} - Event: {trigger_event}"
 )
 
-# רשימת כל הסימולים במערכת
 all_strategy_tickers = [
     "NVDA",
     "AMD",
@@ -73,7 +70,6 @@ all_strategy_tickers = [
     "GTEC",
 ]
 
-# מילון שמות חברות בעברית/אנגלית לצורך תצוגה דינמית לצד הלוגו
 company_names = {
     "NVDA": "NVIDIA",
     "AMD": "AMD",
@@ -109,7 +105,6 @@ tickers_to_fetch = all_strategy_tickers + [
 
 
 def fetch_all_data():
-    """מושך נתוני מחיר ושינוי יומי מ-yfinance"""
     market_data = {}
     print("Fetching market data from yfinance...")
     for ticker in tickers_to_fetch:
@@ -137,7 +132,6 @@ def fetch_all_data():
     return market_data
 
 
-# נתוני קנייה ומחיר יעד של התיק בסעיף 5
 portfolio_buys = {
     "NVDA": {"shares": 3, "buy": 184.90, "target": 220.0},
     "AMD": {"shares": 20, "buy": 211.34, "target": 250.0},
@@ -162,7 +156,6 @@ portfolio_buys = {
 
 
 def generate_ai_insights(market_data):
-    """פונה ל-Gemini API עם מנגנון גיבוי ומייצר את כל הטקסטים הדינמיים למערכת"""
     api_keys = [
         os.environ.get("GEMINI_API_KEY_1") or os.environ.get("GEMINI_API_KEY"),
         os.environ.get("GEMINI_API_KEY_2"),
@@ -180,7 +173,7 @@ def generate_ai_insights(market_data):
         "**כללים קשיחים לחובה:**\n"
         "1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.\n"
         "2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n\n"
-        "החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:\n"
+        "החזר אובייקט JSON תקף בלבד הכולל את כל המפתחות הבאים בעברית מקצועית:\n"
         "- US_MARKET_MACRO_NEWS\n"
         "- IL_MARKET_MACRO_NEWS\n"
         "- SECTOR_CHIPS_DESC\n"
@@ -233,8 +226,6 @@ def generate_ai_insights(market_data):
                 parsed_json = json.loads(text_response.strip())
                 print("Gemini API data received and parsed successfully.")
                 return parsed_json
-            else:
-                print(f"Gemini response structure unexpected: {res_data}")
         except Exception as e:
             print(f"Error calling Gemini API with key {i}: {e}")
             continue
@@ -243,7 +234,6 @@ def generate_ai_insights(market_data):
     return {}
 
 
-# עדכון אוטומטי פעיל מ-10:30 (630 דקות) ועד 23:35 (1415 דקות) כדי להבטיח כיסוי מלא של 23:30
 is_within_auto_hours = 630 <= current_total_minutes <= 1415
 should_update = (trigger_event == "workflow_dispatch") or is_within_auto_hours
 
@@ -287,90 +277,4 @@ if should_update:
 
         btc_data = market_data.get("BTC-USD", {})
         btc_price_val = format_num(btc_data.get("price", 65000.0))
-        btc_change = f"{btc_data.get('change', 0)}%"
-
-        fx_data = market_data.get("USDILS=X", {})
-        usd_ils_price = format_num(fx_data.get("price", 3.65))
-        usd_ils_change = f"{fx_data.get('change', 0)}%"
-
-        replacements = {}
-        replacements["update_time"] = f"{date_str} | {time_str}"
-        replacements["LAST_UPDATED"] = f"{date_str} | {time_str}"
-
-        replacements["sp500_val"] = sp500_price
-        replacements["SP500_PRICE"] = sp500_price
-        replacements["SP500_LEVEL"] = sp500_price
-        replacements["SNP_500_LEVEL"] = sp500_price
-        replacements["sp500_change"] = sp500_change
-        replacements["SP500_CHANGE"] = sp500_change
-        replacements["SP500_PCT"] = sp500_change
-        replacements["SNP_500_CHANGE"] = sp500_change
-
-        replacements["nasdaq_val"] = nasdaq_price
-        replacements["NASDAQ_PRICE"] = nasdaq_price
-        replacements["NASDAQ_LEVEL"] = nasdaq_price
-        replacements["nasdaq_change"] = nasdaq_change
-        replacements["NASDAQ_CHANGE"] = nasdaq_change
-        replacements["NASDAQ_PCT"] = nasdaq_change
-
-        replacements["dow_val"] = dji_price
-        replacements["DJI_PRICE"] = dji_price
-        replacements["DJI_LEVEL"] = dji_price
-        replacements["DOW_PRICE"] = dji_price
-        replacements["dow_change"] = dji_change
-        replacements["DJI_CHANGE"] = dji_change
-        replacements["DJI_PCT"] = dji_change
-        replacements["DOW_PCT"] = dji_change
-
-        replacements["vix_val"] = vix_price
-        replacements["VIX_PRICE"] = vix_price
-        replacements["VIX_LEVEL"] = vix_price
-        replacements["vix_change"] = vix_change
-        replacements["VIX_CHANGE"] = vix_change
-        replacements["VIX_PCT"] = vix_change
-
-        replacements["dxy_val"] = dxy_price
-        replacements["DXY_PRICE"] = dxy_price
-        replacements["DXY_LEVEL"] = dxy_price
-        replacements["dxy_change"] = dxy_change
-        replacements["DXY_CHANGE"] = dxy_change
-        replacements["DXY_PCT"] = dxy_change
-        replacements["usd_ils"] = usd_ils_price
-        replacements["USD_ILS"] = usd_ils_price
-        replacements["USD_ILS_PRICE"] = usd_ils_price
-        replacements["USD_ILS_RATE"] = usd_ils_price
-        replacements["USD_ILS_CHANGE"] = usd_ils_change
-
-        replacements["oil_price"] = oil_price
-        replacements["OIL_PRICE"] = oil_price
-        replacements["OIL_CHANGE"] = oil_change
-        replacements["gold_price"] = gold_price
-        replacements["GOLD_PRICE"] = gold_price
-        replacements["GOLD_CHANGE"] = gold_change
-        replacements["btc_price"] = btc_price_val
-        replacements["BTC_PRICE"] = btc_price_val
-        replacements["BTC_CHANGE"] = btc_change
-
-        macro_us = ai_insights.get(
-            "US_MARKET_MACRO_NEWS",
-            "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
-        )
-        replacements["macro_news_us"] = macro_us
-        replacements["US_MARKET_NEWS"] = macro_us
-
-        macro_il = ai_insights.get(
-            "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
-        )
-        replacements["macro_news_il"] = macro_il
-        replacements["IL_MARKET_NEWS"] = macro_il
-
-        sec_chips = ai_insights.get(
-            "SECTOR_CHIPS_DESC",
-            "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.",
-        )
-        replacements["sector_chips"] = sec_chips
-        replacements["SECTOR_CHIPS_DESC"] = sec_chips
-
-        sec_cloud = ai_insights.get(
-            "SECTOR_CLOUD_DESC",
-            "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבו
+        btc_change = f"{btc_data.get('change',
