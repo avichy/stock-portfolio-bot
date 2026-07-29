@@ -373,13 +373,4 @@ if should_update:
 
         sec_cloud = ai_insights.get(
             "SECTOR_CLOUD_DESC",
-            "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבוסס ענן.",
-        )
-        replacements["sector_cloud"] = sec_cloud
-        replacements["SECTOR_CLOUD_DESC"] = sec_cloud
-
-        sec_crypto = ai_insights.get(
-            "SECTOR_CRYPTO_DESC",
-            "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.",
-        )
-        replacements["sector_crypto"] = sec_
+            "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבו
