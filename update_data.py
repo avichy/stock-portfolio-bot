@@ -292,4 +292,6 @@ if should_update:
         replacements["SP500_LEVEL"] = sp500_price
         replacements["SNP_500_LEVEL"] = sp500_price
         replacements["sp500_change"] = sp500_change
-        replacements["SP500_CHANGE"] = sp5
+        replacements["SP500_CHANGE"] = sp500_change
+        replacements["SP500_PCT"] = sp500_change
+        replacements["SNP_500_CHANGE"] = sp500_change
