@@ -72,6 +72,29 @@ all_strategy_tickers = [
     "GTEC",
 ]
 
+# מילון שמות חברות בעברית/אנגלית לצורך תצוגה דינמית לצד הלוגו
+company_names = {
+    "NVDA": "NVIDIA",
+    "AMD": "AMD",
+    "MU": "Micron",
+    "GOOG": "Google",
+    "AMZN": "Amazon",
+    "META": "Meta",
+    "MA": "Mastercard",
+    "WMT": "Walmart",
+    "TTWO": "Take-Two",
+    "WDC": "Western Digital",
+    "TQQQ": "TQQQ",
+    "INTC": "Intel",
+    "IREN": "Iren",
+    "CIFR": "Cipher Mining",
+    "IBIT": "iShares Bitcoin",
+    "SIMO": "Silicon Motion",
+    "SNDK": "SanDisk",
+    "NFLX": "Netflix",
+    "GTEC": "GreenPower",
+}
+
 tickers_to_fetch = all_strategy_tickers + [
     "GC=F",
     "CL=F",
@@ -490,6 +513,23 @@ if should_update:
         content = content.replace("US:", "🇺🇸")
         content = content.replace("IL:", "🇮🇱")
 
+        # החלפה דינמית אוטומטית של (סמל: TICKER) ללוגו החברה + (טיקר: TICKER)
+        for ticker in all_strategy_tickers:
+            comp_name = company_names.get(ticker, ticker)
+            logo_url = f"[https://assets.parqet.com/logos/symbol/](https://assets.parqet.com/logos/symbol/){ticker}"
+
+            # מבנה HTML גמיש בשורה אחת שמציג את הלוגו ואז את השם וסוגרי הטיקר בצורה מושלמת
+            new_ticker_html = f"""<span style="display: inline-flex; align-items: center; gap: 6px; vertical-align: middle;">
+                <img src="{logo_url}" alt="{ticker}" style="width: 22px; height: 22px; object-fit: contain; display: inline-block;" onerror="this.style.display='none'">
+                <span>{comp_name} (טיקר: {ticker})</span>
+            </span>"""
+
+            # החלפת כל צורות הכתיבה האפשריות בקוד ה-HTML באופן אוטומטי לחלוטין
+            content = content.replace(f"(סמל: {ticker})", new_ticker_html)
+            content = content.replace(f"(סמל:{ticker})", new_ticker_html)
+            content = content.replace(f"({ticker} :סמל)", new_ticker_html)
+            content = content.replace(f"{{{ticker}_HEADER}}", new_ticker_html)
+
         for ticker in all_strategy_tickers:
             old_pattern1 = (
                 "קישור למקור: " + ticker + "/{{" + ticker + "_NEWS_LINK}}"
@@ -532,7 +572,7 @@ if should_update:
             content = content.replace(
                 f"class='{class_name}'",
                 f"class='{class_name}' style='display: block; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; line-height: 1.6;'",
-            )
+                )
             content = content.replace(
                 f'class="{class_name}"',
                 f'class="{class_name}" style="display: block; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; line-height: 1.6;"',
