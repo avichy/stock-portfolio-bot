@@ -279,6 +279,7 @@ if should_update:
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
+            "DAY_NAME": day_name,  # <--- הוספה כאן לעדכון היום בשבוע בכותרת,
             "SNP_500_LEVEL": sp500_price,
             "SP500_PRICE": sp500_price,
             "SP500_LEVEL": sp500_price,
