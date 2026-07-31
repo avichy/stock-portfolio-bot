@@ -245,3 +245,13 @@ if should_update:
         dxy = market_data.get("USDILS=X", {})
 
         sp500_price = format_num(sp500.get("price", 0))
+        sp500_change = f"{sp500.get('change', 0)}%"
+
+        nasdaq_price = format_num(nasdaq.get("price", 0))
+        nasdaq_change = f"{nasdaq.get('change', 0)}%"
+
+        dji_price = format_num(dji.get("price", 0))
+        dji_change = f"{dji.get('change', 0)}%"
+
+        vix_price = format_num(vix.get("price", 0))
+        vix_change =
