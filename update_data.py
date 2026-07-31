@@ -238,4 +238,262 @@ if should_update:
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        sp500 = market_data.
+        sp500 = market_data.get("^GSPC", {})
+        nasdaq = market_data.get("^IXIC", {})
+        dji = market_data.get("^DJI", {})
+        vix = market_data.get("^VIX", {})
+        dxy = market_data.get("USDILS=X", {})
+
+        sp500_p = sp500.get("price", 0)
+        sp500_c = sp500.get("change", 0)
+        sp500_price = format_num(sp500_p)
+        sp500_change = f"{sp500_c}%"
+
+        nasdaq_p = nasdaq.get("price", 0)
+        nasdaq_c = nasdaq.get("change", 0)
+        nasdaq_price = format_num(nasdaq_p)
+        nasdaq_change = f"{nasdaq_c}%"
+
+        dji_p = dji.get("price", 0)
+        dji_c = dji.get("change", 0)
+        dji_price = format_num(dji_p)
+        dji_change = f"{dji_c}%"
+
+        vix_p = vix.get("price", 0)
+        vix_c = vix.get("change", 0)
+        vix_price = format_num(vix_p)
+        vix_change = f"{vix_c}%"
+
+        dxy_p = dxy.get("price", 0)
+        dxy_c = dxy.get("change", 0)
+        dxy_price = format_num(dxy_p)
+        dxy_change = f"{dxy_c}%"
+
+        usd_ils_data = market_data.get("USDILS=X", {})
+        usd_ils_p = usd_ils_data.get("price", 3.65)
+        usd_ils_c = usd_ils_data.get("change", 0)
+        usd_ils_price = format_num(usd_ils_p)
+        usd_ils_change = f"{usd_ils_c}%"
+
+        oil_data = market_data.get("CL=F", {})
+        oil_p = oil_data.get("price", 75.0)
+        oil_c = oil_data.get("change", 0)
+        oil_price = format_num(oil_p)
+        oil_change = f"{oil_c}%"
+
+        gold_data = market_data.get("GC=F", {})
+        gold_p = gold_data.get("price", 2350.0)
+        gold_c = gold_data.get("change", 0)
+        gold_price = format_num(gold_p)
+        gold_change = f"{gold_c}%"
+
+        btc_data = market_data.get("BTC-USD", {})
+        btc_p = btc_data.get("price", 65000.0)
+        btc_c = btc_data.get("change", 0)
+        btc_price = f"${format_num(btc_p)}"
+        btc_change = f"{btc_c}%"
+
+        replacements = {
+            "LAST_UPDATED": f"{date_str} | {time_str}",
+            "DAY_NAME": day_name,
+            "SNP_500_LEVEL": sp500_price,
+            "SP500_PRICE": sp500_price,
+            "SP500_LEVEL": sp500_price,
+            "SNP_500_CHANGE": sp500_change,
+            "SP500_CHANGE": sp500_change,
+            "SP500_PCT": sp500_change,
+            "NASDAQ_LEVEL": nasdaq_price,
+            "NASDAQ_PRICE": nasdaq_price,
+            "NASDAQ_CHANGE": nasdaq_change,
+            "NASDAQ_PCT": nasdaq_change,
+            "DJI_LEVEL": dji_price,
+            "DJI_PRICE": dji_price,
+            "DJI_CHANGE": dji_change,
+            "DJI_PCT": dji_change,
+            "DOW_PRICE": dji_price,
+            "DOW_PCT": dji_change,
+            "VIX_LEVEL": vix_price,
+            "VIX_PRICE": vix_price,
+            "VIX_CHANGE": vix_change,
+            "VIX_PCT": vix_change,
+            "DXY_LEVEL": dxy_price,
+            "DXY_PRICE": dxy_price,
+            "DXY_CHANGE": dxy_change,
+            "DXY_PCT": dxy_change,
+            "USD_ILS": usd_ils_price,
+            "USD_ILS_PRICE": usd_ils_price,
+            "USD_ILS_RATE": usd_ils_price,
+            "USD_ILS_CHANGE": usd_ils_change,
+            "OIL_PRICE": oil_price,
+            "OIL_CHANGE": oil_change,
+            "GOLD_PRICE": gold_price,
+            "GOLD_CHANGE": gold_change,
+            "BTC_PRICE": btc_price,
+            "BTC_CHANGE": btc_change,
+            "US_MARKET_NEWS": ai_insights.get(
+                "US_MARKET_MACRO_NEWS",
+                "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
+            ),
+            "IL_MARKET_NEWS": ai_insights.get(
+                "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
+            ),
+            "SECTOR_CHIPS_DESC": ai_insights.get(
+                "SECTOR_CHIPS_DESC",
+                "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.",
+            ),
+            "SECTOR_CLOUD_DESC": ai_insights.get(
+                "SECTOR_CLOUD_DESC",
+                "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבוסס ענן.",
+            ),
+            "SECTOR_CRYPTO_DESC": ai_insights.get(
+                "SECTOR_CRYPTO_DESC",
+                "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.",
+            ),
+            "CATALYST_EARNINGS": ai_insights.get(
+                "CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים."
+            ),
+            "CATALYST_MONETARY": ai_insights.get(
+                "CATALYST_MONETARY",
+                "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.",
+            ),
+            "CATALYST_HARDWARE": ai_insights.get(
+                "CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה."
+            ),
+            "COMMUNITY_SENTIMENT": ai_insights.get(
+                "COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות."
+            ),
+            "ANALYST_POINT_1": ai_insights.get(
+                "ANALYST_POINT_1",
+                "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.",
+            ),
+            "ANALYST_POINT_2": ai_insights.get(
+                "ANALYST_POINT_2",
+                "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.",
+            ),
+            "RISK_MANAGEMENT_TEXT": ai_insights.get(
+                "RISK_MANAGEMENT_TEXT",
+                "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
+            ),
+            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
+                "ACTION_RECOMMENDATIONS_TEXT",
+                "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
+            ),
+        }
+
+        for ticker in all_strategy_tickers:
+            p_data = market_data.get(ticker, {})
+            price_val = f"${format_num(p_data.get('price', 0.0))}"
+            pct_val = f"{p_data.get('change', 0.0)}%"
+            target_val = f"${format_num(portfolio_buys.get(ticker, {}).get('target', 0.0))}"
+            rationale_val = ai_insights.get(
+                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
+            )
+            swing_val = ai_insights.get(
+                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
+            )
+
+            for prefix in [
+                f"{ticker}_LONG",
+                f"{ticker}_SWING",
+                ticker,
+            ]:
+                replacements[f"{prefix}_PRICE"] = price_val
+                replacements[f"{prefix}_PRE"] = price_val
+                replacements[f"{prefix}_PCT"] = pct_val
+                replacements[f"{prefix}_TARGET"] = target_val
+                replacements[f"{prefix}_RATIONALE"] = rationale_val
+                replacements[f"{prefix}_TEXT"] = swing_val
+
+            replacements[f"{ticker}_SWING_TEXT_2"] = (
+                f"עדכון מומנטום נוסף עבור {ticker}."
+            )
+
+        for ticker, info in portfolio_buys.items():
+            curr_p = market_data.get(ticker, {}).get("price", info["buy"])
+            ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
+            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
+            status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+
+            curr_p_str = f"${format_num(curr_p)}"
+            target_p_str = f"${format_num(info['target'])}"
+
+            replacements[f"{ticker}_PORT_STATUS"] = status_str
+            replacements[f"{ticker}_PORT_TARGET"] = target_p_str
+            replacements[f"{ticker}_PORT_PRE"] = curr_p_str
+            replacements[f"{ticker}_PORT_CURRENT"] = curr_p_str
+            replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
+                f"{ticker}_PORT_NOTE",
+                "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
+            )
+
+            replacements[f"PORTFOLIO_{ticker}_PRICE"] = curr_p_str
+            replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
+            replacements[f"PORTFOLIO_{ticker}_TARGET"] = target_p_str
+            replacements[f"PORTFOLIO_{ticker}_PRE"] = curr_p_str
+
+        for ticker in all_strategy_tickers:
+            replacements[f"{ticker}_NEWS_LINK"] = (
+                f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){ticker}"
+            )
+            replacements[f"{ticker}_NEWS_TITLE"] = ai_insights.get(
+                f"{ticker}_NEWS_TITLE", f"עדכון שוק מרכזי עבור מניית {ticker}"
+            )
+            replacements[f"{ticker}_NEWS_CONTENT"] = ai_insights.get(
+                f"{ticker}_NEWS_CONTENT",
+                f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {ticker}.",
+            )
+            replacements[f"{ticker}_NEWS_IMPACT"] = ai_insights.get(
+                f"{ticker}_NEWS_IMPACT",
+                "השפעה חיובית ומתונה על תיק ההשקעות והמגמה הראשית.",
+            )
+
+        with open("index.template.html", "r", encoding="utf-8-sig") as f:
+            content = f.read()
+
+        for key, val in replacements.items():
+            placeholder = f"{{{{{key}}}}}"
+            content = content.replace(placeholder, str(val))
+
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print("Successfully updated index.html with live AI injection data.")
+
+        subprocess.run(
+            ["git", "config", "--global", "user.name", "github-actions[bot]"],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "config",
+                "--global",
+                "user.email",
+                "github-actions[bot]@users.noreply.github.com",
+            ],
+            check=True,
+        )
+        subprocess.run(["git", "add", "index.html"], check=True)
+
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        if "index.html" in status.stdout:
+            commit_message = f"Auto-update full dynamic AI injection report for {day_name} at {time_str}"
+            subprocess.run(
+                ["git", "commit", "-m", commit_message],
+                check=True,
+            )
+            subprocess.run(["git", "push"], check=True)
+            print("Changes committed and pushed successfully.")
+        else:
+            print("No changes in index.html to commit.")
+
+    except Exception as e:
+        print(f"Error updating file: {e}")
+        traceback.print_exc()
+else:
+    print("Outside active automated hours. Skipping scheduled run.")
