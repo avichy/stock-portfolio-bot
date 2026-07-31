@@ -19,6 +19,17 @@ def format_num(val, decimals=2):
         return str(val)
 
 
+def format_pct_colored(val):
+    """מפרמט אחוזים עם צבע HTML: ירוק לחיובי, אדום לשלילי"""
+    try:
+        num = float(val)
+        sign = "+" if num > 0 else ""
+        color = "#2ecc71" if num >= 0 else "#e74c3c"
+        return f'<span style="color: {color}; font-weight: bold;">{sign}{num:.2f}%</span>'
+    except (ValueError, TypeError):
+        return str(val)
+
+
 # הגדרת אזור זמן של ישראל
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
@@ -84,14 +95,42 @@ tickers_to_fetch = all_strategy_tickers + [
     "^VIX",
 ]
 
+# נתוני קנייה ומחיר בסיס של התיק
+portfolio_buys = {
+    "NVDA": {"shares": 3, "buy": 184.90},
+    "AMD": {"shares": 20, "buy": 211.34},
+    "MU": {"shares": 6, "buy": 316.32},
+    "SNDK": {"shares": 4, "buy": 630.26},
+    "WDC": {"shares": 6, "buy": 223.23},
+    "INTC": {"shares": 20, "buy": 43.05},
+    "SIMO": {"shares": 30, "buy": 131.32},
+    "IREN": {"shares": 54, "buy": 52.75},
+    "CIFR": {"shares": 28, "buy": 17.50},
+    "META": {"shares": 2, "buy": 661.00},
+    "AMZN": {"shares": 6, "buy": 229.29},
+    "GOOG": {"shares": 4, "buy": 317.95},
+    "TTWO": {"shares": 5, "buy": 235.50},
+    "WMT": {"shares": 16, "buy": 119.45},
+    "NFLX": {"shares": 14, "buy": 94.03},
+    "MA": {"shares": 4, "buy": 503.99},
+    "IBIT": {"shares": 14, "buy": 60.48},
+    "GTEC": {"shares": 260, "buy": 1.27},
+    "TQQQ": {"shares": 28, "buy": 56.53},
+}
+
 
 def fetch_all_data():
-    """מושך נתוני מחיר ושינוי יומי מ-yfinance"""
+    """מושך נתוני מחיר, שינוי יומי ויעד אנליסטים אמיתי מ-yfinance"""
     market_data = {}
     for ticker in tickers_to_fetch:
         try:
             stock = yf.Ticker(ticker)
             hist = stock.history(period="2d")
+            info = stock.info
+            
+            # שליפת יעד אנליסטים ממוצע אמיתי מהשוק (במידה וקיים)
+            target_mean = info.get("targetMeanPrice")
+            
             if not hist.empty:
                 current_price = round(hist["Close"].iloc[-1], 2)
                 prev_close = (
@@ -103,37 +142,14 @@ def fetch_all_data():
                 market_data[ticker] = {
                     "price": current_price,
                     "change": change,
+                    "target": target_mean if target_mean else 0.0,
                 }
             else:
-                market_data[ticker] = {"price": 0.0, "change": 0.0}
+                market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
         except Exception as e:
             print(f"Error fetching {ticker}: {e}")
-            market_data[ticker] = {"price": 0.0, "change": 0.0}
+            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
     return market_data
-
-
-# נתוני קנייה ומחיר יעד של התיק בסעיף 5
-portfolio_buys = {
-    "NVDA": {"shares": 3, "buy": 184.90, "target": 220.0},
-    "AMD": {"shares": 20, "buy": 211.34, "target": 250.0},
-    "MU": {"shares": 6, "buy": 316.32, "target": 350.0},
-    "SNDK": {"shares": 4, "buy": 630.26, "target": 700.0},
-    "WDC": {"shares": 6, "buy": 223.23, "target": 260.0},
-    "INTC": {"shares": 20, "buy": 43.05, "target": 55.0},
-    "SIMO": {"shares": 30, "buy": 131.32, "target": 160.0},
-    "IREN": {"shares": 54, "buy": 52.75, "target": 70.0},
-    "CIFR": {"shares": 28, "buy": 17.50, "target": 25.0},
-    "META": {"shares": 2, "buy": 661.00, "target": 750.0},
-    "AMZN": {"shares": 6, "buy": 229.29, "target": 270.0},
-    "GOOG": {"shares": 4, "buy": 317.95, "target": 360.0},
-    "TTWO": {"shares": 5, "buy": 235.50, "target": 280.0},
-    "WMT": {"shares": 16, "buy": 119.45, "target": 140.0},
-    "NFLX": {"shares": 14, "buy": 94.03, "target": 120.0},
-    "MA": {"shares": 4, "buy": 503.99, "target": 580.0},
-    "IBIT": {"shares": 14, "buy": 60.48, "target": 75.0},
-    "GTEC": {"shares": 260, "buy": 1.27, "target": 2.0},
-    "TQQQ": {"shares": 28, "buy": 56.53, "target": 75.0},
-}
 
 
 def generate_ai_insights(market_data):
@@ -149,34 +165,35 @@ def generate_ai_insights(market_data):
         return {}
 
     prompt = (
-        "אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים כרגע:\n"
+        "אתה אנליסט בכיר בשוק ההון. ניתוח נתוני השוק החיים והאמיתיים כרגע (כולל מחירי יעד שנשלפו מהבורסה):\n"
         + json.dumps(market_data, ensure_ascii=False)
         + "\n\n"
-        "**כללים קשיחים לחובה:**\n"
-        "1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.\n"
-        "2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n\n"
-        "החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:\n"
-        "- US_MARKET_MACRO_NEWS\n"
-        "- IL_MARKET_MACRO_NEWS\n"
-        "- SECTOR_CHIPS_DESC\n"
-        "- SECTOR_CLOUD_DESC\n"
-        "- SECTOR_CRYPTO_DESC\n"
-        "- CATALYST_EARNINGS\n"
-        "- CATALYST_MONETARY\n"
-        "- CATALYST_HARDWARE\n"
-        "- COMMUNITY_SENTIMENT\n"
-        "- ANALYST_POINT_1\n"
-        "- ANALYST_POINT_2\n"
-        "- RISK_MANAGEMENT_TEXT\n"
-        "- ACTION_RECOMMENDATIONS_TEXT\n\n"
+        + "**כללים קשיחים לחובה:**\n"
+        + "1. דרישת דיוק אנליטי ומספרי של לפחות 95%: עליך להקפיד על דיוק מקצועי גבוה ביותר, להסתמך אך ורק על נתוני הבסיס המסופקים מבלי להמציא או לשערך עובדות, ולוודא תאימות מוחלטת לנתוני השוק.\n"
+        + "2. פורמט מספרים: כל מספר מעל 1,000 חייב להיכתב תמיד עם פסיק מפריד אלפים (לדוגמה: 7,413.18 ולא 7413.18).\n"
+        + "3. מחירי יעד: עבור כל מניה, השתמש אך ורק ביעד האנליסטים הרשמי והאמיתי שסופק בתוך נתוני השוק עבורה. אל תמציא מחירי יעד מהזיכרון.\n\n"
+        + "החזר אובייקט JSON תקף בלבד (ללא טקסט עוטף או Markdown נוסף מעבר ל-JSON) הכולל את כל המפתחות הבאים בעברית מקצועית המותאמת למצב הנוכחי:\n"
+        + "- US_MARKET_MACRO_NEWS\n"
+        + "- IL_MARKET_MACRO_NEWS\n"
+        + "- SECTOR_CHIPS_DESC\n"
+        + "- SECTOR_CLOUD_DESC\n"
+        + "- SECTOR_CRYPTO_DESC\n"
+        + "- CATALYST_EARNINGS\n"
+        + "- CATALYST_MONETARY\n"
+        + "- CATALYST_HARDWARE\n"
+        + "- COMMUNITY_SENTIMENT\n"
+        + "- ANALYST_POINT_1\n"
+        + "- ANALYST_POINT_2\n"
+        + "- RISK_MANAGEMENT_TEXT\n"
+        + "- ACTION_RECOMMENDATIONS_TEXT\n\n"
         + f"וכמו כן, עבור כל אחד מהסימולים הבאים ({', '.join(all_strategy_tickers)}), הוסף מפתחות ניתוח וחדשות:\n"
-        "1. [TICKER]_RATIONALE\n"
-        "2. [TICKER]_SWING_TEXT\n"
-        "3. [TICKER]_NEWS_TITLE\n"
-        "4. [TICKER]_NEWS_CONTENT\n"
-        "5. [TICKER]_NEWS_IMPACT\n"
-        "6. [TICKER]_NEWS_LINK\n"
-        "7. [TICKER]_PORT_NOTE"
+        + "1. [TICKER]_RATIONALE\n"
+        + "2. [TICKER]_SWING_TEXT\n"
+        + "3. [TICKER]_NEWS_TITLE\n"
+        + "4. [TICKER]_NEWS_CONTENT\n"
+        + "5. [TICKER]_NEWS_IMPACT\n"
+        + "6. [TICKER]_NEWS_LINK\n"
+        + "7. [TICKER]_PORT_NOTE"
     )
 
     payload = {
@@ -247,51 +264,51 @@ if should_update:
         sp500_p = sp500.get("price", 0)
         sp500_c = sp500.get("change", 0)
         sp500_price = format_num(sp500_p)
-        sp500_change = f"{sp500_c}%"
+        sp500_change = format_pct_colored(sp500_c)
 
         nasdaq_p = nasdaq.get("price", 0)
         nasdaq_c = nasdaq.get("change", 0)
         nasdaq_price = format_num(nasdaq_p)
-        nasdaq_change = f"{nasdaq_c}%"
+        nasdaq_change = format_pct_colored(nasdaq_c)
 
         dji_p = dji.get("price", 0)
         dji_c = dji.get("change", 0)
         dji_price = format_num(dji_p)
-        dji_change = f"{dji_c}%"
+        dji_change = format_pct_colored(dji_c)
 
         vix_p = vix.get("price", 0)
         vix_c = vix.get("change", 0)
         vix_price = format_num(vix_p)
-        vix_change = f"{vix_c}%"
+        vix_change = format_pct_colored(vix_c)
 
         dxy_p = dxy.get("price", 0)
         dxy_c = dxy.get("change", 0)
         dxy_price = format_num(dxy_p)
-        dxy_change = f"{dxy_c}%"
+        dxy_change = format_pct_colored(dxy_c)
 
         usd_ils_data = market_data.get("USDILS=X", {})
         usd_ils_p = usd_ils_data.get("price", 3.65)
         usd_ils_c = usd_ils_data.get("change", 0)
         usd_ils_price = f"{format_num(usd_ils_p)}₪"
-        usd_ils_change = f"{usd_ils_c}%"
+        usd_ils_change = format_pct_colored(usd_ils_c)
 
         oil_data = market_data.get("CL=F", {})
         oil_p = oil_data.get("price", 75.0)
         oil_c = oil_data.get("change", 0)
         oil_price = f"${format_num(oil_p)}"
-        oil_change = f"{oil_c}%"
+        oil_change = format_pct_colored(oil_c)
 
         gold_data = market_data.get("GC=F", {})
         gold_p = gold_data.get("price", 2350.0)
         gold_c = gold_data.get("change", 0)
         gold_price = f"${format_num(gold_p)}"
-        gold_change = f"{gold_c}%"
+        gold_change = format_pct_colored(gold_c)
 
         btc_data = market_data.get("BTC-USD", {})
         btc_p = btc_data.get("price", 65000.0)
         btc_c = btc_data.get("change", 0)
         btc_price = f"${format_num(btc_p)}"
-        btc_change = f"{btc_c}%"
+        btc_change = format_pct_colored(btc_c)
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
@@ -383,8 +400,14 @@ if should_update:
         for ticker in all_strategy_tickers:
             p_data = market_data.get(ticker, {})
             price_val = f"${format_num(p_data.get('price', 0.0))}"
-            pct_val = f"{p_data.get('change', 0.0)}%"
-            target_val = f"${format_num(portfolio_buys.get(ticker, {}).get('target', 0.0))}"
+            pct_val = format_pct_colored(p_data.get('change', 0.0))
+            
+            # שליפת יעד האנליסטים האמיתי שנשלף מ-yfinance, ואם אין - שימוש בברירת מחדל
+            fetched_target = p_data.get('target', 0.0)
+            if not fetched_target or fetched_target == 0.0:
+                fetched_target = portfolio_buys.get(ticker, {}).get('buy', 0.0) * 1.25
+            target_val = f"${format_num(fetched_target)}"
+
             rationale_val = ai_insights.get(
                 f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
             )
@@ -411,11 +434,15 @@ if should_update:
         for ticker, info in portfolio_buys.items():
             curr_p = market_data.get(ticker, {}).get("price", info["buy"])
             ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
-            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
+            ret_str = format_pct_colored(ret)
             status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
 
             curr_p_str = f"${format_num(curr_p)}"
-            target_p_str = f"${format_num(info['target'])}"
+            
+            fetched_target = market_data.get(ticker, {}).get("target", 0.0)
+            if not fetched_target or fetched_target == 0.0:
+                fetched_target = info["buy"] * 1.25
+            target_p_str = f"${format_num(fetched_target)}"
 
             replacements[f"{ticker}_PORT_STATUS"] = status_str
             replacements[f"{ticker}_PORT_TARGET"] = target_p_str
