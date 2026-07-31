@@ -272,7 +272,7 @@ if should_update:
         usd_ils_data = market_data.get("USDILS=X", {})
         usd_ils_p = usd_ils_data.get("price", 3.65)
         usd_ils_c = usd_ils_data.get("change", 0)
-        usd_ils_price = f"₪{format_num(usd_ils_p)}"
+        usd_ils_price = f"{format_num(usd_ils_p)₪}"
         usd_ils_change = f"{usd_ils_c}%"
 
         oil_data = market_data.get("CL=F", {})
