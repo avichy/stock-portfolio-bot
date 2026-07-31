@@ -2,6 +2,8 @@ name: Update Stock Prices & Notifications
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [workflow_dispatch]
 
 permissions:
   contents: write
