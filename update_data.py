@@ -211,8 +211,7 @@ def generate_ai_insights(market_data):
             error_code = res_data.get("error", {}).get("code")
             if error_code == 429:
                 print(
-                    f"API Key #{i} exceeded quota (429). Switching to next"
-                    " key..."
+                    f"API Key #{i} exceeded quota (429). Switching to next key..."
                 )
                 continue
             else:
@@ -272,14 +271,12 @@ if should_update:
         )
         gold_change = f"{market_data.get('GC=F', {}).get('change', 0)}%"
 
-        btc_price = format_num(
-            market_data.get("BTC-USD", {}).get("price", 65000.0)
-        )
+        btc_price = f"${format_num(market_data.get('BTC-USD', {}).get('price', 65000.0))}"
         btc_change = f"{market_data.get('BTC-USD', {}).get('change', 0)}%"
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
-            "DAY_NAME": day_name,  # <--- הוספה כאן לעדכון היום בשבוע בכותרת,
+            "DAY_NAME": day_name,
             "SNP_500_LEVEL": sp500_price,
             "SP500_PRICE": sp500_price,
             "SP500_LEVEL": sp500_price,
@@ -331,161 +328,4 @@ if should_update:
             ),
             "SECTOR_CRYPTO_DESC": ai_insights.get(
                 "SECTOR_CRYPTO_DESC",
-                "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.",
-            ),
-            "CATALYST_EARNINGS": ai_insights.get(
-                "CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים."
-            ),
-            "CATALYST_MONETARY": ai_insights.get(
-                "CATALYST_MONETARY",
-                "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.",
-            ),
-            "CATALYST_HARDWARE": ai_insights.get(
-                "CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה."
-            ),
-            "COMMUNITY_SENTIMENT": ai_insights.get(
-                "COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות."
-            ),
-            "ANALYST_POINT_1": ai_insights.get(
-                "ANALYST_POINT_1",
-                "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.",
-            ),
-            "ANALYST_POINT_2": ai_insights.get(
-                "ANALYST_POINT_2",
-                "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.",
-            ),
-            "RISK_MANAGEMENT_TEXT": ai_insights.get(
-                "RISK_MANAGEMENT_TEXT",
-                "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
-            ),
-            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
-                "ACTION_RECOMMENDATIONS_TEXT",
-                "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
-            ),
-        }
-
-        for ticker in all_strategy_tickers:
-            p_data = market_data.get(ticker, {})
-            price_val = format_num(p_data.get("price", 0.0))
-            pct_val = f"{p_data.get('change', 0.0)}%"
-            target_val = format_num(
-                portfolio_buys.get(ticker, {}).get("target", 0.0)
-            )
-            rationale_val = ai_insights.get(
-                f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
-            )
-            swing_val = ai_insights.get(
-                f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
-            )
-
-            for prefix in [
-                f"{ticker}_LONG",
-                f"{ticker}_SWING",
-                ticker,
-            ]:
-                replacements[f"{prefix}_PRICE"] = price_val
-                replacements[f"{prefix}_PRE"] = price_val
-                replacements[f"{prefix}_PCT"] = pct_val
-                replacements[f"{prefix}_TARGET"] = target_val
-                replacements[f"{prefix}_RATIONALE"] = rationale_val
-                replacements[f"{prefix}_TEXT"] = swing_val
-
-            replacements[f"{ticker}_SWING_TEXT_2"] = (
-                f"עדכון מומנטום נוסף עבור {ticker}."
-            )
-
-        for ticker, info in portfolio_buys.items():
-            curr_p = market_data.get(ticker, {}).get("price", info["buy"])
-            ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
-            ret_str = f"+{ret}%" if ret >= 0 else f"{ret}%"
-            status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
-
-            replacements[f"{ticker}_PORT_STATUS"] = status_str
-            replacements[f"{ticker}_PORT_TARGET"] = format_num(info["target"])
-            replacements[f"{ticker}_PORT_PRE"] = format_num(curr_p)
-            replacements[f"{ticker}_PORT_CURRENT"] = format_num(curr_p)
-            replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
-                f"{ticker}_PORT_NOTE",
-                "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
-            )
-
-            replacements[f"PORTFOLIO_{ticker}_PRICE"] = format_num(curr_p)
-            replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
-            replacements[f"PORTFOLIO_{ticker}_TARGET"] = format_num(
-                info["target"]
-            )
-            replacements[f"PORTFOLIO_{ticker}_PRE"] = format_num(curr_p)
-
-        for ticker in all_strategy_tickers:
-            replacements[f"{ticker}_NEWS_LINK"] = (
-                f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){ticker}"
-            )
-            replacements[f"{ticker}_NEWS_TITLE"] = ai_insights.get(
-                f"{ticker}_NEWS_TITLE", f"עדכון שוק מרכזי עבור מניית {ticker}"
-            )
-            replacements[f"{ticker}_NEWS_CONTENT"] = ai_insights.get(
-                f"{ticker}_NEWS_CONTENT",
-                f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {ticker}.",
-            )
-            replacements[f"{ticker}_NEWS_IMPACT"] = ai_insights.get(
-                f"{ticker}_NEWS_IMPACT",
-                "השפעה חיובית ומתונה על תיק ההשקעות והמגמה הראשית.",
-            )
-
-        with open("index.template.html", "r", encoding="utf-8-sig") as f:
-            content = f.read()
-
-        for key, val in replacements.items():
-            placeholder = f"{{{{{key}}}}}"
-            content = content.replace(placeholder, str(val))
-
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write(content)
-
-        print("Successfully updated index.html with live AI injection data.")
-
-        subprocess.run(
-            ["git", "config", "--global", "user.name", "github-actions[bot]"],
-            check=True,
-        )
-        subprocess.run(
-            [
-                "git",
-                "config",
-                "--global",
-                "user.email",
-                "github-actions[bot]@users.noreply.github.com",
-            ],
-            check=True,
-        )
-        subprocess.run(["git", "add", "index.html"], check=True)
-
-        status = subprocess.run(
-            ["git", "status", "--porcelain"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        if "index.html" in status.stdout:
-            subprocess.run(
-                [
-                    "git",
-                    "commit",
-                    "-m",
-                    (
-                        "Auto-update full dynamic AI injection report for"
-                        f" {day_name} at {time_str}"
-                    ),
-                ],
-                check=True,
-            )
-            subprocess.run(["git", "push"], check=True)
-            print("Changes committed and pushed successfully.")
-            print("התשובה שהתקבלה מ-Gemini:", response.text)
-        else:
-            print("No changes in index.html to commit.")
-
-    except Exception as e:
-        print(f"Error updating file: {e}")
-else:
-    print("Outside active automated hours. Skipping scheduled run.")
+                "תנו
