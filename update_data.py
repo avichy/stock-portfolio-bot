@@ -481,6 +481,7 @@ if should_update:
             )
             subprocess.run(["git", "push"], check=True)
             print("Changes committed and pushed successfully.")
+            print("התשובה שהתקבלה מ-Gemini:", response.text)
         else:
             print("No changes in index.html to commit.")
 
