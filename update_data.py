@@ -278,13 +278,13 @@ if should_update:
         oil_data = market_data.get("CL=F", {})
         oil_p = oil_data.get("price", 75.0)
         oil_c = oil_data.get("change", 0)
-        oil_price = format_num(oil_p)
+        oil_price = f"${format_num(oil_p)}
         oil_change = f"{oil_c}%"
 
         gold_data = market_data.get("GC=F", {})
         gold_p = gold_data.get("price", 2350.0)
         gold_c = gold_data.get("change", 0)
-        gold_price = format_num(gold_p)
+        gold_price = f"${format_num(gold_p)}
         gold_change = f"{gold_c}%"
 
         btc_data = market_data.get("BTC-USD", {})
