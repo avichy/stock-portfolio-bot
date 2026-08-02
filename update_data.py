@@ -195,7 +195,7 @@ def call_gemini_with_rotation(prompt, valid_keys):
             " quota (429). Switching key & waiting..."
         )
         current_key_index += 1
-        time.sleep(12)
+        time.sleep(15)
       else:
         print(f"Gemini API Error Response: {res_data}")
         current_key_index += 1
@@ -210,7 +210,7 @@ def call_gemini_with_rotation(prompt, valid_keys):
 
 
 def generate_ai_insights(market_data):
-  """מייצר את כל הטקסטים הדינמיים בחלוקה לבאצ'ים כדי למנוע חריגת טוקנים"""
+  """מייצר את כל הטקסטים הדינמיים בחלוקה לבאצ'ים מוגנים עם השהיות ארוכות"""
   api_keys = [
       os.environ.get("GEMINI_API_KEY_1") or os.environ.get("GEMINI_API_KEY"),
       os.environ.get("GEMINI_API_KEY_2"),
@@ -229,45 +229,57 @@ def generate_ai_insights(market_data):
       "אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:\n"
       + json.dumps(market_data, ensure_ascii=False)
       + "\n\nכללי חובה:\n1. דיוק אנליטי גבוה.\n2. פורמט מספרים מעל 1,000 עם"
-      " פסיק אלפים.\n\nהחזר אובייקט JSON תקף בלבד הכולל את המפתחות הבאים בעברית"
-      " מקצועית:\n- US_MARKET_MACRO_NEWS\n- IL_MARKET_MACRO_NEWS\n-"
-      " SECTOR_CHIPS_DESC\n- SECTOR_CLOUD_DESC\n- SECTOR_CRYPTO_DESC\n-"
-      " CATALYST_EARNINGS\n- CATALYST_MONETARY\n- CATALYST_HARDWARE\n-"
-      " COMMUNITY_SENTIMENT\n- ANALYST_POINT_1\n- ANALYST_POINT_2\n-"
-      " RISK_MANAGEMENT_TEXT\n- ACTION_RECOMMENDATIONS_TEXT"
+      " פסיק אלפים.\n3. אל תחזיר טקסט ריק.\n\nהחזר אובייקט JSON תקף בלבד הכולל"
+      " את המפתחות הבאים בעברית מקצועית ומפורטת:\n- US_MARKET_MACRO_NEWS\n-"
+      " IL_MARKET_MACRO_NEWS\n- SECTOR_CHIPS_DESC\n- SECTOR_CLOUD_DESC\n-"
+      " SECTOR_CRYPTO_DESC\n- CATALYST_EARNINGS\n- CATALYST_MONETARY\n-"
+      " CATALYST_HARDWARE\n- COMMUNITY_SENTIMENT\n- ANALYST_POINT_1\n-"
+      " ANALYST_POINT_2\n- RISK_MANAGEMENT_TEXT\n- ACTION_RECOMMENDATIONS_TEXT"
   )
 
   macro_res = call_gemini_with_rotation(macro_prompt, valid_keys)
-  if isinstance(macro_res, dict):
+  if isinstance(macro_res, dict) and len(macro_res) > 0:
     all_insights.update(macro_res)
 
-  time.sleep(10)  # השהייה בין בקשות למניעת עומס
+  time.sleep(15)  # השהייה ארוכה למניעת עומס
 
-  # שלב 2: חלוקת המניות לקבוצות (באצ'ים של 5 מניות בכל פעם)
-  batch_size = 5
+  # שלב 2: חלוקת המניות לקבוצות (באצ'ים קטנים של 3 מניות בלבד כדי לא להעמיס טוקנים בדקה)
+  batch_size = 3
   for i in range(0, len(all_strategy_tickers), batch_size):
     batch = all_strategy_tickers[i : i + batch_size]
-    print(f"Generating insights for batch: {batch}")
+    print(
+        f"Generating detailed insights for batch ({i+1}/{len(all_strategy_tickers)}):"
+        f" {batch}"
+    )
     batch_market_data = {t: market_data.get(t, {}) for t in batch}
 
     batch_prompt = (
-        "אתה אנליסט בכיר בשוק ההון. עבור קבוצת המניות הבאה, ספק ניתוח מדויק"
-        " ומקצועי מבוסס על נתוני השוק:\n"
+        "אתה אנליסט בכיר בשוק ההון. עבור קבוצת המניות הבאה, ספק ניתוח עמוק,"
+        " מקצועי ומפורט (לא קצר מדי!) מבוסס על נתוני השוק:\n"
         + json.dumps(batch_market_data, ensure_ascii=False)
         + "\n\nכללי חובה:\n1. כל מספר מעל 1,000 עם פסיק אלפים.\n2. השתמש במחירי"
-        " יעד אמיתיים.\n\nהחזר אובייקט JSON תקף בלבד הכולל את כל המפתחות הבאים"
-        " עבור *כל אחד* מהסימולים בקבוצה ("
+        " יעד אמיתיים.\n3. כתוב ניתוחים מלאים ומקצועיים לכל שדה, ללא"
+        " קיצורים.\n\nהחזר אובייקט JSON תקף בלבד הכולל את כל המפתחות הבאים עבור"
+        " *כל אחד* מהסימולים בקבוצה ("
         + ", ".join(batch)
         + "):\n- [TICKER]_RATIONALE\n- [TICKER]_SWING_TEXT\n- [TICKER]_NEWS_TITLE\n-"
         " [TICKER]_NEWS_CONTENT\n- [TICKER]_NEWS_IMPACT\n- [TICKER]_NEWS_LINK\n-"
         " [TICKER]_PORT_NOTE"
     )
 
-    batch_res = call_gemini_with_rotation(batch_prompt, valid_keys)
+    # מנגנון ניסיון חוזר (Retry Loop) לבאץ' ספציפי אם הוא נכשל
+    batch_res = {}
+    for attempt in range(3):
+      batch_res = call_gemini_with_rotation(batch_prompt, valid_keys)
+      if isinstance(batch_res, dict) and len(batch_res) > 0:
+        break
+      print(f"Batch failed or empty, retrying attempt {attempt+1}...")
+      time.sleep(10)
+
     if isinstance(batch_res, dict):
       all_insights.update(batch_res)
 
-    time.sleep(10)  # השהייה בין באצ'ים
+    time.sleep(15)  # השהייה של 15 שניות בין באץ' לבאץ' כדי שה־TPM יתאפס
 
   return all_insights
 
