@@ -48,71 +48,37 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
                 
-                <!-- צד ימין: מדדים מובילים -->
-                <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
-                    <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
-                    
-                    <div class="space-y-3 text-sm">
-                        <p class="text-gray-300">
-                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> המדד משקף את מצב השוק הרחב.</span>
-                        </p>
+ <!-- צד ימין: מדדים מובילים -->
+<div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
+    <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
+    
+    <div class="space-y-3 text-sm">
+        <p class="text-gray-300">
+            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
+            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{SP500_ANALYSIS}}</span></span>
+        </p>
 
-                        <p class="text-gray-300">
-                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> משקף את סקטור הטכנולוגיה והצמיחה.</span>
-                        </p>
+        <p class="text-gray-300">
+            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
+            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{NASDAQ_ANALYSIS}}</span></span>
+        </p>
 
-                        <p class="text-gray-300">
-                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> משקף את החברות התעשייתיות המסורתיות.</span>
-                        </p>
+        <p class="text-gray-300">
+            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
+            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DOW_ANALYSIS}}</span></span>
+        </p>
 
-                        <p class="text-gray-300">
-                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> רמת התנודתיות והחשש בשוק.</span>
-                        </p>
+        <p class="text-gray-300">
+            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
+            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{VIX_ANALYSIS}}</span></span>
+        </p>
 
-                        <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> חוזק הדולר מול סל המטבעות.</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- צד שמאל: דולר, נפט, זהב, ביטקוין בכרטיסים קומפקטיים -->
-                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS_RATE}}</strong> לדולר אחד.</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> השפעה על תיק השקעות דולרי מול שקל.</p>
-                    </div>
-
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> לחבית על רקע אירועים גיאופוליטיים ומאקרו-כלכליים.</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> השפעה על עלויות אנרגיה ואינפלציה.</p>
-                    </div>
-
-                    <!-- כרטיס זהב -->
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400 flex items-center gap-1.5">
-                            זהב (Gold) 🪙
-                        </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> לאונקיה.</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> גידור מפני אי-יציבות כלכלית.</p>
-                    </div>
-
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-<h3 class="text-base font-bold text-cyan-400" style="display: flex; align-items: center; gap: 8px;">
-    <span>ביטקוין (Bitcoin)</span>
-<img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" style="width: 22px; height: 22px; vertical-align: middle; display: inline-block; margin-right: 4px;"></h3>  
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> </p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> אינדיקטור לסנטימנט סיכון ונכסים דיגיטליים.</p>
-                    </div>
-
-                </div>
+        <p class="text-gray-300">
+            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
+            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DXY_ANALYSIS}}</span></span>
+        </p>
+    </div>
+</div>
 
             </div>
 
