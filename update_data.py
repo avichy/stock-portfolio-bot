@@ -38,7 +38,6 @@ now_il = datetime.now(israel_tz)
 current_date = now_il.date()
 current_hour = now_il.hour
 current_minute = now_il.minute
-current_total_minutes = current_hour * 60 + current_minute
 
 trigger_event = (
     os.environ.get("GITHUB_EVENT_NAME")
@@ -62,41 +61,7 @@ print(
     f" {day_name} - Event: {trigger_event}"
 )
 
-# רשימת כל הסימולים במערכת
-all_strategy_tickers = [
-    "NVDA",
-    "AMD",
-    "MU",
-    "GOOG",
-    "AMZN",
-    "META",
-    "MA",
-    "WMT",
-    "TTWO",
-    "WDC",
-    "TQQQ",
-    "INTC",
-    "IREN",
-    "CIFR",
-    "IBIT",
-    "SIMO",
-    "SNDK",
-    "NFLX",
-    "GTEC",
-]
-
-tickers_to_fetch = all_strategy_tickers + [
-    "GC=F",
-    "CL=F",
-    "BTC-USD",
-    "USDILS=X",
-    "^GSPC",
-    "^IXIC",
-    "^DJI",
-    "^VIX",
-]
-
-# נתוני קנייה ומחיר בסיס של התיק
+# נתוני קנייה ומחיר בסיס של התיק האישי (לשמירת טבלת הפוזיציות הקיימת)
 portfolio_buys = {
     "NVDA": {"shares": 3, "buy": 184.90},
     "AMD": {"shares": 20, "buy": 211.34},
@@ -119,16 +84,27 @@ portfolio_buys = {
     "TQQQ": {"shares": 28, "buy": 56.53},
 }
 
+# סימולים כלליים למשיכת נתוני שוק בסיסיים (מדדים, סחורות, מט"ח ותיק)
+base_market_tickers = [
+    "GC=F",
+    "CL=F",
+    "BTC-USD",
+    "USDILS=X",
+    "^GSPC",
+    "^IXIC",
+    "^DJI",
+    "^VIX",
+] + list(portfolio_buys.keys())
 
-def fetch_all_data():
-  """מושך נתוני מחיר, שינוי יומי ויעד אנליסטים אמיתי מ-yfinance"""
+
+def fetch_market_data(tickers):
+  """מושך נתוני מחיר, שינוי יומי ויעד אנליסטים מ-yfinance עבור רשימת סימולים"""
   market_data = {}
-  for ticker in tickers_to_fetch:
+  for ticker in tickers:
     try:
       stock = yf.Ticker(ticker)
       hist = stock.history(period="2d")
       info = stock.info
-
       target_mean = info.get("targetMeanPrice")
 
       if not hist.empty:
@@ -167,7 +143,7 @@ def call_gemini_with_rotation(prompt, valid_keys):
     api_key = valid_keys[current_key_index % len(valid_keys)]
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
     try:
-      res = requests.post(url, json=payload, timeout=40)
+      res = requests.post(url, json=payload, timeout=50)
       res_data = res.json()
 
       if "candidates" in res_data:
@@ -210,7 +186,7 @@ def call_gemini_with_rotation(prompt, valid_keys):
 
 
 def generate_ai_insights(market_data):
-  """מייצר את כל הטקסטים הדינמיים בחלוקה לבאצ'ים מוגנים עם השהיות ארוכות"""
+  """מייצר את ניתוחי המדדים ואת 10+10 המניות הדינמיות מה-AI"""
   api_keys = [
       os.environ.get("GEMINI_API_KEY_1") or os.environ.get("GEMINI_API_KEY"),
       os.environ.get("GEMINI_API_KEY_2"),
@@ -221,67 +197,37 @@ def generate_ai_insights(market_data):
     print("No GEMINI_API_KEY found. Skipping AI generation.")
     return {}
 
-  all_insights = {}
-
-  # שלב 1: בקשה למאקרו וסקטורים כלליים
-  print("Generating Macro & Sectors insights...")
-  macro_prompt = (
+  print(
+      "Generating Macro analysis, Indices analysis, and Dynamic 10+10 stocks"
+      " selection from AI..."
+  )
+  prompt = (
       "אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:\n"
       + json.dumps(market_data, ensure_ascii=False)
-      + "\n\nכללי חובה:\n1. דיוק אנליטי גבוה.\n2. פורמט מספרים מעל 1,000 עם"
-      " פסיק אלפים.\n3. אל תחזיר טקסט ריק.\n\nהחזר אובייקט JSON תקף בלבד הכולל"
-      " את המפתחות הבאים בעברית מקצועית ומפורטת:\n- US_MARKET_MACRO_NEWS\n-"
-      " IL_MARKET_MACRO_NEWS\n- SECTOR_CHIPS_DESC\n- SECTOR_CLOUD_DESC\n-"
-      " SECTOR_CRYPTO_DESC\n- CATALYST_EARNINGS\n- CATALYST_MONETARY\n-"
-      " CATALYST_HARDWARE\n- COMMUNITY_SENTIMENT\n- ANALYST_POINT_1\n-"
-      " ANALYST_POINT_2\n- RISK_MANAGEMENT_TEXT\n- ACTION_RECOMMENDATIONS_TEXT"
+      + "\n\nכללי חובה קשיחים:\n"
+      "1. ספק ניתוח אנליסטי מפורט וגנרי תחת "
+      "SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.\n"
+      "2. בחר והחזר בדיוק **10 מניות** להשקעה ארוכת טווח (Long-Term Core) תחת"
+      " המפתח 'long_term_stocks' כמערך JSON הכולל את השדות: symbol, name,"
+      " target, rationale.\n"
+      "3. בחר והחזר בדיוק **10 מניות** למסחר סווינג קצר טווח (Swing Trading)"
+      " תחת המפתח 'swing_stocks' כמערך JSON הכולל את השדות: symbol, name,"
+      " target, sector_desc, rationale.\n"
+      "4. הוסף ניתוחי מאקרו כלליים תחת המפתחות:"
+      " US_MARKET_MACRO_NEWS, IL_MARKET_MACRO_NEWS, RISK_MANAGEMENT_TEXT,"
+      " ACTION_RECOMMENDATIONS_TEXT.\n"
+      "5. החזר אובייקט JSON תקף בלבד, ללא שום טקסט נוסף מסביב.\n"
   )
 
-  macro_res = call_gemini_with_rotation(macro_prompt, valid_keys)
-  if isinstance(macro_res, dict) and len(macro_res) > 0:
-    all_insights.update(macro_res)
+  ai_res = {}
+  for attempt in range(3):
+    ai_res = call_gemini_with_rotation(prompt, valid_keys)
+    if isinstance(ai_res, dict) and len(ai_res) > 0:
+      break
+    print(f"AI generation failed or empty, retrying attempt {attempt+1}...")
+    time.sleep(10)
 
-  time.sleep(15)  # השהייה ארוכה למניעת עומס
-
-  # שלב 2: חלוקת המניות לקבוצות (באצ'ים קטנים של 3 מניות בלבד כדי לא להעמיס טוקנים בדקה)
-  batch_size = 3
-  for i in range(0, len(all_strategy_tickers), batch_size):
-    batch = all_strategy_tickers[i : i + batch_size]
-    print(
-        f"Generating detailed insights for batch ({i+1}/{len(all_strategy_tickers)}):"
-        f" {batch}"
-    )
-    batch_market_data = {t: market_data.get(t, {}) for t in batch}
-
-    batch_prompt = (
-        "אתה אנליסט בכיר בשוק ההון. עבור קבוצת המניות הבאה, ספק ניתוח עמוק,"
-        " מקצועי ומפורט (לא קצר מדי!) מבוסס על נתוני השוק:\n"
-        + json.dumps(batch_market_data, ensure_ascii=False)
-        + "\n\nכללי חובה:\n1. כל מספר מעל 1,000 עם פסיק אלפים.\n2. השתמש במחירי"
-        " יעד אמיתיים.\n3. כתוב ניתוחים מלאים ומקצועיים לכל שדה, ללא"
-        " קיצורים.\n\nהחזר אובייקט JSON תקף בלבד הכולל את כל המפתחות הבאים עבור"
-        " *כל אחד* מהסימולים בקבוצה ("
-        + ", ".join(batch)
-        + "):\n- [TICKER]_RATIONALE\n- [TICKER]_SWING_TEXT\n- [TICKER]_NEWS_TITLE\n-"
-        " [TICKER]_NEWS_CONTENT\n- [TICKER]_NEWS_IMPACT\n- [TICKER]_NEWS_LINK\n-"
-        " [TICKER]_PORT_NOTE"
-    )
-
-    # מנגנון ניסיון חוזר (Retry Loop) לבאץ' ספציפי אם הוא נכשל
-    batch_res = {}
-    for attempt in range(3):
-      batch_res = call_gemini_with_rotation(batch_prompt, valid_keys)
-      if isinstance(batch_res, dict) and len(batch_res) > 0:
-        break
-      print(f"Batch failed or empty, retrying attempt {attempt+1}...")
-      time.sleep(10)
-
-    if isinstance(batch_res, dict):
-      all_insights.update(batch_res)
-
-    time.sleep(15)  # השהייה של 15 שניות בין באץ' לבאץ' כדי שה־TPM יתאפס
-
-  return all_insights
+  return ai_res
 
 
 # מעדכן תמיד בכל הרצה
@@ -289,143 +235,159 @@ should_update = True
 
 if should_update:
   try:
-    market_data = fetch_all_data()
-    ai_insights = generate_ai_insights(market_data)
+    base_market_data = fetch_market_data(base_market_tickers)
+    ai_insights = generate_ai_insights(base_market_data)
 
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    sp500 = market_data.get("^GSPC", {})
-    nasdaq = market_data.get("^IXIC", {})
-    dji = market_data.get("^DJI", {})
-    vix = market_data.get("^VIX", {})
-    dxy = market_data.get("USDILS=X", {})
+    sp500 = base_market_data.get("^GSPC", {})
+    nasdaq = base_market_data.get("^IXIC", {})
+    dji = base_market_data.get("^DJI", {})
+    vix = base_market_data.get("^VIX", {})
+    dxy = base_market_data.get("USDILS=X", {})
 
-    sp500_p = sp500.get("price", 0)
-    sp500_c = sp500.get("change", 0)
-    sp500_price = format_num(sp500_p)
-    sp500_change = format_pct_colored(sp500_c)
+    sp500_price = format_num(sp500.get("price", 0))
+    sp500_change = format_pct_colored(sp500.get("change", 0))
 
-    nasdaq_p = nasdaq.get("price", 0)
-    nasdaq_c = nasdaq.get("change", 0)
-    nasdaq_price = format_num(nasdaq_p)
-    nasdaq_change = format_pct_colored(nasdaq_c)
+    nasdaq_price = format_num(nasdaq.get("price", 0))
+    nasdaq_change = format_pct_colored(nasdaq.get("change", 0))
 
-    dji_p = dji.get("price", 0)
-    dji_c = dji.get("change", 0)
-    dji_price = format_num(dji_p)
-    dji_change = format_pct_colored(dji_c)
+    dji_price = format_num(dji.get("price", 0))
+    dji_change = format_pct_colored(dji.get("change", 0))
 
-    vix_p = vix.get("price", 0)
-    vix_c = vix.get("change", 0)
-    vix_price = format_num(vix_p)
-    vix_change = format_pct_colored(vix_c)
+    vix_price = format_num(vix.get("price", 0))
+    vix_change = format_pct_colored(vix.get("change", 0))
 
-    dxy_p = dxy.get("price", 0)
-    dxy_c = dxy.get("change", 0)
-    dxy_price = format_num(dxy_p)
-    dxy_change = format_pct_colored(dxy_c)
+    dxy_price = format_num(dxy.get("price", 0))
+    dxy_change = format_pct_colored(dxy.get("change", 0))
 
-    usd_ils_data = market_data.get("USDILS=X", {})
-    usd_ils_p = usd_ils_data.get("price", 3.65)
-    usd_ils_c = usd_ils_data.get("change", 0)
+    usd_ils_p = dxy.get("price", 3.65)
+    usd_ils_c = dxy.get("change", 0)
     usd_ils_price = f"{format_num(usd_ils_p)}₪"
     usd_ils_change = format_pct_colored(usd_ils_c)
 
-    oil_data = market_data.get("CL=F", {})
+    oil_data = base_market_data.get("CL=F", {})
     oil_p = oil_data.get("price", 75.0)
     oil_c = oil_data.get("change", 0)
     oil_price = f"${format_num(oil_p)}"
     oil_change = format_pct_colored(oil_c)
 
-    gold_data = market_data.get("GC=F", {})
+    gold_data = base_market_data.get("GC=F", {})
     gold_p = gold_data.get("price", 2350.0)
     gold_c = gold_data.get("change", 0)
     gold_price = f"${format_num(gold_p)}"
     gold_change = format_pct_colored(gold_c)
 
-    btc_data = market_data.get("BTC-USD", {})
+    btc_data = base_market_data.get("BTC-USD", {})
     btc_p = btc_data.get("price", 65000.0)
     btc_c = btc_data.get("change", 0)
     btc_price = f"${format_num(btc_p)}"
     btc_change = format_pct_colored(btc_c)
 
+    # שליפת 10 מניות ארוכות טווח ו-10 מניות סווינג שהוחזרו מה-AI
+    long_term_stocks = ai_insights.get("long_term_stocks", [])
+    swing_stocks = ai_insights.get("swing_stocks", [])
+
+    # איסוף הסימולים שלהן כדי לשלוף עבורן מחירים חיים מעודכנים מ-yfinance
+    dynamic_tickers = [
+        s.get("symbol") for s in long_term_stocks if "symbol" in s
+    ] + [s.get("symbol") for s in swing_stocks if "symbol" in s]
+
+    dynamic_market_data = fetch_market_data(dynamic_tickers)
+
+    # בניית ה-HTML עבור קבוצת מניות ארוכות טווח
+    long_term_html_blocks = ""
+    for stock in long_term_stocks:
+      sym = stock.get("symbol", "")
+      name = stock.get("name", sym)
+      rationale = stock.get("rationale", "")
+      p_info = dynamic_market_data.get(
+          sym, {"price": 0, "change": 0, "target": 0}
+      )
+
+      price_str = f"${format_num(p_info['price'])}" if p_info["price"] else "N/A"
+      pct_str = format_pct_colored(p_info["change"])
+      target_str = (
+          f"${format_num(p_info['target'])}"
+          if p_info["target"]
+          else stock.get("target", "N/A")
+      )
+
+      long_term_html_blocks += f"""
+        <p class="border-b border-gray-700 pb-3">
+            🚀 <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>
+            מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>
+            מחיר יעד אנליסטים ממוצע: <strong>{target_str}</strong><br>
+            <strong>רציונל וניתוח AI:</strong> <span class="text-gray-200">{rationale}</span>
+        </p>
+        """
+
+    # בניית ה-HTML עבור קבוצת מניות סווינג
+    swing_html_blocks = ""
+    for stock in swing_stocks:
+      sym = stock.get("symbol", "")
+      name = stock.get("name", sym)
+      sector_desc = stock.get("sector_desc", "")
+      rationale = stock.get("rationale", "")
+      p_info = dynamic_market_data.get(
+          sym, {"price": 0, "change": 0, "target": 0}
+      )
+
+      price_str = f"${format_num(p_info['price'])}" if p_info["price"] else "N/A"
+      pct_str = format_pct_colored(p_info["change"])
+      target_str = (
+          f"${format_num(p_info['target'])}"
+          if p_info["target"]
+          else stock.get("target", "N/A")
+      )
+
+      swing_html_blocks += f"""
+        <p class="border-b border-gray-700 pb-3">
+            ⚡ <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>
+            מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>
+            יעד למסחר: <strong>{target_str}</strong><br>
+            תחום עיסוק: {sector_desc}<br>
+            <strong>רציונל וחדשות:</strong> <span class="text-gray-200">{rationale}</span>
+        </p>
+        """
+
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "DAY_NAME": day_name,
-        "SNP_500_LEVEL": sp500_price,
         "SP500_PRICE": sp500_price,
-        "SP500_LEVEL": sp500_price,
-        "SNP_500_CHANGE": sp500_change,
-        "SP500_CHANGE": sp500_change,
         "SP500_PCT": sp500_change,
-        "NASDAQ_LEVEL": nasdaq_price,
         "NASDAQ_PRICE": nasdaq_price,
-        "NASDAQ_CHANGE": nasdaq_change,
         "NASDAQ_PCT": nasdaq_change,
-        "DJI_LEVEL": dji_price,
-        "DJI_PRICE": dji_price,
-        "DJI_CHANGE": dji_change,
-        "DJI_PCT": dji_change,
         "DOW_PRICE": dji_price,
         "DOW_PCT": dji_change,
-        "VIX_LEVEL": vix_price,
         "VIX_PRICE": vix_price,
-        "VIX_CHANGE": vix_change,
         "VIX_PCT": vix_change,
-        "DXY_LEVEL": dxy_price,
         "DXY_PRICE": dxy_price,
-        "DXY_CHANGE": dxy_change,
         "DXY_PCT": dxy_change,
-        "USD_ILS": usd_ils_price,
-        "USD_ILS_PRICE": usd_ils_price,
-        "USD_ILS_RATE": usd_ils_price,
-        "USD_ILS_CHANGE": usd_ils_change,
-        "OIL_PRICE": oil_price,
-        "OIL_CHANGE": oil_change,
-        "GOLD_PRICE": gold_price,
-        "GOLD_CHANGE": gold_change,
-        "BTC_PRICE": btc_price,
-        "BTC_CHANGE": btc_change,
+        "SP500_ANALYSIS": ai_insights.get(
+            "SP500_ANALYSIS", "ניתוח מדד S&P 500 מתעדכן..."
+        ),
+        "NASDAQ_ANALYSIS": ai_insights.get(
+            "NASDAQ_ANALYSIS", "ניתוח מדד נאסד\"ק מתעדכן..."
+        ),
+        "DOW_ANALYSIS": ai_insights.get(
+            "DOW_ANALYSIS", "ניתוח מדד דאו ג'ונס מתעדכן..."
+        ),
+        "VIX_ANALYSIS": ai_insights.get(
+            "VIX_ANALYSIS", "ניתוח מדד הפחד VIX מתעדכן..."
+        ),
+        "DXY_ANALYSIS": ai_insights.get(
+            "DXY_ANALYSIS", "ניתוח מדד הדולר מתעדכן..."
+        ),
+        "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
+        "SWING_STOCKS_SECTION": swing_html_blocks,
         "US_MARKET_NEWS": ai_insights.get(
             "US_MARKET_MACRO_NEWS",
             "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
         ),
         "IL_MARKET_NEWS": ai_insights.get(
             "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
-        ),
-        "SECTOR_CHIPS_DESC": ai_insights.get(
-            "SECTOR_CHIPS_DESC",
-            "ביקושים חזקים לשבבי בינה מלאכותית וחומרה מתקדמת.",
-        ),
-        "SECTOR_CLOUD_DESC": ai_insights.get(
-            "SECTOR_CLOUD_DESC",
-            "צמיחה מתמשכת בתשתיות ענן ושירותי מחשוב מבוסס ענן.",
-        ),
-        "SECTOR_CRYPTO_DESC": ai_insights.get(
-            "SECTOR_CRYPTO_DESC",
-            "תנודתיות ערה ופעילות ענפה בנכסים דיגיטליים ובלוקצ'יין.",
-        ),
-        "CATALYST_EARNINGS": ai_insights.get(
-            "CATALYST_EARNINGS", "מעקב אחר דוחות רבעוניים וציפיות אנליסטים."
-        ),
-        "CATALYST_MONETARY": ai_insights.get(
-            "CATALYST_MONETARY",
-            "החלטות מדיניות מוניטרית, ריבית ובנקים מרכזיים.",
-        ),
-        "CATALYST_HARDWARE": ai_insights.get(
-            "CATALYST_HARDWARE", "השקות מוצרים טכנולוגיים ועדכוני תוכנה."
-        ),
-        "COMMUNITY_SENTIMENT": ai_insights.get(
-            "COMMUNITY_SENTIMENT", "אופטימיות זהירה המלווה בסלקטיביות."
-        ),
-        "ANALYST_POINT_1": ai_insights.get(
-            "ANALYST_POINT_1",
-            "התמקדות בחברות בעלות צמיחה חזקה ותזרים מזומנים יציב.",
-        ),
-        "ANALYST_POINT_2": ai_insights.get(
-            "ANALYST_POINT_2",
-            "מעקב הדוק אחר מדיניות הבנקים המרכזיים ונתוני האינפלציה.",
         ),
         "RISK_MANAGEMENT_TEXT": ai_insights.get(
             "RISK_MANAGEMENT_TEXT",
@@ -435,50 +397,24 @@ if should_update:
             "ACTION_RECOMMENDATIONS_TEXT",
             "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
         ),
+        "USD_ILS": usd_ils_price,
+        "USD_ILS_CHANGE": usd_ils_change,
+        "OIL_PRICE": oil_price,
+        "OIL_CHANGE": oil_change,
+        "GOLD_PRICE": gold_price,
+        "GOLD_CHANGE": gold_change,
+        "BTC_PRICE": btc_price,
+        "BTC_CHANGE": btc_change,
     }
 
-    for ticker in all_strategy_tickers:
-      p_data = market_data.get(ticker, {})
-      price_val = f"${format_num(p_data.get('price', 0.0))}"
-      pct_val = format_pct_colored(p_data.get("change", 0.0))
-
-      fetched_target = p_data.get("target", 0.0)
-      if not fetched_target or fetched_target == 0.0:
-        fetched_target = portfolio_buys.get(ticker, {}).get("buy", 0.0) * 1.25
-      target_val = f"${format_num(fetched_target)}"
-
-      rationale_val = ai_insights.get(
-          f"{ticker}_RATIONALE", "ניתוח מניה עדכני מתבצע..."
-      )
-      swing_val = ai_insights.get(
-          f"{ticker}_SWING_TEXT", "מומנטום קצר טווח נבחן בשוק..."
-      )
-
-      for prefix in [
-          f"{ticker}_LONG",
-          f"{ticker}_SWING",
-          ticker,
-      ]:
-        replacements[f"{prefix}_PRICE"] = price_val
-        replacements[f"{prefix}_PRE"] = price_val
-        replacements[f"{prefix}_PCT"] = pct_val
-        replacements[f"{prefix}_TARGET"] = target_val
-        replacements[f"{prefix}_RATIONALE"] = rationale_val
-        replacements[f"{prefix}_TEXT"] = swing_val
-
-      replacements[f"{ticker}_SWING_TEXT_2"] = (
-          f"עדכון מומנטום נוסף עבור {ticker}."
-      )
-
+    # עדכון נתוני תיק ההשקעות האישי (Portfolio Buys) לשמירת תאימות טבלאות
     for ticker, info in portfolio_buys.items():
-      curr_p = market_data.get(ticker, {}).get("price", info["buy"])
+      curr_p = base_market_data.get(ticker, {}).get("price", info["buy"])
       ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
       ret_str = format_pct_colored(ret)
       status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
-
       curr_p_str = f"${format_num(curr_p)}"
-
-      fetched_target = market_data.get(ticker, {}).get("target", 0.0)
+      fetched_target = base_market_data.get(ticker, {}).get("target", 0.0)
       if not fetched_target or fetched_target == 0.0:
         fetched_target = info["buy"] * 1.25
       target_p_str = f"${format_num(fetched_target)}"
@@ -487,30 +423,8 @@ if should_update:
       replacements[f"{ticker}_PORT_TARGET"] = target_p_str
       replacements[f"{ticker}_PORT_PRE"] = curr_p_str
       replacements[f"{ticker}_PORT_CURRENT"] = curr_p_str
-      replacements[f"{ticker}_PORT_NOTE"] = ai_insights.get(
-          f"{ticker}_PORT_NOTE",
-          "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.",
-      )
-
-      replacements[f"PORTFOLIO_{ticker}_PRICE"] = curr_p_str
-      replacements[f"PORTFOLIO_{ticker}_STATUS"] = status_str
-      replacements[f"PORTFOLIO_{ticker}_TARGET"] = target_p_str
-      replacements[f"PORTFOLIO_{ticker}_PRE"] = curr_p_str
-
-    for ticker in all_strategy_tickers:
-      replacements[f"{ticker}_NEWS_LINK"] = (
-          f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){ticker}"
-      )
-      replacements[f"{ticker}_NEWS_TITLE"] = ai_insights.get(
-          f"{ticker}_NEWS_TITLE", f"עדכון שוק מרכזי עבור מניית {ticker}"
-      )
-      replacements[f"{ticker}_NEWS_CONTENT"] = ai_insights.get(
-          f"{ticker}_NEWS_CONTENT",
-          f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {ticker}.",
-      )
-      replacements[f"{ticker}_NEWS_IMPACT"] = ai_insights.get(
-          f"{ticker}_NEWS_IMPACT",
-          "השפעה חיובית ומתונה על תיק ההשקעות והמגמה הראשית.",
+      replacements[f"{ticker}_PORT_NOTE"] = (
+          "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים."
       )
 
     with open("index.template.html", "r", encoding="utf-8-sig") as f:
@@ -523,7 +437,10 @@ if should_update:
     with open("index.html", "w", encoding="utf-8") as f:
       f.write(content)
 
-    print("Successfully updated index.html with live AI injection data.")
+    print(
+        "Successfully updated index.html with dynamic AI indices & 10+10 stock"
+        " strategy."
+    )
 
     subprocess.run(
         ["git", "config", "--global", "user.name", "github-actions[bot]"],
@@ -548,11 +465,8 @@ if should_update:
         check=True,
     )
     if "index.html" in status.stdout:
-      commit_message = f"Auto-update full dynamic AI injection report for {day_name} at {time_str}"
-      subprocess.run(
-          ["git", "commit", "-m", commit_message],
-          check=True,
-      )
+      commit_message = f"Auto-update dynamic AI 10+10 report for {day_name} at {time_str}"
+      subprocess.run(["git", "commit", "-m", commit_message], check=True)
       subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
       subprocess.run(["git", "push"], check=True)
       print("Changes committed and pushed successfully.")
