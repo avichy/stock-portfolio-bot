@@ -1,4 +1,3 @@
-import base64
 from datetime import datetime
 import json
 import os
@@ -8,6 +7,26 @@ import traceback
 import pytz
 import requests
 import yfinance as yf
+
+AI_CACHE_FILE = "ai_cache.json"
+
+
+def load_ai_cache():
+  if os.path.exists(AI_CACHE_FILE):
+    try:
+      with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+    except Exception:
+      pass
+  return {}
+
+
+def save_ai_cache(data):
+  try:
+    with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
+      json.dump(data, f, ensure_ascii=False, indent=2)
+  except Exception as e:
+    print(f"Error saving AI cache: {e}")
 
 
 def format_num(val, decimals=2):
@@ -133,10 +152,10 @@ def generate_ai_insights(market_data):
       " target, sector_desc, rationale, news_title, news_content, news_impact.\n"
       "4. הוסף הסברים קצרים בשפה פשוטה ומעודכנית למצב השוק הנוכחי עבור ארבעת"
       " הנכסים הבאים תחת המפתחות:\n"
-      "   - USD_ILS_EXPLANATION\n"
-      "   - OIL_EXPLANATION\n"
-      "   - GOLD_EXPLANATION\n"
-      "   - BTC_EXPLANATION\n"
+      "    - USD_ILS_EXPLANATION\n"
+      "    - OIL_EXPLANATION\n"
+      "    - GOLD_EXPLANATION\n"
+      "    - BTC_EXPLANATION\n"
       "5. הוסף ניתוחי מאקרו כלליים תחת המפתחות: US_MARKET_MACRO_NEWS,"
       " IL_MARKET_MACRO_NEWS, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.\n"
       "6. החזר אובייקט JSON תקף בלבד, ללא שום טקסט נוסף מסביב.\n"
@@ -187,8 +206,48 @@ def generate_ai_insights(market_data):
 
 
 try:
+  # שליפת נתוני השוק והמחירים תמיד (בכל חצי שעה)
   base_market_data = fetch_market_data(base_market_tickers)
-  ai_insights = generate_ai_insights(base_market_data)
+
+  # לוגיקת תזמון: הפעלת AI רק בשעות היעד (כל 3 שעות: 10, 13, 16, 19, 22, 0) בדקות הראשונות או בהפעלה ידנית
+  trigger_event = os.environ.get("TRIGGER_EVENT", "")
+  current_hour = now_il.hour
+  current_minute = now_il.minute
+  ai_hours = [10, 13, 16, 19, 22, 0]
+
+  run_ai = (trigger_event == "workflow_dispatch") or (
+      (current_hour in ai_hours) and (current_minute < 15)
+  )
+
+  print(
+      f"Current Israel Time: {now_il.strftime('%Y-%m-%d %H:%M')} - Run AI:"
+      f" {run_ai}"
+  )
+
+  ai_insights = {}
+  if run_ai:
+    print("Running Gemini AI generation...")
+    ai_insights = generate_ai_insights(base_market_data)
+    if ai_insights:
+      save_ai_cache(ai_insights)
+    else:
+      print(
+          "Gemini AI returned empty results, falling back to cache if available."
+      )
+      ai_insights = load_ai_cache()
+  else:
+    print(
+        "Skipping Gemini AI for this half-hour run to save quota. Loading"
+        " cached AI insights..."
+    )
+    ai_insights = load_ai_cache()
+    if not ai_insights:
+      print(
+          "No AI cache found, running Gemini AI as fallback to avoid empty data."
+      )
+      ai_insights = generate_ai_insights(base_market_data)
+      if ai_insights:
+        save_ai_cache(ai_insights)
 
   date_str = now_il.strftime("%d.%m.%Y")
   time_str = now_il.strftime("%H:%M")
@@ -312,142 +371,4 @@ try:
             <p>🔗 <strong>קישור למקור:</strong> <a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline">{news_link}</a></p>
             <p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>
             <p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>
-            <p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>
-        </div>
-        """
-
-  replacements = {
-      "LAST_UPDATED": f"{date_str} | {time_str}",
-      "DAY_NAME": day_name,
-      "SP500_PRICE": sp500_price,
-      "SP500_PCT": sp500_change,
-      "NASDAQ_PRICE": nasdaq_price,
-      "NASDAQ_PCT": nasdaq_change,
-      "DOW_PRICE": dji_price,
-      "DOW_PCT": dji_change,
-      "VIX_PRICE": vix_price,
-      "VIX_PCT": vix_change,
-      "DXY_PRICE": dxy_price,
-      "DXY_PCT": dxy_change,
-      "SP500_ANALYSIS": ai_insights.get(
-          "SP500_ANALYSIS", "ניתוח מדד S&P 500 מתעדכן..."
-      ),
-      "NASDAQ_ANALYSIS": ai_insights.get(
-          "NASDAQ_ANALYSIS", 'ניתוח מדד נאסד"ק מתעדכן...'
-      ),
-      "DOW_ANALYSIS": ai_insights.get(
-          "DOW_ANALYSIS", "ניתוח מדד דאו ג'ונס מתעדכן..."
-      ),
-      "VIX_ANALYSIS": ai_insights.get(
-          "VIX_ANALYSIS", "ניתוח מדד הפחד VIX מתעדכן..."
-      ),
-      "DXY_ANALYSIS": ai_insights.get(
-          "DXY_ANALYSIS", "ניתוח מדד הדולר מתעדכן..."
-      ),
-      "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
-      "SWING_STOCKS_SECTION": swing_html_blocks,
-      "NEWS_SECTION": news_html_blocks,
-      "US_MARKET_NEWS": ai_insights.get(
-          "US_MARKET_MACRO_NEWS",
-          "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
-      ),
-      "IL_MARKET_NEWS": ai_insights.get(
-          "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
-      ),
-      "RISK_MANAGEMENT_TEXT": ai_insights.get(
-          "RISK_MANAGEMENT_TEXT",
-          "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
-      ),
-      "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
-          "ACTION_RECOMMENDATIONS_TEXT",
-          "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
-      ),
-      "USD_ILS": usd_ils_price,
-      "USD_ILS_CHANGE": usd_ils_change,
-      "OIL_PRICE": oil_price,
-      "OIL_CHANGE": oil_change,
-      "GOLD_PRICE": gold_price,
-      "GOLD_CHANGE": gold_change,
-      "BTC_PRICE": btc_price,
-      "BTC_CHANGE": btc_change,
-      "USD_ILS_EXPLANATION": ai_insights.get(
-          "USD_ILS_EXPLANATION",
-          "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות.",
-      ),
-      "OIL_EXPLANATION": ai_insights.get(
-          "OIL_EXPLANATION",
-          "משפיע ישירות על עלויות האנרגיה, הדלק ושיעורי האינפלציה.",
-      ),
-      "GOLD_EXPLANATION": ai_insights.get(
-          "GOLD_EXPLANATION",
-          "משמש כנכס מקלט בטוח וגידור מפני אי-יציבות בשווקים ובאינפלציה.",
-      ),
-      "BTC_EXPLANATION": ai_insights.get(
-          "BTC_EXPLANATION",
-          "אינדיקטור מוביל לסנטימנט סיכון, נזילות ונכסים אלטרנטיביים.",
-      ),
-  }
-
-  for ticker, info in portfolio_buys.items():
-    curr_p = base_market_data.get(ticker, {}).get("price", info["buy"])
-    ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
-    ret_str = format_pct_colored(ret)
-    status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
-    curr_p_str = f"${format_num(curr_p)}"
-    fetched_target = base_market_data.get(ticker, {}).get("target", 0.0)
-    if not fetched_target or fetched_target == 0.0:
-      fetched_target = info["buy"] * 1.25
-    target_p_str = f"${format_num(fetched_target)}"
-
-    replacements[f"{ticker}_PORT_STATUS"] = status_str
-    replacements[f"{ticker}_PORT_TARGET"] = target_p_str
-    replacements[f"{ticker}_PORT_PRE"] = curr_p_str
-    replacements[f"{ticker}_PORT_CURRENT"] = curr_p_str
-    replacements[f"{ticker}_PORT_NOTE"] = (
-        "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים."
-    )
-
-  with open("index.template.html", "r", encoding="utf-8-sig") as f:
-    content = f.read()
-
-  for key, val in replacements.items():
-    content = content.replace(f"{{{{{key}}}}}", str(val))
-
-  with open("index.html", "w", encoding="utf-8") as f:
-    f.write(content)
-
-  subprocess.run(
-      ["git", "config", "--global", "user.name", "github-actions[bot]"],
-      check=True,
-  )
-  subprocess.run(
-      [
-          "git",
-          "config",
-          "--global",
-          "user.email",
-          "github-actions[bot]@users.noreply.github.com",
-      ],
-      check=True,
-  )
-  subprocess.run(["git", "add", "index.html"], check=True)
-
-  status = subprocess.run(
-      ["git", "status", "--porcelain"], capture_output=True, text=True, check=True
-  )
-  if "index.html" in status.stdout:
-    subprocess.run(
-        [
-            "git",
-            "commit",
-            "-m",
-            f"Auto-update dynamic AI report & news for {day_name} at"
-            f" {time_str}",
-        ],
-        check=True,
-    )
-    subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-    subprocess.run(["git", "push"], check=True)
-
-except Exception as e:
-  traceback.print_exc()
+            <p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}
