@@ -186,7 +186,7 @@ def call_gemini_with_rotation(prompt, valid_keys):
 
 
 def generate_ai_insights(market_data):
-  """מייצר את ניתוחי המדדים ואת 10+10 המניות הדינמיות מה-AI"""
+  """מייצר את ניתוחי המדדים, 10+10 המניות והחדשות הדינמיות מה-AI"""
   api_keys = [
       os.environ.get("GEMINI_API_KEY_1") or os.environ.get("GEMINI_API_KEY"),
       os.environ.get("GEMINI_API_KEY_2"),
@@ -198,8 +198,8 @@ def generate_ai_insights(market_data):
     return {}
 
   print(
-      "Generating Macro analysis, Indices analysis, and Dynamic 10+10 stocks"
-      " selection from AI..."
+      "Generating Macro analysis, Indices analysis, Dynamic 10+10 stocks &"
+      " News from AI..."
   )
   prompt = (
       "אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:\n"
@@ -209,10 +209,10 @@ def generate_ai_insights(market_data):
       "SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.\n"
       "2. בחר והחזר בדיוק **10 מניות** להשקעה ארוכת טווח (Long-Term Core) תחת"
       " המפתח 'long_term_stocks' כמערך JSON הכולל את השדות: symbol, name,"
-      " target, rationale.\n"
+      " target, rationale, news_title, news_content, news_impact.\n"
       "3. בחר והחזר בדיוק **10 מניות** למסחר סווינג קצר טווח (Swing Trading)"
       " תחת המפתח 'swing_stocks' כמערך JSON הכולל את השדות: symbol, name,"
-      " target, sector_desc, rationale.\n"
+      " target, sector_desc, rationale, news_title, news_content, news_impact.\n"
       "4. הוסף ניתוחי מאקרו כלליים תחת המפתחות:"
       " US_MARKET_MACRO_NEWS, IL_MARKET_MACRO_NEWS, RISK_MANAGEMENT_TEXT,"
       " ACTION_RECOMMENDATIONS_TEXT.\n"
@@ -352,6 +352,34 @@ if should_update:
         </p>
         """
 
+    # בניית כרטיסי החדשות הדינמיים לכל 20 המניות הנבחרות
+    news_html_blocks = ""
+    all_selected_stocks = long_term_stocks + swing_stocks
+    for stock in all_selected_stocks:
+      sym = stock.get("symbol", "")
+      name = stock.get("name", sym)
+      news_title = stock.get(
+          "news_title", f"עדכון שוק וסקירה טכנית עבור מניית {sym}"
+      )
+      news_content = stock.get(
+          "news_content",
+          f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {sym}.",
+      )
+      news_impact = stock.get(
+          "news_impact", "השפעה חיובית ומתונה על המגמה הראשית."
+      )
+      news_link = f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){sym}"
+
+      news_html_blocks += f"""
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300">
+            <h3 class="text-cyan-400 font-semibold">חדשות {name} (סמל: {sym})</h3>
+            <p>🔗 <strong>קישור למקור:</strong> <a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline">{news_link}</a></p>
+            <p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>
+            <p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>
+            <p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>
+        </div>
+        """
+
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "DAY_NAME": day_name,
@@ -382,6 +410,7 @@ if should_update:
         ),
         "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
         "SWING_STOCKS_SECTION": swing_html_blocks,
+        "NEWS_SECTION": news_html_blocks,
         "US_MARKET_NEWS": ai_insights.get(
             "US_MARKET_MACRO_NEWS",
             "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
@@ -438,8 +467,8 @@ if should_update:
       f.write(content)
 
     print(
-        "Successfully updated index.html with dynamic AI indices & 10+10 stock"
-        " strategy."
+        "Successfully updated index.html with dynamic AI indices, 10+10 stock"
+        " strategy & news."
     )
 
     subprocess.run(
@@ -465,7 +494,7 @@ if should_update:
         check=True,
     )
     if "index.html" in status.stdout:
-      commit_message = f"Auto-update dynamic AI 10+10 report for {day_name} at {time_str}"
+      commit_message = f"Auto-update dynamic AI report & news for {day_name} at {time_str}"
       subprocess.run(["git", "commit", "-m", commit_message], check=True)
       subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
       subprocess.run(["git", "push"], check=True)
