@@ -206,10 +206,8 @@ def generate_ai_insights(market_data):
 
 
 try:
-  # שליפת נתוני השוק והמחירים תמיד (בכל חצי שעה)
   base_market_data = fetch_market_data(base_market_tickers)
 
-  # לוגיקת תזמון: הפעלת AI רק בשעות היעד (כל 3 שעות: 10, 13, 16, 19, 22, 0) בדקות הראשונות או בהפעלה ידנית
   trigger_event = os.environ.get("TRIGGER_EVENT", "")
   current_hour = now_il.hour
   current_minute = now_il.minute
@@ -315,14 +313,14 @@ try:
         if p_info["target"]
         else stock.get("target", "N/A")
     )
-    long_term_html_blocks += f"""
-        <p class="border-b border-gray-700 pb-3">
-            🚀 <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>
-            מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>
-            מחיר יעד אנליסטים ממוצע: <strong>{target_str}</strong><br>
-            <strong>רציונל וניתוח AI:</strong> <span class="text-gray-200">{rationale}</span>
-        </p>
-        """
+    long_term_html_blocks += (
+        '<p class="border-b border-gray-700 pb-3">'
+        f"🚀 <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>"
+        f'מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>'
+        f"מחיר יעד אנליסטים ממוצע: <strong>{target_str}</strong><br>"
+        f'<strong>רציונל וניתוח AI:</strong> <span class="text-gray-200">{rationale}</span>'
+        "</p>"
+    )
 
   swing_html_blocks = ""
   for stock in swing_stocks:
@@ -340,15 +338,15 @@ try:
         if p_info["target"]
         else stock.get("target", "N/A")
     )
-    swing_html_blocks += f"""
-        <p class="border-b border-gray-700 pb-3">
-            ⚡ <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>
-            מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>
-            יעד למסחר: <strong>{target_str}</strong><br>
-            תחום עיסוק: {sector_desc}<br>
-            <strong>רציונל וחדשות:</strong> <span class="text-gray-200">{rationale}</span>
-        </p>
-        """
+    swing_html_blocks += (
+        '<p class="border-b border-gray-700 pb-3">'
+        f"⚡ <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>"
+        f'מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>'
+        f"יעד למסחר: <strong>{target_str}</strong><br>"
+        f"תחום עיסוק: {sector_desc}<br>"
+        f'<strong>רציונל וחדשות:</strong> <span class="text-gray-200">{rationale}</span>'
+        "</p>"
+    )
 
   news_html_blocks = ""
   for stock in long_term_stocks + swing_stocks:
@@ -365,10 +363,146 @@ try:
         "news_impact", "השפעה חיובית ומתונה על המגמה הראשית."
     )
     news_link = f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){sym}"
-    news_html_blocks += f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300">
-            <h3 class="text-cyan-400 font-semibold">חדשות {name} (סמל: {sym})</h3>
-            <p>🔗 <strong>קישור למקור:</strong> <a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline">{news_link}</a></p>
-            <p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>
-            <p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>
-            <p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}
+    news_html_blocks += (
+        '<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow'
+        ' space-y-2 text-sm text-gray-300">'
+        f'<h3 class="text-cyan-400 font-semibold">חדשות {name} (סמל: {sym})</h3>'
+        "<p>🔗 <strong>קישור למקור:</strong> "
+        f'<a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline">{news_link}</a></p>'
+        f"<p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>"
+        f"<p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>"
+        f"<p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>"
+        "</div>"
+    )
+
+  replacements = {
+      "LAST_UPDATED": f"{date_str} | {time_str}",
+      "DAY_NAME": day_name,
+      "SP500_PRICE": sp500_price,
+      "SP500_PCT": sp500_change,
+      "NASDAQ_PRICE": nasdaq_price,
+      "NASDAQ_PCT": nasdaq_change,
+      "DOW_PRICE": dji_price,
+      "DOW_PCT": dji_change,
+      "VIX_PRICE": vix_price,
+      "VIX_PCT": vix_change,
+      "DXY_PRICE": dxy_price,
+      "DXY_PCT": dxy_change,
+      "SP500_ANALYSIS": ai_insights.get(
+          "SP500_ANALYSIS", "ניתוח מדד S&P 500 מתעדכן..."
+      ),
+      "NASDAQ_ANALYSIS": ai_insights.get(
+          "NASDAQ_ANALYSIS", 'ניתוח מדד נאסד"ק מתעדכן...'
+      ),
+      "DOW_ANALYSIS": ai_insights.get(
+          "DOW_ANALYSIS", "ניתוח מדד דאו ג'ונס מתעדכן..."
+      ),
+      "VIX_ANALYSIS": ai_insights.get(
+          "VIX_ANALYSIS", "ניתוח מדד הפחד VIX מתעדכן..."
+      ),
+      "DXY_ANALYSIS": ai_insights.get(
+          "DXY_ANALYSIS", "ניתוח מדד הדולר מתעדכן..."
+      ),
+      "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
+      "SWING_STOCKS_SECTION": swing_html_blocks,
+      "NEWS_SECTION": news_html_blocks,
+      "US_MARKET_NEWS": ai_insights.get(
+          "US_MARKET_MACRO_NEWS",
+          "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים.",
+      ),
+      "IL_MARKET_NEWS": ai_insights.get(
+          "IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."
+      ),
+      "RISK_MANAGEMENT_TEXT": ai_insights.get(
+          "RISK_MANAGEMENT_TEXT",
+          "ניהול סיכונים קפדני באמצעות פקודות סטופ-לוס וגודל פוזיציה מדוד.",
+      ),
+      "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
+          "ACTION_RECOMMENDATIONS_TEXT",
+          "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות בשוק.",
+      ),
+      "USD_ILS": usd_ils_price,
+      "USD_ILS_CHANGE": usd_ils_change,
+      "OIL_PRICE": oil_price,
+      "OIL_CHANGE": oil_change,
+      "GOLD_PRICE": gold_price,
+      "GOLD_CHANGE": gold_change,
+      "BTC_PRICE": btc_price,
+      "BTC_CHANGE": btc_change,
+      "USD_ILS_EXPLANATION": ai_insights.get(
+          "USD_ILS_EXPLANATION",
+          "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות.",
+      ),
+      "OIL_EXPLANATION": ai_insights.get(
+          "OIL_EXPLANATION",
+          "משפיע ישירות על עלויות האנרגיה, הדלק ושיעורי האינפלציה.",
+      ),
+      "GOLD_EXPLANATION": ai_insights.get(
+          "GOLD_EXPLANATION",
+          "משמש כנכס מקלט בטוח וגידור מפני אי-יציבות בשווקים ובאינפלציה.",
+      ),
+      "BTC_EXPLANATION": ai_insights.get(
+          "BTC_EXPLANATION",
+          "אינדיקטור מוביל לסנטימנט סיכון, נזילות ונכסים אלטרנטיביים.",
+      ),
+  }
+
+  for ticker, info in portfolio_buys.items():
+    curr_p = base_market_data.get(ticker, {}).get("price", info["buy"])
+    ret = round(((curr_p - info["buy"]) / info["buy"]) * 100, 2)
+    ret_str = format_pct_colored(ret)
+    status_str = f"רווח {ret_str}" if ret >= 0 else f"הפסד {ret_str}"
+    curr_p_str = f"${format_num(curr_p)}"
+    fetched_target = base_market_data.get(ticker, {}).get("target", 0.0)
+    if not fetched_target or fetched_target == 0.0:
+      fetched_target = info["buy"] * 1.25
+    target_p_str = f"${format_num(fetched_target)}"
+
+    replacements[f"{ticker}_PORT_STATUS"] = status_str
+    replacements[f"{ticker}_PORT_TARGET"] = target_p_str
+    replacements[f"{ticker}_PORT_PRE"] = curr_p_str
+    replacements[f"{ticker}_PORT_CURRENT"] = curr_p_str
+    replacements[f"{ticker}_PORT_NOTE"] = (
+        "מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים."
+    )
+
+  with open("index.template.html", "r", encoding="utf-8-sig") as f:
+    content = f.read()
+
+  for key, val in replacements.items():
+    content = content.replace(f"{{{{{key}}}}}", str(val))
+
+  with open("index.html", "w", encoding="utf-8") as f:
+    f.write(content)
+
+  subprocess.run(
+      ["git", "config", "--global", "user.name", "github-actions[bot]"],
+      check=True,
+  )
+  subprocess.run(
+      [
+          "git",
+          "config",
+          "--global",
+          "user.email",
+          "github-actions[bot]@users.noreply.github.com",
+      ],
+      check=True,
+  )
+  subprocess.run(["git", "add", "index.html"], check=True)
+
+  status = subprocess.run(
+      ["git", "status", "--porcelain"], capture_output=True, text=True, check=True
+  )
+  if "index.html" in status.stdout:
+    commit_msg = (
+        f"Auto-update prices & AI report for {day_name} at {time_str}"
+        if run_ai
+        else f"Auto-update stock prices (yfinance) for {day_name} at {time_str}"
+    )
+    subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+    subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
+    subprocess.run(["git", "push"], check=True)
+
+except Exception as e:
+  traceback.print_exc()
