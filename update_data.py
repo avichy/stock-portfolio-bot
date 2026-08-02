@@ -202,9 +202,12 @@ def generate_ai_insights(market_data):
       "Generating Macro analysis, Indices analysis, Dynamic 10+10 stocks &"
       " News from AI..."
   )
-  prompt = (
-      "אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:\n"
-      + json.dumps(market_data, ensure_ascii=False)
-      + "\n\nכללי חובה קשיחים:\n"
-      "1. ספק ניתוח אנליסטי מפורט וגנרי תחת "
-      "SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.\n"
+  
+  market_json = json.dumps(market_data, ensure_ascii=False)
+  prompt = f"""אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:
+{market_json}
+
+כללי חובה קשיחים:
+1. ספק ניתוח אנליסטי מפורט וגנרי תחת SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.
+2. בחר והחזר בדיוק **10 מניות** להשקעה ארוכת טווח (Long-Term Core) תחת המפתח 'long_term_stocks' כמערך JSON הכולל את השדות: symbol, name, target, rationale, news_title, news_content, news_impact.
+3. בחר והחזר בדיוק **10 מניות** למסחר
