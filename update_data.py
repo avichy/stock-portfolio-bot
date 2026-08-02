@@ -202,12 +202,20 @@ def generate_ai_insights(market_data):
       "Generating Macro analysis, Indices analysis, Dynamic 10+10 stocks &"
       " News from AI..."
   )
-  
-  market_json = json.dumps(market_data, ensure_ascii=False)
-  prompt = f"""אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:
-{market_json}
 
-כללי חובה קשיחים:
-1. ספק ניתוח אנליסטי מפורט וגנרי תחת SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.
-2. בחר והחזר בדיוק **10 מניות** להשקעה ארוכת טווח (Long-Term Core) תחת המפתח 'long_term_stocks' כמערך JSON הכולל את השדות: symbol, name, target, rationale, news_title, news_content, news_impact.
-3. בחר והחזר בדיוק **10 מניות** למסחר
+  market_json = json.dumps(market_data, ensure_ascii=False)
+
+  # שימוש בשרשור מחרוזות רגיל למניעת שגיאות תחביר של Python עם טקסט עברי
+  prompt = (
+      "אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים:\n"
+      + market_json
+      + "\n\nכללי חובה קשיחים:\n"
+      "1. ספק ניתוח אנליסטי מפורט וגנרי תחת SP500_ANALYSIS, NASDAQ_ANALYSIS,"
+      " DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.\n"
+      "2. בחר והחזר בדיוק **10 מניות** להשקעה ארוכת טווח (Long-Term Core)"
+      " תחת המפתח 'long_term_stocks' כמערך JSON הכולל את השדות: symbol, name,"
+      " target, rationale, news_title, news_content, news_impact.\n"
+      "3. בחר והחזר בדיוק **10 מניות** למסחר סווינג קצר טווח (Swing Trading)"
+      " תחת המפתח 'swing_stocks' כמערך JSON הכולל את השדות: symbol, name,"
+      " target, sector_desc, rationale, news_title, news_content, news_impact.\n"
+      "4. הוסף הסברים קצרים בשפה פשוטה ומעודכנית למצב השוק הנוכחי עבור ארבעת
