@@ -115,6 +115,7 @@ def generate_ai_insights(market_data):
     api_keys.append(general_k)
   valid_keys = [k for k in api_keys if k]
   if not valid_keys:
+    print("Error: No Gemini API keys found.")
     return {}
 
   market_json = json.dumps(market_data, ensure_ascii=False)
@@ -143,7 +144,10 @@ def generate_ai_insights(market_data):
 
   payload = {
       "contents": [{"parts": [{"text": prompt_raw}]}],
-      "generationConfig": {"response_mime_type": "application/json"},
+      "generationConfig": {
+          "response_mime_type": "application/json",
+          "max_output_tokens": 8192,
+      },
   }
 
   max_attempts = len(valid_keys) * 3
@@ -152,7 +156,7 @@ def generate_ai_insights(market_data):
     api_key = valid_keys[current_key_index % len(valid_keys)]
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
     try:
-      res = requests.post(url, json=payload, timeout=50)
+      res = requests.post(url, json=payload, timeout=60)
       res_data = res.json()
       if "candidates" in res_data:
         text_response = (
@@ -167,13 +171,15 @@ def generate_ai_insights(market_data):
         parsed_res = json.loads(text_response.strip())
         if isinstance(parsed_res, dict) and len(parsed_res) > 0:
           return parsed_res
+      print(f"API Warning/Error response: {res_data}")
       if res_data.get("error", {}).get("code") == 429:
         current_key_index += 1
         time.sleep(20)
       else:
         current_key_index += 1
         time.sleep(5)
-    except Exception:
+    except Exception as e:
+      print(f"Exception during AI generation: {e}")
       current_key_index += 1
       time.sleep(5)
     attempts += 1
