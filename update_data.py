@@ -127,10 +127,10 @@ def fetch_all_data():
             stock = yf.Ticker(ticker)
             hist = stock.history(period="2d")
             info = stock.info
-            
+
             # שליפת יעד אנליסטים ממוצע אמיתי מהשוק (במידה וקיים)
             target_mean = info.get("targetMeanPrice")
-            
+
             if not hist.empty:
                 current_price = round(hist["Close"].iloc[-1], 2)
                 prev_close = (
