@@ -333,7 +333,7 @@ def generate_ai_insights(market_data, date_str, day_name):
     attempts = 0
     while attempts < max_attempts:
         api_key = valid_keys[current_key_index % len(valid_keys)]
-        url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=){api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
         try:
             res = requests.post(url, json=payload, timeout=60)
             res_data = res.json()
@@ -507,7 +507,7 @@ try:
         news_impact = stock.get(
             "news_impact", "השפעה חיובית ומתונה על המגמה הראשית."
         )
-        news_link = f"https://finance.yahoo.com/quote/{sym}"
+        news_link = f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){sym}"
         news_html_blocks += (
             '<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300">'
             f'<h3 class="text-cyan-400 font-semibold">חדשות {name} (סמל: {sym})</h3>'
