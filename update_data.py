@@ -51,7 +51,7 @@ def get_default_ai_insights():
             "rationale": "חברה יציבה עם תזרים מזומנים חזק, מובילה בעולם הטכנולוגיה והשירותים הדיגיטליים.",
             "news_title": "הרחבת פעילות שירותי הפרטיות והאינטגרציה של מערכות החומרה",
             "news_content": "אנליסטים מציינים ביקושים יציבים לשדרוגי מכשירים והכנסות שיא ממגזר השירותים.",
-            "news_impact": "מחזקת את מעמדה כעוגן יציב וירוק לטווח הארוך בתיק ההשקעות."
+            "news_impact": "מחזקת את מעמדה כעוגן יציב וירוק לטווח הרחוק בתיק ההשקעות."
         },
         {
             "symbol": "MSFT", "name": "Microsoft", "target": "480.00",
@@ -189,7 +189,7 @@ def get_default_ai_insights():
             "rationale": "מחזור עסקים משתפר ותהליכי רה-ארגון בחברה מייצרים עניין למסחר קצר טווח.",
             "news_title": "היערכות להשלמת פיצול פעילות זרוע הפלאש מרכזיות הנתונים",
             "news_content": "אנליסטים מעריכים כי המהלך עשוי להציף ערך רב למשקיעים בטווח הקרוב.",
-            "news_impact": "תנועות שער חדות בעקבות חדשות הקשורות למבנה התאגידי."
+            "news_impact": "תנועות שער חדות בעקבות חדשות הקשורות במבנה התאגידי."
         },
         {
             "symbol": "GTEC", "name": "Green Scientific Technologies", "target": "2.50",
@@ -520,138 +520,7 @@ try:
             "</div>"
         )
 
-    base_portfolio_list = []
-    for ticker, info in portfolio_buys.items():
-        fetched_price_data = base_market_data.get(ticker, {})
-        curr_p = fetched_price_data.get("price")
-        if not curr_p or curr_p == 0.0:
-            curr_p = info["buy"]
-        
-        fetched_target = fetched_price_data.get("target", 0.0)
-        if not fetched_target or fetched_target == 0.0:
-            fetched_target = info["buy"] * 1.25
-
-        base_portfolio_list.append({
-            "ticker": ticker,
-            "shares": info["shares"],
-            "buy": info["buy"],
-            "current": curr_p,
-            "target": fetched_target
-        })
-
-    portfolio_json_str = json.dumps(base_portfolio_list, ensure_ascii=False)
-
-    portfolio_html_blocks = """
-    <!-- טופס הוספת מניה חדשה לתיק ב־UI -->
-    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 space-y-3 text-right" dir="rtl">
-        <h3 class="text-cyan-400 font-semibold text-lg">➕ הוספת מניה חדשה לתיק האישי</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">סמל (טיקר):</label>
-                <input type="text" id="ui-ticker" placeholder="למשל AAPL" class="w-full bg-gray-900 border border-gray-700 p-2 rounded text-white text-left uppercase" dir="ltr">
-            </div>
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">מספר מניות:</label>
-                <input type="number" id="ui-shares" placeholder="כמות" class="w-full bg-gray-900 border border-gray-700 p-2 rounded text-white text-right">
-            </div>
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($):</label>
-                <input type="number" step="any" id="ui-buy" placeholder="מחיר" class="w-full bg-gray-900 border border-gray-700 p-2 rounded text-white text-right">
-            </div>
-            <div class="flex items-end">
-                <button onclick="addNewPortfolioStock()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold p-2 rounded transition shadow">הוסף לתיק</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- אזור הצגת המניות בתיק -->
-    <div id="portfolio-container" class="space-y-4"></div>
-
-    <script>
-    const defaultPortfolio = """ + portfolio_json_str + """;
-
-    function getPortfolio() {
-        const saved = localStorage.getItem('user_portfolio_stocks');
-        if (saved) {
-            try { return JSON.parse(saved); } catch(e) {}
-        }
-        return defaultPortfolio;
-    }
-
-    function savePortfolio(portfolio) {
-        localStorage.setItem('user_portfolio_stocks', JSON.stringify(portfolio));
-    }
-
-    function renderPortfolio() {
-        const container = document.getElementById('portfolio-container');
-        const portfolio = getPortfolio();
-        container.innerHTML = '';
-
-        if (portfolio.length === 0) {
-            container.innerHTML = '<p class="text-gray-400 text-right">אין מניות בתיק כרגע.</p>';
-            return;
-        }
-
-        portfolio.forEach((item, index) => {
-            const ret = ((item.current - item.buy) / item.buy) * 100;
-            const sign = ret > 0 ? "+" : "";
-            const color = ret >= 0 ? "#2ecc71" : "#e74c3c";
-            const statusText = ret >= 0 ? `רווח <span style="color: ${color}; font-weight: bold;">${sign}${ret.toFixed(2)}%</span>` : `הפסד <span style="color: ${color}; font-weight: bold;">${ret.toFixed(2)}%</span>`;
-
-            const html = `
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-right relative" dir="rtl">
-                    <button onclick="removePortfolioStock(${index})" class="absolute top-3 left-3 text-red-400 hover:text-red-300 text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700">🗑️ הסר</button>
-                    <p>💼 <span dir="ltr" style="unicode-bidi: isolate;"><strong>${item.ticker}</strong></span></p>
-                    <p>מספר מניות: ${item.shares} מניות</p>
-                    <p>קנייה: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.buy).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
-                    <p>מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.current).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
-                    <p>מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.target).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
-                    <p>סטטוס פוזיציה: ${statusText}</p>
-                    <p><strong>רציונל ונתונים:</strong> מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.</p>
-                </div>
-            `;
-            container.innerHTML += html;
-        });
-    }
-
-    function addNewPortfolioStock() {
-        const ticker = document.getElementById('ui-ticker').value.trim().toUpperCase();
-        const shares = parseFloat(document.getElementById('ui-shares').value);
-        const buy = parseFloat(document.getElementById('ui-buy').value);
-
-        if (!ticker || isNaN(shares) || isNaN(buy)) {
-            alert('אנא מלא את כל השדות בצורה תקינה.');
-            return;
-        }
-
-        const portfolio = getPortfolio();
-        portfolio.push({
-            ticker: ticker,
-            shares: shares,
-            buy: buy,
-            current: buy,
-            target: buy * 1.25
-        });
-
-        savePortfolio(portfolio);
-        renderPortfolio();
-
-        document.getElementById('ui-ticker').value = '';
-        document.getElementById('ui-shares').value = '';
-        document.getElementById('ui-buy').value = '';
-    }
-
-    function removePortfolioStock(index) {
-        const portfolio = getPortfolio();
-        portfolio.splice(index, 1);
-        savePortfolio(portfolio);
-        renderPortfolio();
-    }
-
-    document.addEventListener('DOMContentLoaded', renderPortfolio);
-    </script>
-    """
-
+    # יצירת המשתנים הדינמיים לתיק ההשקעות בהתאם לתבנית המקורית
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "DAY_NAME": day_name,
@@ -673,7 +542,6 @@ try:
         "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
         "SWING_STOCKS_SECTION": swing_html_blocks,
         "NEWS_SECTION": news_html_blocks,
-        "PORTFOLIO_SECTION": portfolio_html_blocks,
         "US_MARKET_NEWS": ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים."),
         "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."),
         "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", "ניהול סיכונים קפדני."),
@@ -691,6 +559,29 @@ try:
         "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", "משמש כנכס מקלט בטוח."),
         "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", "אינדיקטור לסנטימנט סיכון."),
     }
+
+    # מילוי נתוני תיק ההשקעות לתוך התבנית המקורית עם שורת "רווח:" בשורה נפרדת
+    for ticker, info in portfolio_buys.items():
+        fetched_price_data = base_market_data.get(ticker, {})
+        curr_p = fetched_price_data.get("price")
+        if not curr_p or curr_p == 0.0:
+            curr_p = info["buy"]
+        
+        fetched_target = fetched_price_data.get("target", 0.0)
+        if not fetched_target or fetched_target == 0.0:
+            fetched_target = info["buy"] * 1.25
+
+        ret = ((curr_p - info["buy"]) / info["buy"]) * 100
+        sign = "+" if ret > 0 else ""
+        color = "#2ecc71" if ret >= 0 else "#e74c3c"
+
+        replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
+        replacements[f"{ticker}_PORT_PRE"] = format_pct_colored(fetched_price_data.get("change", 0))
+        replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
+        
+        # שורת הרווח המבוקשת בשורה נפרדת עם התווית "רווח:"
+        replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
+        replacements[f"{ticker}_PORT_NOTE"] = f"מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים עבור {ticker}."
 
     with open("index.template.html", "r", encoding="utf-8-sig") as f:
         content = f.read()
