@@ -157,7 +157,7 @@ def get_default_ai_insights():
             "sector_desc": "תעודת סל ממונפת (x3) על מדד הנאסדק",
             "rationale": "מתאימה למסחר יומי וסווינג מהיר של מספר ימים בניצול מגמות מאקרו.",
             "news_title": "תגובה חדה לתנודות במדד הנאסדק 100 בהשפעת תשואות האג\"ח הממשלתי",
-            "news_content": "כל שינוי קל במדד המוביל מתורגם לתנועה תלת-ממדית חזקה בתעודת הסל הממונפת.",
+            "news_content": "כל שינוי קל במדד המוביל מתורגומי לתנועה תלת-ממדית חזקה בתעודת הסל הממונפת.",
             "news_impact": "רמת סיכון גבוהה הדורשת מעקב צמוד ועצירת הפסד מהירה."
         },
         {
@@ -459,10 +459,10 @@ try:
             else stock.get("target", "N/A")
         )
         long_term_html_blocks += (
-            '<p class="border-b border-gray-700 pb-3">'
-            f"🚀 <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>"
-            f'מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>'
-            f"מחיר יעד אנליסטים ממוצע: <strong>{target_str}</strong><br>"
+            '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
+            f'🚀 <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong> ({pct_str})</span><br>'
+            f'מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
             f'<strong>רציונל וניתוח AI ארוך טווח:</strong> <span class="text-gray-200">{rationale}</span>'
             "</p>"
         )
@@ -484,11 +484,11 @@ try:
             else stock.get("target", "N/A")
         )
         swing_html_blocks += (
-            '<p class="border-b border-gray-700 pb-3">'
-            f"⚡ <strong>{name}</strong> (סמל: <strong>{sym}</strong>)<br>"
-            f'מחיר נוכחי: <strong>{price_str}</strong> (<span class="text-cyan-300">{pct_str}</span>)<br>'
-            f"יעד למסחר סווינג: <strong>{target_str}</strong><br>"
-            f"תחום עיסוק: {sector_desc}<br>"
+            '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
+            f'⚡ <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong> ({pct_str})</span><br>'
+            f'יעד למסחר סווינג: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
+            f'תחום עיסוק: {sector_desc}<br>'
             f'<strong>רציונל וטריגר למסחר:</strong> <span class="text-gray-200">{rationale}</span>'
             "</p>"
         )
@@ -509,13 +509,13 @@ try:
         )
         news_link = f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){sym}"
         news_html_blocks += (
-            '<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300">'
-            f'<h3 class="text-cyan-400 font-semibold">חדשות {name} (סמל: {sym})</h3>'
-            "<p>🔗 <strong>קישור למקור:</strong> "
-            f'<a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline">{news_link}</a></p>'
-            f"<p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>"
-            f"<p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>"
-            f"<p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>"
+            '<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">'
+            f'<h3 class="text-cyan-400 font-semibold">חדשות <span dir="ltr" style="unicode-bidi: isolate;">{name} (סמל: {sym})</span></h3>'
+            '<p>🔗 <strong>קישור למקור:</strong> '
+            f'<a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline" dir="ltr">{news_link}</a></p>'
+            f'<p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>'
+            f'<p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>'
+            f'<p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>'
             "</div>"
         )
 
