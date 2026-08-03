@@ -45,7 +45,7 @@ def format_pct_colored(val):
         return str(val)
 
 def get_default_ai_insights():
-    """נתוני גיבוי למקרה שה-AI חורג מהמכסה, כדי שהדשבורד לעולם לא יישאר ריק"""
+    """נתוני גיבוי למקרה שה-AI לא פועל בריצה הנוכחית, כדי שהדשבורד יסתמך על הקאש או גיבוי"""
     default_stock = {
         "symbol": "AAPL",
         "name": "Apple Inc.",
@@ -231,20 +231,22 @@ def generate_ai_insights(market_data):
     return get_default_ai_insights()
 
 try:
+    # 1. תמיד מעדכנים את מחירי השוק באמצעות yfinance בכל ריצה (ללא תלות ב-AI)
     base_market_data = fetch_market_data(base_market_tickers)
 
     trigger_event = os.environ.get("TRIGGER_EVENT", "")
     current_hour = now_il.hour
     current_minute = now_il.minute
-    ai_hours = [10, 13, 16, 19, 22, 0]
-
+    
+    # אופטימיזציה: פנייה ל-AI בדיוק 3 פעמים ביום (פתיחת מסחר ב-16:00, אמצע יום ב-20:00, סגירה ב-23:00) או בהפעלה ידנית
+    ai_hours = [16, 20, 23]
     run_ai = (trigger_event == "workflow_dispatch") or (
-        (current_hour in ai_hours) and (current_minute < 15)
+        (current_hour in ai_hours) and (current_minute < 30)
     )
 
     ai_insights = {}
     if run_ai:
-        print("Running Gemini AI generation...")
+        print("Running Gemini AI generation (Scheduled/Manual trigger)...")
         ai_insights = generate_ai_insights(base_market_data)
         if ai_insights and len(ai_insights.get("long_term_stocks", [])) > 0:
             save_ai_cache(ai_insights)
@@ -253,6 +255,7 @@ try:
             if not ai_insights:
                 ai_insights = get_default_ai_insights()
     else:
+        print("Skipping AI call to save quota. Loading from ai_cache.json...")
         ai_insights = load_ai_cache()
         if not ai_insights or len(ai_insights.get("long_term_stocks", [])) == 0:
             ai_insights = get_default_ai_insights()
