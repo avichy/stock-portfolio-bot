@@ -55,7 +55,7 @@ def get_default_ai_insights():
         },
         {
             "symbol": "MSFT", "name": "Microsoft", "target": "480.00",
-            "rationale": "מוביلة עולמית בתחומי הענן (Azure) והטמעת בינה מלאכותית ארגונית.",
+            "rationale": "מובילה עולמית בתחומי הענן (Azure) והטמעת בינה מלאכותית ארגונית.",
             "news_title": "גידול מתמשך בצריכת שירותי הענן והשקת פתרונות AI חדשים לארגונים",
             "news_content": "החברה מדווחת על אימוץ נרחב של תשתיות הענן לצד שיפור ברווחיות התפעולית.",
             "news_impact": "תרומה משמעותית לתוצאות העסקיות ולצמיחה עתידית מובטחת."
@@ -272,6 +272,12 @@ def fetch_market_data(tickers):
             hist = stock.history(period="2d")
             info = stock.info
             target_mean = info.get("targetMeanPrice")
+            
+            # שליפת מחיר טרום פתיחה או פתיחה מתוך info או היסטוריה
+            pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
+            if not pre_market_val and not hist.empty:
+                pre_market_val = hist["Open"].iloc[-1]
+
             if not hist.empty:
                 current_price = round(hist["Close"].iloc[-1], 2)
                 prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else current_price
@@ -280,11 +286,12 @@ def fetch_market_data(tickers):
                     "price": current_price,
                     "change": change,
                     "target": target_mean if target_mean else 0.0,
+                    "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
                 }
             else:
-                market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
+                market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
         except Exception as e:
-            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
+            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
     return market_data
 
 current_key_index = 0
@@ -520,7 +527,6 @@ try:
             "</div>"
         )
 
-    # יצירת המשתנים הדינמיים לתיק ההשקעות בהתאם לתבנית המקורית
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "DAY_NAME": day_name,
@@ -560,7 +566,7 @@ try:
         "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", "אינדיקטור לסנטימנט סיכון."),
     }
 
-    # מילוי נתוני תיק ההשקעות לתוך התבנית המקורית עם שורת "רווח:" בשורה נפרדת
+    # מילוי נתוני תיק ההשקעות עם הצגת מחיר הטרום-פתיחה האמיתי ב־_PORT_PRE
     for ticker, info in portfolio_buys.items():
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price")
@@ -571,15 +577,18 @@ try:
         if not fetched_target or fetched_target == 0.0:
             fetched_target = info["buy"] * 1.25
 
+        # מחיר טרום פתיחה או פתיחה מתוך נתוני השוק
+        pre_p = fetched_price_data.get("pre_market", 0.0)
+        if not pre_p or pre_p == 0.0:
+            pre_p = curr_p
+
         ret = ((curr_p - info["buy"]) / info["buy"]) * 100
         sign = "+" if ret > 0 else ""
         color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
         replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
-        replacements[f"{ticker}_PORT_PRE"] = format_pct_colored(fetched_price_data.get("change", 0))
+        replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
         replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-        
-        # שורת הרווח המבוקשת בשורה נפרדת עם התווית "רווח:"
         replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
         replacements[f"{ticker}_PORT_NOTE"] = f"מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים עבור {ticker}."
 
