@@ -56,7 +56,7 @@ def get_default_ai_insights():
         },
         {
             "symbol": "MSFT", "name": "Microsoft", "target": "480.00",
-            "rationale": "מוביلة עולמית בתחומי הענן (Azure) והטמעת בינה מלאכותית ארגונית.",
+            "rationale": "מובילה עולמית בתחומי הענן (Azure) והטמעת בינה מלאכותית ארגונית.",
             "news_title": "גידול מתמשך בצריכת שירותי הענן והשקת פתרונות AI חדשים לארגונים",
             "news_content": "החברה מדווחת על אימוץ נרחב של תשתיות הענן לצד שיפור ברווחיות התפעולית.",
             "news_impact": "תרומה משמעותית לתוצאות העסקיות ולצמיחה עתידית מובטחת."
@@ -284,7 +284,7 @@ def fetch_market_data(tickers):
                 }
             else:
                 market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
-        except Exception as e:
+        except Exception:
             market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0}
     return market_data
 
@@ -348,16 +348,13 @@ def generate_ai_insights(market_data, date_str, day_name):
                 parsed_res = json.loads(text_response.strip())
                 if isinstance(parsed_res, dict) and len(parsed_res.get("long_term_stocks", [])) > 0:
                     return parsed_res
-            print(f"API Warning/Error response: {res_data}")
             current_key_index += 1
             time.sleep(5)
-        except Exception as e:
-            print(f"Exception during AI generation: {e}")
+        except Exception:
             current_key_index += 1
             time.sleep(5)
         attempts += 1
     
-    print("All AI attempts failed or quota exceeded. Returning default fallback insights.")
     return get_default_ai_insights()
 
 try:
@@ -596,5 +593,5 @@ try:
         subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
 
-except Exception as e:
+except Exception:
     traceback.print_exc()
