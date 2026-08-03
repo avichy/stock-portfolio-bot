@@ -273,7 +273,6 @@ def fetch_market_data(tickers):
             info = stock.info
             target_mean = info.get("targetMeanPrice")
             
-            # שליפת מחיר טרום פתיחה או פתיחה מתוך info או היסטוריה
             pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
             if not pre_market_val and not hist.empty:
                 pre_market_val = hist["Open"].iloc[-1]
@@ -469,7 +468,7 @@ try:
         long_term_html_blocks += (
             '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
             f'🚀 <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong> ({pct_str})</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong>&nbsp;({pct_str})</span><br>'
             f'מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
             f'<strong>רציונל וניתוח AI ארוך טווח:</strong> <span class="text-gray-200">{rationale}</span>'
             "</p>"
@@ -494,7 +493,7 @@ try:
         swing_html_blocks += (
             '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
             f'⚡ <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong> ({pct_str})</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong>&nbsp;({pct_str})</span><br>'
             f'יעד למסחר סווינג: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
             f'תחום עיסוק: {sector_desc}<br>'
             f'<strong>רציונל וטריגר למסחר:</strong> <span class="text-gray-200">{rationale}</span>'
@@ -566,7 +565,6 @@ try:
         "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", "אינדיקטור לסנטימנט סיכון."),
     }
 
-    # מילוי נתוני תיק ההשקעות עם הצגת מחיר הטרום-פתיחה האמיתי ב־_PORT_PRE
     for ticker, info in portfolio_buys.items():
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price")
@@ -577,7 +575,6 @@ try:
         if not fetched_target or fetched_target == 0.0:
             fetched_target = info["buy"] * 1.25
 
-        # מחיר טרום פתיחה או פתיחה מתוך נתוני השוק
         pre_p = fetched_price_data.get("pre_market", 0.0)
         if not pre_p or pre_p == 0.0:
             pre_p = curr_p
