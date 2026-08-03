@@ -471,7 +471,7 @@ try:
         long_term_html_blocks += (
             '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
             f'🚀 <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong>&nbsp;({pct_str})</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong></span>&nbsp;<span dir="ltr" style="unicode-bidi: isolate;">({pct_str})</span><br>'
             f'מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
             f'<strong>רציונל וניתוח AI ארוך טווח:</strong> <span class="text-gray-200">{rationale}</span>'
             "</p>"
@@ -496,7 +496,7 @@ try:
         swing_html_blocks += (
             '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
             f'⚡ <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong>&nbsp;({pct_str})</span><br>'
+            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong></span>&nbsp;<span dir="ltr" style="unicode-bidi: isolate;">({pct_str})</span><br>'
             f'יעד למסחר סווינג: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
             f'תחום עיסוק: {sector_desc}<br>'
             f'<strong>רציונל וטריגר למסחר:</strong> <span class="text-gray-200">{rationale}</span>'
