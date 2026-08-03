@@ -258,8 +258,9 @@ base_market_tickers = [
     "CL=F",
     "BTC-USD",
     "USDILS=X",
+    "DX-Y.NYB",
     "^GSPC",
-    "^IXIC",
+    "^NDX",
     "^DJI",
     "^VIX",
 ] + list(portfolio_buys.keys())
@@ -402,10 +403,11 @@ try:
             ai_insights = get_default_ai_insights()
 
     sp500 = base_market_data.get("^GSPC", {})
-    nasdaq = base_market_data.get("^IXIC", {})
+    nasdaq = base_market_data.get("^NDX", {})
     dji = base_market_data.get("^DJI", {})
     vix = base_market_data.get("^VIX", {})
-    dxy = base_market_data.get("USDILS=X", {})
+    usd_ils_data = base_market_data.get("USDILS=X", {})
+    dxy_data = base_market_data.get("DX-Y.NYB", {})
 
     sp500_price = format_num(sp500.get("price", 0))
     sp500_change = format_pct_colored(sp500.get("change", 0))
@@ -415,11 +417,12 @@ try:
     dji_change = format_pct_colored(dji.get("change", 0))
     vix_price = format_num(vix.get("price", 0))
     vix_change = format_pct_colored(vix.get("change", 0))
-    dxy_price = format_num(dxy.get("price", 0))
-    dxy_change = format_pct_colored(dxy.get("change", 0))
+    
+    dxy_price = format_num(dxy_data.get("price", 0))
+    dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
-    usd_ils_p = dxy.get("price", 3.65)
-    usd_ils_c = dxy.get("change", 0)
+    usd_ils_p = usd_ils_data.get("price", 3.65)
+    usd_ils_c = usd_ils_data.get("change", 0)
     usd_ils_price = f"{format_num(usd_ils_p)}₪"
     usd_ils_change = format_pct_colored(usd_ils_c)
 
