@@ -301,8 +301,8 @@ def generate_ai_insights(market_data, date_str, day_name):
         api_keys.append(general_k)
     valid_keys = [k for k in api_keys if k]
     if not valid_keys:
-        print("Error: No Gemini API keys found. Using fallback data.")
-        return get_default_ai_insights()
+        print("Error: No Gemini API keys found.")
+        return {}
 
     market_json = json.dumps(market_data, ensure_ascii=False)
     
@@ -359,8 +359,8 @@ def generate_ai_insights(market_data, date_str, day_name):
             time.sleep(5)
         attempts += 1
     
-    print("All AI attempts failed or quota exceeded. Returning default fallback insights.")
-    return get_default_ai_insights()
+    print("All AI attempts failed or quota exceeded.")
+    return {}
 
 try:
     base_market_data = fetch_market_data(base_market_tickers)
@@ -384,8 +384,10 @@ try:
         if ai_insights and len(ai_insights.get("long_term_stocks", [])) > 0:
             save_ai_cache(ai_insights)
         else:
+            print("AI generation failed. Loading last successful cache from ai_cache.json...")
             ai_insights = load_ai_cache()
-            if not ai_insights:
+            if not ai_insights or len(ai_insights.get("long_term_stocks", [])) == 0:
+                print("Cache is empty. Falling back to default insights.")
                 ai_insights = get_default_ai_insights()
     else:
         print("Skipping AI call to save quota. Loading from ai_cache.json...")
@@ -518,9 +520,6 @@ try:
             "</div>"
         )
 
-    # ------------------------------------------
-    # בניית התיק הבסיסי והוספת טופס UI אינטראקטיבי
-    # ------------------------------------------
     base_portfolio_list = []
     for ticker, info in portfolio_buys.items():
         fetched_price_data = base_market_data.get(ticker, {})
@@ -542,7 +541,7 @@ try:
 
     portfolio_json_str = json.dumps(base_portfolio_list, ensure_ascii=False)
 
-    portfolio_html_blocks = f"""
+    portfolio_html_blocks = """
     <!-- טופס הוספת מניה חדשה לתיק ב־UI -->
     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 space-y-3 text-right" dir="rtl">
         <h3 class="text-cyan-400 font-semibold text-lg">➕ הוספת מניה חדשה לתיק האישי</h3>
@@ -569,90 +568,86 @@ try:
     <div id="portfolio-container" class="space-y-4"></div>
 
     <script>
-    // טעינת הנתונים הבסיסיים מפייתון יחד עם שמירה ב־localStorage
-    const defaultPortfolio = {portfolio_json_str};
+    const defaultPortfolio = """ + portfolio_json_str + """;
 
-    function getPortfolio() {{
+    function getPortfolio() {
         const saved = localStorage.getItem('user_portfolio_stocks');
-        if (saved) {{
-            try {{ return JSON.parse(saved); }} catch(e) {{}}
-        }}
+        if (saved) {
+            try { return JSON.parse(saved); } catch(e) {}
+        }
         return defaultPortfolio;
-    }}
+    }
 
-    function savePortfolio(portfolio) {{
+    function savePortfolio(portfolio) {
         localStorage.setItem('user_portfolio_stocks', JSON.stringify(portfolio));
-    }}
+    }
 
-    function renderPortfolio() {{
+    function renderPortfolio() {
         const container = document.getElementById('portfolio-container');
         const portfolio = getPortfolio();
         container.innerHTML = '';
 
-        if (portfolio.length === 0) {{
+        if (portfolio.length === 0) {
             container.innerHTML = '<p class="text-gray-400 text-right">אין מניות בתיק כרגע.</p>';
             return;
-        }}
+        }
 
-        portfolio.forEach((item, index) => {{
+        portfolio.forEach((item, index) => {
             const ret = ((item.current - item.buy) / item.buy) * 100;
             const sign = ret > 0 ? "+" : "";
             const color = ret >= 0 ? "#2ecc71" : "#e74c3c";
-            const statusText = ret >= 0 ? `רווח <span style="color: ${{color}}; font-weight: bold;">${{sign}}${ret.toFixed(2)}%</span>` : `הפסד <span style="color: ${{color}}; font-weight: bold;">${{ret.toFixed(2)}%</span>`;
+            const statusText = ret >= 0 ? `רווח <span style="color: ${color}; font-weight: bold;">${sign}${ret.toFixed(2)}%</span>` : `הפסד <span style="color: ${color}; font-weight: bold;">${ret.toFixed(2)}%</span>`;
 
             const html = `
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-right relative" dir="rtl">
-                    <button onclick="removePortfolioStock(${{index}})" class="absolute top-3 left-3 text-red-400 hover:text-red-300 text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700">🗑️ הסר</button>
-                    <p>💼 <span dir="ltr" style="unicode-bidi: isolate;"><strong>${{item.ticker}}</strong></span></p>
-                    <p>מספר מניות: ${{item.shares}} מניות</p>
-                    <p>קנייה: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${{Number(item.buy).toLocaleString(undefined, {{minimumFractionDigits: 2, maximumFractionDigits: 2}})}}</strong></span></p>
-                    <p>מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${{Number(item.current).toLocaleString(undefined, {{minimumFractionDigits: 2, maximumFractionDigits: 2}})}}</strong></span></p>
-                    <p>מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${{Number(item.target).toLocaleString(undefined, {{minimumFractionDigits: 2, maximumFractionDigits: 2}})}}</strong></span></p>
-                    <p>סטטוס פוזיציה: ${{statusText}}</p>
+                    <button onclick="removePortfolioStock(${index})" class="absolute top-3 left-3 text-red-400 hover:text-red-300 text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700">🗑️ הסר</button>
+                    <p>💼 <span dir="ltr" style="unicode-bidi: isolate;"><strong>${item.ticker}</strong></span></p>
+                    <p>מספר מניות: ${item.shares} מניות</p>
+                    <p>קנייה: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.buy).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
+                    <p>מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.current).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
+                    <p>מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>$${Number(item.target).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></span></p>
+                    <p>סטטוס פוזיציה: ${statusText}</p>
                     <p><strong>רציונל ונתונים:</strong> מעקב פוזיציה שוטף מבוסס ביצועי שוק נוכחיים.</p>
                 </div>
             `;
             container.innerHTML += html;
-        }});
-    }}
+        });
+    }
 
-    function addNewPortfolioStock() {{
+    function addNewPortfolioStock() {
         const ticker = document.getElementById('ui-ticker').value.trim().toUpperCase();
         const shares = parseFloat(document.getElementById('ui-shares').value);
         const buy = parseFloat(document.getElementById('ui-buy').value);
 
-        if (!ticker || isNaN(shares) || isNaN(buy)) {{
+        if (!ticker || isNaN(shares) || isNaN(buy)) {
             alert('אנא מלא את כל השדות בצורה תקינה.');
             return;
-        }}
+        }
 
         const portfolio = getPortfolio();
-        // בדיקה אם המניה כבר קיימת, אם כן נעדכן אותה או נוסיף כחדשה
-        portfolio.push({{
+        portfolio.push({
             ticker: ticker,
             shares: shares,
             buy: buy,
-            current: buy, // ברירת מחדל עד לסנכרון הבא
+            current: buy,
             target: buy * 1.25
-        }});
+        });
 
         savePortfolio(portfolio);
         renderPortfolio();
 
-        // איפוס שדות הטופס
         document.getElementById('ui-ticker').value = '';
         document.getElementById('ui-shares').value = '';
         document.getElementById('ui-buy').value = '';
-    }}
+    }
 
-    function removePortfolioStock(index) {{
+    function removePortfolioStock(index) {
         const portfolio = getPortfolio();
         portfolio.splice(index, 1);
         savePortfolio(portfolio);
         renderPortfolio();
-    }}
+    }
 
-    // הרצה ראשונית בטעינת העמוד
     document.addEventListener('DOMContentLoaded', renderPortfolio);
     </script>
     """
