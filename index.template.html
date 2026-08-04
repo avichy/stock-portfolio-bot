@@ -131,30 +131,19 @@
                     </div>
                 </div>
 
-            </div> <!-- סגירת ה-grid של שלב 1 -->
-        </div> <!-- סגירת ה-div של tab-1 -->
-
-<!-- שלב 2: סקטורים -->
-        <div id="tab-2" class="tab-content">
-            <h2>שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים 💻📈</h2>
-            <div class="card">
-                <canvas id="sectorChart" height="90"></canvas>
             </div>
-            <div class="card">
-                <p class="text-cyan" style="font-weight: bold; margin-bottom: 12px;">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
-                <div class="grid-2" style="font-size: 0.85rem;">
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">💻 <strong>טכנולוגיית מידע:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏦 <strong>פיננסים:</strong> בנקים, ביטוח ואשראי.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏥 <strong>שירותי בריאות:</strong> פארמה, ביוטכנולוגיה וציוד רפואי.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛍️ <strong>צרכנות מחזורית:</strong> קמעונאות, רכבים ומלונאות.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛒 <strong>צרכנות בסיסית:</strong> מזון, משקאות ורשתות שיווק.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛢️ <strong>אנרגיה:</strong> נפט, גז ואנרגיה מתחדשת.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏭 <strong>תעשייה:</strong> תעופה, ביטחון ומכונות.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🧪 <strong>חומרים:</strong> כימיקלים ומתכות.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">📡 <strong>שירותי תקשורת:</strong> טלקום ומדיה חברתית.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">⚡ <strong>תשתיות ציבוריות:</strong> חשמל ומים.</div>
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155; grid-column: span 2;">🏢 <strong>נדל"ן:</strong> קרנות REITs ונכסים מניבים.</div>
-                </div>
+        </div>
+
+        <!-- שלב 2: סקטורים -->
+        <div id="tab-2" class="tab-content hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית (שבבים, ענן וקריפטו) 💻</h2>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow mb-4">
+                <canvas id="sectorChart" height="110"></canvas>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
+                <p>🔌 <strong>סקטור השבבים והחומרה (Semiconductors):</strong> <span class="{{SECTOR_CHIPS_CLASS}}">{{SECTOR_CHIPS_PCT}}</span> — {{SECTOR_CHIPS_DESC}}</p>
+                <p>☁️ <strong>תשתיות ענן ובינה מלאכותית (Cloud & AI):</strong> <span class="{{SECTOR_CLOUD_CLASS}}">{{SECTOR_CLOUD_PCT}}</span> — {{SECTOR_CLOUD_DESC}}</p>
+                <p>🔗 <strong>קריפטו ותשתיות דיגיטליות:</strong> <span class="{{SECTOR_CRYPTO_CLASS}}">{{SECTOR_CRYPTO_PCT}}</span> — {{SECTOR_CRYPTO_DESC}}</p>
             </div>
         </div>
 
@@ -185,41 +174,41 @@
             </div>
         </div>
 
-<!-- שלב 5: התיק האישי -->
-        <div id="tab-5" class="tab-content">
-            <h2>שלב 5: תיק ההשקעות האישי המלא 💼</h2>
-            <div class="card">
-                <h3 style="margin-bottom: 12px; font-size:1.1rem;">הוספה או עדכון מניה</h3>
-                <div class="grid-4" style="margin-bottom: 12px;">
+        <!-- שלב 5: התיק האישי -->
+        <div id="tab-5" class="tab-content hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
+            
+            <!-- טופס הוספה או עדכון מניה -->
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
+                <h3 class="text-base font-bold text-cyan-400">הוספה או עדכון מניה</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">שם חברה</label>
-                        <input type="text" id="stock-name" placeholder="למשל: NVIDIA" style="width:100%;">
+                        <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
+                        <input type="text" id="stock-name" placeholder="למשל: NVIDIA" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
-                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">טיקר</label>
-                        <input type="text" id="stock-symbol" placeholder="NVDA" style="width:100%; text-transform:uppercase;" dir="ltr">
+                        <label class="block text-xs text-gray-400 mb-1">טיקר</label>
+                        <input type="text" id="stock-symbol" placeholder="NVDA" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 uppercase focus:outline-none focus:border-cyan-400" dir="ltr">
                     </div>
                     <div>
-                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">כמות מניות</label>
-                        <input type="number" id="stock-shares" placeholder="3" style="width:100%;" dir="ltr">
+                        <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
+                        <input type="number" id="stock-shares" placeholder="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-400" dir="ltr">
                     </div>
                     <div>
-                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">מחיר קנייה ($)</label>
-                        <input type="number" step="0.01" id="stock-buy" placeholder="184.9" style="width:100%;" dir="ltr">
+                        <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($)</label>
+                        <input type="number" step="0.01" id="stock-buy" placeholder="184.9" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-400" dir="ltr">
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <button onclick="addOrUpdateStock()" class="btn-primary" style="padding: 10px 20px;">שמור/עדכן מניה</button>
-                    <span id="status-msg" style="font-size: 0.85rem; color: #facc15;"></span>
+                <div class="flex items-center gap-4 flex-wrap">
+                    <button onclick="addOrUpdateStock()" class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-semibold px-4 py-2 rounded-lg text-sm transition shadow">שמור/עדכן מניה</button>
+                    <button onclick="exportPortfolioJson()" class="bg-gray-700 hover:bg-gray-600 text-cyan-300 font-semibold px-4 py-2 rounded-lg text-sm transition shadow">הורד כקובץ JSON 📥</button>
+                    <span id="status-msg" class="text-xs text-yellow-400"></span>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="flex-between" style="border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px;">
-                    <h3 class="text-cyan">מניות התיק במערכת</h3>
-                    <div id="portfolio-counter" style="font-weight: bold; color: #38bdf8; font-size: 0.95rem;">כמות חברות בתיק: 0</div> 
-                </div>
-                <div id="portfolio-list"></div>
+            <!-- רשימת מניות התיק -->
+            <div id="portfolio-container" class="space-y-3">
+                <!-- יתמלא דינמית על ידי JavaScript -->
             </div>
         </div>
         
@@ -272,8 +261,138 @@
 
     </main>
 
-    <!-- JavaScript for Tab Switching and Safe Chart.js Initialization -->
+    <!-- JavaScript for Tab Switching, Chart.js, and Portfolio Management -->
     <script>
+        // רשימת המניות ההתחלתית בתיק
+        let portfolioStocks = [
+            { name: "NVIDIA", symbol: "NVDA", shares: 3, buyPrice: 184.90, current: "{{NVDA_PORT_CURRENT}}", pre: "{{NVDA_PORT_PRE}}", target: "{{NVDA_PORT_TARGET}}", status: "{{NVDA_PORT_STATUS}}", note: "{{NVDA_PORT_NOTE}}" },
+            { name: "Advanced Micro Devices", symbol: "AMD", shares: 20, buyPrice: 211.34, current: "{{AMD_PORT_CURRENT}}", pre: "{{AMD_PORT_PRE}}", target: "{{AMD_PORT_TARGET}}", status: "{{AMD_PORT_STATUS}}", note: "{{AMD_PORT_NOTE}}" },
+            { name: "Micron Technology", symbol: "MU", shares: 6, buyPrice: 316.32, current: "{{MU_PORT_CURRENT}}", pre: "{{MU_PORT_PRE}}", target: "{{MU_PORT_TARGET}}", status: "{{MU_PORT_STATUS}}", note: "{{MU_PORT_NOTE}}" },
+            { name: "SanDisk", symbol: "SNDK", shares: 4, buyPrice: 630.26, current: "{{SNDK_PORT_CURRENT}}", pre: "{{SNDK_PORT_PRE}}", target: "{{SNDK_PORT_TARGET}}", status: "{{SNDK_PORT_STATUS}}", note: "{{SNDK_PORT_NOTE}}" },
+            { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
+            { name: "Intel", symbol: "INTC", shares: 20, buyPrice: 43.05, current: "{{INTC_PORT_CURRENT}}", pre: "{{INTC_PORT_PRE}}", target: "{{INTC_PORT_TARGET}}", status: "{{INTC_PORT_STATUS}}", note: "{{INTC_PORT_NOTE}}" },
+            { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
+            { name: "Iris Energy", symbol: "IREN", shares: 54, buyPrice: 52.75, current: "{{IREN_PORT_CURRENT}}", pre: "{{IREN_PORT_PRE}}", target: "{{IREN_PORT_TARGET}}", status: "{{IREN_PORT_STATUS}}", note: "{{IREN_PORT_NOTE}}" },
+            { name: "Cipher Mining", symbol: "CIFR", shares: 28, buyPrice: 17.50, current: "{{CIFR_PORT_CURRENT}}", pre: "{{CIFR_PORT_PRE}}", target: "{{CIFR_PORT_TARGET}}", status: "{{CIFR_PORT_STATUS}}", note: "{{CIFR_PORT_NOTE}}" },
+            { name: "Meta Platforms", symbol: "META", shares: 2, buyPrice: 661.00, current: "{{META_PORT_CURRENT}}", pre: "{{META_PORT_PRE}}", target: "{{META_PORT_TARGET}}", status: "{{META_PORT_STATUS}}", note: "{{META_PORT_NOTE}}" },
+            { name: "Amazon", symbol: "AMZN", shares: 6, buyPrice: 229.29, current: "{{AMZN_PORT_CURRENT}}", pre: "{{AMZN_PORT_PRE}}", target: "{{AMZN_PORT_TARGET}}", status: "{{AMZN_PORT_STATUS}}", note: "{{AMZN_PORT_NOTE}}" },
+            { name: "Alphabet / Google", symbol: "GOOG", shares: 4, buyPrice: 317.95, current: "{{GOOG_PORT_CURRENT}}", pre: "{{GOOG_PORT_PRE}}", target: "{{GOOG_PORT_TARGET}}", status: "{{GOOG_PORT_STATUS}}", note: "{{GOOG_PORT_NOTE}}" },
+            { name: "Take-Two Interactive", symbol: "TTWO", shares: 5, buyPrice: 235.50, current: "{{TTWO_PORT_CURRENT}}", pre: "{{TTWO_PORT_PRE}}", target: "{{TTWO_PORT_TARGET}}", status: "{{TTWO_PORT_STATUS}}", note: "{{TTWO_PORT_NOTE}}" },
+            { name: "Walmart", symbol: "WMT", shares: 16, buyPrice: 119.45, current: "{{WMT_PORT_CURRENT}}", pre: "{{WMT_PORT_PRE}}", target: "{{WMT_PORT_TARGET}}", status: "{{WMT_PORT_STATUS}}", note: "{{WMT_PORT_NOTE}}" },
+            { name: "Netflix", symbol: "NFLX", shares: 14, buyPrice: 94.03, current: "{{NFLX_PORT_CURRENT}}", pre: "{{NFLX_PORT_PRE}}", target: "{{NFLX_PORT_TARGET}}", status: "{{NFLX_PORT_STATUS}}", note: "{{NFLX_PORT_NOTE}}" },
+            { name: "Mastercard", symbol: "MA", shares: 4, buyPrice: 503.99, current: "{{MA_PORT_CURRENT}}", pre: "{{MA_PORT_PRE}}", target: "{{MA_PORT_TARGET}}", status: "{{MA_PORT_STATUS}}", note: "{{MA_PORT_NOTE}}" },
+            { name: "iShares Bitcoin Trust", symbol: "IBIT", shares: 14, buyPrice: 60.48, current: "{{IBIT_PORT_CURRENT}}", pre: "{{IBIT_PORT_PRE}}", target: "{{IBIT_PORT_TARGET}}", status: "{{IBIT_PORT_STATUS}}", note: "{{IBIT_PORT_NOTE}}" },
+            { name: "Greenland Technologies", symbol: "GTEC", shares: 260, buyPrice: 1.27, current: "{{GTEC_PORT_CURRENT}}", pre: "{{GTEC_PORT_PRE}}", target: "{{GTEC_PORT_TARGET}}", status: "{{GTEC_PORT_STATUS}}", note: "{{GTEC_PORT_NOTE}}" },
+            { name: "ProShares UltraPro QQQ", symbol: "TQQQ", shares: 28, buyPrice: 56.53, current: "{{TQQQ_PORT_CURRENT}}", pre: "{{TQQQ_PORT_PRE}}", target: "{{TQQQ_PORT_TARGET}}", status: "{{TQQQ_PORT_STATUS}}", note: "{{TQQQ_PORT_NOTE}}" }
+        ];
+
+        function renderPortfolio() {
+            const container = document.getElementById('portfolio-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            portfolioStocks.forEach((stock, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <p><strong>${stock.name}</strong> (סמל: <strong dir="ltr">${stock.symbol}</strong>)<br>
+                        מספר מניות: ${stock.shares} מניות<br>
+                        קנייה: <strong>$${stock.buyPrice.toFixed(2)}</strong><br>
+                        מחיר נוכחי: <strong>${stock.current}</strong><br>
+                        מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
+                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
+                        <strong>${stock.status}</strong><br>
+                        <span class="text-gray-400">חדשות ורציונל: ${stock.note}</span></p>
+                    </div>
+                    <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
+                        <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
+                        <button onclick="deleteStock(${index})" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-xs transition">מחק 🗑️</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addOrUpdateStock() {
+            const name = document.getElementById('stock-name').value.trim();
+            const symbol = document.getElementById('stock-symbol').value.trim().toUpperCase();
+            const shares = parseInt(document.getElementById('stock-shares').value);
+            const buyPrice = parseFloat(document.getElementById('stock-buy').value);
+            const statusMsg = document.getElementById('status-msg');
+
+            if (!name || !symbol || isNaN(shares) || isNaN(buyPrice)) {
+                statusMsg.style.color = "#f87171";
+                statusMsg.innerText = "נא למלא את כל השדות כראוי!";
+                return;
+            }
+
+            // בדיקה האם המניה קיימת כבר לפי סמל לצורך עדכון או הוספה
+            const existingIndex = portfolioStocks.findIndex(s => s.symbol === symbol);
+            if (existingIndex !== -1) {
+                portfolioStocks[existingIndex].name = name;
+                portfolioStocks[existingIndex].shares = shares;
+                portfolioStocks[existingIndex].buyPrice = buyPrice;
+                statusMsg.style.color = "#4ade80";
+                statusMsg.innerText = `המניה ${symbol} עודכנה בהצלחה!`;
+            } else {
+                portfolioStocks.push({
+                    name: name,
+                    symbol: symbol,
+                    shares: shares,
+                    buyPrice: buyPrice,
+                    current: "N/A",
+                    pre: "N/A",
+                    target: "N/A",
+                    status: "פוזיציה חדשה",
+                    note: "נוספה ידנית על ידי המשתמש"
+                });
+                statusMsg.style.color = "#4ade80";
+                statusMsg.innerText = `המניה ${symbol} נוספה בהצלחה!`;
+            }
+
+            clearForm();
+            renderPortfolio();
+        }
+
+        function loadStockForUpdate(index) {
+            const stock = portfolioStocks[index];
+            document.getElementById('stock-name').value = stock.name;
+            document.getElementById('stock-symbol').value = stock.symbol;
+            document.getElementById('stock-shares').value = stock.shares;
+            document.getElementById('stock-buy').value = stock.buyPrice;
+            document.getElementById('status-msg').style.color = "#facc15";
+            document.getElementById('status-msg').innerText = `טוען את ${stock.symbol} לעדכון...`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteStock(index) {
+            const stockSymbol = portfolioStocks[index].symbol;
+            if (confirm(`האם אתה בטוח שברצונך למחוק את המניה ${stockSymbol}?`)) {
+                portfolioStocks.splice(index, 1);
+                renderPortfolio();
+                document.getElementById('status-msg').style.color = "#f87171";
+                document.getElementById('status-msg').innerText = `המניה ${stockSymbol} נמחקה.`;
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('stock-name').value = '';
+            document.getElementById('stock-symbol').value = '';
+            document.getElementById('stock-shares').value = '';
+            document.getElementById('stock-buy').value = '';
+        }
+
+        function exportPortfolioJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioStocks, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "portfolio.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
         function switchTab(tabNumber) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden');
@@ -294,6 +413,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            renderPortfolio();
+
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tabNum = parseInt(btn.getAttribute('data-tab'));
