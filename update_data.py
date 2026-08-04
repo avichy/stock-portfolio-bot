@@ -1,8 +1,9 @@
 import base64
+import json
 import os
 import requests
 
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get(
     "GITHUB_REPO"
 )  # לדוגמה: "username/stock-portfolio-bot"
