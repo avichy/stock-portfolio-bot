@@ -9,6 +9,7 @@ import requests
 import yfinance as yf
 
 AI_CACHE_FILE = "ai_cache.json"
+PORTFOLIO_FILE = "portfolio.json"
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -25,6 +26,17 @@ def save_ai_cache(data):
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving AI cache: {e}")
+
+def load_portfolio_buys():
+    if os.path.exists(PORTFOLIO_FILE):
+        try:
+            with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading portfolio.json: {e}")
+    return {}
+
+portfolio_buys = load_portfolio_buys()
 
 def format_num(val, decimals=2):
     try:
@@ -43,28 +55,6 @@ def format_pct_colored(val):
         return f'<span style="color: {color}; font-weight: bold;">{sign}{num:.2f}%</span>'
     except (ValueError, TypeError):
         return str(val)
-
-portfolio_buys = {
-    "NVDA": {"shares": 3, "buy": 184.90},
-    "AMD": {"shares": 20, "buy": 211.34},
-    "MU": {"shares": 6, "buy": 316.32},
-    "SNDK": {"shares": 4, "buy": 630.26},
-    "WDC": {"shares": 6, "buy": 223.23},
-    "INTC": {"shares": 20, "buy": 43.05},
-    "SIMO": {"shares": 30, "buy": 131.32},
-    "IREN": {"shares": 54, "buy": 52.75},
-    "CIFR": {"shares": 28, "buy": 17.50},
-    "META": {"shares": 2, "buy": 661.00},
-    "AMZN": {"shares": 6, "buy": 229.29},
-    "GOOG": {"shares": 4, "buy": 317.95},
-    "TTWO": {"shares": 5, "buy": 235.50},
-    "WMT": {"shares": 16, "buy": 119.45},
-    "NFLX": {"shares": 14, "buy": 94.03},
-    "MA": {"shares": 4, "buy": 503.99},
-    "IBIT": {"shares": 14, "buy": 60.48},
-    "GTEC": {"shares": 260, "buy": 1.27},
-    "TQQQ": {"shares": 28, "buy": 56.53},
-}
 
 def get_default_ai_insights():
     long_term_list = [
@@ -337,6 +327,12 @@ def get_default_ai_insights():
             "news_title": "תגובה חדה לשינויים בתשואות האג\"ח ובסנטימנט הטכנולוגי",
             "news_content": "תנועות חדות במדד המוביל מכפילות את ההשפעה על שער יחידות הסל.",
             "news_impact": "סיכון מוגבר המחייב מעקב צמוד ויציאה מהירה במידת הצורך."
+        },
+        "BE": {
+            "rationale": "צמיחה בתחום תאי הדלק והאספקה העצמאית של חשמל נקי למרכזי נתונים (AI Data Centers).",
+            "news_title": "התרחבות בפתרונות אספקת אנרגיה מבוזרת לתשתיות מחשוב מתקדמות",
+            "news_content": "הביקוש לפתרונות אנרגיה עצמאיים מזנק על רקע עומסים ברשתות החשמל המסורתיות.",
+            "news_impact": "פוטנציאל אפסייד משמעותי הנגזר מהביקוש לתשתיות טכנולוגיות."
         }
     }
 
