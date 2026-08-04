@@ -9,6 +9,7 @@ import requests
 import yfinance as yf
 
 AI_CACHE_FILE = "ai_cache.json"
+PORTFOLIO_FILE = "portfolio.json"
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -25,6 +26,17 @@ def save_ai_cache(data):
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving AI cache: {e}")
+
+def load_portfolio_buys():
+    if os.path.exists(PORTFOLIO_FILE):
+        try:
+            with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading portfolio.json: {e}")
+    return {}
+
+portfolio_buys = load_portfolio_buys()
 
 def format_num(val, decimals=2):
     try:
@@ -44,312 +56,16 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-portfolio_buys = {
-    "NVDA": {"shares": 3, "buy": 184.90},
-    "AMD": {"shares": 20, "buy": 211.34},
-    "MU": {"shares": 6, "buy": 316.32},
-    "SNDK": {"shares": 4, "buy": 630.26},
-    "WDC": {"shares": 6, "buy": 223.23},
-    "INTC": {"shares": 20, "buy": 43.05},
-    "SIMO": {"shares": 30, "buy": 131.32},
-    "IREN": {"shares": 54, "buy": 52.75},
-    "CIFR": {"shares": 28, "buy": 17.50},
-    "META": {"shares": 2, "buy": 661.00},
-    "AMZN": {"shares": 6, "buy": 229.29},
-    "GOOG": {"shares": 4, "buy": 317.95},
-    "TTWO": {"shares": 5, "buy": 235.50},
-    "WMT": {"shares": 16, "buy": 119.45},
-    "NFLX": {"shares": 14, "buy": 94.03},
-    "MA": {"shares": 4, "buy": 503.99},
-    "IBIT": {"shares": 14, "buy": 60.48},
-    "GTEC": {"shares": 260, "buy": 1.27},
-    "TQQQ": {"shares": 28, "buy": 56.53},
-}
-
 def get_default_ai_insights():
-    long_term_list = [
-        {
-            "symbol": "AAPL", "name": "Apple Inc.", "target": "240.00",
-            "rationale": "מעבר ממוקד לשירותי מנויים דיגיטליים מתקדמים לצד יציבות תזרימית חסרת תקדים בשוק הסמארטפונים.",
-            "news_title": "השקת עדכוני אבטחה ופלטפורמת בינה עסקית חדשה למפתחי צד שלישי",
-            "news_content": "החברה מרחיבה את מעטפת השירותים המקוונים שלה כדי לפצות על האטה במכירות חומרה נקודתיות.",
-            "news_impact": "מבסס את רווחיות החברה ומחזק את אמון המשקיעים לטווח הארוך."
-        },
-        {
-            "symbol": "MSFT", "name": "Microsoft", "target": "480.00",
-            "rationale": "הטמעה עמוקה של סוכני AI אוטונומיים במערכות הענן של ארגונים גלובליים מובילים.",
-            "news_title": "גידול בהכנסות שירותי הענן העסקיים וחתימה על עסקאות ענק ממשלתיות",
-            "news_content": "הביקוש לתשתיות מחשוב ענן ייעודיות לחישובי ענק ממשיך לדחוף כלפי מעלה את שולי הרווח.",
-            "news_impact": "מנוע צמיחה יציב המייצר ערך אמיתי לבעלי המניות."
-        },
-        {
-            "symbol": "GOOGL", "name": "Alphabet", "target": "200.00",
-            "rationale": "דומיננטיות מוחלטת בשזירת מודלי שפה מתקדמים במנועי חיפוש ובפלטפורמות ענן ארגוניות.",
-            "news_title": "אופטימיזציה של מבנה ההוצאות התפעוליות וגידול חד בהכנסות הפרסום הדיגיטלי",
-            "news_content": "הנהלת החברה מציגה שיפור ניכר ביעילות המרכזים והאלגוריתמים המשרתים מיליוני משתמשים.",
-            "news_impact": "תמחור אטרקטיבי המגלם פוטנציאל אפסייד גבוה ביחס לסיכון."
-        },
-        {
-            "symbol": "AMZN", "name": "Amazon", "target": "230.00",
-            "rationale": "סינרגיה מושלמת בין פעילות המסחר המקוון הלוגיסטית לבין זרוע שירותי הענן AWS.",
-            "news_title": "התייעלות במערך השילוח הבין-יבשתי ועלייה בשיעורי הרווחיות של AWS",
-            "news_content": "שימוש מוגבר באוטומציה מתקדמת במרכזי הלוגיסטיקה מוזיל משמעותית את עלויות התפעול.",
-            "news_impact": "מחזק את המגמה הראשית ומעניק רוח גבית לתוצאות הרבעוניות."
-        },
-        {
-            "symbol": "NVDA", "name": "NVIDIA", "target": "140.00",
-            "rationale": "הובלה בלתי מעורערת באספקת מעבדי קצה וארכיטקטורות חומרה למרכזי נתונים עתירי AI.",
-            "news_title": "חשיפת השבבים החדשים והרחבת חוזי האספקה ארוכי הטווח עם ענקיות הענן",
-            "news_content": "הביקוש העולמי למערכות עיבוד נתונים משולבות ממשיך לעלות על תחזיות האנליסטים המוקדמות.",
-            "news_impact": "המשך ביסוס המונופול הטכנולוגי בשוק המעבדים הגלובלי."
-        },
-        {
-            "symbol": "BRK-B", "name": "Berkshire Hathaway", "target": "490.00",
-            "rationale": "פורטפוליו עסקי מבוזר המגן על המשקיעים מפני זעזועי מאקרו ותנודתיות בשווקים.",
-            "news_title": "מימוש נבון של אחזקות נזילות והגדלת עתודות המזומנים של הקונגלומרט",
-            "news_content": "החברות הבנות מציגות יציבות פיננסית גבוהה גם בסביבת ריבית מאתגרת.",
-            "news_impact": "מספק עוגן בטוח המאזן את התיק הכולל."
-        },
-        {
-            "symbol": "JPM", "name": "JPMorgan Chase", "target": "220.00",
-            "rationale": "מאזן חזק וניהול סיכונים קפדני המציבים את הבנק בראש המערכת הפיננסית העולמית.",
-            "news_title": "התאוששות בפעילות הנפקות החוב והמיזוגים לצד גידול בהכנסות ריבית נטו",
-            "news_content": "הבנק עומד בכל מבחני הלחץ הרגולטוריים בהצלחה יתרה ומחלק תשואה יציבה.",
-            "news_impact": "חיזוק הסנטימנט החיובי בסקטור הפיננסי."
-        },
-        {
-            "symbol": "WMT", "name": "Walmart", "target": "90.00",
-            "rationale": "רשת קמעונאות גלובלית המושכת אליה צרכנים המחפשים ערך מוסף בתקופות אינפלציוניות.",
-            "news_title": "צמיחה מואצת בפעילות המסחר הדיגיטלי ובשירותי המנויים של הרשת",
-            "news_content": "שיפור שרשרת האספקה הקמעונאית מאפשר שמירה על מרווחי רווח יציבים.",
-            "news_impact": "משמש כמגן יעיל מפני תנודות חדות בשווקים."
-        },
-        {
-            "symbol": "V", "name": "Visa", "target": "320.00",
-            "rationale": "מודל עסקי עמיד המבוסס על עמלות סליקה גלובליות במעבר לתשלומים אלקטרוניים.",
-            "news_title": "עלייה בהיקפי עסקאות המסחר הבינלאומיות והתשלומים הניידים",
-            "news_content": "התיירות העולמית המתאוששת תומכת בגידול עקבי בנפחי הסליקה היומיים.",
-            "news_impact": "תזרים מזומנים צפוי ויציב התומך בתגמול מתמשך לבעלי המניות."
-        },
-        {
-            "symbol": "NFLX", "name": "Netflix", "target": "100.00",
-            "rationale": "שליטה בשוק הסטרימינג העולמי הודות לאסטרטגיית תוכן מדויקת ומוניטין חזק.",
-            "news_title": "הצלחת מסלולי הצפייה המוזלים בשילוב פרסומות ואכיפת מדיניות המנויים",
-            "news_content": "החברה רושמת תוספת מנויים נקייה גבוהה מהציפיות ושיפור במרווח התפעולי.",
-            "news_impact": "חיזוק מעמדה התחרותי בתעשיית הבידור הדיגיטלי."
-        }
-    ]
-
-    swing_list = [
-        {
-            "symbol": "AMD", "name": "Advanced Micro Devices", "target": "160.00",
-            "sector_desc": "מוליכים למחצה ותשתיות מחשוב",
-            "rationale": "פוטנציאל למומנטום קצר טווח בעקבות נתח שוק הולך וגדל במאיצי AI מתקדמים.",
-            "news_title": "חתימה על עסקאות אספקה חדשות למרכזי נתונים מתקדמים באסיה ובארה\"ב",
-            "news_content": "המשקיעים בוחנים את יכולתה של החברה לתרגם את השקת השבבים להכנסות מיידיות.",
-            "news_impact": "תנודתיות גבוהה המאפשרת הזדמנויות מסחר מהירות."
-        },
-        {
-            "symbol": "TSLA", "name": "Tesla", "target": "250.00",
-            "sector_desc": "רכב חשמלי ואנרגיה מתחדשת",
-            "rationale": "נכס תנודתי המגיב בעוצמה גבוהה לדיווחים רגולטוריים ונתוני מכירות רבעוניים.",
-            "news_title": "עדכונים סביב פיתוח מערכות נהיגה אוטונומית ופתרונות אחסון אנרגיה",
-            "news_content": "השוק מגיב באגרסיביות לכל ידיעה חדשה הנוגעת למדיניות המחירים ותחרות הרכבים.",
-            "news_impact": "תנועות שער חדות המצריכות ניהול סיכונים הדוק למסחר קצר טווח."
-        },
-        {
-            "symbol": "MU", "name": "Micron Technology", "target": "115.00",
-            "sector_desc": "שבבי זיכרון ואחסון מתקדמים",
-            "rationale": "חשיפה ישירה למחזור הביקושים הגבוה לשבבי HBM המוטמעים בשררתי AI.",
-            "news_title": "דיווחים על הידוק מלאים ועליית מחירים בקווי הייצור של רכיבי הזיכרון",
-            "news_content": "הביקוש המוגבר מצד יצרניות החומרה תומך בשיפור תוצאותיה העסקיות.",
-            "news_impact": "תגובה מהירה לרוח הגביה של סקטור השבבים בוול סטריט."
-        },
-        {
-            "symbol": "META", "name": "Meta Platforms", "target": "620.00",
-            "sector_desc": "שירותי תקשורת ומדיה חברתית",
-            "rationale": "מומנטום חיובי המונע משיפור אלגוריתמיקה מבוססת AI למיקוד פרסומות מדויק.",
-            "news_title": "שדרוג כלים למפרסמים המציגים החזר השקעה (ROI) גבוה משמעותית",
-            "news_content": "מותגים וגופים מסחריים מגדילים את תקציבי הפרסום הפונים לפלטפורמות החברה.",
-            "news_impact": "תמיכה בפריצת רמות התנגדות טכניות במסחר הסווינג."
-        },
-        {
-            "symbol": "TQQQ", "name": "ProShares UltraPro QQQ", "target": "75.00",
-            "sector_desc": "תעודת סל ממונפת (x3) על מדד הנאסדק",
-            "rationale": "כלי מסחר אגרסיבי המיועד לניצול מגמות מאקרו יומיות של מדד הטכנולוגיה.",
-            "news_title": "תגובה חדה לתנודות בתשואות אג\"ח ממשלת ארצות הברית והסנטימנט הטכנולוגי",
-            "news_content": "כל תנועה קטנה במדד המוביל מתורגמת לתנודתיות משולשת בנכס הבסיס.",
-            "news_impact": "רמת סיכון גבוהה המחייבת יציאה מהירה מפוזיציות הפוכות."
-        },
-        {
-            "symbol": "IREN", "name": "Iris Energy", "target": "12.00",
-            "sector_desc": "תשתיות מחשוב ענן וכרייה ירוקה",
-            "rationale": "מתאפיינת בקורלציה גבוהה לשוק הקריפטו ולמעבר מתקני אנרגיה לשימושי AI.",
-            "news_title": "הסבת חוזי חשמל ומתקנים קיימים לתמיכה בחישובי ענן ובינה מלאכותית",
-            "news_content": "הנהלת החברה מדווחת על עסקאות גיבוי ענן המייצרות מקור הכנסה אלטרנטיבי.",
-            "news_impact": "תנודות שער חדות המספקות פוטנציאל רווח סווינג גבוה."
-        },
-        {
-            "symbol": "CIFR", "name": "Cipher Mining", "target": "6.50",
-            "sector_desc": "כריית ביטקוין ותשתיות דיגיטליות",
-            "rationale": "מניה בעלת בטא גבוהה המושפעת ישירות מתנודות המחיר של שוק המטבעות הדיגיטליים.",
-            "news_title": "תנועה במחירי הביטקוין ודיונים סביב שיתופי פעולה תשתיתיים",
-            "news_content": "סוחרים אקטיביים מנצלים את מחזורי המסחר הערים לביצוע עסקאות מהירות.",
-            "news_impact": "רגישות מוגברת לחדשות יומיות המכתיבות את כיוון המסחר."
-        },
-        {
-            "symbol": "SIMO", "name": "Silicon Motion Technology", "target": "85.00",
-            "sector_desc": "בקרי אחסון למוליכים למחצה",
-            "rationale": "שחקנית נישה בסקטור השבבים הרגישה במיוחד לפערים בתמחור הטכני קצר הטווח.",
-            "news_title": "עדכונים על קצבי אספקת בקרים ליצרניות כוננים איתנות",
-            "news_content": "התאוששות הדרגתית בשוק המחשבים האישיים תומכת בפעילותה השוטפת.",
-            "news_impact": "אפשרות לתיקון חד מעלה בעקבות זיהוי תבניות טכניות."
-        },
-        {
-            "symbol": "WDC", "name": "Western Digital", "target": "75.00",
-            "sector_desc": "פתרונות אחסון מידע וזיכרון",
-            "rationale": "תהליכי רה-ארגון פנימיים ומחזור עסקים משתפר מייצרים עניין למסחר סווינג.",
-            "news_title": "התקדמות לקראת השלמת המהלך המבני והפיצול התאגידי המתוכנן",
-            "news_content": "אנליסטים בשוק מעריכים כי המהלך צפוי להציף ערך משמעותי למשקיעים.",
-            "news_impact": "תנועות מחיר מושפעות מדיווחים תאגידיים נקודתיים."
-        },
-        {
-            "symbol": "GTEC", "name": "Green Scientific Technologies", "target": "2.50",
-            "sector_desc": "טכנולוגיות ירוקות וחקלאות חכמה",
-            "rationale": "מניית מומנטום תנודתית המאפשרת עסקאות ספקולטיביות מהירות במחזורים נמוכים.",
-            "news_title": "חתימה על הסכמי הפצה אזוריים חדשים בשווקים מתעוררים",
-            "news_content": "פרסום הודעות על פרויקטים תפעוליים מביא לקפיצות פתאומיות במחזור.",
-            "news_impact": "סיכון גבוה המותאם לסוחרים מנוסים בלבד."
-        }
-    ]
-
-    # ניתוחי גיבוי מפורטים ויחודיים לכל מניה בתיק האישי (מונע טקסט גנרי במקרה של נפילת API)
-    default_portfolio_analysis = {
-        "NVDA": {
-            "rationale": "עוצמה טכנית גבוהה בשילוב ביקושי ענק למעבדי Blackwell ודור העתיד במרכזי הנתונים.",
-            "news_title": "חוזים חדשים לאספקת שבבי AI לענקיות הטכנולוגיה העולמיות",
-            "news_content": "החברה שומרת על נתח שוק דומיננטי חרף כניסת מתחרות חדשות לזירה.",
-            "news_impact": "דחיפה כלפי מעלה של התשואה והמשך ביסוס המובילות בשוק."
-        },
-        "AMD": {
-            "rationale": "פוטנציאל אפסייד משמעותי במאיצי AI ובנתח השוק של מעבדי השרתים (EPYC).",
-            "news_title": "הרחבת שיתופי הפעולה האסטרטגיים בתחום הענן והחישוב המואץ",
-            "news_content": "הערכות האנליסטים מצביעות על עלייה בהכנסות ממגזר השבבים המתקדמים.",
-            "news_impact": "תנודתיות חיובית ותמיכה בהתאוששות השערים."
-        },
-        "MU": {
-            "rationale": "מחזור זיכרון (DRAM/HBM) חזק הדוחף את מרווחי הרווח של החברה לשיאים חדשים.",
-            "news_title": "עלייה בביקושים לשבבי זיכרון לתשתיות בינה מלאכותית",
-            "news_content": "המלאים בענף מצטמצמים מה שמוביל לשמירה על רמות מחירים גבוהות לרכיבים.",
-            "news_impact": "חיזוק המאזן והגנה מפני זעזועים רבעוניים."
-        },
-        "SNDK": {
-            "rationale": "חשיפה ממוקדת לפתרונות אחסון מתקדמים וביקוש מוסדי ער בנכסי הבסיס.",
-            "news_title": "התפתחויות חיוביות בשרשרת האספקה של רכיבי האחסון הדיגיטלי",
-            "news_content": "ניתוח הפעילות מצביע על ייצוב רמות התמיכה וגידול במחזורי המסחר.",
-            "news_impact": "השפעה חיובית מתונה על ניהול הפוזיציה לטווח הבינוני."
-        },
-        "WDC": {
-            "rationale": "התקדמות במהלכים הקשורים לשיפור מבנה ההון וייעול קווי הייצור.",
-            "news_title": "עדכון אסטרטגי בנוגע לפעילות פתרונות האחסון והזיכרון",
-            "news_content": "ההנהלה מציגה צעדים קונקרטיים להצפת ערך עבור בעלי המניות.",
-            "news_impact": "תמיכה במגמה הראשית של המניה."
-        },
-        "INTC": {
-            "rationale": "תהליכי הבראה מורכבים ובחינת מהלכים מבניים לשם התאוששות עסקית.",
-            "news_title": "התקדמות בתוכנית ההתייעלות וקבלת מענקי תשתית ממשלתיים",
-            "news_content": "המשקיעים עוקבים אחר לוחות הזמנים לשיפור מודל הייצור והיציאה לרווחיות.",
-            "news_impact": "תנודתיות המזמנת הזדמנויות ואתגרים ניהוליים כאחד."
-        },
-        "SIMO": {
-            "rationale": "מיצוב חזק בנישה של בקרי אחסון לפלאש, עם מתאם גבוה להתאוששות שוק המחשוב.",
-            "news_title": "גידול בהזמנות בקרים עבור שותפות אסטרטגיות בתעשייה",
-            "news_content": "החברה מציגה נתונים פיננסיים יציבים ותזרים מזומנים בריא.",
-            "news_impact": "חיזוק הביטחון בפוזיציה לטווח הקצר והבינוני."
-        },
-        "IREN": {
-            "rationale": "סינרגיה בין תשתיות אנרגיה ירוקה לבין פריסת חוזי מחשוב ענן ו-AI.",
-            "news_title": "הרחבת מתקני הענן והסבת הסכמי חשמל לטובת תשתיות חישוב",
-            "news_content": "פעילות החברה מושכת עניין רב מצד שחקני מומנטום בשוק.",
-            "news_impact": "תנועות שער חדות המשפיעות ישירות על מצב הרווח/הפסד."
-        },
-        "CIFR": {
-            "rationale": "מתאפיינת ברגישות גבוהה למחירי הקריפטו ולפיתוח מתחמי דאטה-סנטר.",
-            "news_title": "סקירת התקדמות בהקמת מתקני כרייה ומרכזי נתונים חדשים",
-            "news_content": "מחזורי מסחר ערים מאפיינים את הפעילות סביב רמות המחיר הנוכחיות.",
-            "news_impact": "רמת סיכון גבוהה המצריכה מעקב הדוק."
-        },
-        "META": {
-            "rationale": "החזר השקעה מרשים בפרסום מבוסס AI ויעילות תפעולית גבוהה מאוד.",
-            "news_title": "שדרוג מודלי הפרסום הדיגיטלי והרחבת פלטפורמות המטא-וורס העסקיות",
-            "news_content": "הכנסות החברה מציגות צמיחה עקבית העולה על תחזיות השוק המוקדמות.",
-            "news_impact": "שמירה על מומנטום חיובי ויציבות בתיק."
-        },
-        "AMZN": {
-            "rationale": "צמיחה מואצת בשולי הרווח של AWS לצד שיפור הלוגיסטיקה במסחר האלקטרוני.",
-            "news_title": "הרחבת השקעות בתשתיות ענן ובינה מלאכותית ארגונית",
-            "news_content": "הנהלת החברה ממשיכה לייעל את מבנה ההוצאות התפעוליות בכל המגזרים.",
-            "news_impact": "עוגן מרכזי ויציב בתיק ההשקעות."
-        },
-        "GOOG": {
-            "rationale": "מובילות טכנולוגית בשזירת מודלי Gemini במנועי החיפוש ובענן של Google.",
-            "news_title": "גידול בהכנסות ענן וחיזוק מעמדה התחרותי מול ענקיות הטכנולוגיה",
-            "news_content": "שיפור ביעילות המרכזים והאלגוריתמים המשרתים את בסיס המשתמשים הגלובלי.",
-            "news_impact": "תמחור אטרקטיבי המייצר ערך גבוה לאורך זמן."
-        },
-        "TTWO": {
-            "rationale": "צבר כותרים חזק לקראת השקות עתידיות המרכזות עניין רב בתעשיית הגיימינג.",
-            "news_title": "עדכונים על לוחות זמנים לפיתוח משחקי הדגל והתרחבות במובייל",
-            "news_content": "אנליסטים צופים גידול חד בהכנסות עם יציאת הכותרים המרכזיים לשוק.",
-            "news_impact": "פוטנציאל צמיחה התלוי באבן דרך עסקית קרובה."
-        },
-        "WMT": {
-            "rationale": "חסינות אינפלציונית מוכחת וצמיחה בערוצי המסחר הדיגיטלי והפרסום.",
-            "news_title": "הרחבת נתח השוק הקמעונאי ושירותי המנויים המקוונים",
-            "news_content": "שמירה על שרשרת אספקה יעילה המאפשרת מרווחים יציבים בכל התנאים.",
-            "news_impact": "הפחתת תנודתיות כללית ושמירה על יציבות התיק."
-        },
-        "NFLX": {
-            "rationale": "מונופול סטרימינג עולמי המפיק תועלת אדירה ממודל הפרסום ומניעת שיתוף סיסמאות.",
-            "news_title": "עלייה במספר המנויים הנקי וגידול עקבי בתזרים המזומנים החופשי",
-            "news_content": "השקת תוכן מקורי מצליחה לשמור על מעורבות גבוהה של המשתמשים.",
-            "news_impact": "תמיכה בחוזק הפיננסי של הפוזיציה."
-        },
-        "MA": {
-            "rationale": "מודל עמלות עמיד וצמיחה עקבית בהיקפי התשלומים האלקטרוניים והדיגיטליים.",
-            "news_title": "עלייה בנפחי הסליקה הבינלאומיים ופיתוח פתרונות אבטחת מידע",
-            "news_content": "התיירות העולמית והמסחר המקוון ממשיכים להוות מנועי צמיחה יציבים.",
-            "news_impact": "תזרים מזומנים צפוי התומך בתגמול בעלי המניות."
-        },
-        "IBIT": {
-            "rationale": "חשיפה ישירה לתנועות המחיר של הביטקוין דרך מכשיר פיננסי מפוקח ונגיש.",
-            "news_title": "תנודות בשוק הקריפטו ועדכונים רגולטוריים סביב קרנות הסל",
-            "news_content": "זרימת הון מוסדי משפיעה ישירות על קצב המסחר והנזילות בקרן.",
-            "news_impact": "רמת תנודתיות גבוהה הדורשת ניהול סיכונים מושכל."
-        },
-        "GTEC": {
-            "rationale": "מניית ספונד/מומנטום קטנה המגיבה בעוצמה להודעות חברה ולחוזים נקודתיים.",
-            "news_title": "פרסום עדכונים תפעוליים והסכמי הפצה בשווקים חדשים",
-            "news_content": "מחזורי מסחר תנודתיים המשקפים פעילות ספקולטיבית קצרת טווח.",
-            "news_impact": "סיכון גבוה המותאם להקצאה מדודה בלבד בתיק."
-        },
-        "TQQQ": {
-            "rationale": "מינוף תלת-ממדי על מדד הנאסד"ק המיועד למסחר מומנטום אגרסיבי קצר טווח.",
-            "news_title": "תגובה חדה לשינויים בתשואות האג\"ח ובסנטימנט הטכנולוגי",
-            "news_content": "תנועות חדות במדד המוביל מכפילות את ההשפעה על שער יחידות הסל.",
-            "news_impact": "סיכון מוגבר המחייב מעקב צמוד ויציאה מהירה במידת הצורך."
-        }
-    }
-
     return {
         "SP500_ANALYSIS": "מדד S&P 500 ממשיך להיסחר סביב רמות מפתח תוך בחינת נתוני המאקרו והאינפלציה.",
         "NASDAQ_ANALYSIS": "מדד הטכנולוגיה מוביל את הסנטימנט בשוק עם דגש על חברות הבינה המלאכותית.",
         "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן לתיק המסחר.",
         "VIX_ANALYSIS": "מדד התנודתיות משקף רמת רגיעה מתונה בשווקים ללא לחצים חריגים.",
         "DXY_ANALYSIS": "מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.",
-        "long_term_stocks": long_term_list,
-        "swing_stocks": swing_list,
-        "portfolio_analysis": default_portfolio_analysis,
+        "long_term_stocks": [],
+        "swing_stocks": [],
+        "portfolio_analysis": {},
         "USD_ILS_EXPLANATION": "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות המקומי.",
         "OIL_EXPLANATION": "משפיע ישירות על עלויות האנרגיה, התחבורה ושיעורי האינפלציה הגלובליים.",
         "GOLD_EXPLANATION": "משמש כנכס מקלט בטוח וגידור מרכזי מפני אי-יציבות גיאו-פוליטית.",
@@ -363,169 +79,54 @@ def get_default_ai_insights():
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
 day_name = {
-    0: "שני",
-    1: "שלישי",
-    2: "רביעי",
-    3: "חמישי",
-    4: "שישי",
-    5: "שבת",
-    6: "ראשון",
+    0: "שני", 1: "שלישי", 2: "רביעי", 3: "חמישי", 4: "שישי", 5: "שבת", 6: "ראשון",
 }[now_il.weekday()]
 
 base_market_tickers = [
-    "GC=F",
-    "CL=F",
-    "BTC-USD",
-    "USDILS=X",
-    "DX-Y.NYB",
-    "^GSPC",
-    "^NDX",
-    "^DJI",
-    "^VIX",
+    "GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX",
 ] + list(portfolio_buys.keys())
 
 def fetch_market_data(tickers):
     market_data = {}
     for ticker in tickers:
-        try:
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period="2d")
-            info = stock.info
-            target_mean = info.get("targetMeanPrice")
-            
-            pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
-            if not pre_market_val and not hist.empty:
-                pre_market_val = hist["Open"].iloc[-1]
+        success = False
+        for attempt in range(3): # ניסיון חוזר למקרה של נפילה רגעית ב-Yahoo Finance
+            try:
+                stock = yf.Ticker(ticker)
+                hist = stock.history(period="2d")
+                info = stock.info
+                target_mean = info.get("targetMeanPrice")
+                
+                pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
+                if not pre_market_val and not hist.empty:
+                    pre_market_val = hist["Open"].iloc[-1]
 
-            if not hist.empty:
-                current_price = round(hist["Close"].iloc[-1], 2)
-                prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else current_price
-                change = round(((current_price - prev_close) / prev_close) * 100, 2)
-                market_data[ticker] = {
-                    "price": current_price,
-                    "change": change,
-                    "target": target_mean if target_mean else 0.0,
-                    "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
-                }
-            else:
-                market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
-        except Exception as e:
+                if not hist.empty:
+                    current_price = round(hist["Close"].iloc[-1], 2)
+                    prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else current_price
+                    change = round(((current_price - prev_close) / prev_close) * 100, 2)
+                    market_data[ticker] = {
+                        "price": current_price,
+                        "change": change,
+                        "target": target_mean if target_mean else 0.0,
+                        "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
+                    }
+                    success = True
+                    break
+            except Exception:
+                time.sleep(2)
+        if not success:
             market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
     return market_data
 
-current_key_index = 0
-
-def generate_ai_insights(market_data, date_str, day_name, portfolio_tickers):
-    global current_key_index
-    api_keys = []
-    for i in range(1, 6):
-        k = os.environ.get(f"GEMINI_API_KEY_{i}")
-        if k:
-            api_keys.append(k)
-    general_k = os.environ.get("GEMINI_API_KEY")
-    if general_k and general_k not in api_keys:
-        api_keys.append(general_k)
-    valid_keys = [k for k in api_keys if k]
-    if not valid_keys:
-        print("Error: No Gemini API keys found. Loading defaults.")
-        return get_default_ai_insights()
-
-    market_json = json.dumps(market_data, ensure_ascii=False)
-    portfolio_json = json.dumps(portfolio_tickers, ensure_ascii=False)
-    
-    prompt_raw = f"""אתה אנליסט בכיר בשוק ההון. נתח את נתוני המאקרו והשוק הבאים עבור התאריך הנוכחי {date_str} (יום {day_name}):
-{market_json}
-
-רשימת מניות התיק האישי של המשתמש שחייבות לקבל ניתוח עומק ייחודי ומלא:
-{portfolio_json}
-
-כללי חובה קשיחים ואבסולוטיים למניעת כל תוכן גנרי:
-1. איסור מוחלט על טקסט גנרי או מחוזר: אסור להשתמש בניסוחים קבועים מראש, משפטים כלליים או תבניות חוזרות. כל מניה בכל קטגוריה (ארוך טווח, סווינג, ותיק אישי) חייבת לקבל ניתוח עומק, רציונל, כותרת חדשותית, תוכן חדשותי והשפעה שונים לחלוטין, מקוריים, מעודכנים וספציפיים אך ורק להיום.
-2. ספק ניתוח אנליסטי מפורט ועדכני להיום תחת SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS.
-3. בחר והחזר בדיוק **10 מניות שונות לחלוטין** להשקעה ארוכת טווח תחת המפתח 'long_term_stocks' כמערך JSON שבו לכל מניה יש שדות ייחודיים: symbol, name, target, rationale, news_title, news_content, news_impact.
-4. בחר והחזר בדיוק **10 מניות שונות לחלוטין** למסחר סווינג קצר טווח תחת המפתח 'swing_stocks' כמערך JSON שבו לכל מניה יש שדות ייחודיים: symbol, name, target, sector_desc, rationale, news_title, news_content, news_impact.
-5. עבור **כל** אחד מהטיקרים שברשימת התיק האישי ({portfolio_json}), ספק אובייקט תחת המפתח 'portfolio_analysis' שבו המפתח הוא הטיקר, והערך הוא אובייקט הכולל שדות טקסט מקוריים לחלוטין: rationale, news_title, news_content, news_impact.
-6. הוסף הסברים קצרים למצב השוק הנוכחי תחת המפתחות: USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION.
-7. הוסף ניתוחי מאקרו וניהול סיכונים תחת המפתחות: US_MARKET_MACRO_NEWS, IL_MARKET_MACRO_NEWS, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.
-8. החזר אובייקט JSON תקף בלבד, ללא שום טקסט נוסף מסביב.
-"""
-
-    payload = {
-        "contents": [{"parts": [{"text": prompt_raw}]}],
-        "generationConfig": {
-            "response_mime_type": "application/json",
-            "max_output_tokens": 8192,
-        },
-    }
-
-    max_attempts = len(valid_keys) * 2
-    attempts = 0
-    while attempts < max_attempts:
-        api_key = valid_keys[current_key_index % len(valid_keys)]
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-        try:
-            res = requests.post(url, json=payload, timeout=60)
-            res_data = res.json()
-            if "candidates" in res_data:
-                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
-                if text_response.startswith("```json"):
-                    text_response = text_response[7:]
-                elif text_response.startswith("```"):
-                    text_response = text_response[3:]
-                text_response = text_response.strip()
-                if text_response.endswith("```"):
-                    text_response = text_response[:-3]
-                text_response = text_response.strip()
-                
-                parsed_res = json.loads(text_response)
-                if isinstance(parsed_res, dict) and len(parsed_res.get("long_term_stocks", [])) > 0:
-                    return parsed_res
-            print(f"API Warning/Error response or Quota limit hit: {res_data}")
-            current_key_index += 1
-            time.sleep(10) # השהייה ארוכה יותר למניעת חסימת Rate Limit
-        except Exception as e:
-            print(f"Exception during AI generation: {e}")
-            current_key_index += 1
-            time.sleep(10)
-        attempts += 1
-    
-    print("All AI attempts failed or quota exceeded. Falling back to rich default insights.")
-    return get_default_ai_insights()
-
 try:
     base_market_data = fetch_market_data(base_market_tickers)
-
-    trigger_event = os.environ.get("TRIGGER_EVENT", "")
-    current_hour = now_il.hour
-    current_minute = now_il.minute
-    
-    ai_hours = [16, 20, 23]
-    run_ai = (trigger_event == "workflow_dispatch") or (
-        (current_hour in ai_hours) and (current_minute < 30)
-    )
-
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    ai_insights = {}
-    portfolio_tickers_list = list(portfolio_buys.keys())
-
-    if run_ai:
-        print("Running Gemini AI generation (Scheduled/Manual trigger)...")
-        ai_insights = generate_ai_insights(base_market_data, date_str, day_name, portfolio_tickers_list)
-        if ai_insights and len(ai_insights.get("long_term_stocks", [])) > 0:
-            save_ai_cache(ai_insights)
-        else:
-            print("AI generation failed. Loading last successful cache from ai_cache.json...")
-            ai_insights = load_ai_cache()
-            if not ai_insights or len(ai_insights.get("long_term_stocks", [])) == 0:
-                print("Cache is empty. Falling back to default insights.")
-                ai_insights = get_default_ai_insights()
-    else:
-        print("Skipping AI call to save quota. Loading from ai_cache.json...")
-        ai_insights = load_ai_cache()
-        if not ai_insights or len(ai_insights.get("long_term_stocks", [])) == 0:
-            ai_insights = get_default_ai_insights()
+    ai_insights = load_ai_cache()
+    if not ai_insights:
+        ai_insights = get_default_ai_insights()
 
     sp500 = base_market_data.get("^GSPC", {})
     nasdaq = base_market_data.get("^NDX", {})
@@ -569,94 +170,10 @@ try:
     btc_price = f"${format_num(btc_p)}"
     btc_change = format_pct_colored(btc_c)
 
-    long_term_stocks = ai_insights.get("long_term_stocks", [])
-    swing_stocks = ai_insights.get("swing_stocks", [])
     portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
 
-    dynamic_tickers = list(set(
-        [s.get("symbol") for s in long_term_stocks if "symbol" in s] + 
-        [s.get("symbol") for s in swing_stocks if "symbol" in s]
-    ))
-    dynamic_market_data = fetch_market_data(dynamic_tickers)
-
-    long_term_html_blocks = ""
-    for stock in long_term_stocks:
-        sym = stock.get("symbol", "")
-        name = stock.get("name", sym)
-        rationale = stock.get("rationale", "")
-        p_info = dynamic_market_data.get(
-            sym, {"price": 0, "change": 0, "target": 0}
-        )
-        price_str = f"${format_num(p_info['price'])}" if p_info["price"] else "N/A"
-        pct_str = format_pct_colored(p_info["change"])
-        target_str = (
-            f"${format_num(p_info['target'])}"
-            if p_info["target"]
-            else stock.get("target", "N/A")
-        )
-        long_term_html_blocks += (
-            '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
-            f'🚀 <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong></span>&nbsp;<span dir="ltr" style="unicode-bidi: isolate;">({pct_str})</span><br>'
-            f'מחיר יעד אנליסטים ממוצע: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
-            f'<strong>רציונל וניתוח AI ארוך טווח:</strong> <span class="text-gray-200">{rationale}</span>'
-            "</p>"
-        )
-
-    swing_html_blocks = ""
-    for stock in swing_stocks:
-        sym = stock.get("symbol", "")
-        name = stock.get("name", sym)
-        sector_desc = stock.get("sector_desc", "מסחר סווינג ומומנטום")
-        rationale = stock.get("rationale", "")
-        p_info = dynamic_market_data.get(
-            sym, {"price": 0, "change": 0, "target": 0}
-        )
-        price_str = f"${format_num(p_info['price'])}" if p_info["price"] else "N/A"
-        pct_str = format_pct_colored(p_info["change"])
-        target_str = (
-            f"${format_num(p_info['target'])}"
-            if p_info["target"]
-            else stock.get("target", "N/A")
-        )
-        swing_html_blocks += (
-            '<p class="border-b border-gray-700 pb-3 text-right" dir="rtl">'
-            f'⚡ <span dir="ltr" style="unicode-bidi: isolate;"><strong>{name}</strong> (סמל: <strong>{sym}</strong>)</span><br>'
-            f'מחיר נוכחי: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{price_str}</strong></span>&nbsp;<span dir="ltr" style="unicode-bidi: isolate;">({pct_str})</span><br>'
-            f'יעד למסחר סווינג: <span dir="ltr" style="unicode-bidi: isolate;"><strong>{target_str}</strong></span><br>'
-            f'תחום עיסוק: {sector_desc}<br>'
-            f'<strong>רציונל וטריגר למסחר:</strong> <span class="text-gray-200">{rationale}</span>'
-            "</p>"
-        )
-
-    news_html_blocks = ""
-    for stock in long_term_stocks + swing_stocks:
-        sym = stock.get("symbol", "")
-        name = stock.get("name", sym)
-        news_title = stock.get(
-            "news_title", f"עדכון שוק וסקירה טכנית עבור מניית {sym}"
-        )
-        news_content = stock.get(
-            "news_content",
-            f"ניתוח פעילות מסחר ונתונים פיננסיים עדכניים עבור {sym}.",
-        )
-        news_impact = stock.get(
-            "news_impact", "השפעה חיובית ומתונה על המגמה הראשית."
-        )
-        news_link = f"[https://finance.yahoo.com/quote/](https://finance.yahoo.com/quote/){sym}"
-        news_html_blocks += (
-            '<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">'
-            f'<h3 class="text-cyan-400 font-semibold">חדשות <span dir="ltr" style="unicode-bidi: isolate;">{name} (סמל: {sym})</span></h3>'
-            '<p>🔗 <strong>קישור למקור:</strong> '
-            f'<a href="{news_link}" target="_blank" class="text-cyan-400 hover:underline" dir="ltr">{news_link}</a></p>'
-            f'<p><strong>כותרת הכתבה המלאה:</strong> {news_title}</p>'
-            f'<p><strong>תוכן הכתבה המלא:</strong> {news_content}</p>'
-            f'<p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {news_impact}</p>'
-            "</div>"
-        )
-
-    nvda_stock = next((s for s in long_term_stocks + swing_stocks if s.get("symbol") == "NVDA"), {})
-    amd_stock = next((s for s in long_term_stocks + swing_stocks if s.get("symbol") == "AMD"), {})
+    with open("index.template.html", "r", encoding="utf-8-sig") as f:
+        content = f.read()
 
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
@@ -671,41 +188,11 @@ try:
         "VIX_PCT": vix_change,
         "DXY_PRICE": dxy_price,
         "DXY_PCT": dxy_change,
-        "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", "ניתוח מדד S&P 500 מתעדכן..."),
-        "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", 'ניתוח מדד נאסד"ק מתעדכן...'),
-        "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", "ניתוח מדד דאו ג'ונס מתעדכן..."),
-        "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", "ניתוח מדד הפחד VIX מתעדכן..."),
-        "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", "ניתוח מדד הדולר מתעדכן..."),
-        
-        "SECTOR_CHIPS_DESC": "מוליכים למחצה ותשתיות עיבוד נתונים מתקדמות",
-        "SECTOR_CLOUD_DESC": "שירותי ענן, תשתיות ארגוניות ובינה מלאכותית",
-        "SECTOR_CRYPTO_DESC": "נכסים דיגיטליים, בלוקצ'יין וכרייה ירוקה",
-
-        "CATALYST_EARNINGS": "דיווחים שוטפים על תוצאות רבעוניות והערכות אנליסטים",
-        "CATALYST_MONETARY": "החלטות ריבית, נתוני אינפלציה וצעדי בנקים מרכזיים",
-        "CATALYST_HARDWARE": "השקות מוצרי חומרה חדשים ועדכוני תוכנה לתשתיות AI",
-
-        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר בקרב משקיעים פרטיים ומוסדיים",
-        "ANALYST_POINT_1": "המשך דגש על חברות בעלות תזרים מזומנים חזק ויציב",
-        "ANALYST_POINT_2": "מעקב צמוד אחר רמות התנגדות טכניות במדדים המוצגים",
-
-        "NVDA_NEWS_LINK": "[https://finance.yahoo.com/quote/NVDA](https://finance.yahoo.com/quote/NVDA)",
-        "NVDA_NEWS_TITLE": nvda_stock.get("news_title", "ביקושים גבוהים לשבבי הדור הבא מצד ענקיות הענן"),
-        "NVDA_NEWS_CONTENT": nvda_stock.get("news_content", "החברה ממשיכה לדווח על צבר הזמנות חזק המעיד על המשך שליטה בשוק מעבדי ה-AI."),
-        "NVDA_NEWS_IMPACT": nvda_stock.get("news_impact", "תמיכה חזקה במומנטום החיובי של המניה בטווח הקצר והארוך."),
-
-        "AMD_NEWS_LINK": "[https://finance.yahoo.com/quote/AMD](https://finance.yahoo.com/quote/AMD)",
-        "AMD_NEWS_TITLE": amd_stock.get("news_title", "הרחבת נתח השוק במעבדי בינה מלאכותית למרכזי נתונים"),
-        "AMD_NEWS_CONTENT": amd_stock.get("news_content", "הכרזות על שיתופי פעולה אסטרטגיים עם לקוחות מובילים במגזר הטכנולוגי."),
-        "AMD_NEWS_IMPACT": amd_stock.get("news_impact", "פוטנציאל לראלי מחירים ותנודתיות גבוהה במסחר סווינג."),
-
-        "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
-        "SWING_STOCKS_SECTION": swing_html_blocks,
-        "NEWS_SECTION": news_html_blocks,
-        "US_MARKET_NEWS": ai_insights.get("US_MARKET_MACRO_NEWS", "נתוני המאקרו ממשיכים להוות מנוע ניווט בשווקים."),
-        "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_MACRO_NEWS", "השוק המקומי מגיב להתפתחויות הכלכליות."),
-        "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", "ניהול סיכונים קפדני."),
-        "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "בחינה מדודה של פוזיציות."),
+        "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", ""),
+        "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", ""),
+        "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", ""),
+        "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", ""),
+        "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", ""),
         "USD_ILS": usd_ils_price,
         "USD_ILS_CHANGE": usd_ils_change,
         "OIL_PRICE": oil_price,
@@ -714,12 +201,9 @@ try:
         "GOLD_CHANGE": gold_change,
         "BTC_PRICE": btc_price,
         "BTC_CHANGE": btc_change,
-        "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", "השפעה ישירה על עלות ייבוא."),
-        "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", "משפיע ישירות על עלויות האנרגיה."),
-        "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", "משמש כנכס מקלט בטוח."),
-        "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", "אינדיקטור לסנטימנט סיכון."),
     }
 
+    # עדכון אוטומטי של כל מניה מתוך portfolio.json כולל כמות מניות
     for ticker, info in portfolio_buys.items():
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price")
@@ -738,11 +222,13 @@ try:
         sign = "+" if ret > 0 else ""
         color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
+        shares_count = info.get("shares", 0)
+
         p_item = portfolio_analysis_map.get(ticker, {})
-        p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו מתקדם עבור מניית {ticker}.")
-        p_news_title = p_item.get("news_title", f"עדכון שוק ומגמות מסחר עבור {ticker}")
-        p_news_content = p_item.get("news_content", f"סקירת פעילות המסחר והנתונים הפיננסיים העדכניים המאפיינים את {ticker}.")
-        p_news_impact = p_item.get("news_impact", "השפעה ישירה וממוקדת על ניהול הפוזיציה.")
+        p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
+        p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
+        p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
+        p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
 
         full_note_html = (
             f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
@@ -751,14 +237,12 @@ try:
             f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
         )
 
+        replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
         replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
         replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
         replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
         replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
         replacements[f"{ticker}_PORT_NOTE"] = full_note_html
-
-    with open("index.template.html", "r", encoding="utf-8-sig") as f:
-        content = f.read()
 
     for key, val in replacements.items():
         content = content.replace(f"{{{{{key}}}}}", str(val))
@@ -772,12 +256,7 @@ try:
 
     status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
     if "index.html" in status.stdout:
-        commit_msg = (
-            f"Auto-update prices & dynamic unique AI analysis for {day_name} at {time_str}"
-            if run_ai
-            else f"Auto-update stock prices (yfinance) for {day_name} at {time_str}"
-        )
-        subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+        subprocess.run(["git", "commit", "-m", f"Fix portfolio values and shares update for {day_name}"], check=True)
         subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
 
