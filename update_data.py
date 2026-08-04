@@ -223,7 +223,6 @@ def get_default_ai_insights():
         }
     ]
 
-    # ניתוחי גיבוי מפורטים ויחודיים לכל מניה בתיק האישי (מונע טקסט גנרי במקרה של נפילת API)
     default_portfolio_analysis = {
         "NVDA": {
             "rationale": "עוצמה טכנית גבוהה בשילוב ביקושי ענק למעבדי Blackwell ודור העתיד במרכזי הנתונים.",
@@ -271,7 +270,7 @@ def get_default_ai_insights():
             "rationale": "סינרגיה בין תשתיות אנרגיה ירוקה לבין פריסת חוזי מחשוב ענן ו-AI.",
             "news_title": "הרחבת מתקני הענן והסבת הסכמי חשמל לטובת תשתיות חישוב",
             "news_content": "פעילות החברה מושכת עניין רב מצד שחקני מומנטום בשוק.",
-            "news_impact": "תנועות שער חדות המשפיעות ישירות על מצב הרווח/הפסד."
+            "news_impact": "תנודות שער חדות המשפיעות ישירות על מצב הרווח/הפסד."
         },
         "CIFR": {
             "rationale": "מתאפיינת ברגישות גבוהה למחירי הקריפטו ולפיתוח מתחמי דאטה-סנטר.",
@@ -334,7 +333,7 @@ def get_default_ai_insights():
             "news_impact": "סיכון גבוה המותאם להקצאה מדודה בלבד בתיק."
         },
         "TQQQ": {
-            "rationale": "מינוף תלת-ממדי על מדד הנאסד"ק המיועד למסחר מומנטום אגרסיבי קצר טווח.",
+            "rationale": 'מינוף תלת-ממדי על מדד הנאסד"ק המיועד למסחר מומנטום אגרסיבי קצר טווח.',
             "news_title": "תגובה חדה לשינויים בתשואות האג\"ח ובסנטימנט הטכנולוגי",
             "news_content": "תנועות חדות במדד המוביל מכפילות את ההשפעה על שער יחידות הסל.",
             "news_impact": "סיכון מוגבר המחייב מעקב צמוד ויציאה מהירה במידת הצורך."
@@ -482,7 +481,7 @@ def generate_ai_insights(market_data, date_str, day_name, portfolio_tickers):
                     return parsed_res
             print(f"API Warning/Error response or Quota limit hit: {res_data}")
             current_key_index += 1
-            time.sleep(10) # השהייה ארוכה יותר למניעת חסימת Rate Limit
+            time.sleep(10)
         except Exception as e:
             print(f"Exception during AI generation: {e}")
             current_key_index += 1
