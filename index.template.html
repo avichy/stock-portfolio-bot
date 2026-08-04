@@ -134,16 +134,27 @@
             </div> <!-- סגירת ה-grid של שלב 1 -->
         </div> <!-- סגירת ה-div של tab-1 -->
 
-        <!-- שלב 2: סקטורים -->
-        <div id="tab-2" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית (שבבים, ענן וקריפטו) 💻</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow mb-4">
-                <canvas id="sectorChart" height="110"></canvas>
+<!-- שלב 2: סקטורים -->
+        <div id="tab-2" class="tab-content">
+            <h2>שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים 💻📈</h2>
+            <div class="card">
+                <canvas id="sectorChart" height="90"></canvas>
             </div>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🔌 <strong>סקטור השבבים והחומרה (Semiconductors):</strong> {{SECTOR_CHIPS_DESC}}</p>
-                <p>☁️ <strong>תשתיות ענן ובינה מלאכותית (Cloud & AI):</strong> {{SECTOR_CLOUD_DESC}}</p>
-                <p>🔗 <strong>קריפטו ותשתיות דיגיטליות:</strong> {{SECTOR_CRYPTO_DESC}}</p>
+            <div class="card">
+                <p class="text-cyan" style="font-weight: bold; margin-bottom: 12px;">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
+                <div class="grid-2" style="font-size: 0.85rem;">
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">💻 <strong>טכנולוגיית מידע:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏦 <strong>פיננסים:</strong> בנקים, ביטוח ואשראי.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏥 <strong>שירותי בריאות:</strong> פארמה, ביוטכנולוגיה וציוד רפואי.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛍️ <strong>צרכנות מחזורית:</strong> קמעונאות, רכבים ומלונאות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛒 <strong>צרכנות בסיסית:</strong> מזון, משקאות ורשתות שיווק.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛢️ <strong>אנרגיה:</strong> נפט, גז ואנרגיה מתחדשת.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏭 <strong>תעשייה:</strong> תעופה, ביטחון ומכונות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🧪 <strong>חומרים:</strong> כימיקלים ומתכות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">📡 <strong>שירותי תקשורת:</strong> טלקום ומדיה חברתית.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">⚡ <strong>תשתיות ציבוריות:</strong> חשמל ומים.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155; grid-column: span 2;">🏢 <strong>נדל"ן:</strong> קרנות REITs ונכסים מניבים.</div>
+                </div>
             </div>
         </div>
 
@@ -174,47 +185,41 @@
             </div>
         </div>
 
-        <!-- שלב 5: התיק האישי -->
-        <div id="tab-5" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות, נתונים והרציונל המלא 💼</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
-                <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>)<br>מספר מניות: 3 מניות<br>קנייה: <strong>$184.90</strong><br>מחיר נוכחי: <strong>{{NVDA_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{NVDA_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{NVDA_PORT_TARGET}}</strong><br><strong>{{NVDA_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{NVDA_PORT_NOTE}}</span></p>
+<!-- שלב 5: התיק האישי -->
+        <div id="tab-5" class="tab-content">
+            <h2>שלב 5: תיק ההשקעות האישי המלא 💼</h2>
+            <div class="card">
+                <h3 style="margin-bottom: 12px; font-size:1.1rem;">הוספה או עדכון מניה</h3>
+                <div class="grid-4" style="margin-bottom: 12px;">
+                    <div>
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">שם חברה</label>
+                        <input type="text" id="stock-name" placeholder="למשל: NVIDIA" style="width:100%;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">טיקר</label>
+                        <input type="text" id="stock-symbol" placeholder="NVDA" style="width:100%; text-transform:uppercase;" dir="ltr">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">כמות מניות</label>
+                        <input type="number" id="stock-shares" placeholder="3" style="width:100%;" dir="ltr">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">מחיר קנייה ($)</label>
+                        <input type="number" step="0.01" id="stock-buy" placeholder="184.9" style="width:100%;" dir="ltr">
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button onclick="addOrUpdateStock()" class="btn-primary" style="padding: 10px 20px;">שמור/עדכן מניה</button>
+                    <span id="status-msg" style="font-size: 0.85rem; color: #facc15;"></span>
+                </div>
+            </div>
 
-                <p>💻 <strong>Advanced Micro Devices</strong> (סמל: <strong>AMD</strong>)<br>מספר מניות: 20 מניות<br>מחיר קנייה: <strong>$211.34</strong><br>מחיר נוכחי: <strong>{{AMD_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{AMD_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{AMD_PORT_TARGET}}</strong><br><strong>{{AMD_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{AMD_PORT_NOTE}}</span></p>
-
-                <p>🧠 <strong>Micron Technology</strong> (סמל: <strong>MU</strong>)<br>מספר מניות: 6 מניות<br>מחיר קנייה: <strong>$316.32</strong><br>מחיר נוכחי: <strong>{{MU_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{MU_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{MU_PORT_TARGET}}</strong><br><strong>{{MU_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{MU_PORT_NOTE}}</span></p>
-
-                <p>💾 <strong>SanDisk</strong> (סמל: <strong>SNDK</strong>)<br>מספר מניות: 4 מניות<br>מחיר קנייה: <strong>$630.26</strong><br>מחיר נוכחי: <strong>{{SNDK_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{SNDK_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{SNDK_PORT_TARGET}}</strong><br><strong>{{SNDK_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{SNDK_PORT_NOTE}}</span></p>
-
-                <p>💽 <strong>Western Digital</strong> (סמל: <strong>WDC</strong>)<br>מספר מניות: 6 מניות<br>מחיר קנייה: <strong>$223.23</strong><br>מחיר נוכחי: <strong>{{WDC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{WDC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{WDC_PORT_TARGET}}</strong><br><strong>{{WDC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{WDC_PORT_NOTE}}</span></p>
-
-                <p>⚡ <strong>Intel</strong> (סמל: <strong>INTC</strong>)<br>מספר מניות: 20 מניות<br>מחיר קנייה: <strong>$43.05</strong><br>מחיר נוכחי: <strong>{{INTC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{INTC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{INTC_PORT_TARGET}}</strong><br><strong>{{INTC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{INTC_PORT_NOTE}}</span></p>
-
-                <p>🔌 <strong>Silicon Motion</strong> (סמל: <strong>SIMO</strong>)<br>מספר מניות: 30 מניות<br>מחיר קנייה: <strong>$131.32</strong><br>מחיר נוכחי: <strong>{{SIMO_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{SIMO_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{SIMO_PORT_TARGET}}</strong><br><strong>{{SIMO_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{SIMO_PORT_NOTE}}</span></p>
-
-                <p>🌿 <strong>Iris Energy</strong> (סמל: <strong>IREN</strong>)<br>מספר מניות: 54 מניות<br>מחיר קנייה: <strong>$52.75</strong><br>מחיר נוכחי: <strong>{{IREN_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{IREN_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{IREN_PORT_TARGET}}</strong><br><strong>{{IREN_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{IREN_PORT_NOTE}}</span></p>
-
-                <p>⛏️ <strong>Cipher Mining</strong> (סמל: <strong>CIFR</strong>)<br>מספר מניות: 28 מניות<br>מחיר קנייה: <strong>$17.50</strong><br>מחיר נוכחי: <strong>{{CIFR_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{CIFR_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{CIFR_PORT_TARGET}}</strong><br><strong>{{CIFR_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{CIFR_PORT_NOTE}}</span></p>
-
-                <p>👥 <strong>Meta Platforms</strong> (סמל: <strong>META</strong>)<br>מספר מניות: 2 מניות<br>מחיר קנייה: <strong>$661.00</strong><br>מחיר נוכחי: <strong>{{META_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{META_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{META_PORT_TARGET}}</strong><br><strong>{{META_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{META_PORT_NOTE}}</span></p>
-
-                <p>📦 <strong>Amazon</strong> (סמל: <strong>AMZN</strong>)<br>מספר מניות: 6 מניות<br>מחיר קנייה: <strong>$229.29</strong><br>מחיר נוכחי: <strong>{{AMZN_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{AMZN_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{AMZN_PORT_TARGET}}</strong><br><strong>{{AMZN_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{AMZN_PORT_NOTE}}</span></p>
-
-                <p>🌐 <strong>Alphabet / Google</strong> (סמל: <strong>GOOG</strong>)<br>מספר מניות: 4 מניות<br>מחיר קנייה: <strong>$317.95</strong><br>מחיר נוכחי: <strong>{{GOOG_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{GOOG_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{GOOG_PORT_TARGET}}</strong><br><strong>{{GOOG_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{GOOG_PORT_NOTE}}</span></p>
-
-                <p>🎮 <strong>Take-Two Interactive</strong> (סמל: <strong>TTWO</strong>)<br>מספר מניות: 5 מניות<br>מחיר קנייה: <strong>$235.50</strong><br>מחיר נוכחי: <strong>{{TTWO_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{TTWO_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{TTWO_PORT_TARGET}}</strong><br><strong>{{TTWO_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{TTWO_PORT_NOTE}}</span></p>
-
-                <p>🛒 <strong>Walmart</strong> (סמל: <strong>WMT</strong>)<br>מספר מניות: 16 מניות<br>מחיר קנייה: <strong>$119.45</strong><br>מחיר נוכחי: <strong>{{WMT_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{WMT_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{WMT_PORT_TARGET}}</strong><br><strong>{{WMT_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{WMT_PORT_NOTE}}</span></p>
-
-                <p>🎬 <strong>Netflix</strong> (סמל: <strong>NFLX</strong>)<br>מספר מניות: 14 מניות<br>מחיר קנייה: <strong>$94.03</strong><br>מחיר נוכחי: <strong>{{NFLX_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{NFLX_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{NFLX_PORT_TARGET}}</strong><br><strong>{{NFLX_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{NFLX_PORT_NOTE}}</span></p>
-
-                <p>💳 <strong>Mastercard</strong> (סמל: <strong>MA</strong>)<br>מספר מניות: 4 מניות<br>מחיר קנייה: <strong>$503.99</strong><br>מחיר נוכחי: <strong>{{MA_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{MA_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{MA_PORT_TARGET}}</strong><br><strong>{{MA_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{MA_PORT_NOTE}}</span></p>
-
-                <p>🪙 <strong>iShares Bitcoin Trust</strong> (סמל: <strong>IBIT</strong>)<br>מספר מניות: 14 מניות<br>מחיר קנייה: <strong>$60.48</strong><br>מחיר נוכחי: <strong>{{IBIT_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{IBIT_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{IBIT_PORT_TARGET}}</strong><br><strong>{{IBIT_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{IBIT_PORT_NOTE}}</span></p>
-
-                <p>🔋 <strong>Greenland Technologies</strong> (סמל: <strong>GTEC</strong>)<br>מספר מניות: 260 מניות<br>מחיר קנייה: <strong>$1.27</strong><br>מחיר נוכחי: <strong>{{GTEC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{GTEC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{GTEC_PORT_TARGET}}</strong><br><strong>{{GTEC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{GTEC_PORT_NOTE}}</span></p>
-
-                <p>📈 <strong>ProShares UltraPro QQQ</strong> (סמל: <strong>TQQQ</strong>)<br>מספר מניות: 28 מניות<br>מחיר קנייה: <strong>$56.53</strong><br>מחיר נוכחי: <strong>{{TQQQ_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{TQQQ_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{TQQQ_PORT_TARGET}}</strong><br><strong>{{TQQQ_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{TQQQ_PORT_NOTE}}</span></p>
+            <div class="card">
+                <div class="flex-between" style="border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px;">
+                    <h3 class="text-cyan">מניות התיק במערכת</h3>
+                    <div id="portfolio-counter" style="font-weight: bold; color: #38bdf8; font-size: 0.95rem;">כמות חברות בתיק: 0</div> 
+                </div>
+                <div id="portfolio-list"></div>
             </div>
         </div>
         
