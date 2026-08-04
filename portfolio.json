@@ -1,82 +1,21 @@
 {
-  "NVDA": {
-    "shares": 3,
-    "buy": 184.9
-  },
-  "AMD": {
-    "shares": 20,
-    "buy": 211.34
-  },
-  "MU": {
-    "shares": 6,
-    "buy": 316.32
-  },
-  "SNDK": {
-    "shares": 4,
-    "buy": 630.26
-  },
-  "WDC": {
-    "shares": 6,
-    "buy": 223.23
-  },
-  "INTC": {
-    "shares": 20,
-    "buy": 43.05
-  },
-  "SIMO": {
-    "shares": 30,
-    "buy": 131.32
-  },
-  "IREN": {
-    "shares": 54,
-    "buy": 52.75
-  },
-  "CIFR": {
-    "shares": 28,
-    "buy": 17.5
-  },
-  "META": {
-    "shares": 2,
-    "buy": 661
-  },
-  "AMZN": {
-    "shares": 6,
-    "buy": 229.29
-  },
-  "GOOG": {
-    "shares": 4,
-    "buy": 317.95
-  },
-  "TTWO": {
-    "shares": 5,
-    "buy": 235.5
-  },
-  "WMT": {
-    "shares": 16,
-    "buy": 119.45
-  },
-  "NFLX": {
-    "shares": 14,
-    "buy": 94.03
-  },
-  "MA": {
-    "shares": 4,
-    "buy": 503.99
-  },
-  "IBIT": {
-    "shares": 14,
-    "buy": 60.48
-  },
-  "GTEC": {
-    "shares": 260,
-    "buy": 1.27
-  },
-  "TQQQ": {
-    "shares": 28,
-    "buy": 56.53
-  },
-  "BE": {
-    "shares": 2,
-    "buy": 221.85
-  }
+  "NVDA": { "name": "NVIDIA", "shares": 3, "buyPrice": 184.9, "currentPrice": 206.64, "gainLossPct": 0.11757, "totalValue": 619.92 },
+  "AMD": { "name": "Advanced Micro Devices", "shares": 20, "buyPrice": 211.34, "currentPrice": 484.64, "gainLossPct": 1.29317, "totalValue": 9692.8 },
+  "MU": { "name": "Micron Technology", "shares": 6, "buyPrice": 316.32, "currentPrice": 829.5, "gainLossPct": 1.62234, "totalValue": 4977 },
+  "SNDK": { "name": "SanDisk", "shares": 4, "buyPrice": 630.26, "currentPrice": 1288.03, "gainLossPct": 1.04364, "totalValue": 5152.12 },
+  "WDC": { "name": "Western Digital", "shares": 6, "buyPrice": 223.23, "currentPrice": 527.22, "gainLossPct": 1.36177, "totalValue": 3163.32 },
+  "INTC": { "name": "Intel", "shares": 20, "buyPrice": 43.05, "currentPrice": 91, "gainLossPct": 1.11382, "totalValue": 1820 },
+  "SIMO": { "name": "Silicon Motion", "shares": 30, "buyPrice": 131.32, "currentPrice": 251.52, "gainLossPct": 0.91532, "totalValue": 7545.6 },
+  "IREN": { "name": "Iris Energy", "shares": 54, "buyPrice": 52.75, "currentPrice": 39.75, "gainLossPct": -0.24644, "totalValue": 2146.5 },
+  "CIFR": { "name": "Cipher Mining", "shares": 28, "buyPrice": 17.5, "currentPrice": 24.16, "gainLossPct": 0.38057, "totalValue": 676.48 },
+  "META": { "name": "Meta Platforms", "shares": 2, "buyPrice": 661, "currentPrice": 590.24, "gainLossPct": -0.10704, "totalValue": 1180.48 },
+  "AMZN": { "name": "Amazon", "shares": 6, "buyPrice": 229.29, "currentPrice": 284.02, "gainLossPct": 0.23869, "totalValue": 1704.12 },
+  "GOOG": { "name": "Alphabet / Google", "shares": 4, "buyPrice": 317.95, "currentPrice": 372.47, "gainLossPct": 0.17147, "totalValue": 1489.88 },
+  "TTWO": { "name": "Take-Two Interactive", "shares": 5, "buyPrice": 235.5, "currentPrice": 245.15, "gainLossPct": 0.04097, "totalValue": 1225.75 },
+  "WMT": { "name": "Walmart", "shares": 16, "buyPrice": 119.45, "currentPrice": 110.71, "gainLossPct": -0.07316, "totalValue": 1771.36 },
+  "NFLX": { "name": "Netflix", "shares": 14, "buyPrice": 94.03, "currentPrice": 73.33, "gainLossPct": -0.22014, "totalValue": 1026.62 },
+  "MA": { "name": "Mastercard", "shares": 4, "buyPrice": 503.99, "currentPrice": 570.97, "gainLossPct": 0.13289, "totalValue": 2283.88 },
+  "IBIT": { "name": "iShares Bitcoin Trust", "shares": 14, "buyPrice": 60.48, "currentPrice": 36.16, "gainLossPct": -0.40211, "totalValue": 506.24 },
+  "GTEC": { "name": "Greenland Technologies", "shares": 260, "buyPrice": 1.27, "currentPrice": 0.53, "gainLossPct": -0.58267, "totalValue": 137.8 },
+  "TQQQ": { "name": "ProShares UltraPro QQQ", "shares": 28, "buyPrice": 56.53, "currentPrice": 67.96, "gainLossPct": 0.20219, "totalValue": 1902.88 }
 }
