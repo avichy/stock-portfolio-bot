@@ -1,15 +1,15 @@
 from datetime import datetime
 import json
 import os
-import subprocess
-import time
-import traceback
 import pytz
-import requests
 import yfinance as yf
+from flask import Flask, jsonify, render_template, request
+
+app = Flask(__name__)
 
 AI_CACHE_FILE = "ai_cache.json"
 PORTFOLIO_FILE = "portfolio.json"
+
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -20,12 +20,14 @@ def load_ai_cache():
             pass
     return {}
 
+
 def save_ai_cache(data):
     try:
         with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving AI cache: {e}")
+
 
 def load_portfolio_buys():
     if os.path.exists(PORTFOLIO_FILE):
@@ -36,7 +38,14 @@ def load_portfolio_buys():
             print(f"Error loading portfolio.json: {e}")
     return {}
 
-portfolio_buys = load_portfolio_buys()
+
+def save_portfolio_buys(data):
+    try:
+        with open(PORTFOLIO_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error saving portfolio.json: {e}")
+
 
 def format_num(val, decimals=2):
     try:
@@ -47,6 +56,7 @@ def format_num(val, decimals=2):
     except (ValueError, TypeError):
         return str(val)
 
+
 def format_pct_colored(val):
     try:
         num = float(val)
@@ -55,6 +65,7 @@ def format_pct_colored(val):
         return f'<span style="color: {color}; font-weight: bold;">{sign}{num:.2f}%</span>'
     except (ValueError, TypeError):
         return str(val)
+
 
 def get_default_ai_insights():
     return {
@@ -73,53 +84,90 @@ def get_default_ai_insights():
         "US_MARKET_MACRO_NEWS": "נתוני המאקרו ממשיכים להוות מנוע ניווט מרכזי עבור הבנק המרכזי והמשקיעים.",
         "IL_MARKET_MACRO_NEWS": "השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות באזור.",
         "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה.",
-        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות."
+        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות.",
     }
 
-israel_tz = pytz.timezone("Asia/Jerusalem")
-now_il = datetime.now(israel_tz)
-day_name = {
-    0: "שני", 1: "שלישי", 2: "רביעי", 3: "חמישי", 4: "שישי", 5: "שבת", 6: "ראשון",
-}[now_il.weekday()]
-
-base_market_tickers = [
-    "GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX",
-] + list(portfolio_buys.keys())
 
 def fetch_market_data(tickers):
     market_data = {}
     for ticker in tickers:
         success = False
-        for attempt in range(3): # ניסיון חוזר למקרה של נפילה רגעית ב-Yahoo Finance
+        for attempt in range(3):
             try:
                 stock = yf.Ticker(ticker)
                 hist = stock.history(period="2d")
                 info = stock.info
                 target_mean = info.get("targetMeanPrice")
-                
-                pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
+
+                pre_market_val = (
+                    info.get("preMarketPrice")
+                    or info.get("open")
+                    or info.get("regularMarketOpen")
+                )
                 if not pre_market_val and not hist.empty:
                     pre_market_val = hist["Open"].iloc[-1]
 
                 if not hist.empty:
                     current_price = round(hist["Close"].iloc[-1], 2)
-                    prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else current_price
-                    change = round(((current_price - prev_close) / prev_close) * 100, 2)
+                    prev_close = (
+                        hist["Close"].iloc[-2]
+                        if len(hist) > 1
+                        else current_price
+                    )
+                    change = round(
+                        ((current_price - prev_close) / prev_close) * 100, 2
+                    )
                     market_data[ticker] = {
                         "price": current_price,
                         "change": change,
                         "target": target_mean if target_mean else 0.0,
-                        "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
+                        "pre_market": (
+                            round(float(pre_market_val), 2)
+                            if pre_market_val
+                            else current_price
+                        ),
                     }
                     success = True
                     break
             except Exception:
-                time.sleep(2)
+                time.sleep(1)
         if not success:
-            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
+            market_data[ticker] = {
+                "price": 0.0,
+                "change": 0.0,
+                "target": 0.0,
+                "pre_market": 0.0,
+            }
     return market_data
 
-try:
+
+@app.route("/")
+def index():
+    portfolio_buys = load_portfolio_buys()
+    israel_tz = pytz.timezone("Asia/Jerusalem")
+    now_il = datetime.now(israel_tz)
+    day_name = {
+        0: "שני",
+        1: "שלישי",
+        2: "רביעי",
+        3: "חמישי",
+        4: "שישי",
+        5: "שבת",
+        6: "ראשון",
+    }[now_il.weekday()]
+
+    base_market_tickers = [
+        "GC=F",
+        "CL=F",
+        "BTC-USD",
+        "USDILS=X",
+        "DX-Y.NYB",
+        "^GSPC",
+        "^NDX",
+        "^DJI",
+        "^VIX",
+    ] + list(portfolio_buys.keys())
+
     base_market_data = fetch_market_data(base_market_tickers)
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
@@ -143,7 +191,7 @@ try:
     dji_change = format_pct_colored(dji.get("change", 0))
     vix_price = format_num(vix.get("price", 0))
     vix_change = format_pct_colored(vix.get("change", 0))
-    
+
     dxy_price = format_num(dxy_data.get("price", 0))
     dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
@@ -172,7 +220,12 @@ try:
 
     portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
 
-    with open("index.template.html", "r", encoding="utf-8-sig") as f:
+    template_file = (
+        "index.template.html"
+        if os.path.exists("index.template.html")
+        else "index.html"
+    )
+    with open(template_file, "r", encoding="utf-8-sig") as f:
         content = f.read()
 
     replacements = {
@@ -201,34 +254,73 @@ try:
         "GOLD_CHANGE": gold_change,
         "BTC_PRICE": btc_price,
         "BTC_CHANGE": btc_change,
+        "US_MARKET_NEWS": ai_insights.get("US_MARKET_MACRO_NEWS", ""),
+        "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_MACRO_NEWS", ""),
+        "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", ""),
+        "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get(
+            "ACTION_RECOMMENDATIONS_TEXT", ""
+        ),
+        "COMMUNITY_SENTIMENT": ai_insights.get(
+            "COMMUNITY_SENTIMENT", "סנטימנט חיובי מתון בשווקים."
+        ),
+        "ANALYST_POINT_1": ai_insights.get(
+            "ANALYST_POINT_1", "המשך מעקב אחר תוצאות חברות הטכנולוגיה."
+        ),
+        "ANALYST_POINT_2": ai_insights.get(
+            "ANALYST_POINT_2", "זהירות ברמות השיא וגיוון תיק ההשקעות."
+        ),
+        "SECTOR_CHIPS_DESC": ai_insights.get(
+            "SECTOR_CHIPS_DESC", "ביקוש גבוה לשבבי AI."
+        ),
+        "SECTOR_CLOUD_DESC": ai_insights.get(
+            "SECTOR_CLOUD_DESC", "צמיחה יציבה בתשתיות ענן."
+        ),
+        "SECTOR_CRYPTO_DESC": ai_insights.get(
+            "SECTOR_CRYPTO_DESC", "תנודתיות גבוהה בנכסים דיגיטליים."
+        ),
+        "CATALYST_EARNINGS": ai_insights.get(
+            "CATALYST_EARNINGS", "דוחות כספיים קרובים של ענקיות הטכנולוגיה."
+        ),
+        "CATALYST_MONETARY": ai_insights.get(
+            "CATALYST_MONETARY", "החלטות ריבית צפויות של הבנקים המרכזיים."
+        ),
+        "CATALYST_HARDWARE": ai_insights.get(
+            "CATALYST_HARDWARE", "השקות מוצרים חדשים בתחום החומרה והשבבים."
+        ),
     }
 
-    # עדכון אוטומטי של כל מניה מתוך portfolio.json כולל כמות מניות
     for ticker, info in portfolio_buys.items():
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price")
         if not curr_p or curr_p == 0.0:
-            curr_p = info["buy"]
-        
+            curr_p = info.get("buy", 100.0)
+
         fetched_target = fetched_price_data.get("target", 0.0)
         if not fetched_target or fetched_target == 0.0:
-            fetched_target = info["buy"] * 1.25
+            fetched_target = info.get("buy", 100.0) * 1.25
 
         pre_p = fetched_price_data.get("pre_market", 0.0)
         if not pre_p or pre_p == 0.0:
             pre_p = curr_p
 
-        ret = ((curr_p - info["buy"]) / info["buy"]) * 100
+        buy_price = info.get("buy", curr_p)
+        ret = ((curr_p - buy_price) / buy_price) * 100
         sign = "+" if ret > 0 else ""
         color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
         shares_count = info.get("shares", 0)
 
         p_item = portfolio_analysis_map.get(ticker, {})
-        p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
+        p_rationale = p_item.get(
+            "rationale", f"ניתוח טכני ומאקרו עבור {ticker}."
+        )
         p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-        p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
-        p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
+        p_news_content = p_item.get(
+            "news_content", f"סקירת נתונים פיננסיים עבור {ticker}."
+        )
+        p_news_impact = p_item.get(
+            "news_impact", "השפעה מתונה על ניהול הפוזיציה."
+        )
 
         full_note_html = (
             f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
@@ -241,24 +333,101 @@ try:
         replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
         replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
         replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-        replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
+        replacements[
+            f"{ticker}_PORT_STATUS"
+        ] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
         replacements[f"{ticker}_PORT_NOTE"] = full_note_html
 
     for key, val in replacements.items():
         content = content.replace(f"{{{{{key}}}}}", str(val))
 
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(content)
+    return content
 
-    subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
-    subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-    subprocess.run(["git", "add", "index.html"], check=True)
 
-    status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-    if "index.html" in status.stdout:
-        subprocess.run(["git", "commit", "-m", f"Fix portfolio values and shares update for {day_name}"], check=True)
-        subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-        subprocess.run(["git", "push"], check=True)
+@app.route("/api/portfolio-data", methods=["GET"])
+def get_portfolio():
+    portfolio_buys = load_portfolio_buys()
+    tickers = list(portfolio_buys.keys())
+    market_data = fetch_market_data(tickers) if tickers else {}
 
-except Exception as e:
-    traceback.print_exc()
+    stocks_list = []
+    for ticker, info in portfolio_buys.items():
+        fetched = market_data.get(ticker, {})
+        curr_p = fetched.get("price") or info.get("buy", 0)
+        target_p = fetched.get("target") or (info.get("buy", 0) * 1.25)
+        pre_p = fetched.get("pre_market") or curr_p
+
+        buy_price = info.get("buy", 0)
+        ret = (
+            ((curr_p - buy_price) / buy_price) * 100 if buy_price > 0 else 0
+        )
+        sign = "+" if ret > 0 else ""
+        color = "#2ecc71" if ret >= 0 else "#e74c3c"
+
+        stocks_list.append(
+            {
+                "symbol": ticker,
+                "name": info.get("name", ticker),
+                "shares": info.get("shares", 0),
+                "buyPrice": buy_price,
+                "currentPrice": f"${format_num(curr_p)}",
+                "preMarket": f"${format_num(pre_p)}",
+                "target": f"${format_num(target_p)}",
+                "status": f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>',
+                "note": info.get("note", "הוספה ידנית לתיק"),
+            }
+        )
+
+    return jsonify({"stocks": stocks_list})
+
+
+@app.route("/api/update-portfolio", methods=["POST"])
+def update_portfolio():
+    data = request.json
+    symbol = data.get("symbol")
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+
+    name = data.get("name", symbol)
+    try:
+        shares = float(data.get("shares", 0))
+    except ValueError:
+        shares = 0
+
+    try:
+        buy_price = float(data.get("buyPrice", 0))
+    except ValueError:
+        buy_price = 0.0
+
+    portfolio_buys = load_portfolio_buys()
+
+    portfolio_buys[symbol] = {
+        "name": name,
+        "shares": shares,
+        "buy": buy_price,
+        "note": "נוכן או נוסף דרך ממשק הניהול",
+    }
+
+    save_portfolio_buys(portfolio_buys)
+    return jsonify({"success": True})
+
+
+@app.route("/api/delete-stock", methods=["POST"])
+def delete_stock():
+    data = request.json
+    symbol = data.get("symbol")
+    if not symbol:
+        return jsonify({"error": "Symbol is required"}), 400
+
+    portfolio_buys = load_portfolio_buys()
+    if symbol in portfolio_buys:
+        del portfolio_buys[symbol]
+        save_portfolio_buys(portfolio_buys)
+
+    return jsonify({"success": True})
+
+
+if __name__ == "__main__":
+    import time
+
+    app.run(debug=True, port=5000)
