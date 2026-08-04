@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [workflow_dispatch]
+  push:
+    branches:
+      - main
+    paths:
+      - 'portfolio.json'
 
 permissions:
   contents: write
@@ -42,6 +47,9 @@ jobs:
           GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
           GEMINI_API_KEY_5: ${{ secrets.GEMINI_API_KEY_5 }}
           TRIGGER_EVENT: ${{ github.event_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
         run: |
           python update_data.py
 
