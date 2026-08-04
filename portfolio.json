@@ -1,22 +1,82 @@
 {
-  "NVDA": {"shares": 3, "buy": 184.90},
-  "AMD": {"shares": 20, "buy": 211.34},
-  "MU": {"shares": 6, "buy": 316.32},
-  "SNDK": {"shares": 4, "buy": 630.26},
-  "WDC": {"shares": 6, "buy": 223.23},
-  "INTC": {"shares": 20, "buy": 43.05},
-  "SIMO": {"shares": 30, "buy": 131.32},
-  "IREN": {"shares": 54, "buy": 52.75},
-  "CIFR": {"shares": 28, "buy": 17.50},
-  "META": {"shares": 2, "buy": 661.00},
-  "AMZN": {"shares": 6, "buy": 229.29},
-  "GOOG": {"shares": 4, "buy": 317.95},
-  "TTWO": {"shares": 5, "buy": 235.50},
-  "WMT": {"shares": 16, "buy": 119.45},
-  "NFLX": {"shares": 14, "buy": 94.03},
-  "MA": {"shares": 4, "buy": 503.99},
-  "IBIT": {"shares": 14, "buy": 60.48},
-  "GTEC": {"shares": 260, "buy": 1.27},
-  "TQQQ": {"shares": 28, "buy": 56.53},
-  "BE": {"shares": 2, "buy": 221.85}
+  "NVDA": {
+    "shares": 3,
+    "buy": 184.9
+  },
+  "AMD": {
+    "shares": 20,
+    "buy": 211.34
+  },
+  "MU": {
+    "shares": 6,
+    "buy": 316.32
+  },
+  "SNDK": {
+    "shares": 4,
+    "buy": 630.26
+  },
+  "WDC": {
+    "shares": 6,
+    "buy": 223.23
+  },
+  "INTC": {
+    "shares": 20,
+    "buy": 43.05
+  },
+  "SIMO": {
+    "shares": 30,
+    "buy": 131.32
+  },
+  "IREN": {
+    "shares": 54,
+    "buy": 52.75
+  },
+  "CIFR": {
+    "shares": 28,
+    "buy": 17.5
+  },
+  "META": {
+    "shares": 2,
+    "buy": 661
+  },
+  "AMZN": {
+    "shares": 6,
+    "buy": 229.29
+  },
+  "GOOG": {
+    "shares": 4,
+    "buy": 317.95
+  },
+  "TTWO": {
+    "shares": 5,
+    "buy": 235.5
+  },
+  "WMT": {
+    "shares": 16,
+    "buy": 119.45
+  },
+  "NFLX": {
+    "shares": 14,
+    "buy": 94.03
+  },
+  "MA": {
+    "shares": 4,
+    "buy": 503.99
+  },
+  "IBIT": {
+    "shares": 14,
+    "buy": 60.48
+  },
+  "GTEC": {
+    "shares": 260,
+    "buy": 1.27
+  },
+  "TQQQ": {
+    "shares": 28,
+    "buy": 56.53
+  },
+  "BE": {
+    "shares": 2,
+    "buy": 221.85
+  }
 }
