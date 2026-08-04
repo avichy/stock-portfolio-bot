@@ -308,9 +308,50 @@
             });
         }
 
-        async function loadPortfolioList() {
-            // טעינת מניות התיק
+async function loadPortfolioList() {
+    try {
+        const res = await fetch('portfolio.json');
+        if (!res.ok) return;
+        const data = await res.json();
+        const listEl = document.getElementById('portfolio-list');
+        const counterEl = document.getElementById('portfolio-counter');
+        if (!listEl) return;
+
+        // portfolio.json הוא אובייקט (מילון) שבו המפתחות הם הטיקרים
+        const entries = Object.entries(data);
+
+        // עדכון מונה החברות בדיق לפי מה שקיים בקובץ
+        if (counterEl) {
+            counterEl.innerText = `כמות חברות בתיק: ${entries.length}`;
         }
+        
+        if (entries.length === 0) {
+            listEl.innerHTML = '<p class="text-gray-400 text-sm">אין מניות בתיק כרגע.</p>';
+            return;
+        }
+
+        // יצירת כרטיס דינמי לכל מניה ומוצר שנמצאים בקובץ ה-JSON
+        listEl.innerHTML = entries.map(([ticker, s]) => `
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 relative">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-cyan-400 font-semibold text-base">
+                        ${s.name || ticker} (סמל: <strong class="text-white">${ticker}</strong>)
+                    </h4>
+                    <button onclick="deleteStock('${ticker}')" class="text-red-400 hover:text-red-300 text-xs bg-red-900/40 px-2.5 py-1 rounded border border-red-800 transition">מחיקה</button>
+                </div>
+                <p class="space-y-1">
+                    מספר מניות: <strong>${s.shares || 0}</strong><br>
+                    מחיר קנייה: <strong>$${s.buy || s.buyPrice || 0}</strong><br>
+                    מחיר נוכחי: <strong>${s.currentPrice || 'מעדכן...'}</strong><br>
+                    <span class="text-cyan-300">${s.status || ''}</span><br>
+                    <span class="text-gray-400">פרטים ונתונים: ${s.note || 'אין הערות זמינות'}</span>
+                </p>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Error loading portfolio:', e);
+    }
+}
 
         async function addOrUpdateStock() {
             const name = document.getElementById('stock-name').value;
