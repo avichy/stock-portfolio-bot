@@ -529,6 +529,10 @@ try:
             "</div>"
         )
 
+    # שליפת חדשות ספציפיות עבור NVDA ו-AMD להצגה בשלב 8
+    nvda_stock = next((s for s in long_term_stocks + swing_stocks if s.get("symbol") == "NVDA"), {})
+    amd_stock = next((s for s in long_term_stocks + swing_stocks if s.get("symbol") == "AMD"), {})
+
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "DAY_NAME": day_name,
@@ -547,6 +551,33 @@ try:
         "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", "ניתוח מדד דאו ג'ונס מתעדכן..."),
         "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", "ניתוח מדד הפחד VIX מתעדכן..."),
         "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", "ניתוח מדד הדולר מתעדכן..."),
+        
+        # שלב 2 - סקטוריאלית
+        "SECTOR_CHIPS_DESC": "מוליכים למחצה ותשתיות עיבוד נתונים מתקדמות",
+        "SECTOR_CLOUD_DESC": "שירותי ענן, תשתיות ארגוניות ובינה מלאכותית",
+        "SECTOR_CRYPTO_DESC": "נכסים דיגיטליים, בלוקצ'יין וכרייה ירוקה",
+
+        # שלב 3 - זרימים וזרזים
+        "CATALYST_EARNINGS": "דיווחים שוטפים על תוצאות רבעוניות והערכות אנליסטים",
+        "CATALYST_MONETARY": "החלטות ריבית, נתוני אינפלציה וצעדי בנקים מרכזיים",
+        "CATALYST_HARDWARE": "השקות מוצרי חומרה חדשים ועדכוני תוכנה לתשתיות AI",
+
+        # שלב 6 - סנטימנט
+        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר בקרב משקיעים פרטיים ומוסדיים",
+        "ANALYST_POINT_1": "המשך דגש על חברות בעלות תזרים מזומנים חזק ויציב",
+        "ANALYST_POINT_2": "מעקב צמוד אחר רמות התנגדות טכניות במדדים המוצגים",
+
+        # שלב 8 - חדשות ספציפיות למניות נבחרות
+        "NVDA_NEWS_LINK": "[https://finance.yahoo.com/quote/NVDA](https://finance.yahoo.com/quote/NVDA)",
+        "NVDA_NEWS_TITLE": nvda_stock.get("news_title", "ביקושים גבוהים לשבבי הדור הבא מצד ענקיות הענן"),
+        "NVDA_NEWS_CONTENT": nvda_stock.get("news_content", "החברה ממשיכה לדווח על צבר הזמנות חזק המעיד על המשך שליטה בשוק מעבדי ה-AI."),
+        "NVDA_NEWS_IMPACT": nvda_stock.get("news_impact", "תמיכה חזקה במומנטום החיובי של המניה בטווח הקצר והארוך."),
+
+        "AMD_NEWS_LINK": "[https://finance.yahoo.com/quote/AMD](https://finance.yahoo.com/quote/AMD)",
+        "AMD_NEWS_TITLE": amd_stock.get("news_title", "הרחבת נתח השוק במעבדי בינה מלאכותית למרכזי נתונים"),
+        "AMD_NEWS_CONTENT": amd_stock.get("news_content", "הכרזות על שיתופי פעולה אסטרטגיים עם לקוחות מובילים במגזר הטכנולוגי."),
+        "AMD_NEWS_IMPACT": amd_stock.get("news_impact", "פוטנציאל לראלי מחירים ותנודתיות גבוהה במסחר סווינג."),
+
         "LONG_TERM_STOCKS_SECTION": long_term_html_blocks,
         "SWING_STOCKS_SECTION": swing_html_blocks,
         "NEWS_SECTION": news_html_blocks,
