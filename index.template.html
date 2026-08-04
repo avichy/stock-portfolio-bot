@@ -290,7 +290,7 @@
 
         async function loadPortfolioList() {
             try {
-                const res = await fetch('/api/portfolio-data');
+                const res = await fetch('portfolio.json');
                 if (!res.ok) return;
                 const data = await res.json();
                 const listEl = document.getElementById('portfolio-list');
