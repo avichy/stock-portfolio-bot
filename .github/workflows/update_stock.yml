@@ -58,6 +58,13 @@ jobs:
             git push
           fi
 
+      - name: Trigger Vercel Deployment
+        if: success() && env.VERCEL_DEPLOY_HOOK_URL != ''
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          curl -X POST "$VERCEL_DEPLOY_HOOK_URL"
+
       - name: Upload page artifact
         uses: actions/upload-pages-artifact@v3
         with:
