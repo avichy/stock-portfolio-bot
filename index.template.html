@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Alpine.js CDN לניהול משתנים דינמיים -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
     <!-- Header Banner -->
@@ -92,7 +90,7 @@
             </div>
         </div>
 
-        <!-- שלב 2: סקטורים (כל 11 הסקטורים של שוק ההון) -->
+        <!-- שלב 2: סקטורים (כל 11 הסקטורים) -->
         <div id="tab-2" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים של שוק ההון 💻📈</h2>
             
@@ -103,17 +101,17 @@
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
                 <p class="font-bold text-cyan-400">📊 פירוט 11 הסקטורים המרכזיים בשוק ההון (S&P 500 GICS Sectors):</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">💻 <strong>טכנולוגיית מידע (Information Technology):</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏦 <strong>פיננסים (Financials):</strong> בנקים, חברות ביטוח שירותי אשראי והשקעות.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏥 <strong>שירותי בריאות (Health Care):</strong> פארמה, ביוטכנולוגיה, ציוד רפואי ובתי חולים.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛍️ <strong>צרכנות מחזורית (Consumer Discretionary):</strong> קמעונאות, רכבים, מלונאות ומוצרים לא חיוניים.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛒 <strong>צרכנות בסיסית (Consumer Staples):</strong> מזון, משקאות, מוצרי היגיינה ורשתות שיווק.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛢️ <strong>אנרגיה (Energy):</strong> חיפוש הפקה וזיקוק של נפט, גז ואנרגיה מתחדשת.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏭 <strong>תעשייה (Industrials):</strong> תעופה, ביטחון, מכונות כבדות ותחבורה.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🧪 <strong>חומרים (Materials):</strong> כימיקלים, מתכות, כרייה ואריזה.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">📡 <strong>שירותי תקשורת (Communication Services):</strong> טלקום, מדיה, רשתות חברתיות ובידור.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">⚡ <strong>תשתיות ציבוריות (Utilities):</strong> חברות חשמל, מים וגז טבעי.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700 md:col-span-2">🏢 <strong>נדל"ן (Real Estate):</strong> קרנות השקעה במקרקעין (REITs) ונכסים מניבים.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">💻 <strong>טכנולוגיית מידע:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏦 <strong>פיננסים:</strong> בנקים, חברות ביטוח שירותי אשראי והשקעות.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏥 <strong>שירותי בריאות:</strong> פארמה, ביוטכנולוגיה, ציוד רפואי ובתי חולים.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛍️ <strong>צרכנות מחזורית:</strong> קמעונאות, רכבים, מלונאות ומוצרים לא חיוניים.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛒 <strong>צרכנות בסיסית:</strong> מזון, משקאות, מוצרי היגיינה ורשתות שיווק.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛢️ <strong>אנרגיה:</strong> חיפוש הפקה וזיקוק של נפט, גז ואנרגיה מתחדשת.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏭 <strong>תעשייה:</strong> תעופה, ביטחון, מכונות כבדות ותחבורה.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🧪 <strong>חומרים:</strong> כימיקלים, מתכות, כרייה ואריזה.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">📡 <strong>שירותי תקשורת:</strong> טלקום, מדיה, רשתות חברתיות ובידור.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">⚡ <strong>תשתיות ציבוריות:</strong> חברות חשמל, מים וגז טבעי.</div>
+                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700 md:col-span-2">🏢 <strong>נדל"ן:</strong> קרנות השקעה במקרקעין (REITs) ונכסים מניבים.</div>
                 </div>
             </div>
         </div>
@@ -138,8 +136,8 @@
             </div>
         </div>
 
-        <!-- שלב 5: התיק האישי (מנוהל דינמית ע"י Alpine.js) -->
-        <div id="tab-5" class="tab-content hidden space-y-4" x-data="portfolioManager()">
+        <!-- שלב 5: התיק האישי -->
+        <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
             
             <div class="p-4 bg-gray-900 rounded-xl border border-gray-700 space-y-4">
@@ -147,7 +145,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
-                        <input type="text" id="stock-name" placeholder="שם חברה" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="text" id="stock-name" placeholder="לדוגמה: Bloom Energy" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">טיקר</label>
@@ -155,11 +153,11 @@
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
-                        <input type="number" id="stock-shares" placeholder="2" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="number" id="stock-shares" placeholder="10" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($)</label>
-                        <input type="number" step="0.01" id="stock-buy" placeholder="221.85" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="number" step="0.01" id="stock-buy" placeholder="20.50" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                 </div>
                 <div class="flex items-center gap-4 mt-4">
@@ -171,33 +169,9 @@
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
                 <div class="flex justify-between items-center border-b border-gray-700 pb-3">
                     <h3 class="text-base font-bold text-cyan-400">מניות התיק במערכת</h3>
-                    <!-- מונה דינמי שמתעדכן אוטומטית לפי אורך ה-JSON -->
-                    <div id="portfolio-counter" class="text-sm font-bold text-cyan-300">
-                        כמות חברות בתיק: <span x-text="portfolioCount">טוען...</span>
-                    </div> 
+                    <div id="portfolio-counter" class="text-sm font-bold text-cyan-300">כמות חברות בתיק: 0</div> 
                 </div>
-
-                <!-- רשימת מניות דינמית -->
-                <div id="portfolio-list" class="space-y-3 text-sm">
-                    <template x-if="entries.length === 0">
-                        <p class="text-gray-400 text-sm">טוען נתונים או שאין מניות בתיק...</p>
-                    </template>
-                    <template x-for="[ticker, s] in entries" :key="ticker">
-                        <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 relative">
-                            <div class="flex justify-between items-start">
-                                <h4 class="text-cyan-400 font-semibold text-base" x-text="(s.name || ticker) + ' (סמל: ' + ticker + ')'"></h4>
-                                <button @click="deleteStock(ticker)" class="text-red-400 hover:text-red-300 text-xs bg-red-900/40 px-2.5 py-1 rounded border border-red-800 transition">מחיקה</button>
-                            </div>
-                            <p class="space-y-1">
-                                מספר מניות: <strong x-text="s.shares || 0"></strong><br>
-                                מחיר קנייה: $<strong x-text="s.buyPrice || 0"></strong><br>
-                                מחיר נוכחי: $<strong x-text="s.currentPrice || 0"></strong><br>
-                                רווח/הפסד: <strong :class="((s.gainLossPct || 0) >= 0) ? 'text-green-400' : 'text-red-400'" x-text="((s.gainLossPct || 0) * 100).toFixed(2) + '%'"></strong><br>
-                                שווי כולל: $<strong x-text="s.totalValue || 0"></strong>
-                            </p>
-                        </div>
-                    </template>
-                </div>
+                <div id="portfolio-list" class="space-y-3 text-sm"></div>
             </div>
         </div>
         
@@ -227,8 +201,9 @@
 
     </main>
 
-    <!-- JavaScript -->
+    <!-- JavaScript מתקדם עם LocalStorage לעדכון מיידי -->
     <script>
+        // ניהול טאבים
         function switchTab(tabNumber) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden');
@@ -248,41 +223,131 @@
             });
         }
 
-        // ניהול המניות והנתונים הדינמיים באמצעות Alpine.js
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('portfolioManager', () => ({
-                entries: [],
-                portfolioCount: 0,
-                async init() {
-                    try {
-                        const res = await fetch('portfolio.json');
-                        if (res.ok) {
-                            const data = await res.json();
-                            this.entries = Object.entries(data);
-                            this.portfolioCount = this.entries.length;
-                        } else {
-                            console.error('שגיאה בטעינת קובץ ה־JSON');
-                        }
-                    } catch (e) {
-                        console.error('Error loading portfolio:', e);
-                    }
-                },
-                deleteStock(ticker) {
-                    if (confirm(`האם למחוק את ${ticker}?`)) {
-                        // לוגיקת מחיקה
-                    }
-                }
-            }));
-        });
+        // נתוני ברירת מחדל אם התיק ריק
+        const defaultPortfolio = {
+            "BE": { name: "Bloom Energy", shares: 10, buyPrice: 20.5, currentPrice: 24.0, gainLossPct: 0.17, totalValue: 240.0 },
+            "AMD": { name: "Advanced Micro Devices", shares: 5, buyPrice: 130.0, currentPrice: 145.0, gainLossPct: 0.115, totalValue: 725.0 }
+        };
 
-        async function addOrUpdateStock() {
-            const statusMsg = document.getElementById('status-msg');
-            statusMsg.innerText = 'שומר...';
-            setTimeout(() => {
-                statusMsg.innerText = 'נשמר בהצלחה!';
-            }, 500);
+        function getPortfolioData() {
+            const data = localStorage.getItem('my_portfolio_data');
+            if (!data) {
+                localStorage.setItem('my_portfolio_data', JSON.stringify(defaultPortfolio));
+                return defaultPortfolio;
+            }
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                return defaultPortfolio;
+            }
         }
 
+        function savePortfolioData(data) {
+            localStorage.setItem('my_portfolio_data', JSON.stringify(data));
+        }
+
+        // טעינה והצגה של התיק
+        function loadPortfolioList() {
+            const portfolio = getPortfolioData();
+            const entries = Object.entries(portfolio);
+            const counterEl = document.getElementById('portfolio-counter');
+            const listEl = document.getElementById('portfolio-list');
+
+            if (counterEl) {
+                counterEl.innerText = `כמות חברות בתיק: ${entries.length}`;
+            }
+
+            if (entries.length === 0) {
+                listEl.innerHTML = '<p class="text-gray-400 text-sm">אין מניות בתיק כרגע.</p>';
+                return;
+            }
+
+            listEl.innerHTML = entries.map(([ticker, s]) => {
+                const gainLossPct = s.gainLossPct ? (s.gainLossPct * 100).toFixed(2) : 0;
+                const isPositive = gainLossPct >= 0;
+                const colorClass = isPositive ? 'text-green-400' : 'text-red-400';
+
+                return `
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 relative">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-cyan-400 font-semibold text-base">
+                                ${s.name || ticker} (סמל: <strong class="text-white">${ticker}</strong>)
+                            </h4>
+                            <button onclick="deleteStock('${ticker}')" class="text-red-400 hover:text-red-300 text-xs bg-red-900/40 px-2.5 py-1 rounded border border-red-800 transition">מחיקה</button>
+                        </div>
+                        <p class="space-y-1">
+                            מספר מניות: <strong>${s.shares || 0}</strong><br>
+                            מחיר קנייה: <strong>$${s.buyPrice || 0}</strong><br>
+                            מחיר נוכחי: <strong>$${s.currentPrice || s.buyPrice || 0}</strong><br>
+                            רווח/הפסד: <strong class="${colorClass}">${gainLossPct}%</strong><br>
+                            שווי כולל: <strong>$${s.totalValue || (s.shares * (s.currentPrice || s.buyPrice || 0)).toFixed(2)}</strong>
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // הוספה או עדכון מניה בפועל
+        function addOrUpdateStock() {
+            const nameInput = document.getElementById('stock-name');
+            const symbolInput = document.getElementById('stock-symbol');
+            const sharesInput = document.getElementById('stock-shares');
+            const buyInput = document.getElementById('stock-buy');
+            const statusMsg = document.getElementById('status-msg');
+
+            const symbol = symbolInput.value.trim().toUpperCase();
+            const name = nameInput.value.trim() || symbol;
+            const shares = parseFloat(sharesInput.value);
+            const buyPrice = parseFloat(buyInput.value);
+
+            if (!symbol || isNaN(shares) || isNaN(buyPrice)) {
+                statusMsg.innerText = 'נא למלא את כל השדות כראוי!';
+                statusMsg.className = 'text-sm text-red-400';
+                return;
+            }
+
+            let portfolio = getPortfolioData();
+            
+            // חישוב ערכים
+            const currentPrice = buyPrice; // ברירת מחדל למחיר קנייה אם אין נתון בזמן אמת
+            const totalValue = +(shares * currentPrice).toFixed(2);
+
+            portfolio[symbol] = {
+                name: name,
+                shares: shares,
+                buyPrice: buyPrice,
+                currentPrice: currentPrice,
+                gainLossPct: 0.0, // התחלה מ-0% רווח עד לעדכון מחיר שוק
+                totalValue: totalValue
+            };
+
+            savePortfolioData(portfolio);
+            loadPortfolioList();
+
+            // איפוס שדות והודעת הצלחה
+            nameInput.value = '';
+            symbolInput.value = '';
+            sharesInput.value = '';
+            buyInput.value = '';
+            statusMsg.innerText = 'המניה נשמרה בהצלחה!';
+            statusMsg.className = 'text-sm text-green-400';
+
+            setTimeout(() => {
+                statusMsg.innerText = '';
+            }, 3000);
+        }
+
+        // מחיקת מניה
+        function deleteStock(symbol) {
+            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
+            
+            let portfolio = getPortfolioData();
+            delete portfolio[symbol];
+            savePortfolioData(portfolio);
+            loadPortfolioList();
+        }
+
+        // אתחול בעליית הדף
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -291,6 +356,10 @@
                 });
             });
 
+            // טעינת רשימת התיק והמונה
+            loadPortfolioList();
+
+            // יצירת הגרף (11 סקטורים)
             try {
                 const ctx = document.getElementById('sectorChart');
                 if (ctx) {
