@@ -18,7 +18,7 @@
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div class="text-xs text-gray-400 mt-3">
-                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong>עודכן לאחרונה: <span dir="ltr">04.08.2026 | 23:35</span></strong></span>
+                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong>עודכן לאחרונה: <span dir="ltr">04.08.2026 | 23:38</span></strong></span>
             </div>
         </div>
     </header>
@@ -74,7 +74,7 @@
                         </p>
 
                         <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>99.85</strong> (<span class="text-cyan-300"><span style="color: #e74c3c; font-weight: bold;">-0.11%</span></span>)<br>
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>99.86</strong> (<span class="text-cyan-300"><span style="color: #e74c3c; font-weight: bold;">-0.10%</span></span>)<br>
                             <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.</span></span>
                         </p>
                     </div>
@@ -91,7 +91,7 @@
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$75.35</strong> (<span class="text-cyan-300"><span style="color: #e74c3c; font-weight: bold;">-6.21%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$75.32</strong> (<span class="text-cyan-300"><span style="color: #e74c3c; font-weight: bold;">-6.25%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{OIL_EXPLANATION}}</span></p>
                     </div>
 
@@ -100,7 +100,7 @@
                         <h3 class="text-base font-bold text-cyan-400 flex items-center gap-1.5">
                             זהב (Gold) 🪙
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$4,132.20</strong> (<span class="text-cyan-300"><span style="color: #2ecc71; font-weight: bold;">+2.44%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$4,132.70</strong> (<span class="text-cyan-300"><span style="color: #2ecc71; font-weight: bold;">+2.45%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{GOLD_EXPLANATION}}</span></p>
                     </div>
 
@@ -110,7 +110,7 @@
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>  
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>$64,140.81</strong> (<span class="text-cyan-300"><span style="color: #2ecc71; font-weight: bold;">+1.07%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>$64,187.98</strong> (<span class="text-cyan-300"><span style="color: #2ecc71; font-weight: bold;">+1.15%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{BTC_EXPLANATION}}</span></p>
                     </div>
 
@@ -177,51 +177,6 @@
         <!-- שלב 5: התיק האישי -->
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות, נתונים והרציונל המלא 💼</h2>
-            
-            <!-- אזור ניהול תיק השקעות מהיר (GitHub API Form) -->
-            <div class="p-6 bg-gray-800 border border-gray-700 rounded-2xl shadow-xl text-right" dir="rtl">
-                <h2 class="text-2xl font-bold text-cyan-400 mb-4">🛠️ ניהול תיק השקעות מהיר</h2>
-                
-                <!-- הגדרת טוקן -->
-                <div id="token-section" class="mb-6 p-4 bg-gray-900 rounded-xl border border-gray-700">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">מפתח גישה ל-GitHub (GitHub Token - נשמר רק אצלך בדפדפן):</label>
-                    <div class="flex gap-2">
-                        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" dir="ltr" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm" />
-                        <button onclick="saveToken()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">שמור טוקן</button>
-                    </div>
-                </div>
-
-                <!-- טופס הוספת/עריכת מניה -->
-                <div class="mb-8 p-4 bg-gray-900 rounded-xl border border-gray-700">
-                    <h3 class="text-lg font-semibold text-white mb-3">הוספה או עדכון מניה</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">טיקר (למשל: BE, AAPL)</label>
-                            <input type="text" id="stock-symbol" placeholder="BE" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
-                            <input type="number" id="stock-shares" placeholder="2" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ממוצע ($)</label>
-                            <input type="number" step="0.01" id="stock-buy" placeholder="221.85" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
-                        </div>
-                    </div>
-                    <button onclick="addOrUpdateStock()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition">שמור מניה ועדכן אתר</button>
-                    <span id="status-msg" class="mr-4 text-sm text-yellow-400"></span>
-                </div>
-
-                <!-- רשימת המניות הקיימות בתיק -->
-                <div>
-                    <h3 class="text-lg font-semibold text-white mb-3">המניות הנוכחיות בתיק (לחץ מחיקה להסרה)</h3>
-                    <div id="portfolio-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
-                        טוען מניות...
-                    </div>
-                </div>
-            </div>
-
-            <!-- רשימת המניות המקורית מהשרת -->
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
                 <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>)<br>מספר מניות: 3 מניות<br>קנייה: <strong>$184.90</strong><br>מחיר נוכחי: <strong>$211.94</strong><br>מחיר טרום פתיחה: <strong>$211.49</strong><br>מחיר יעד אנליסטים ממוצע: <strong>$302.83</strong><br><strong>רווח: <span style="color: #2ecc71; font-weight: bold;">+14.62%</span></strong><br><span class="text-gray-400">חדשות ורציונל: <strong>רציונל וניתוח:</strong> ניתוח טכני ומאקרו עבור NVDA.<br><strong>כותרת חדשותית:</strong> עדכון שוק עבור NVDA<br><strong>תוכן חדשותי:</strong> סקירת נתונים פיננסיים עבור NVDA.<br><strong>השפעה על הפוזיציה:</strong> השפעה מתונה על ניהול הפוזיציה.</span></p>
 
@@ -380,131 +335,7 @@
             } catch (e) {
                 console.error('Chart initialization error:', e);
             }
-
-            const savedToken = localStorage.getItem("gh_portfolio_token");
-            if (savedToken) {
-                document.getElementById("gh-token").value = savedToken;
-                loadPortfolioJson();
-            } else {
-                const listEl = document.getElementById("portfolio-list");
-                if(listEl) listEl.innerHTML = "נא להזין מפתח גישה למעלה כדי לטעון את התיק.";
-            }
         });
-
-        function saveToken() {
-            const token = document.getElementById("gh-token").value.trim();
-            if (token) {
-                localStorage.setItem("gh_portfolio_token", token);
-                alert("הטוקן נשמר בהצלחה!");
-                loadPortfolioJson();
-            }
-        }
-
-        const GITHUB_USER = "avichy";
-        const GITHUB_REPO = "stock-portfolio-bot";
-        const FILE_PATH = "portfolio.json";
-
-        async function getPortfolioData() {
-            const token = localStorage.getItem("gh_portfolio_token");
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${token}` }
-            });
-            if (!res.ok) throw new Error("שגיאה בטעינת הקובץ מ-GitHub. בדוק שהטוקן תקין.");
-            const data = await res.json();
-            const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            return { content, sha: data.sha };
-        }
-
-        async function loadPortfolioJson() {
-            const listEl = document.getElementById("portfolio-list");
-            if (!listEl) return;
-            try {
-                const { content } = await getPortfolioData();
-                listEl.innerHTML = "";
-                for (const [symbol, info] of Object.entries(content)) {
-                    listEl.innerHTML += `
-                        <div class="flex justify-between items-center bg-gray-800 p-2 rounded-lg border border-gray-700">
-                            <span class="text-white"><strong>${symbol}</strong> | כמות: ${info.shares} | מחיר קנייה: $${info.buy}</span>
-                            <button onclick="deleteStock('${symbol}')" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-xs transition">מחק</button>
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                listEl.innerHTML = `<span class="text-red-400">${err.message}</span>`;
-            }
-        }
-
-        async function addOrUpdateStock() {
-            const symbol = document.getElementById("stock-symbol").value.trim().toUpperCase();
-            const shares = parseFloat(document.getElementById("stock-shares").value);
-            const buy = parseFloat(document.getElementById("stock-buy").value);
-            const msgEl = document.getElementById("status-msg");
-
-            if (!symbol || isNaN(shares) || isNaN(buy)) {
-                alert("נא למלא את כל השדות כראוי.");
-                return;
-            }
-
-            msgEl.innerText = "מעדכן את GitHub...";
-            try {
-                const token = localStorage.getItem("gh_portfolio_token");
-                const { content, sha } = await getPortfolioData();
-
-                content[symbol] = { shares: shares, buy: buy };
-
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: `Update portfolio via web interface: add/edit ${symbol}`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-                        sha: sha
-                    })
-                });
-
-                if (!res.ok) throw new Error("שגיאה בעדכון הקובץ ב-GitHub.");
-
-                msgEl.innerText = "עודכן בהצלחה! האתר יתעדכן אוטומטית בדקות הקרובות.";
-                document.getElementById("stock-symbol").value = "";
-                document.getElementById("stock-shares").value = "";
-                document.getElementById("stock-buy").value = "";
-                loadPortfolioJson();
-            } catch (err) {
-                msgEl.innerText = err.message;
-            }
-        }
-
-        async function deleteStock(symbol) {
-            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
-            try {
-                const token = localStorage.getItem("gh_portfolio_token");
-                const { content, sha } = await getPortfolioData();
-
-                delete content[symbol];
-
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: `Delete ${symbol} from portfolio via web interface`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-                        sha: sha
-                    })
-                });
-
-                if (!res.ok) throw new Error("שגיאה במחיקת המניה.");
-                alert("המניה נמחקה בהצלחה!");
-                loadPortfolioJson();
-            } catch (err) {
-                alert(err.message);
-            }
-        }
     </script>
 </body>
 </html>
