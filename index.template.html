@@ -4,225 +4,214 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>דו"ח סקייל שוק ההון המלא – מעקב כלל שוק ההון</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #0f172a; color: #f1f5f9; min-height: 100vh; direction: rtl; }
+        header { background-color: #1e293b; border-bottom: 1px solid #334155; padding: 24px 16px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1 { color: #22d3ee; font-size: 1.8rem; margin-bottom: 8px; }
+        p.subtitle { color: #94a3b8; font-size: 0.95rem; }
+        .update-time { font-size: 0.8rem; color: #64748b; margin-top: 12px; }
+        .update-time span { color: #38bdf8; font-weight: 600; }
+        
+        nav { background-color: rgba(30, 41, 59, 0.9); border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(8px); overflow-x: auto; white-space: nowrap; padding: 10px 16px; }
+        .tab-btn { background: transparent; border: none; color: #cbd5e1; padding: 8px 16px; font-size: 0.9rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-left: 4px; }
+        .tab-btn:hover { color: #fff; background-color: rgba(51, 65, 85, 0.5); }
+        .tab-btn.active { color: #22d3ee; background-color: #334155; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+        main { max-width: 1200px; margin: 0 auto; padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; }
+        .tab-content { display: none; flex-direction: column; gap: 16px; }
+        .tab-content.active { display: flex; }
+
+        h2 { font-size: 1.3rem; color: #f8fafc; border-right: 4px solid #22d3ee; padding-right: 12px; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        
+        .text-cyan { color: #22d3ee; }
+        .text-green { color: #4ade80; }
+        .text-red { color: #f87171; }
+        .text-muted { color: #94a3b8; font-size: 0.85rem; }
+        
+        input, button { font-size: 0.9rem; border-radius: 8px; padding: 10px 14px; border: 1px solid #475569; background-color: #0f172a; color: #fff; }
+        input:focus { outline: none; border-color: #22d3ee; }
+        button.btn-primary { background-color: #16a34a; border: none; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button.btn-primary:hover { background-color: #15803d; }
+        button.btn-danger { background-color: #7f1d1d; border: 1px solid #991b1b; color: #fca5a5; font-size: 0.75rem; padding: 4px 10px; cursor: pointer; border-radius: 6px; }
+        button.btn-danger:hover { background-color: #991b1b; }
+
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .stock-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+<body>
+
     <!-- Header Banner -->
-    <header class="bg-gray-800 border-b border-gray-700 py-6 px-4 shadow-lg text-center">
-        <div class="container mx-auto">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-cyan-400 mb-2">
-                דו"ח סקייל שוק ההון המלא - מעקב כלל השווקים 📊
-            </h1>
-            <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים גלובליים, כלל הסקטורים וחדשות שוק</p>
-            <div class="text-xs text-gray-400 mt-3">
-                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><span dir="ltr">05/08/2026 01:52</span></span>
-            </div>
+    <header>
+        <h1>דו"ח סקייל שוק ההון המלא - מעקב כלל השווקים 📊</h1>
+        <p class="subtitle">מעקב אחר תיק ההשקעות, מדדים גלובליים, כלל הסקטורים וחדשות שוק</p>
+        <div class="update-time">
+            עודכן לאחרונה: <span>05/08/2026 01:52</span>
         </div>
     </header>
 
     <!-- Main Navigation Tabs (8 Steps) -->
-    <nav class="bg-gray-800/80 border-b border-gray-700 sticky top-0 z-50 backdrop-blur">
-        <div class="container mx-auto px-4 overflow-x-auto">
-            <div class="flex space-x-1 space-x-reverse py-3 min-w-max">
-                <button data-tab="1" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-cyan-400 bg-gray-700 shadow focus:outline-none transition">שלב 1: מאקרו</button>
-                <button data-tab="2" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 2: סקטורים</button>
-                <button data-tab="3" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 3: זרימים</button>
-                <button data-tab="4" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 4: אסטרטגיה</button>
-                <button data-tab="5" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 5: התיק האישי</button>
-                <button data-tab="6" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 6: סנטימנט</button>
-                <button data-tab="7" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 7: סיכון</button>
-                <button data-tab="8" class="tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition">שלב 8: חדשות מניות</button>
-            </div>
-        </div>
+    <nav id="nav-tabs">
+        <button data-tab="1" class="tab-btn active">שלב 1: מאקרו</button>
+        <button data-tab="2" class="tab-btn">שלב 2: סקטורים</button>
+        <button data-tab="3" class="tab-btn">שלב 3: זרימים</button>
+        <button data-tab="4" class="tab-btn">שלב 4: אסטרטגיה</button>
+        <button data-tab="5" class="tab-btn">שלב 5: התיק האישי</button>
+        <button data-tab="6" class="tab-btn">שלב 6: סנטימנט</button>
+        <button data-tab="7" class="tab-btn">שלב 7: סיכון</button>
+        <button data-tab="8" class="tab-btn">שלב 8: חדשות מניות</button>
     </nav>
 
     <!-- Main Container Content -->
-    <main class="container mx-auto p-4 md:p-6 space-y-6">
+    <main>
         
         <!-- שלב 1: מאקרו -->
-        <div id="tab-1" class="tab-content space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
-                    <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
-                    <div class="space-y-3 text-sm">
-                        <p class="text-gray-300">
-                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>5,520</strong> (<span class="text-cyan-300">+0.45%</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">המדד שומר על יציבות חיובית ומציג חוסן יחסי למרות תנודות ריבית.</span></span>
-                        </p>
-                        <p class="text-gray-300">
-                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>17,400</strong> (<span class="text-cyan-300">+0.75%</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">סקטור הטכנולוגיה והשבבים ממשיך להוביל את עליות השערים.</span></span>
-                        </p>
-                        <p class="text-gray-300">
-                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>40,600</strong> (<span class="text-cyan-300">+0.15%</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">מסחר מתון במניות הערך המסורתיות.</span></span>
-                        </p>
-                        <p class="text-gray-300">
-                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>14.5</strong> (<span class="text-cyan-300">-2.1%</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">רמת תנודתיות נמוכה המעידה על שקט יחסי בשווקים.</span></span>
-                        </p>
+        <div id="tab-1" class="tab-content active">
+            <h2>שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="text-cyan" style="margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">מדדים מובילים (Indices) 📈</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                        <p><strong>S&P 500:</strong> נסחר סביב <strong>5,520</strong> (<span class="text-cyan">+0.45%</span>)<br><span class="text-muted">המדד שומר על יציבות חיובית ומציג חוסן יחסי.</span></p>
+                        <p><strong>NASDAQ:</strong> נסחר סביב <strong>17,400</strong> (<span class="text-cyan">+0.75%</span>)<br><span class="text-muted">סקטור הטכנולוגיה והשבבים ממשיך להוביל.</span></p>
+                        <p><strong>Dow Jones:</strong> נסחר סביב <strong>40,600</strong> (<span class="text-cyan">+0.15%</span>)<br><span class="text-muted">מסחר מתון במניות הערך המסורתיות.</span></p>
+                        <p><strong>VIX (מדד הפחד):</strong> נסחר סביב <strong>14.5</strong> (<span class="text-cyan">-2.1%</span>)<br><span class="text-muted">רמת תנודתיות נמוכה, שקט יחסי בשווקים.</span></p>
                     </div>
                 </div>
-
-                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>3.64 ₪</strong> (<span class="text-cyan-300">-0.2%</span>)</p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$78.50</strong> (<span class="text-cyan-300">+0.4%</span>)</p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$2,430</strong> (<span class="text-cyan-300">+0.6%</span>)</p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">ביטקוין (Bitcoin) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב <strong>$65,400</strong> (<span class="text-cyan-300">+1.8%</span>)</p>
-                    </div>
+                <div class="grid-4" style="align-content: start;">
+                    <div class="card"><h4 class="text-cyan">דולר (USD/ILS)</h4><p style="margin-top: 6px;"><strong>3.64 ₪</strong> (<span class="text-cyan">-0.2%</span>)</p></div>
+                    <div class="card"><h4 class="text-cyan">נפט (Brent)</h4><p style="margin-top: 6px;"><strong>$78.50</strong> (<span class="text-cyan">+0.4%</span>)</p></div>
+                    <div class="card"><h4 class="text-cyan">זהב (Gold)</h4><p style="margin-top: 6px;"><strong>$2,430</strong> (<span class="text-cyan">+0.6%</span>)</p></div>
+                    <div class="card"><h4 class="text-cyan">ביטקוין</h4><p style="margin-top: 6px;"><strong>$65,400</strong> (<span class="text-cyan">+1.8%</span>)</p></div>
                 </div>
             </div>
         </div>
 
-        <!-- שלב 2: סקטורים (כל 11 הסקטורים) -->
-        <div id="tab-2" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים של שוק ההון 💻📈</h2>
-            
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow mb-4">
-                <canvas id="sectorChart" height="130"></canvas>
+        <!-- שלב 2: סקטורים -->
+        <div id="tab-2" class="tab-content">
+            <h2>שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים 💻📈</h2>
+            <div class="card">
+                <canvas id="sectorChart" height="90"></canvas>
             </div>
-
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p class="font-bold text-cyan-400">📊 פירוט 11 הסקטורים המרכזיים בשוק ההון (S&P 500 GICS Sectors):</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">💻 <strong>טכנולוגיית מידע:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏦 <strong>פיננסים:</strong> בנקים, חברות ביטוח שירותי אשראי והשקעות.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏥 <strong>שירותי בריאות:</strong> פארמה, ביוטכנולוגיה, ציוד רפואי ובתי חולים.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛍️ <strong>צרכנות מחזורית:</strong> קמעונאות, רכבים, מלונאות ומוצרים לא חיוניים.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛒 <strong>צרכנות בסיסית:</strong> מזון, משקאות, מוצרי היגיינה ורשתות שיווק.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🛢️ <strong>אנרגיה:</strong> חיפוש הפקה וזיקוק של נפט, גז ואנרגיה מתחדשת.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🏭 <strong>תעשייה:</strong> תעופה, ביטחון, מכונות כבדות ותחבורה.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">🧪 <strong>חומרים:</strong> כימיקלים, מתכות, כרייה ואריזה.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">📡 <strong>שירותי תקשורת:</strong> טלקום, מדיה, רשתות חברתיות ובידור.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">⚡ <strong>תשתיות ציבוריות:</strong> חברות חשמל, מים וגז טבעי.</div>
-                    <div class="bg-gray-900 p-3 rounded-lg border border-gray-700 md:col-span-2">🏢 <strong>נדל"ן:</strong> קרנות השקעה במקרקעין (REITs) ונכסים מניבים.</div>
+            <div class="card">
+                <p class="text-cyan" style="font-weight: bold; margin-bottom: 12px;">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
+                <div class="grid-2" style="font-size: 0.85rem;">
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">💻 <strong>טכנולוגיית מידע:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏦 <strong>פיננסים:</strong> בנקים, ביטוח ואשראי.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏥 <strong>שירותי בריאות:</strong> פארמה, ביוטכנולוגיה וציוד רפואי.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛍️ <strong>צרכנות מחזורית:</strong> קמעונאות, רכבים ומלונאות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛒 <strong>צרכנות בסיסית:</strong> מזון, משקאות ורשתות שיווק.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🛢️ <strong>אנרגיה:</strong> נפט, גז ואנרגיה מתחדשת.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🏭 <strong>תעשייה:</strong> תעופה, ביטחון ומכונות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">🧪 <strong>חומרים:</strong> כימיקלים ומתכות.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">📡 <strong>שירותי תקשורת:</strong> טלקום ומדיה חברתית.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155;">⚡ <strong>תשתיות ציבוריות:</strong> חשמל ומים.</div>
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; border:1px solid #334155; grid-column: span 2;">🏢 <strong>נדל"ן:</strong> קרנות REITs ונכסים מניבים.</div>
                 </div>
             </div>
         </div>
 
         <!-- שלב 3: זרימים -->
-        <div id="tab-3" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> מעקב הדוק אחרי תוצאות החברות בתיק ובכלל הסקטורים.</p>
-                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> החלטות ריבית ונתוני אינפלציה של הפדרל ריזרב.</p>
+        <div id="tab-3" class="tab-content">
+            <h2>שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
+            <div class="card" style="display:flex; flex-direction:column; gap:10px; font-size:0.95rem;">
+                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> מעקב הדוק אחרי תוצאות החברות בתיק.</p>
+                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> החלטות ריבית ונתוני אינפלציה של הפד.</p>
             </div>
         </div>
 
         <!-- שלב 4: אסטרטגיה -->
-        <div id="tab-4" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 4: אסטרטגיות מסחר והשקעה (ליבה וסווינג) 📈</h2>
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-cyan-400">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core) 🏆</h3>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    פיזור מושכל בין סקטורים שונים להשקעה ארוכת טווח.
-                </div>
+        <div id="tab-4" class="tab-content">
+            <h2>שלב 4: אסטרטגיות מסחר והשקעה 📈</h2>
+            <div class="card">
+                <h3 class="text-cyan" style="margin-bottom:8px;">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core) 🏆</h3>
+                <p style="font-size: 0.9rem;">פיזור מושכל בין סקטורים שונים להשקעה ארוכת טווח ויציבה.</p>
             </div>
         </div>
 
         <!-- שלב 5: התיק האישי -->
-        <div id="tab-5" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
-            
-            <div class="p-4 bg-gray-900 rounded-xl border border-gray-700 space-y-4">
-                <h3 class="text-lg font-semibold text-white mb-3">הוספה או עדכון מניה</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div id="tab-5" class="tab-content">
+            <h2>שלב 5: תיק ההשקעות האישי המלא 💼</h2>
+            <div class="card">
+                <h3 style="margin-bottom: 12px; font-size:1.1rem;">הוספה או עדכון מניה</h3>
+                <div class="grid-4" style="margin-bottom: 12px;">
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
-                        <input type="text" id="stock-name" placeholder="שם חברה" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">שם חברה</label>
+                        <input type="text" id="stock-name" placeholder="למשל: NVIDIA" style="width:100%;">
                     </div>
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">טיקר</label>
-                        <input type="text" id="stock-symbol" placeholder="AMD" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">טיקר</label>
+                        <input type="text" id="stock-symbol" placeholder="NVDA" style="width:100%; text-transform:uppercase;" dir="ltr">
                     </div>
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
-                        <input type="number" id="stock-shares" placeholder="20" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">כמות מניות</label>
+                        <input type="number" id="stock-shares" placeholder="3" style="width:100%;" dir="ltr">
                     </div>
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($)</label>
-                        <input type="number" step="0.01" id="stock-buy" placeholder="211.34" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <label style="display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">מחיר קנייה ($)</label>
+                        <input type="number" step="0.01" id="stock-buy" placeholder="184.9" style="width:100%;" dir="ltr">
                     </div>
                 </div>
-                <div class="flex items-center gap-4 mt-4">
-                    <button onclick="addOrUpdateStock()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition">שמור/עדכן מניה</button>
-                    <span id="status-msg" class="text-sm text-yellow-400"></span>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button onclick="addOrUpdateStock()" class="btn-primary" style="padding: 10px 20px;">שמור/עדכן מניה</button>
+                    <span id="status-msg" style="font-size: 0.85rem; color: #facc15;"></span>
                 </div>
             </div>
 
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
-                <div class="flex justify-between items-center border-b border-gray-700 pb-3">
-                    <h3 class="text-base font-bold text-cyan-400">מניות התיק במערכת</h3>
-                    <div id="portfolio-counter" class="text-sm font-bold text-cyan-300">כמות חברות בתיק: 0</div> 
+            <div class="card">
+                <div class="flex-between" style="border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px;">
+                    <h3 class="text-cyan">מניות התיק במערכת</h3>
+                    <div id="portfolio-counter" style="font-weight: bold; color: #38bdf8; font-size: 0.95rem;">כמות חברות בתיק: 0</div> 
                 </div>
-                <div id="portfolio-list" class="space-y-3 text-sm"></div>
+                <div id="portfolio-list"></div>
             </div>
         </div>
         
         <!-- שלב 6: סנטימנט -->
-        <div id="tab-6" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים 🔮</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>💬 אופטימיות זהירה וניהול סיכונים סלקטיבי רוחבי בכלל הסקטורים.</p>
-            </div>
+        <div id="tab-6" class="tab-content">
+            <h2>שלב 6: סנטימנט בקהילות המסחר 🔮</h2>
+            <div class="card"><p>💬 אופטימיות זהירה וניהול סיכונים סלקטיבי בכלל הסקטורים.</p></div>
         </div>
 
         <!-- שלב 7: סיכון -->
-        <div id="tab-7" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🛡️ הקפד על פיזור נכון בין סקטורים שונים.</p>
-            </div>
+        <div id="tab-7" class="tab-content">
+            <h2>שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
+            <div class="card"><p>🛡️ הקפד על פיזור נכון בין סקטורים שונים.</p></div>
         </div>
 
         <!-- שלב 8: חדשות -->
-        <div id="tab-8" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 8: חדשות ועדכוני שוק 📰</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300">
-                <p>מעקב אחר חדשות רוחביות בכלל הסקטורים הפיננסיים והטכנולוגיים.</p>
-            </div>
+        <div id="tab-8" class="tab-content">
+            <h2>שלב 8: חדשות ועדכוני שוק 📰</h2>
+            <div class="card"><p>מעקב אחר חדשות רוחביות בכלל הסקטורים הפיננסיים והטכנולוגיים.</p></div>
         </div>
 
     </main>
 
-    <!-- JavaScript נקי ובטוח -->
+    <!-- JavaScript נקי, מהיר ובטוח לחלוטין -->
     <script>
-        function switchTab(tabNumber) {
-            document.querySelectorAll('.tab-content').forEach(el => {
-                el.classList.add('hidden');
-            });
-            const targetTab = document.getElementById('tab-' + tabNumber);
-            if (targetTab) {
-                targetTab.classList.remove('hidden');
+        // ניהול טאבים חלק
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('tab-btn')) {
+                const tabNum = e.target.getAttribute('data-tab');
+                
+                // הסרת active מכולם
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // הוספת active לנבחר
+                e.target.classList.add('active');
+                const target = document.getElementById('tab-' + tabNum);
+                if (target) target.classList.add('active');
             }
-            
-            document.querySelectorAll('.tab-btn').forEach((btn) => {
-                const btnTabNum = parseInt(btn.getAttribute('data-tab'));
-                if (btnTabNum === tabNumber) {
-                    btn.className = "tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-cyan-400 bg-gray-700 shadow focus:outline-none transition";
-                } else {
-                    btn.className = "tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition";
-                }
-            });
-        }
+        });
 
-        // נתוני ברירת מחדל מלאים (19 החברות מהתיק שלך)
+        // נתוני ברירת מחדל לתיק
         const initialPortfolio = {
             "NVDA": { name: "NVIDIA", shares: 3, buyPrice: 184.9, currentPrice: 206.64, gainLossPct: 0.11757, totalValue: 619.92 },
             "AMD": { name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, currentPrice: 484.64, gainLossPct: 1.29317, totalValue: 9692.8 },
@@ -230,7 +219,7 @@
             "SNDK": { name: "SanDisk", shares: 4, buyPrice: 630.26, currentPrice: 1288.03, gainLossPct: 1.04364, totalValue: 5152.12 },
             "WDC": { name: "Western Digital", shares: 6, buyPrice: 223.23, currentPrice: 527.22, gainLossPct: 1.36177, totalValue: 3163.32 },
             "INTC": { name: "Intel", shares: 20, buyPrice: 43.05, currentPrice: 91, gainLossPct: 1.11382, totalValue: 1820 },
-            "SIMO": { name: "Silicon Motion", shares: 30, "buyPrice": 131.32, currentPrice: 251.52, gainLossPct: 0.91532, totalValue: 7545.6 },
+            "SIMO": { name: "Silicon Motion", shares: 30, buyPrice: 131.32, currentPrice: 251.52, gainLossPct: 0.91532, totalValue: 7545.6 },
             "IREN": { name: "Iris Energy", shares: 54, buyPrice: 52.75, currentPrice: 39.75, gainLossPct: -0.24644, totalValue: 2146.5 },
             "CIFR": { name: "Cipher Mining", shares: 28, buyPrice: 17.5, currentPrice: 24.16, gainLossPct: 0.38057, totalValue: 676.48 },
             "META": { name: "Meta Platforms", shares: 2, buyPrice: 661, currentPrice: 590.24, gainLossPct: -0.10704, totalValue: 1180.48 },
@@ -241,15 +230,15 @@
             "NFLX": { name: "Netflix", shares: 14, buyPrice: 94.03, currentPrice: 73.33, gainLossPct: -0.22014, totalValue: 1026.62 },
             "MA": { name: "Mastercard", shares: 4, buyPrice: 503.99, currentPrice: 570.97, gainLossPct: 0.13289, totalValue: 2283.88 },
             "IBIT": { name: "iShares Bitcoin Trust", shares: 14, buyPrice: 60.48, currentPrice: 36.16, gainLossPct: -0.40211, totalValue: 506.24 },
-            "GTEC": { name: "Greenland Technologies", shares: 260, buyPrice: 1.27, currentPrice: 0.53, "gainLossPct": -0.58267, totalValue: 137.8 },
+            "GTEC": { name: "Greenland Technologies", shares: 260, buyPrice: 1.27, currentPrice: 0.53, gainLossPct: -0.58267, totalValue: 137.8 },
             "TQQQ": { name: "ProShares UltraPro QQQ", shares: 28, buyPrice: 56.53, currentPrice: 67.96, gainLossPct: 0.20219, totalValue: 1902.88 }
         };
 
         function getPortfolio() {
             try {
-                const saved = localStorage.getItem('my_stock_portfolio');
+                const saved = localStorage.getItem('my_stock_portfolio_v2');
                 if (!saved) {
-                    localStorage.setItem('my_stock_portfolio', JSON.stringify(initialPortfolio));
+                    localStorage.setItem('my_stock_portfolio_v2', JSON.stringify(initialPortfolio));
                     return initialPortfolio;
                 }
                 return JSON.parse(saved);
@@ -259,7 +248,7 @@
         }
 
         function savePortfolio(data) {
-            localStorage.setItem('my_stock_portfolio', JSON.stringify(data));
+            localStorage.setItem('my_stock_portfolio_v2', JSON.stringify(data));
         }
 
         function loadPortfolioList() {
@@ -275,30 +264,30 @@
             if (!listEl) return;
 
             if (entries.length === 0) {
-                listEl.innerHTML = '<p class="text-gray-400 text-sm">אין מניות בתיק כרגע.</p>';
+                listEl.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem;">אין מניות בתיק כרגע.</p>';
                 return;
             }
 
             listEl.innerHTML = entries.map(([ticker, s]) => {
                 const gainLossPct = s.gainLossPct ? (s.gainLossPct * 100).toFixed(2) : 0;
                 const isPositive = gainLossPct >= 0;
-                const colorClass = isPositive ? 'text-green-400' : 'text-red-400';
+                const colorClass = isPositive ? 'text-green' : 'text-red';
 
                 return `
-                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 relative">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-cyan-400 font-semibold text-base">
-                                ${s.name || ticker} (סמל: <strong class="text-white">${ticker}</strong>)
+                    <div class="stock-item">
+                        <div class="flex-between">
+                            <h4 style="color: #22d3ee; font-size: 1rem;">
+                                ${s.name || ticker} (<span style="color:#fff;">${ticker}</span>)
                             </h4>
-                            <button onclick="deleteStock('${ticker}')" class="text-red-400 hover:text-red-300 text-xs bg-red-900/40 px-2.5 py-1 rounded border border-red-800 transition">מחיקה</button>
+                            <button onclick="deleteStock('${ticker}')" class="btn-danger">מחיקה</button>
                         </div>
-                        <p class="space-y-1">
-                            מספר מניות: <strong>${s.shares || 0}</strong><br>
-                            מחיר קנייה: <strong>$${s.buyPrice || 0}</strong><br>
-                            מחיר נוכחי: <strong>$${s.currentPrice || s.buyPrice || 0}</strong><br>
-                            רווח/הפסד: <strong class="${colorClass}">${gainLossPct}%</strong><br>
-                            שווי כולל: <strong>$${s.totalValue || 0}</strong>
-                        </p>
+                        <div style="font-size: 0.85rem; color: #cbd5e1; display:flex; gap: 16px; flex-wrap:wrap;">
+                            <span>מספר מניות: <strong>${s.shares || 0}</strong></span>
+                            <span>מחיר קנייה: <strong>$${s.buyPrice || 0}</strong></span>
+                            <span>מחיר נוכחי: <strong>$${s.currentPrice || s.buyPrice || 0}</strong></span>
+                            <span>רווח/הפסד: <strong class="${colorClass}">${gainLossPct}%</strong></span>
+                            <span>שווי כולל: <strong>$${s.totalValue || 0}</strong></span>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -319,7 +308,7 @@
             if (!symbol || isNaN(shares) || isNaN(buyPrice)) {
                 if (msgEl) {
                     msgEl.innerText = 'נא למלא את כל השדות בצורה תקינה!';
-                    msgEl.className = 'text-sm text-red-400';
+                    msgEl.style.color = '#f87171';
                 }
                 return;
             }
@@ -347,7 +336,7 @@
 
             if (msgEl) {
                 msgEl.innerText = 'נשמר בהצלחה!';
-                msgEl.className = 'text-sm text-green-400';
+                msgEl.style.color = '#4ade80';
                 setTimeout(() => { msgEl.innerText = ''; }, 2500);
             }
         }
@@ -360,15 +349,8 @@
             loadPortfolioList();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabNum = parseInt(btn.getAttribute('data-tab'));
-                    switchTab(tabNum);
-                });
-            });
-
-            // טעינה מיידית ובטוחה של הנתונים
+        // אתחול מיידי עם טעינת הדף
+        window.addEventListener('DOMContentLoaded', () => {
             loadPortfolioList();
 
             // יצירת הגרף (11 סקטורים)
@@ -387,7 +369,7 @@
                                 label: 'ביצועי סקטורים (%)',
                                 data: [2.4, 1.1, -0.3, 1.5, -0.5, 0.8, 0.4, 0.2, 1.9, -0.1, 0.6],
                                 backgroundColor: [
-                                    '#06b6d4', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                                    '#22d3ee', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
                                     '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#84cc16', '#eab308'
                                 ],
                                 borderRadius: 6
@@ -400,12 +382,12 @@
                             },
                             scales: {
                                 y: {
-                                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                                    ticks: { color: '#9ca3af' }
+                                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                    ticks: { color: '#94a3b8' }
                                 },
                                 x: {
                                     grid: { display: false },
-                                    ticks: { color: '#9ca3af', font: { size: 11 } }
+                                    ticks: { color: '#94a3b8', font: { size: 11 } }
                                 }
                             }
                         }
