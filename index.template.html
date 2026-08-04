@@ -194,7 +194,11 @@
                 <!-- טופס הוספת/עריכת מניה -->
                 <div class="mb-8 p-4 bg-gray-900 rounded-xl border border-gray-700">
                     <h3 class="text-lg font-semibold text-white mb-3">הוספה או עדכון מניה</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
+                            <input type="text" id="stock-name" placeholder="למשל: NVIDIA" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        </div>
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">טיקר (למשל: BE, AAPL)</label>
                             <input type="text" id="stock-symbol" placeholder="BE" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
@@ -216,51 +220,10 @@
                 <div>
                     <h3 class="text-lg font-semibold text-white mb-3">המניות הנוכחיות בתיק (לחץ מחיקה להסרה)</h3>
                     <div id="portfolio-counter" class="text-sm font-bold text-cyan-300 mb-2">כמות חברות בתיק: 0</div>
-                    <div id="portfolio-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
+                    <div id="portfolio-list" class="space-y-2 max-h-96 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
                         טוען מניות...
                     </div>
                 </div>
-            </div>
-
-            <!-- רשימת המניות המקורית מהשרת -->
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
-                <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>)<br>מספר מניות: {{NVDA_PORT_SHARES}} מניות<br>קנייה: <strong>$184.90</strong><br>מחיר נוכחי: <strong>{{NVDA_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{NVDA_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{NVDA_PORT_TARGET}}</strong><br><strong>{{NVDA_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{NVDA_PORT_NOTE}}</span></p>
-
-                <p>💻 <strong>Advanced Micro Devices</strong> (סמל: <strong>AMD</strong>)<br>מספר מניות: {{AMD_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$211.34</strong><br>מחיר נוכחי: <strong>{{AMD_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{AMD_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{AMD_PORT_TARGET}}</strong><br><strong>{{AMD_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{AMD_PORT_NOTE}}</span></p>
-
-                <p>🧠 <strong>Micron Technology</strong> (סמל: <strong>MU</strong>)<br>מספר מניות: {{MU_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$316.32</strong><br>מחיר נוכחי: <strong>{{MU_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{MU_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{MU_PORT_TARGET}}</strong><br><strong>{{MU_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{MU_PORT_NOTE}}</span></p>
-
-                <p>💾 <strong>SanDisk</strong> (סמל: <strong>SNDK</strong>)<br>מספר מניות: {{SNDK_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$630.26</strong><br>מחיר נוכחי: <strong>{{SNDK_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{SNDK_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{SNDK_PORT_TARGET}}</strong><br><strong>{{SNDK_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{SNDK_PORT_NOTE}}</span></p>
-
-                <p>💽 <strong>Western Digital</strong> (סמל: <strong>WDC</strong>)<br>מספר מניות: {{WDC_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$223.23</strong><br>מחיר נוכחי: <strong>{{WDC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{WDC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{WDC_PORT_TARGET}}</strong><br><strong>{{WDC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{WDC_PORT_NOTE}}</span></p>
-
-                <p>⚡ <strong>Intel</strong> (סמל: <strong>INTC</strong>)<br>מספר מניות: {{INTC_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$43.05</strong><br>מחיר נוכחי: <strong>{{INTC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{INTC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{INTC_PORT_TARGET}}</strong><br><strong>{{INTC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{INTC_PORT_NOTE}}</span></p>
-
-                <p>🔌 <strong>Silicon Motion</strong> (סמל: <strong>SIMO</strong>)<br>מספר מניות: {{SIMO_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$131.32</strong><br>מחיר נוכחי: <strong>{{SIMO_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{SIMO_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{SIMO_PORT_TARGET}}</strong><br><strong>{{SIMO_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{SIMO_PORT_NOTE}}</span></p>
-
-                <p>🌿 <strong>Iris Energy</strong> (סמל: <strong>IREN</strong>)<br>מספר מניות: {{IREN_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$52.75</strong><br>מחיר נוכחי: <strong>{{IREN_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{IREN_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{IREN_PORT_TARGET}}</strong><br><strong>{{IREN_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{IREN_PORT_NOTE}}</span></p>
-
-                <p>⛏️ <strong>Cipher Mining</strong> (סמל: <strong>CIFR</strong>)<br>מספר מניות: {{CIFR_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$17.50</strong><br>מחיר נוכחי: <strong>{{CIFR_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{CIFR_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{CIFR_PORT_TARGET}}</strong><br><strong>{{CIFR_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{CIFR_PORT_NOTE}}</span></p>
-
-                <p>👥 <strong>Meta Platforms</strong> (סמל: <strong>META</strong>)<br>מספר מניות: {{META_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$661.00</strong><br>מחיר נוכחי: <strong>{{META_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{META_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{META_PORT_TARGET}}</strong><br><strong>{{META_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{META_PORT_NOTE}}</span></p>
-
-                <p>📦 <strong>Amazon</strong> (סמל: <strong>AMZN</strong>)<br>מספר מניות: {{AMZN_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$229.29</strong><br>מחיר נוכחי: <strong>{{AMZN_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{AMZN_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{AMZN_PORT_TARGET}}</strong><br><strong>{{AMZN_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{AMZN_PORT_NOTE}}</span></p>
-
-                <p>🌐 <strong>Alphabet / Google</strong> (סמל: <strong>GOOG</strong>)<br>מספר מניות: {{GOOG_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$317.95</strong><br>מחיר נוכחי: <strong>{{GOOG_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{GOOG_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{GOOG_PORT_TARGET}}</strong><br><strong>{{GOOG_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{GOOG_PORT_NOTE}}</span></p>
-
-                <p>🎮 <strong>Take-Two Interactive</strong> (סמל: <strong>TTWO</strong>)<br>מספר מניות: {{TTWO_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$235.50</strong><br>מחיר נוכחי: <strong>{{TTWO_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{TTWO_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{TTWO_PORT_TARGET}}</strong><br><strong>{{TTWO_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{TTWO_PORT_NOTE}}</span></p>
-
-                <p>🛒 <strong>Walmart</strong> (סמל: <strong>WMT</strong>)<br>מספר מניות: {{WMT_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$119.45</strong><br>מחיר נוכחי: <strong>{{WMT_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{WMT_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{WMT_PORT_TARGET}}</strong><br><strong>{{WMT_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{WMT_PORT_NOTE}}</span></p>
-
-                <p>🎬 <strong>Netflix</strong> (סמל: <strong>NFLX</strong>)<br>מספר מניות: {{NFLX_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$94.03</strong><br>מחיר נוכחי: <strong>{{NFLX_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{NFLX_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{NFLX_PORT_TARGET}}</strong><br><strong>{{NFLX_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{NFLX_PORT_NOTE}}</span></p>
-
-                <p>💳 <strong>Mastercard</strong> (סמל: <strong>MA</strong>)<br>מספר מניות: {{MA_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$503.99</strong><br>מחיר נוכחי: <strong>{{MA_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{MA_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{MA_PORT_TARGET}}</strong><br><strong>{{MA_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{MA_PORT_NOTE}}</span></p>
-
-                <p>🪙 <strong>iShares Bitcoin Trust</strong> (סמל: <strong>IBIT</strong>)<br>מספר מניות: {{IBIT_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$60.48</strong><br>מחיר נוכחי: <strong>{{IBIT_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{IBIT_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{IBIT_PORT_TARGET}}</strong><br><strong>{{IBIT_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{IBIT_PORT_NOTE}}</span></p>
-
-                <p>🔋 <strong>Greenland Technologies</strong> (סמל: <strong>GTEC</strong>)<br>מספר מניות: {{GTEC_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$1.27</strong><br>מחיר נוכחי: <strong>{{GTEC_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{GTEC_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{GTEC_PORT_TARGET}}</strong><br><strong>{{GTEC_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{GTEC_PORT_NOTE}}</span></p>
-
-                <p>📈 <strong>ProShares UltraPro QQQ</strong> (סמל: <strong>TQQQ</strong>)<br>מספר מניות: {{TQQQ_PORT_SHARES}} מניות<br>מחיר קנייה: <strong>$56.53</strong><br>מחיר נוכחי: <strong>{{TQQQ_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{TQQQ_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{TQQQ_PORT_TARGET}}</strong><br><strong>{{TQQQ_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{TQQQ_PORT_NOTE}}</span></p>
             </div>
         </div>
         
@@ -427,9 +390,10 @@
                 if (counterEl) counterEl.innerText = `כמות חברות בתיק: ${keys.length}`;
 
                 for (const [symbol, info] of Object.entries(content)) {
+                    const compName = info.name ? `${info.name} ` : '';
                     listEl.innerHTML += `
-                        <div class="flex justify-between items-center bg-gray-800 p-2 rounded-lg border border-gray-700">
-                            <span class="text-white"><strong>${symbol}</strong> | כמות: ${info.shares} | מחיר קנייה: $${info.buy}</span>
+                        <div class="flex justify-between items-center bg-gray-800 p-3 rounded-lg border border-gray-700">
+                            <span class="text-white"><strong>${compName}</strong>(סמל: <strong>${symbol}</strong>) | כמות מניות: ${info.shares} | מחיר קנייה: <strong>$${info.buy}</strong></span>
                             <button onclick="deleteStock('${symbol}')" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-xs transition">מחק</button>
                         </div>
                     `;
@@ -441,13 +405,14 @@
         }
 
         async function addOrUpdateStock() {
+            const name = document.getElementById("stock-name").value.trim();
             const symbol = document.getElementById("stock-symbol").value.trim().toUpperCase();
             const shares = parseFloat(document.getElementById("stock-shares").value);
             const buy = parseFloat(document.getElementById("stock-buy").value);
             const msgEl = document.getElementById("status-msg");
 
             if (!symbol || isNaN(shares) || isNaN(buy)) {
-                alert("נא למלא את כל השדות כראוי.");
+                alert("נא למלא את כל השדות כראוי (טיקר, כמות ומחיר).");
                 return;
             }
 
@@ -456,7 +421,7 @@
                 const token = localStorage.getItem("gh_portfolio_token");
                 const { content, sha } = await getPortfolioData();
 
-                content[symbol] = { shares: shares, buy: buy };
+                content[symbol] = { name: name, shares: shares, buy: buy };
 
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`, {
                     method: "PUT",
@@ -474,6 +439,7 @@
                 if (!res.ok) throw new Error("שגיאה בעדכון הקובץ ב-GitHub.");
 
                 msgEl.innerText = "עודכן בהצלחה! האתר יתעדכן אוטומטית בדקות הקרובות.";
+                document.getElementById("stock-name").value = "";
                 document.getElementById("stock-symbol").value = "";
                 document.getElementById("stock-shares").value = "";
                 document.getElementById("stock-buy").value = "";
