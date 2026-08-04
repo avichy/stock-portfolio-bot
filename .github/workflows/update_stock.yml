@@ -50,8 +50,13 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html portfolio.json || true
-          git diff --staging --quiet || git commit -m "Auto-update generated HTML and portfolio data"
-          git push
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-update generated HTML and portfolio data"
+            git push
+          fi
 
       - name: Upload page artifact
         uses: actions/upload-pages-artifact@v3
