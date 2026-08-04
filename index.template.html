@@ -194,9 +194,15 @@
                             <input type="number" id="stock-shares" placeholder="2" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ממוצע ($)</label>
+                            <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($)</label>
                             <input type="number" step="0.01" id="stock-buy" placeholder="221.85" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                         </div>
+                        <div>
+                    <h3 class="text-lg font-semibold text-white mb-3">המניות הנוכחיות בתיק (לחץ מחיקה להסרה)</h3>
+                    <div id="portfolio-counter" class="text-sm font-bold text-cyan-300 mb-2">כמות חברות בתיק: 0</div>
+                    <div id="portfolio-list" class="space-y-2 max-h-96 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
+                        טוען מניות...
+                    </div>
                     </div>
                     <button onclick="addOrUpdateStock()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition">שמור מניה ועדכן אתר</button>
                     <span id="status-msg" class="mr-4 text-sm text-yellow-400"></span>
