@@ -177,6 +177,51 @@
         <!-- שלב 5: התיק האישי -->
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא – פירוט פוזיציות, נתונים והרציונל המלא 💼</h2>
+            
+            <!-- אזור ניהול תיק השקעות מהיר (GitHub API Form) -->
+            <div class="p-6 bg-gray-800 border border-gray-700 rounded-2xl shadow-xl text-right" dir="rtl">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">🛠️ ניהול תיק השקעות מהיר</h2>
+                
+                <!-- הגדרת טוקן -->
+                <div id="token-section" class="mb-6 p-4 bg-gray-900 rounded-xl border border-gray-700">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">מפתח גישה ל-GitHub (GitHub Token - נשמר רק אצלך בדפדפן):</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" dir="ltr" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm" />
+                        <button onclick="saveToken()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">שמור טוקן</button>
+                    </div>
+                </div>
+
+                <!-- טופס הוספת/עריכת מניה -->
+                <div class="mb-8 p-4 bg-gray-900 rounded-xl border border-gray-700">
+                    <h3 class="text-lg font-semibold text-white mb-3">הוספה או עדכון מניה</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">טיקר (למשל: BE, AAPL)</label>
+                            <input type="text" id="stock-symbol" placeholder="BE" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
+                            <input type="number" id="stock-shares" placeholder="2" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ממוצע ($)</label>
+                            <input type="number" step="0.01" id="stock-buy" placeholder="221.85" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        </div>
+                    </div>
+                    <button onclick="addOrUpdateStock()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition">שמור מניה ועדכן אתר</button>
+                    <span id="status-msg" class="mr-4 text-sm text-yellow-400"></span>
+                </div>
+
+                <!-- רשימת המניות הקיימות בתיק -->
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-3">המניות הנוכחיות בתיק (לחץ מחיקה להסרה)</h3>
+                    <div id="portfolio-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
+                        טוען מניות...
+                    </div>
+                </div>
+            </div>
+
+            <!-- רשימת המניות המקורית מהשרת -->
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
                 <p>🚀 <strong>NVIDIA</strong> (סמל: <strong>NVDA</strong>)<br>מספר מניות: {{NVDA_PORT_SHARES}} מניות<br>קנייה: <strong>$184.90</strong><br>מחיר נוכחי: <strong>{{NVDA_PORT_CURRENT}}</strong><br>מחיר טרום פתיחה: <strong>{{NVDA_PORT_PRE}}</strong><br>מחיר יעד אנליסטים ממוצע: <strong>{{NVDA_PORT_TARGET}}</strong><br><strong>{{NVDA_PORT_STATUS}}</strong><br><span class="text-gray-400">חדשות ורציונל: {{NVDA_PORT_NOTE}}</span></p>
 
@@ -265,49 +310,6 @@
             </div>
         </div>
 
-    <!-- אזור ניהול תיק השקעות מהיר (GitHub API Form) -->
-    <div class="max-w-4xl mx-auto my-12 p-6 bg-gray-800 border border-gray-700 rounded-2xl shadow-xl text-right" dir="rtl">
-        <h2 class="text-2xl font-bold text-cyan-400 mb-4">🛠️ ניהול תיק השקעות מהיר</h2>
-        
-        <!-- הגדרת טוקן -->
-        <div id="token-section" class="mb-6 p-4 bg-gray-900 rounded-xl border border-gray-700">
-            <label class="block text-sm font-medium text-gray-300 mb-2">מפתח גישה ל-GitHub (GitHub Token - נשמר רק אצלך בדפדפן):</label>
-            <div class="flex gap-2">
-                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm" />
-                <button onclick="saveToken()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">שמור טוקן</button>
-            </div>
-        </div>
-
-        <!-- טופס הוספת/עריכת מניה -->
-        <div class="mb-8 p-4 bg-gray-900 rounded-xl border border-gray-700">
-            <h3 class="text-lg font-semibold text-white mb-3">הוספה או עדכון מניה</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">טיקר (למשל: BE, AAPL)</label>
-                    <input type="text" id="stock-symbol" placeholder="BE" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase" />
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
-                    <input type="number" id="stock-shares" placeholder="2" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm" />
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ממוצע ($)</label>
-                    <input type="number" step="0.01" id="stock-buy" placeholder="221.85" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm" />
-                </div>
-            </div>
-            <button onclick="addOrUpdateStock()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition">שמור מניה ועדכן אתר</button>
-            <span id="status-msg" class="mr-4 text-sm text-yellow-400"></span>
-        </div>
-
-        <!-- רשימת המניות הקיימות בתיק -->
-        <div>
-            <h3 class="text-lg font-semibold text-white mb-3">המניות הנוכחיות בתיק (לחץ מחיקה להסרה)</h3>
-            <div id="portfolio-list" class="space-y-2 max-h-60 overflow-y-auto p-2 bg-gray-900 rounded-xl border border-gray-700 text-sm">
-                טוען מניות...
-            </div>
-        </div>
-    </div>
-
     </main>
 
     <!-- JavaScript for Tab Switching and Safe Chart.js Initialization -->
@@ -379,15 +381,14 @@
                 console.error('Chart initialization error:', e);
             }
 
-        // טעינת הטוקן וניהול התיק בדפדפן
-        const savedToken = localStorage.getItem("gh_portfolio_token");
-        if (savedToken) {
-            document.getElementById("gh-token").value = savedToken;
-            loadPortfolioJson();
-        } else {
-            const listEl = document.getElementById("portfolio-list");
-            if(listEl) listEl.innerHTML = "נא להזין מפתח גישה למעלה כדי לטעון את התיק.";
-        }
+            const savedToken = localStorage.getItem("gh_portfolio_token");
+            if (savedToken) {
+                document.getElementById("gh-token").value = savedToken;
+                loadPortfolioJson();
+            } else {
+                const listEl = document.getElementById("portfolio-list");
+                if(listEl) listEl.innerHTML = "נא להזין מפתח גישה למעלה כדי לטעון את התיק.";
+            }
         });
 
         function saveToken() {
