@@ -145,19 +145,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
-                        <input type="text" id="stock-name" placeholder="לדוגמה: Bloom Energy" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="text" id="stock-name" placeholder="שם חברה" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">טיקר</label>
-                        <input type="text" id="stock-symbol" placeholder="BE" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
+                        <input type="text" id="stock-symbol" placeholder="AMD" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm uppercase text-right" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">כמות מניות</label>
-                        <input type="number" id="stock-shares" placeholder="10" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="number" id="stock-shares" placeholder="20" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">מחיר קנייה ($)</label>
-                        <input type="number" step="0.01" id="stock-buy" placeholder="20.50" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
+                        <input type="number" step="0.01" id="stock-buy" placeholder="211.34" dir="ltr" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm text-right" />
                     </div>
                 </div>
                 <div class="flex items-center gap-4 mt-4">
@@ -201,9 +201,8 @@
 
     </main>
 
-    <!-- JavaScript מתקדם עם LocalStorage לעדכון מיידי -->
+    <!-- JavaScript נקי ובטוח -->
     <script>
-        // ניהול טאבים
         function switchTab(tabNumber) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden');
@@ -223,32 +222,48 @@
             });
         }
 
-        // נתוני ברירת מחדל אם התיק ריק
-        const defaultPortfolio = {
-            "BE": { name: "Bloom Energy", shares: 10, buyPrice: 20.5, currentPrice: 24.0, gainLossPct: 0.17, totalValue: 240.0 },
-            "AMD": { name: "Advanced Micro Devices", shares: 5, buyPrice: 130.0, currentPrice: 145.0, gainLossPct: 0.115, totalValue: 725.0 }
+        // נתוני ברירת מחדל מלאים (19 החברות מהתיק שלך)
+        const initialPortfolio = {
+            "NVDA": { name: "NVIDIA", shares: 3, buyPrice: 184.9, currentPrice: 206.64, gainLossPct: 0.11757, totalValue: 619.92 },
+            "AMD": { name: "Advanced Micro Devices", shares: 20, buyPrice: 211.34, currentPrice: 484.64, gainLossPct: 1.29317, totalValue: 9692.8 },
+            "MU": { name: "Micron Technology", shares: 6, buyPrice: 316.32, currentPrice: 829.5, gainLossPct: 1.62234, totalValue: 4977 },
+            "SNDK": { name: "SanDisk", shares: 4, buyPrice: 630.26, currentPrice: 1288.03, gainLossPct: 1.04364, totalValue: 5152.12 },
+            "WDC": { name: "Western Digital", shares: 6, buyPrice: 223.23, currentPrice: 527.22, gainLossPct: 1.36177, totalValue: 3163.32 },
+            "INTC": { name: "Intel", shares: 20, buyPrice: 43.05, currentPrice: 91, gainLossPct: 1.11382, totalValue: 1820 },
+            "SIMO": { name: "Silicon Motion", shares: 30, "buyPrice": 131.32, currentPrice: 251.52, gainLossPct: 0.91532, totalValue: 7545.6 },
+            "IREN": { name: "Iris Energy", shares: 54, buyPrice: 52.75, currentPrice: 39.75, gainLossPct: -0.24644, totalValue: 2146.5 },
+            "CIFR": { name: "Cipher Mining", shares: 28, buyPrice: 17.5, currentPrice: 24.16, gainLossPct: 0.38057, totalValue: 676.48 },
+            "META": { name: "Meta Platforms", shares: 2, buyPrice: 661, currentPrice: 590.24, gainLossPct: -0.10704, totalValue: 1180.48 },
+            "AMZN": { name: "Amazon", shares: 6, buyPrice: 229.29, currentPrice: 284.02, gainLossPct: 0.23869, totalValue: 1704.12 },
+            "GOOG": { name: "Alphabet / Google", shares: 4, buyPrice: 317.95, currentPrice: 372.47, gainLossPct: 0.17147, totalValue: 1489.88 },
+            "TTWO": { name: "Take-Two Interactive", shares: 5, buyPrice: 235.5, currentPrice: 245.15, gainLossPct: 0.04097, totalValue: 1225.75 },
+            "WMT": { name: "Walmart", shares: 16, buyPrice: 119.45, currentPrice: 110.71, gainLossPct: -0.07316, totalValue: 1771.36 },
+            "NFLX": { name: "Netflix", shares: 14, buyPrice: 94.03, currentPrice: 73.33, gainLossPct: -0.22014, totalValue: 1026.62 },
+            "MA": { name: "Mastercard", shares: 4, buyPrice: 503.99, currentPrice: 570.97, gainLossPct: 0.13289, totalValue: 2283.88 },
+            "IBIT": { name: "iShares Bitcoin Trust", shares: 14, buyPrice: 60.48, currentPrice: 36.16, gainLossPct: -0.40211, totalValue: 506.24 },
+            "GTEC": { name: "Greenland Technologies", shares: 260, buyPrice: 1.27, currentPrice: 0.53, "gainLossPct": -0.58267, totalValue: 137.8 },
+            "TQQQ": { name: "ProShares UltraPro QQQ", shares: 28, buyPrice: 56.53, currentPrice: 67.96, gainLossPct: 0.20219, totalValue: 1902.88 }
         };
 
-        function getPortfolioData() {
-            const data = localStorage.getItem('my_portfolio_data');
-            if (!data) {
-                localStorage.setItem('my_portfolio_data', JSON.stringify(defaultPortfolio));
-                return defaultPortfolio;
-            }
+        function getPortfolio() {
             try {
-                return JSON.parse(data);
+                const saved = localStorage.getItem('my_stock_portfolio');
+                if (!saved) {
+                    localStorage.setItem('my_stock_portfolio', JSON.stringify(initialPortfolio));
+                    return initialPortfolio;
+                }
+                return JSON.parse(saved);
             } catch (e) {
-                return defaultPortfolio;
+                return initialPortfolio;
             }
         }
 
-        function savePortfolioData(data) {
-            localStorage.setItem('my_portfolio_data', JSON.stringify(data));
+        function savePortfolio(data) {
+            localStorage.setItem('my_stock_portfolio', JSON.stringify(data));
         }
 
-        // טעינה והצגה של התיק
         function loadPortfolioList() {
-            const portfolio = getPortfolioData();
+            const portfolio = getPortfolio();
             const entries = Object.entries(portfolio);
             const counterEl = document.getElementById('portfolio-counter');
             const listEl = document.getElementById('portfolio-list');
@@ -256,6 +271,8 @@
             if (counterEl) {
                 counterEl.innerText = `כמות חברות בתיק: ${entries.length}`;
             }
+
+            if (!listEl) return;
 
             if (entries.length === 0) {
                 listEl.innerHTML = '<p class="text-gray-400 text-sm">אין מניות בתיק כרגע.</p>';
@@ -280,36 +297,35 @@
                             מחיר קנייה: <strong>$${s.buyPrice || 0}</strong><br>
                             מחיר נוכחי: <strong>$${s.currentPrice || s.buyPrice || 0}</strong><br>
                             רווח/הפסד: <strong class="${colorClass}">${gainLossPct}%</strong><br>
-                            שווי כולל: <strong>$${s.totalValue || (s.shares * (s.currentPrice || s.buyPrice || 0)).toFixed(2)}</strong>
+                            שווי כולל: <strong>$${s.totalValue || 0}</strong>
                         </p>
                     </div>
                 `;
             }).join('');
         }
 
-        // הוספה או עדכון מניה בפועל
         function addOrUpdateStock() {
-            const nameInput = document.getElementById('stock-name');
-            const symbolInput = document.getElementById('stock-symbol');
-            const sharesInput = document.getElementById('stock-shares');
-            const buyInput = document.getElementById('stock-buy');
-            const statusMsg = document.getElementById('status-msg');
+            const nameEl = document.getElementById('stock-name');
+            const symbolEl = document.getElementById('stock-symbol');
+            const sharesEl = document.getElementById('stock-shares');
+            const buyEl = document.getElementById('stock-buy');
+            const msgEl = document.getElementById('status-msg');
 
-            const symbol = symbolInput.value.trim().toUpperCase();
-            const name = nameInput.value.trim() || symbol;
-            const shares = parseFloat(sharesInput.value);
-            const buyPrice = parseFloat(buyInput.value);
+            const symbol = symbolEl.value.trim().toUpperCase();
+            const name = nameEl.value.trim() || symbol;
+            const shares = parseFloat(sharesEl.value);
+            const buyPrice = parseFloat(buyEl.value);
 
             if (!symbol || isNaN(shares) || isNaN(buyPrice)) {
-                statusMsg.innerText = 'נא למלא את כל השדות כראוי!';
-                statusMsg.className = 'text-sm text-red-400';
+                if (msgEl) {
+                    msgEl.innerText = 'נא למלא את כל השדות בצורה תקינה!';
+                    msgEl.className = 'text-sm text-red-400';
+                }
                 return;
             }
 
-            let portfolio = getPortfolioData();
-            
-            // חישוב ערכים
-            const currentPrice = buyPrice; // ברירת מחדל למחיר קנייה אם אין נתון בזמן אמת
+            let portfolio = getPortfolio();
+            const currentPrice = buyPrice;
             const totalValue = +(shares * currentPrice).toFixed(2);
 
             portfolio[symbol] = {
@@ -317,37 +333,33 @@
                 shares: shares,
                 buyPrice: buyPrice,
                 currentPrice: currentPrice,
-                gainLossPct: 0.0, // התחלה מ-0% רווח עד לעדכון מחיר שוק
+                gainLossPct: 0.0,
                 totalValue: totalValue
             };
 
-            savePortfolioData(portfolio);
+            savePortfolio(portfolio);
             loadPortfolioList();
 
-            // איפוס שדות והודעת הצלחה
-            nameInput.value = '';
-            symbolInput.value = '';
-            sharesInput.value = '';
-            buyInput.value = '';
-            statusMsg.innerText = 'המניה נשמרה בהצלחה!';
-            statusMsg.className = 'text-sm text-green-400';
+            nameEl.value = '';
+            symbolEl.value = '';
+            sharesEl.value = '';
+            buyEl.value = '';
 
-            setTimeout(() => {
-                statusMsg.innerText = '';
-            }, 3000);
+            if (msgEl) {
+                msgEl.innerText = 'נשמר בהצלחה!';
+                msgEl.className = 'text-sm text-green-400';
+                setTimeout(() => { msgEl.innerText = ''; }, 2500);
+            }
         }
 
-        // מחיקת מניה
-        function deleteStock(symbol) {
-            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
-            
-            let portfolio = getPortfolioData();
-            delete portfolio[symbol];
-            savePortfolioData(portfolio);
+        function deleteStock(ticker) {
+            if (!confirm(`האם למחוק את ${ticker}?`)) return;
+            let portfolio = getPortfolio();
+            delete portfolio[ticker];
+            savePortfolio(portfolio);
             loadPortfolioList();
         }
 
-        // אתחול בעליית הדף
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -356,7 +368,7 @@
                 });
             });
 
-            // טעינת רשימת התיק והמונה
+            // טעינה מיידית ובטוחה של הנתונים
             loadPortfolioList();
 
             // יצירת הגרף (11 סקטורים)
@@ -400,7 +412,7 @@
                     });
                 }
             } catch (e) {
-                console.error('Chart initialization error:', e);
+                console.error('Chart error:', e);
             }
         });
     </script>
