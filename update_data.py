@@ -203,7 +203,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" onerror="this.src='https://assets.parqet.com/logos/symbol/{ticker}'" alt="{ticker}">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'28\\' height=\\'28\\' viewBox=\\'0 0 28 28\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'10\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>{ticker}</text></svg>';" alt="{ticker}">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -378,7 +378,7 @@ if __name__ == "__main__":
             )
 
             logo_url = f"https://s3-symbol-logo.tradingview.com/{ticker.lower()}.svg"
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" onerror="this.src='https://assets.parqet.com/logos/symbol/{ticker}'" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>{ticker}</text></svg>';" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
 
             replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
@@ -402,7 +402,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Add company logo and ticker to step 5 portfolio items on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Remove parqet fallback and fix logo requests on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
