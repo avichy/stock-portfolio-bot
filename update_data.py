@@ -240,7 +240,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
 
         sign = "+" if change_val > 0 else ""
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
-        change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
+        change_str = f"<span style='color: {color}; font-weight: bold;'><bdi>{sign}{change_val:.2f}%</bdi></span>"
         
         logo_url = get_logo_url(ticker)
 
@@ -251,9 +251,9 @@ def build_structured_stocks_html(stocks_meta, market_data):
                 <span class="text-base font-bold text-white"><bdi>{name}</bdi> (<bdi>טיקר: {ticker}</bdi>):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
-                <div><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
-                <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
+                <div><strong>מחיר נוכחי:</strong> <bdi>${price}</bdi></div>
+                <div><strong>מחיר טרום פתיחה:</strong> <bdi>${pre_market}</bdi></div>
+                <div><strong>יעד אנליסטים ממוצע:</strong> <bdi>${target}</bdi></div>
                 <div><strong>רווח:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל:</strong> {news}</div>
@@ -295,25 +295,25 @@ if __name__ == "__main__":
 
         usd_ils_p = usd_ils_data.get("price", 3.65)
         usd_ils_c = usd_ils_data.get("change", 0)
-        usd_ils_price = f"{format_num(usd_ils_p)}₪"
+        usd_ils_price = f"<bdi>{format_num(usd_ils_p)}₪</bdi>"
         usd_ils_change = format_pct_colored(usd_ils_c)
 
         oil_data = base_market_data.get("CL=F", {})
         oil_p = oil_data.get("price", 75.0)
         oil_c = oil_data.get("change", 0)
-        oil_price = f"${format_num(oil_p)}"
+        oil_price = f"<bdi>${format_num(oil_p)}</bdi>"
         oil_change = format_pct_colored(oil_c)
 
         gold_data = base_market_data.get("GC=F", {})
         gold_p = gold_data.get("price", 2350.0)
         gold_c = gold_data.get("change", 0)
-        gold_price = f"${format_num(gold_p)}"
+        gold_price = f"<bdi>${format_num(gold_p)}</bdi>"
         gold_change = format_pct_colored(gold_c)
 
         btc_data = base_market_data.get("BTC-USD", {})
         btc_p = btc_data.get("price", 65000.0)
         btc_c = btc_data.get("change", 0)
-        btc_price = f"${format_num(btc_p)}"
+        btc_price = f"<bdi>${format_num(btc_p)}</bdi>"
         btc_change = format_pct_colored(btc_c)
 
         portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
@@ -378,7 +378,7 @@ if __name__ == "__main__":
             sign = "+" if s_change > 0 else ""
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
-            replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
+            replacements[f"SECTOR_{s_key}_PCT"] = f"(<bdi>{sign}{s_change:.2f}%</bdi>)"
             replacements[f"SECTOR_{s_key}_CLASS"] = f'style=\'color: {color};\''
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
@@ -424,15 +424,16 @@ if __name__ == "__main__":
 
             logo_url = get_logo_url(upper_ticker)
             
-            # שימוש ב־bdi בשלב 5 כדי למנוע היפוך סוגריים וטקסט אנגלי בעברית
+            # עטיפה מלאה של השם והטיקר עם bdi בשלב 5
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
+            # עטיפת כל הערכים הדינמיים בשלב 5 ב־bdi למניעת היפוך סוגריים, דולרים או אחוזים
             replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
-            replacements[f"{upper_ticker}_PORT_SHARES"] = format_num(shares_count, 0)
-            replacements[f"{upper_ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
-            replacements[f"{upper_ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
-            replacements[f"{upper_ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{upper_ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
+            replacements[f"{upper_ticker}_PORT_SHARES"] = f"<bdi>{format_num(shares_count, 0)}</bdi>"
+            replacements[f"{upper_ticker}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
+            replacements[f"{upper_ticker}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
+            replacements[f"{upper_ticker}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
+            replacements[f"{upper_ticker}_PORT_STATUS"] = f'רווח: <bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
             replacements[f"{upper_ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
@@ -453,7 +454,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Add clean logos and bdi layout to stage 4 and 5 on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add full bdi isolation and logos to stage 5 portfolio on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
