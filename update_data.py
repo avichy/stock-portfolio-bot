@@ -79,6 +79,7 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+# מילון דומיינים מדויק המותאם בדיוק לכל הטיקרים שבקובץ הנתונים שלך (בדיקה תעשה באותיות גדולות)
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "AMD": "amd.com",
@@ -89,50 +90,30 @@ DOMAIN_MAP = {
     "SIMO": "siliconmotion.com",
     "IREN": "iren.com",
     "CIFR": "ciphermining.com",
-    "MSFT": "microsoft.com",
-    "AAPL": "apple.com",
-    "GOOGL": "google.com",
-    "GOOG": "google.com",
-    "AMZN": "amazon.com",
     "META": "meta.com",
-    "AVGO": "broadcom.com",
-    "TSM": "tsmc.com",
-    "ASML": "asml.com",
-    "SMCI": "supermicro.com",
-    "PLTR": "palantir.com",
-    "COIN": "coinbase.com",
-    "ARM": "arm.com",
-    "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com",
-    "JPM": "jpmorganchase.com",
-    "JNJ": "jnj.com",
-    "XOM": "exxonmobil.com",
-    "WMT": "walmart.com",
-    "TSLA": "tesla.com",
-    "UNH": "unitedhealth.com",
-    "PG": "pg.com",
-    "CVX": "chevron.com",
-    "BRK-B": "berkshirehathaway.com",
-    "OXY": "oxy.com",
-    "NVO": "novonordisk.com",
-    "PYPL": "paypal.com",
-    "BA": "boeing.com",
-    "NEM": "newmont.com",
-    "TQQQ": "proshares.com",
-    "IBIT": "ishares.com",
+    "AMZN": "amazon.com",
+    "GOOG": "google.com",
+    "GOOGL": "google.com",
     "TTWO": "take2games.com",
+    "WMT": "walmart.com",
     "NFLX": "netflix.com",
     "MA": "mastercard.com",
+    "IBIT": "ishares.com",
     "GTEC": "gtec.com",
+    "TQQQ": "proshares.com",
+    "MSFT": "microsoft.com",
+    "AAPL": "apple.com",
+    "TSLA": "tesla.com",
     "BTC-USD": "bitcoin.org",
     "ETH-USD": "ethereum.org"
 }
 
 def get_stock_logo_url(ticker, website=None):
     domain = None
+    clean_ticker = str(ticker).strip().upper()
     try:
-        if ticker in DOMAIN_MAP:
-            domain = DOMAIN_MAP[ticker]
+        if clean_ticker in DOMAIN_MAP:
+            domain = DOMAIN_MAP[clean_ticker]
         elif website:
             parsed_url = urllib.parse.urlparse(website)
             netloc = parsed_url.netloc
@@ -142,7 +123,7 @@ def get_stock_logo_url(ticker, website=None):
         pass
     
     if not domain:
-        domain = f"{str(ticker).lower()}.com"
+        domain = f"{clean_ticker.lower()}.com"
         
     return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
@@ -283,7 +264,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=microsoft.com&sz=128';">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -329,9 +310,9 @@ if __name__ == "__main__":
         dxy_price = format_num(dxy_data.get("price", 0))
         dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
-        usd_ils_p = usd_ils_data.get("price", 3.65)
+        usd_ils_p = usd_ils_data.get("price", 3.00)
         if not usd_ils_p or usd_ils_p <= 0:
-            usd_ils_p = 3.65
+            usd_ils_p = 3.00
         usd_ils_c = usd_ils_data.get("change", 0)
         usd_ils_price = f"{format_num(usd_ils_p)}₪"
         usd_ils_change = format_pct_colored(usd_ils_c)
@@ -431,7 +412,7 @@ if __name__ == "__main__":
                 fetched_price_data = base_market_data.get(ticker, {})
                 curr_p = fetched_price_data.get("price")
                 if not curr_p or curr_p == 0.0:
-                    curr_p = buy_p
+                    curr_p = float(info.get("currentPrice") or buy_p)
                 
                 fetched_target = fetched_price_data.get("target", 0.0)
                 if not fetched_target or fetched_target == 0.0:
@@ -464,7 +445,7 @@ if __name__ == "__main__":
 
                 logo_url = get_stock_logo_url(ticker, website)
 
-                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';"> {company_name} (טיקר: {ticker})</span>"""
+                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=microsoft.com&sz=128';"> {company_name} (טיקר: {ticker})</span>"""
 
                 replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
                 replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
