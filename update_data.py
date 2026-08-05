@@ -42,16 +42,24 @@ def load_portfolio_buys():
             if response.status_code == 200:
                 file_data = response.json()
                 content = base64.b64decode(file_data["content"]).decode("utf-8")
-                return json.loads(content)
+                data = json.loads(content)
+                if data:
+                    print("Loaded portfolio from GitHub successfully.")
+                    return data
         except Exception as e:
             print(f"Error loading from GitHub API: {e}")
 
     if os.path.exists(PORTFOLIO_FILE):
         try:
             with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                if data:
+                    print("Loaded local portfolio.json successfully.")
+                    return data
         except Exception as e:
             print(f"Error loading local portfolio.json: {e}")
+            
+    print("Warning: portfolio.json is empty or not found.")
     return {}
 
 portfolio_buys = load_portfolio_buys()
@@ -414,8 +422,6 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
-            
-            # שימוש ב־bdi לבידוד כיווניות כך שהסוגריים והשמות יוצגו בצורה מושלמת בסביבת RTL
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
             replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
