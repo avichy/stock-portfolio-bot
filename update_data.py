@@ -5,6 +5,7 @@ import os
 import subprocess
 import time
 import traceback
+import urllib.parse
 import pytz
 import requests
 import yfinance as yf
@@ -74,72 +75,72 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים מורחב הכולל את כל אחזקות התיק בשלב 5 והמניות האחרות
+# מיפוי בסיסי נפוץ (כגיבוי מהיר), אך המערכת תומכת כעת בשליפה דינמית מלאה לכל טיקר
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
-    "AMD": "amd.com",
-    "MU": "micron.com",
-    "SNDK": "sandisk.com",
-    "WDC": "westerndigital.com",
-    "INTC": "intel.com",
-    "SIMO": "siliconmotion.com",
-    "IREN": "iren.com",
-    "CIFR": "ciphermining.com",
-    "META": "meta.com",
-    "AMZN": "amazon.com",
-    "GOOGL": "google.com",
-    "GOOG": "google.com",
-    "TTWO": "take2games.com",
-    "WMT": "walmart.com",
-    "NFLX": "netflix.com",
-    "MA": "mastercard.com",
-    "IBIT": "ishares.com",
-    "GTEC": "gtec.com",
-    "TQQQ": "proshares.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
-    "AVGO": "broadcom.com",
-    "TSM": "tsmc.com",
-    "ASML": "asml.com",
-    "SMCI": "supermicro.com",
-    "PLTR": "palantir.com",
-    "COIN": "coinbase.com",
-    "ARM": "arm.com",
-    "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com"
+    "GOOGL": "google.com",
+    "AMZN": "amazon.com",
+    "META": "meta.com",
+    "JPM": "jpmorganchase.com",
+    "JNJ": "jnj.com",
+    "XOM": "exxonmobil.com",
+    "WMT": "walmart.com",
+    "TSLA": "tesla.com",
+    "BTC-USD": "bitcoin.org"
 }
 
+def get_stock_logo_url(ticker, website=None):
+    domain = None
+    if ticker in DOMAIN_MAP:
+        domain = DOMAIN_MAP[ticker]
+    elif website:
+        try:
+            parsed_url = urllib.parse.urlparse(website)
+            netloc = parsed_url.netloc
+            if netloc:
+                domain = netloc.replace("www.", "")
+        except Exception:
+            pass
+    
+    if not domain:
+        domain = f"{ticker.lower()}.com"
+        
+    return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+
+# רשימות מרובות סקטורים לשלב 4 (השקעות לטווח ארוך ומסחר סווינג מכל תחומי הכלכלה)
 LT_STOCKS_META = [
-    {"ticker": "NVDA", "name": "NVIDIA Corporation", "desc": "מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.", "news": "ביקושים שיא לשבבי Blackwell. כדאי להחזיק ארוך טווח בשל מובילות שוק טכנולוגית חסרת מתחרים."},
-    {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, מערכות הפעלה ושילוב כלי AI ארגוניים.", "news": "צמיחה חזקה בשירותי הענן והשקעות ענק בבינה מלאכותית, השקעה בטוחה ויציבה לטווח ארוך."},
-    {"ticker": "AAPL", "name": "Apple Inc.", "desc": "פיתוח מכשירי iPhone, שירותים דיגיטליים ואקוסיסטם מוביל.", "news": "השקות מוצרים חדשים ושילוב Apple Intelligence, יציבות פיננסית איתנה לשמירה על ערך."},
-    {"ticker": "GOOGL", "name": "Alphabet / Google", "desc": "מנוע חיפוש גלובלי, ענן ופיתוח מודלי הבינה המלאכותית Gemini.", "news": "התקדמות משמעותית במוניטין ה-AI והכנסות פרסום חזקות, מניה ראויה ומשתלמת להחזקה."},
-    {"ticker": "AMZN", "name": "Amazon.com, Inc.", "desc": "מובילת ענן גלובלית (AWS) וענקית מסחר אלקטרוני.", "news": "שיפור ניכר ברווחיות התפעולית של AWS וצמיחה בלוגיסטיקה, מנוע צמיחה מרכזי בתיק."},
-    {"ticker": "AVGO", "name": "Broadcom Inc.", "desc": "שבבי תקשורת מתקדמים ומעבדי AI ייעודיים (ASIC).", "news": "חוזים חדשים עם ענקיות טכנולוגיה, מציגה נתוני צמיחה מרשימים להשקעה ארוכת טווח."},
-    {"ticker": "AMD", "name": "Advanced Micro Devices", "desc": "פיתוח מעבדים וכרטיסים גרפיים לשווקי ה-PC והשרתים.", "news": "נתח שוק גדל בסדרת מעבדי EPYC וכרטיסי MI300, פוטנציאל רווח גבוה לטווח הרחוק."},
-    {"ticker": "META", "name": "Meta Platforms, Inc.", "desc": "הפעלת רשתות חברתיות מובילות ופיתוח מודלי קוד פתוח.", "news": "ייעול מבני דרסטי ושיפור מהיר בהכנסות מפרסום ממוקד AI, כדאי לשמור בתיק."},
-    {"ticker": "TSM", "name": "Taiwan Semiconductor", "desc": "בית היציקה הגדול בעולם המייצר את השבבים המתקדמים ביותר.", "news": "ביקוש אדיר לייצור שבבים עבור כל ענקיות הטכנולוגיה, עמוד תווך יציב והכרחי בתעשייה."},
-    {"ticker": "ASML", "name": "ASML Holding N.V.", "desc": "יצרנית בלעדית של מכונות ליטוגרפיה EUV לתעשיית השבבים.", "news": "מונופול עולמי ייחודי וקריטי לייצור שבבים מתקדמים, השקעה איכותית לטווח הארוך."}
+    {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, תוכנה, פתרונות AI וטכנולוגיה עסקית גלובלית.", "news": "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית גבוהה."},
+    {"ticker": "JPM", "name": "JPMorgan Chase & Co.", "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).", "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק."},
+    {"ticker": "JNJ", "name": "Johnson & Johnson", "desc": "פיתוח תרופות, ציוד רפואי ומוצרי בריאות הצרכן (סקטור הבריאות).", "news": "חסינות עסקית גבוהה מול מחזוריות השוק, חלוקת דיבידנדים יציבה ואמינה."},
+    {"ticker": "XOM", "name": "Exxon Mobil Corporation", "desc": "חיפוש, הפקה ואנרגיה קונבנציונלית ומתקדמת (סקטור האנרגיה).", "news": "תזרים מזומנים חזק ויעילות תפעולית גבוהה התומכת בתשואות אטרקטיביות למשקיעים."},
+    {"ticker": "WMT", "name": "Walmart Inc.", "desc": "רשת הקמעונאות והמרכולים הגדולה בעולם (סקטור צרכנות בסיסית).", "news": "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר האלקטרוני."},
+    {"ticker": "AMZN", "name": "Amazon.com, Inc.", "desc": "מסחר אלקטרוני גלובלי ושירותי ענן מובילים (AWS).", "news": "שיפור מתמיד בשולי הרווח התפעולי של AWS והתייעלות לוגיסטית רחבת היקף."},
+    {"ticker": "UNH", "name": "UnitedHealth Group", "desc": "שירותי ביטוח בריאות וניהול רפואי מתקדם.", "news": "צמיחה עקבית במספר המבוטחים וביקוש קשיח לשירותי בריאות וניהול סיכונים רפואיים."},
+    {"ticker": "PG", "name": "Procter & Gamble", "desc": "ייצור ושיווק מוצרי צריכה ביתיים ואישיים מובילים.", "news": "כוח תמחור חזק אל מול אינפלציה ומותגים גלובליים חזקים המבטיחים יציבות."},
+    {"ticker": "CVX", "name": "Chevron Corporation", "desc": "אנרגיה, נפט וגז טבעי בפעילות גלובלית רחבה.", "news": "מאזן פיננסי איתן ופרויקטי הפקה חדשים המחזקים את יכולות החלוקה למשקיעים."},
+    {"ticker": "BRK-B", "name": "Berkshire Hathaway", "desc": "חברת אחזקות רב-תחומית המנוהלת בהשקעות ערך קלאסיות.", "news": "נזילות עצומה ופורטפוליו מבוזר של עסקים ראשיים המעניקים ביטחון למשקיע ארוך טווח."}
 ]
 
 SW_STOCKS_META = [
-    {"ticker": "MU", "name": "Micron Technology", "desc": "ייצור רכיבי זיכרון מתקדמים מסוג DRAM ו-NAND.", "news": "מחזור ביקוש חזק לזיכרונות HBM למרכזי נתונים, מתאים מאוד לסווינג קצר טווח."},
-    {"ticker": "SMCI", "name": "Super Micro Computer", "desc": "תשתיות שרתים מתקדמות ופתרונות קירור נוזלי למרכזי נתונים.", "news": "תנודתיות גבוהה במחיר בעקבות דוחות וביקושים, דורש מעקב צמוד למסחר סווינג."},
-    {"ticker": "PLTR", "name": "Palantir Technologies", "desc": "פלטפורמות אנליטיקה ובינה מלאכותית עסקית וביטחונית.", "news": "חוזים ממשלתיים חדשים וצמיחה מהירה במגזר המסחרי (AIP), מניה חזקה למסחר תנודתי."},
-    {"ticker": "COIN", "name": "Coinbase Global, Inc.", "desc": "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו.", "news": "קורלציה גבוהה לתנודות הביטקוין ושוק הקריפטו, מצוינת לסווינג מהיר בתקופות מומנטום."},
-    {"ticker": "IREN", "name": "Iris Energy Limited", "desc": "תשתיות מחשוב ענן ומרכזי נתונים עם דגש על אנרגיה ירוקה.", "news": "הרחבת פעילות ה-AI והתשתיות, תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג."},
-    {"ticker": "CIFR", "name": "Cipher Mining Inc.", "desc": "כרייה ותשתיות מחשוב בהספקים גבוהים.", "news": "התייעלות תפעולית והתרחבות פוטנציאלית לתשתיות AI, מתאימה למעקב סווינג סלקטיבי."},
-    {"ticker": "ARM", "name": "Arm Holdings plc", "desc": "תכנון ארכיטקטורת מעבדים חסכונית באנרגיה.", "news": "חדירה מואצת לשוק המחשבים הניידים והשרתים, פוטנציאל מומנטום טוב לסווינג."},
-    {"ticker": "MRVL", "name": "Marvell Technology", "desc": "פתרונות קישוריות מהירה ושבבים מותאמים אישית.", "news": "ביקושים גבוהים למתגים וקישוריות במרכזי נתונים מבוססי AI, מעקב סווינג כדאי."},
-    {"ticker": "QCOM", "name": "Qualcomm Incorporated", "desc": "שבבים סלולריים ומעבדים למחשבים אישיים מתקדמים.", "news": "כניסה אגרסיבית לשוק מחשבי ה-Copilot+ PC, מציגה תנועות מחיר מעניינות לסווינג."},
-    {"ticker": "TQQQ", "name": "ProShares UltraPro QQQ", "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק 100.", "news": "מתאימה אך ורק למסחר יומי או סווינג קצרצר עקב שחיקת מינוף לאורך זמן."}
+    {"ticker": "TSLA", "name": "Tesla, Inc.", "desc": "רכבים חשמליים, אנרגיה מתחדשת ופתרונות אוטונומיה (סקטור צרכנות מחזורית).", "news": "תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג עם מומנטום חזק."},
+    {"ticker": "AMD", "name": "Advanced Micro Devices", "desc": "פיתוח מעבדים, שבבים וכרטיסים גרפיים לשוק הטכנולוגיה.", "news": "תנועות מחיר חדות סביב השקות מוצרים ודו\"חות רבעוניים בסקטור השבבים."},
+    {"ticker": "COIN", "name": "Coinbase Global, Inc.", "desc": "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו (פיננסים/אלטרנטיבי).", "news": "קורלציה ישירה לתנודתיות בשוק הקריפטו, מעולה למסחר סווינג תנודתי קצר."},
+    {"ticker": "OXY", "name": "Occidental Petroleum", "desc": "חברת אנרגיה וחיפושי נפט וגז עם עניין מוסדי רב.", "news": "מעקב צמוד אחר מחירי הסחורות והאנרגיה המייצרים מהלכים מהירים במסחר."},
+    {"ticker": "PLTR", "name": "Palantir Technologies", "desc": "תוכנות אנליטיקה ובינה מלאכותית למגזר העסקי והביטחוני.", "news": "נפחי מסחר גבוהים מאוד ומומנטום חיובי המושך סוחרים לטווח הקצר והבינוני."},
+    {"ticker": "NVO", "name": "Novo Nordisk A/S", "desc": "תרופות חדשניות לטיפול בסוכרת וניהול משקל (סקטור הבריאות).", "news": "ביקושים אדירים למוצרי הדגל של החברה, יוצר תנודות מחיר מעניינות למסחר."},
+    {"ticker": "PYPL", "name": "PayPal Holdings, Inc.", "desc": "שירותי תשלומים דיגיטליים ופינטק גלובליים.", "news": "התאוששות מבנית ושינויים באסטרטגיית הצמיחה המייצרים הזדמנויות סווינג."},
+    {"ticker": "BA", "name": "The Boeing Company", "desc": "תעופה, ביטחון וייצור מטוסים מסחריים וצבאיים (סקטור התעשייה).", "news": "רגישות גבוהה לחדשות תפעוליות ורגולטוריות המייצרות פערים ותנועות חדות."},
+    {"ticker": "NEM", "name": "Newmont Corporation", "desc": "חברת כריית הזהב הגדולה בעולם (סקטור חומרי גלם וגידור).", "news": "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי הזהב."},
+    {"ticker": "TQQQ", "name": "ProShares UltraPro QQQ", "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק.", "news": "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר."}
 ]
 
 def get_default_ai_insights():
     return {
         "SP500_ANALYSIS": "מדד S&P 500 ממשיך להיסחר סביב רמות מפתח תוך בחינת נתוני המאקרו והאינפלציה.",
-        "NASDAQ_ANALYSIS": "מדד הטכנולוגיה מוביל את הסנטימנט בשוק עם דגש על חברות הבינה המלאכותית.",
-        "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן לתיק המסחר.",
+        "NASDAQ_ANALYSIS": "מדד הטכנולוגיה מוביל את הסנטימנט בשוק עם דגש על חדשנות ובינה מלאכותית.",
+        "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן רחב לתיק המסחר.",
         "VIX_ANALYSIS": "מדד התנודתיות משקף רמת רגיעה מתונה בשווקים ללא לחצים חריגים.",
         "DXY_ANALYSIS": "מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.",
         "USD_ILS_EXPLANATION": "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות המקומי.",
@@ -148,14 +149,14 @@ def get_default_ai_insights():
         "BTC_EXPLANATION": "אינדיקטור מוביל לסנטימנט סיכון ונזילות בנכסים אלטרנטיביים.",
         "US_MARKET_NEWS": "נתוני המאקרו בארה\"ב ממשיכים להוות מנוע ניווט מרכזי עבור הבנק המרכזי והמשקיעים.",
         "IL_MARKET_NEWS": "השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות באזור.",
-        "CATALYST_EARNINGS": "דיווחים רבעוניים של חברות הטכנולוגיה והשבבים מובילים את נפחי המסחר.",
+        "CATALYST_EARNINGS": "דיווחים רבעוניים מגוונים מכלל סקטורי המשק מובילים את נפחי המסחר.",
         "CATALYST_MONETARY": "הודעות ריבית ומדיניות מוניטרית צפויות להשפיע על תשואות האג\"ח.",
-        "CATALYST_HARDWARE": "השקות מוצרי חומרה חדשים, שבבי AI ועדכוני תוכנה מתקדמים.",
-        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר סביב חברות השבבים, הענן והטכנולוגיה המובילות.",
-        "ANALYST_POINT_1": "האנליסטים צופים המשך צמיחה בהשקעות בתשתיות בינה מלאכותית (AI).",
-        "ANALYST_POINT_2": "דגש על ניהול סיכונים קפדני ובחינה בררנית של דוחות כספיים רבעוניים.",
-        "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה לפוזיציות.",
-        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות.",
+        "CATALYST_HARDWARE": "השקות מוצרים, חדשנות טכנולוגית והתפתחויות רוחביות בכלל הענפים.",
+        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר סביב נכסים מובילים והזדמנויות סלקטיביות.",
+        "ANALYST_POINT_1": "האנליסטים ממליצים על פיזור סקטוריאלי רחב וניהול סיכונים קפדני.",
+        "ANALYST_POINT_2": "דגש על בחינה בררנית של דוחות כספיים וביצועי חברות מובילות בכל ענף.",
+        "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות רוחבי ופקודות הגנה לפוזיציות.",
+        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות בכל הסקטורים.",
         "portfolio_analysis": {}
     }
 
@@ -193,6 +194,7 @@ def fetch_market_data(tickers):
                 hist = stock.history(period="2d")
                 info = stock.info
                 target_mean = info.get("targetMeanPrice")
+                website = info.get("website")
                 
                 pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
                 if not pre_market_val and not hist.empty:
@@ -207,13 +209,14 @@ def fetch_market_data(tickers):
                         "change": change,
                         "target": target_mean if target_mean else 0.0,
                         "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
+                        "website": website
                     }
                     success = True
                     break
             except Exception:
                 time.sleep(1)
         if not success:
-            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
+            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0, "website": None}
     return market_data
 
 def build_structured_stocks_html(stocks_meta, market_data):
@@ -229,13 +232,13 @@ def build_structured_stocks_html(stocks_meta, market_data):
         pre_market = format_num(data.get("pre_market", 0))
         target = format_num(data.get("target", 0))
         change_val = data.get("change", 0.0)
+        website = data.get("website")
 
         sign = "+" if change_val > 0 else ""
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
         change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
         
-        domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+        logo_url = get_stock_logo_url(ticker, website)
 
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
@@ -400,6 +403,7 @@ if __name__ == "__main__":
 
             shares_count = info.get("shares", 0)
             company_name = info.get("name", ticker)
+            website = fetched_price_data.get("website")
 
             p_item = portfolio_analysis_map.get(ticker, {})
             p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
@@ -414,8 +418,7 @@ if __name__ == "__main__":
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
-            domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+            logo_url = get_stock_logo_url(ticker, website)
 
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
 
@@ -434,14 +437,14 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations - תיקון הכללת קובץ ה-JSON כדי שהשינויים יישמרו ויעודכנו בשרת
+        # Git operations - עדכון קובץ ה-HTML וקובץ ה-JSON יחד ב-Git
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site and portfolio data on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Update site, multi-sector stocks and dynamic logos on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
