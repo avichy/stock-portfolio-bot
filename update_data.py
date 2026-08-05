@@ -70,7 +70,7 @@ def format_pct_colored(val):
         num = float(val)
         sign = "+" if num > 0 else ""
         color = "#2ecc71" if num >= 0 else "#e74c3c"
-        return f'<span style="color: {color}; font-weight: bold;">{sign}{num:.2f}%</span>'
+        return f'<span style=\'color: {color}; font-weight: bold;\'>{sign}{num:.2f}%</span>'
     except (ValueError, TypeError):
         return str(val)
 
@@ -248,7 +248,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f'style="color: {color};"'
+            replacements[f"SECTOR_{s_key}_CLASS"] = f'style=\'color: {color};\''
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
         for ticker, info in portfolio_buys.items():
@@ -293,7 +293,7 @@ if __name__ == "__main__":
             replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
             replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
             replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style="color: {color}; font-weight: bold;">{sign}{ret:.2f}%</span>'
+            replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
             replacements[f"{ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
