@@ -22,8 +22,8 @@ def load_ai_cache():
         try:
             with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error loading AI cache: {e}")
     return {}
 
 def save_ai_cache(data):
@@ -82,7 +82,6 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "MSFT": "microsoft.com",
@@ -387,9 +386,10 @@ if __name__ == "__main__":
                 continue
             
             upper_ticker = ticker.upper().strip()
+            lower_ticker = ticker.lower().strip()
             buy_p = info.get("buy") or info.get("buyPrice") or 0.0
 
-            fetched_price_data = base_market_data.get(ticker, {})
+            fetched_price_data = base_market_data.get(ticker, {}) or base_market_data.get(upper_ticker, {}) or base_market_data.get(lower_ticker, {})
             curr_p = fetched_price_data.get("price")
             if not curr_p or curr_p == 0.0:
                 curr_p = buy_p
@@ -409,7 +409,7 @@ if __name__ == "__main__":
             shares_count = info.get("shares", 0)
             company_name = info.get("name", upper_ticker)
 
-            p_item = portfolio_analysis_map.get(ticker, {})
+            p_item = portfolio_analysis_map.get(ticker, {}) or portfolio_analysis_map.get(upper_ticker, {}) or portfolio_analysis_map.get(lower_ticker, {})
             p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {upper_ticker}.")
             p_news_title = p_item.get("news_title", f"עדכון שוק עבור {upper_ticker}")
             p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {upper_ticker}.")
@@ -423,18 +423,17 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
-            
-            # עטיפה מלאה של השם והטיקר עם bdi בשלב 5
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
-            # עטיפת כל הערכים הדינמיים בשלב 5 ב־bdi למניעת היפוך סוגריים, דולרים או אחוזים
-            replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
-            replacements[f"{upper_ticker}_PORT_SHARES"] = f"<bdi>{format_num(shares_count, 0)}</bdi>"
-            replacements[f"{upper_ticker}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
-            replacements[f"{upper_ticker}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
-            replacements[f"{upper_ticker}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
-            replacements[f"{upper_ticker}_PORT_STATUS"] = f'רווח: <bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
-            replacements[f"{upper_ticker}_PORT_NOTE"] = full_note_html
+            # הגנה כפולה: תמיכה גם באותיות גדולות וגם באותיות קטנות עבור התבנית
+            for t_variant in [upper_ticker, lower_ticker, ticker]:
+                replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
+                replacements[f"{t_variant}_PORT_SHARES"] = f"<bdi>{format_num(shares_count, 0)}</bdi>"
+                replacements[f"{t_variant}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
+                replacements[f"{t_variant}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
+                replacements[f"{t_variant}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
+                replacements[f"{t_variant}_PORT_STATUS"] = f'רווח: <bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
+                replacements[f"{t_variant}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
             content = content.replace(f"{{{{{key}}}}}", str(val))
@@ -443,7 +442,7 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations with token configuration
+        # Git operations with token configuration & forced timestamp to ensure update triggers
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         
@@ -453,12 +452,24 @@ if __name__ == "__main__":
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Add full bdi isolation and logos to stage 5 portfolio on {day_name}"], check=True)
+        print("Git status output:\n", status.stdout)
+        
+        # גם אם הסטטוס נראה ריק, נוסיף הערת עדכון אוטומטית לקובץ כדי ש־Git תמיד יזהה שינוי ויעדכן את האתר
+        if OUTPUT_FILE in status.stdout or True:
+            # הוספת הערת חותמת זמן נסתרת ב־HTML כדי לוודא ש־Git תמיד יבצע commit וידחוף את העדכון
+            with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+                html_text = f.read()
+            html_text += f"\n<!-- Build timestamp: {now_il.isoformat()} -->"
+            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+                f.write(html_text)
+
+            subprocess.run(["git", "add", OUTPUT_FILE], check=True)
+            subprocess.run(["git", "commit", "-m", f"Auto-update site data and bdi isolation on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
 
-    except:
+    except Exception as e:
+        print("CRITICAL ERROR IN SCRIPT:")
         traceback.print_exc()
-        raise
+        raise e
