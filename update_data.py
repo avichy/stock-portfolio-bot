@@ -82,6 +82,7 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "MSFT": "microsoft.com",
@@ -422,6 +423,8 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
+            
+            # שימוש ב־bdi בשלב 5 כדי למנוע היפוך סוגריים וטקסט אנגלי בעברית
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
             replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
@@ -439,7 +442,7 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations with token configuration for GitHub Actions
+        # Git operations with token configuration
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         
@@ -450,7 +453,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Auto update index.html on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add clean logos and bdi layout to stage 4 and 5 on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
