@@ -252,20 +252,26 @@ if __name__ == "__main__":
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
         for ticker, info in portfolio_buys.items():
+            if not isinstance(info, dict):
+                continue
+            
+            # בדיקה בטוחה האם המפתח הוא 'buy' או 'buyPrice'
+            buy_p = info.get("buy") or info.get("buyPrice") or 0.0
+
             fetched_price_data = base_market_data.get(ticker, {})
             curr_p = fetched_price_data.get("price")
             if not curr_p or curr_p == 0.0:
-                curr_p = info["buy"]
+                curr_p = buy_p
             
             fetched_target = fetched_price_data.get("target", 0.0)
             if not fetched_target or fetched_target == 0.0:
-                fetched_target = info["buy"] * 1.25
+                fetched_target = buy_p * 1.25 if buy_p > 0 else 100.0
 
             pre_p = fetched_price_data.get("pre_market", 0.0)
             if not pre_p or pre_p == 0.0:
                 pre_p = curr_p
 
-            ret = ((curr_p - info["buy"]) / info["buy"]) * 100
+            ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
             sign = "+" if ret > 0 else ""
             color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
