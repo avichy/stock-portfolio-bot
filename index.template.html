@@ -306,7 +306,6 @@
             if (sectorCtx) {
                 function parsePct(str) {
                     if (!str || str.includes('{{')) return 0;
-                    // חילוץ בטוח של מספרים כולל סימן מינוס ונקודה עשרונית מתוך המחרוזת
                     let clean = str.toString().replace(/[^0-9.-]/g, '');
                     return parseFloat(clean) || 0;
                 }
@@ -325,7 +324,8 @@
                     parsePct("{{SECTOR_REAL_ESTATE_PCT}}")
                 ];
 
-                const barColors = rawValues.map(val => val >= 0 ? '#22d3ee' : '#f87171');
+                // שימוש בירוק לעליות (#22c55e) ואדום כהה לירידות (#dc2626)
+                const barColors = rawValues.map(val => val >= 0 ? '#22c55e' : '#dc2626');
 
                 new Chart(sectorCtx.getContext('2d'), {
                     type: 'bar',
@@ -367,7 +367,7 @@
             { name: "SanDisk", symbol: "SNDK", shares: 4, buyPrice: 630.26, current: "{{SNDK_PORT_CURRENT}}", pre: "{{SNDK_PORT_PRE}}", target: "{{SNDK_PORT_TARGET}}", status: "{{SNDK_PORT_STATUS}}", note: "{{SNDK_PORT_NOTE}}" },
             { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
             { name: "Intel", symbol: "INTC", shares: 20, buyPrice: 43.05, current: "{{INTC_PORT_CURRENT}}", pre: "{{INTC_PORT_PRE}}", target: "{{INTC_PORT_TARGET}}", status: "{{INTC_PORT_STATUS}}", note: "{{INTC_PORT_NOTE}}" },
-            { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
+            { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
             { name: "Iris Energy", symbol: "IREN", shares: 54, buyPrice: 52.75, current: "{{IREN_PORT_CURRENT}}", pre: "{{IREN_PORT_PRE}}", target: "{{IREN_PORT_TARGET}}", status: "{{IREN_PORT_STATUS}}", note: "{{IREN_PORT_NOTE}}" },
             { name: "Cipher Mining", symbol: "CIFR", shares: 28, buyPrice: 17.50, current: "{{CIFR_PORT_CURRENT}}", pre: "{{CIFR_PORT_PRE}}", target: "{{CIFR_PORT_TARGET}}", status: "{{CIFR_PORT_STATUS}}", note: "{{CIFR_PORT_NOTE}}" },
             { name: "Meta Platforms", symbol: "META", shares: 2, buyPrice: 661.00, current: "{{META_PORT_CURRENT}}", pre: "{{META_PORT_PRE}}", target: "{{META_PORT_TARGET}}", status: "{{META_PORT_STATUS}}", note: "{{META_PORT_NOTE}}" },
