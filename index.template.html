@@ -152,7 +152,7 @@
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong><strong>:</strong> מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_STAPLES_CLASS}}>{{SECTOR_CONS_STAPLES_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong><strong>:</strong> נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" {{SECTOR_ENERGY_CLASS}}>{{SECTOR_ENERGY_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong><strong>:</strong> תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INDUSTRIALS_CLASS}}>{{SECTOR_INDUSTRIALS_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>strong>:</strong> כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span><</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>:</strong> כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong><strong>:</strong> טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" {{SECTOR_COMM_CLASS}}>{{SECTOR_COMM_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong><strong>:</strong> חשמל ומים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_UTILITIES_CLASS}}>{{SECTOR_UTILITIES_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong><strong>:</strong> קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_REAL_ESTATE_CLASS}}>{{SECTOR_REAL_ESTATE_PCT}}</span></div>
@@ -329,16 +329,22 @@
             portfolioStocks.forEach((stock, index) => {
                 const card = document.createElement('div');
                 card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
+                const tickerLower = stock.symbol.toLowerCase();
+                const logoUrl = `https://s3-symbol-logo.tradingview.com/${tickerLower}.svg`;
+                
                 card.innerHTML = `
                     <div>
-                        <p><strong>${stock.name}</strong> (סמל: <strong dir="ltr">${stock.symbol}</strong>)<br>
+                        <div class="flex items-center gap-2 mb-2">
+                            <img src="${logoUrl}" width="24" height="24" class="rounded-full bg-white p-0.5 object-contain" onerror="this.src='https://assets.parqet.com/logos/symbol/${stock.symbol}'" alt="${stock.symbol}">
+                            <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
+                        </div>
                         מספר מניות: ${stock.shares} מניות<br>
                         קנייה: <strong>$${stock.buyPrice.toFixed(2)}</strong><br>
                         מחיר נוכחי: <strong>${stock.current}</strong><br>
                         מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
                         מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
                         <strong>${stock.status}</strong><br>
-                        <span class="text-gray-400">חדשות ורציונל: ${stock.note}</span></p>
+                        <span class="text-gray-400">חדשות ורציונל: ${stock.note}</span>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
                         <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
@@ -419,68 +425,13 @@
 
         function exportPortfolioJson() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioStocks, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "portfolio.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "portfolio.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderPortfolio();
-
-            try {
-                const ctx = document.getElementById('sectorChart');
-                if (ctx) {
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['טכנולוגיית מידע', 'פיננסים', 'שירותי בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'שירותי תקשורת', 'תשתיות', 'נדל"ן'],
-                            datasets: [{
-                                label: 'ביצועי 11 הסקטורים',
-                                data: [
-                                    parseFloat('{{SECTOR_INFO_TECH_PERF}}') || 0, 
-                                    parseFloat('{{SECTOR_FINANCIALS_PERF}}') || 0, 
-                                    parseFloat('{{SECTOR_HEALTH_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_CONS_DISC_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_CONS_ST_PERF}}' || '{{SECTOR_CONS_STAPLES_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_ENERGY_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_INDUSTRIALS_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_MATERIALS_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_COMM_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_UTILITIES_PERF}}') || 0,
-                                    parseFloat('{{SECTOR_REAL_ESTATE_PERF}}') || 0
-                                ],
-                                backgroundColor: [
-                                    '#06b6d4', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
-                                    '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#84cc16', '#eab308'
-                                ],
-                                borderRadius: 6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                y: {
-                                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                                    ticks: { color: '#9ca3af' }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#9ca3af' }
-                                }
-                            }
-                        }
-                    });
-                }
-            } catch (e) {
-                console.error('Chart initialization error:', e);
-            }
-        });
     </script>
 </body>
 </html>
