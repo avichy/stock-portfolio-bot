@@ -390,14 +390,19 @@
             portfolioStocks.forEach((stock, index) => {
                 const card = document.createElement('div');
                 card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
-                const tickerLower = stock.symbol.toLowerCase();
-                const tvLogo = `https://s3-symbol-logo.tradingview.com/${tickerLower}.svg`;
                 
+                // טעינה אוטומטית לפי הטיקר
+                const cleanSymbol = stock.symbol.trim().toUpperCase();
+                const primaryLogo = `https://assets.parqet.com/logos/symbol/${cleanSymbol}`;
+                const fallbackLogo = `https://s3-symbol-logo.tradingview.com/${cleanSymbol.toLowerCase().replace(/[-.]/g, '')}.svg`;
+
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2 mb-2">
-                            <img src="${tvLogo}" width="24" height="24" class="rounded-full bg-white p-0.5 object-contain" 
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>${stock.symbol}</text></svg>';" 
+                            <img src="${primaryLogo}" 
+                                 width="24" height="24" 
+                                 class="rounded-full bg-white p-0.5 object-contain" 
+                                 onerror="this.onerror=null; this.src='${fallbackLogo}'; this.onerror=function(){this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>${cleanSymbol}</text></svg>';};" 
                                  alt="${stock.symbol}">
                             <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
                         </div>
