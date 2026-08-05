@@ -70,45 +70,32 @@ def format_pct_colored(val):
         num = float(val)
         sign = "+" if num > 0 else ""
         color = "#2ecc71" if num >= 0 else "#e74c3c"
-        return f"<span style='color: {color}; font-weight: bold;'>{sign}{num:.2f}%</span>"
+        return f'<span style=\'color: {color}; font-weight: bold;\'>{sign}{num:.2f}%</span>'
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים מורחב הכולל את כל 19 אחזקות התיק בשלב 5, מניות L/T, סווינג ומדדים
+# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
 DOMAIN_MAP = {
-    # אחזקות התיק בשלב 5 (19 אחזקות)
     "NVDA": "nvidia.com",
-    "AMD": "amd.com",
-    "MU": "micron.com",
-    "SNDK": "sandisk.com",
-    "WDC": "westerndigital.com",
-    "INTC": "intel.com",
-    "SIMO": "siliconmotion.com",
-    "IREN": "iren.com",
-    "CIFR": "ciphermining.com",
-    "META": "meta.com",
-    "AMZN": "amazon.com",
-    "GOOGL": "google.com",
-    "GOOG": "google.com",
-    "TTWO": "take2games.com",
-    "WMT": "walmart.com",
-    "NFLX": "netflix.com",
-    "MA": "mastercard.com",
-    "IBIT": "ishares.com",
-    "GTEC": "gtec.com",
-    "TQQQ": "proshares.com",
-    # מניות נוספות לטווח ארוך וסווינג
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
+    "GOOGL": "google.com",
+    "AMZN": "amazon.com",
     "AVGO": "broadcom.com",
+    "AMD": "amd.com",
+    "META": "meta.com",
     "TSM": "tsmc.com",
     "ASML": "asml.com",
+    "MU": "micron.com",
     "SMCI": "supermicro.com",
     "PLTR": "palantir.com",
     "COIN": "coinbase.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
     "ARM": "arm.com",
     "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com"
+    "QCOM": "qualcomm.com",
+    "TQQQ": "proshares.com"
 }
 
 LT_STOCKS_META = [
@@ -237,12 +224,12 @@ def build_structured_stocks_html(stocks_meta, market_data):
         change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
         
         domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
+        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" loading="lazy" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -374,7 +361,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color};'"
+            replacements[f"SECTOR_{s_key}_CLASS"] = f'style=\'color: {color};\''
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
         for ticker, info in portfolio_buys.items():
@@ -417,16 +404,16 @@ if __name__ == "__main__":
             )
 
             domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
+            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="20" height="20" loading="lazy" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
 
             replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
             replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
             replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
             replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
+            replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
             replacements[f"{ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
@@ -443,7 +430,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Add all stage 5 portfolio asset favicons on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Use Google domain favicons for clean logos on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
