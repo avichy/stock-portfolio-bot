@@ -365,7 +365,7 @@
             { name: "Advanced Micro Devices", symbol: "AMD", shares: 20, buyPrice: 211.34, current: "{{AMD_PORT_CURRENT}}", pre: "{{AMD_PORT_PRE}}", target: "{{AMD_PORT_TARGET}}", status: "{{AMD_PORT_STATUS}}", note: "{{AMD_PORT_NOTE}}" },
             { name: "Micron Technology", symbol: "MU", shares: 6, buyPrice: 316.32, current: "{{MU_PORT_CURRENT}}", pre: "{{MU_PORT_PRE}}", target: "{{MU_PORT_TARGET}}", status: "{{MU_PORT_STATUS}}", note: "{{MU_PORT_NOTE}}" },
             { name: "SanDisk", symbol: "SNDK", shares: 4, buyPrice: 630.26, current: "{{SNDK_PORT_CURRENT}}", pre: "{{SNDK_PORT_PRE}}", target: "{{SNDK_PORT_TARGET}}", status: "{{SNDK_PORT_STATUS}}", note: "{{SNDK_PORT_NOTE}}" },
-            { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
+            { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
             { name: "Intel", symbol: "INTC", shares: 20, buyPrice: 43.05, current: "{{INTC_PORT_CURRENT}}", pre: "{{INTC_PORT_PRE}}", target: "{{INTC_PORT_TARGET}}", status: "{{INTC_PORT_STATUS}}", note: "{{INTC_PORT_NOTE}}" },
             { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
             { name: "Iris Energy", symbol: "IREN", shares: 54, buyPrice: 52.75, current: "{{IREN_PORT_CURRENT}}", pre: "{{IREN_PORT_PRE}}", target: "{{IREN_PORT_TARGET}}", status: "{{IREN_PORT_STATUS}}", note: "{{IREN_PORT_NOTE}}" },
@@ -391,12 +391,14 @@
                 const card = document.createElement('div');
                 card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
                 const tickerLower = stock.symbol.toLowerCase();
-                const logoUrl = `https://s3-symbol-logo.tradingview.com/${tickerLower}.svg`;
+                const tvLogo = `https://s3-symbol-logo.tradingview.com/${tickerLower}.svg`;
                 
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2 mb-2">
-                            <img src="${logoUrl}" width="24" height="24" class="rounded-full bg-white p-0.5 object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>${stock.symbol}</text></svg>';" alt="${stock.symbol}">
+                            <img src="${tvLogo}" width="24" height="24" class="rounded-full bg-white p-0.5 object-contain" 
+                                 onerror="if(!this.dataset.triedParqet){ this.dataset.triedParqet=1; this.src='https://assets.parqet.com/logos/symbol/${stock.symbol}'; } else { this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>${stock.symbol}</text></svg>'; }" 
+                                 alt="${stock.symbol}">
                             <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
