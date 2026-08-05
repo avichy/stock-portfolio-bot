@@ -22,8 +22,8 @@ def load_ai_cache():
         try:
             with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception as e:
-            print(f"Error loading AI cache: {e}")
+        except Exception:
+            pass
     return {}
 
 def save_ai_cache(data):
@@ -42,24 +42,16 @@ def load_portfolio_buys():
             if response.status_code == 200:
                 file_data = response.json()
                 content = base64.b64decode(file_data["content"]).decode("utf-8")
-                data = json.loads(content)
-                if data:
-                    print("Loaded portfolio from GitHub successfully.")
-                    return data
+                return json.loads(content)
         except Exception as e:
             print(f"Error loading from GitHub API: {e}")
 
     if os.path.exists(PORTFOLIO_FILE):
         try:
             with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if data:
-                    print("Loaded local portfolio.json successfully.")
-                    return data
+                return json.load(f)
         except Exception as e:
             print(f"Error loading local portfolio.json: {e}")
-            
-    print("Warning: portfolio.json is empty or not found.")
     return {}
 
 portfolio_buys = load_portfolio_buys()
@@ -78,16 +70,17 @@ def format_pct_colored(val):
         num = float(val)
         sign = "+" if num > 0 else ""
         color = "#2ecc71" if num >= 0 else "#e74c3c"
-        return f'<span style=\'color: {color}; font-weight: bold;\'>{sign}{num:.2f}%</span>'
+        return f"<span style='color: {color}; font-weight: bold;'>{sign}{num:.2f}%</span>"
     except (ValueError, TypeError):
         return str(val)
 
+# מיפוי דומיינים מורחב הכולל מניות, סקטורים (שלב 5), מדדים וסחורות לשליפת לוגואים מושלמת מגוגל
 DOMAIN_MAP = {
+    # מניות L/T ו-Swing
     "NVDA": "nvidia.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
     "GOOGL": "google.com",
-    "GOOG": "google.com",
     "AMZN": "amazon.com",
     "AVGO": "broadcom.com",
     "AMD": "amd.com",
@@ -104,18 +97,29 @@ DOMAIN_MAP = {
     "MRVL": "marvell.com",
     "QCOM": "qualcomm.com",
     "TQQQ": "proshares.com",
-    "TSLA": "tesla.com",
-    "NFLX": "netflix.com",
-    "INTC": "intel.com",
-    "BTC": "bitcoin.org",
-    "ETH": "ethereum.org"
+    # סקטורים (שלב 5)
+    "XLK": "spdrs.com",
+    "XLF": "spdrs.com",
+    "XLV": "spdrs.com",
+    "XLY": "spdrs.com",
+    "XLP": "spdrs.com",
+    "XLE": "spdrs.com",
+    "XLI": "spdrs.com",
+    "XLB": "spdrs.com",
+    "XLC": "spdrs.com",
+    "XLU": "spdrs.com",
+    "XLRE": "spdrs.com",
+    # מדדים וסחורות
+    "GC=F": "spdrgoldshares.com",
+    "CL=F": "cmegroup.com",
+    "BTC-USD": "bitcoin.org",
+    "USDILS=X": "boi.org.il",
+    "DX-Y.NYB": "ice.com",
+    "^GSPC": "spglobal.com",
+    "^NDX": "nasdaq.com",
+    "^DJI": "dowjones.com",
+    "^VIX": "cboe.com"
 }
-
-def get_logo_url(ticker):
-    clean_ticker = ticker.split(".")[0].split("-")[0].replace("=", "").replace("^", "").upper()
-    domain = DOMAIN_MAP.get(clean_ticker, f"{clean_ticker.lower()}.com")
-    # שימוש בשירות ה־Favicon של Google שפעיל ועובד מצוין
-    return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
 LT_STOCKS_META = [
     {"ticker": "NVDA", "name": "NVIDIA Corporation", "desc": "מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.", "news": "ביקושים שיא לשבבי Blackwell. כדאי להחזיק ארוך טווח בשל מובילות שוק טכנולוגית חסרת מתחרים."},
@@ -240,20 +244,21 @@ def build_structured_stocks_html(stocks_meta, market_data):
 
         sign = "+" if change_val > 0 else ""
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
-        change_str = f"<span style='color: {color}; font-weight: bold;'><bdi>{sign}{change_val:.2f}%</bdi></span>"
+        change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
         
-        logo_url = get_logo_url(ticker)
+        domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
+        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.style.display='none'">
-                <span class="text-base font-bold text-white"><bdi>{name}</bdi> (<bdi>טיקר: {ticker}</bdi>):</span>
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
+                <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
-                <div><strong>מחיר נוכחי:</strong> <bdi>${price}</bdi></div>
-                <div><strong>מחיר טרום פתיחה:</strong> <bdi>${pre_market}</bdi></div>
-                <div><strong>יעד אנליסטים ממוצע:</strong> <bdi>${target}</bdi></div>
+                <div><strong>מחיר נוכחי:</strong> ${price}</div>
+                <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
+                <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
                 <div><strong>רווח:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל:</strong> {news}</div>
@@ -295,25 +300,25 @@ if __name__ == "__main__":
 
         usd_ils_p = usd_ils_data.get("price", 3.65)
         usd_ils_c = usd_ils_data.get("change", 0)
-        usd_ils_price = f"<bdi>{format_num(usd_ils_p)}₪</bdi>"
+        usd_ils_price = f"{format_num(usd_ils_p)}₪"
         usd_ils_change = format_pct_colored(usd_ils_c)
 
         oil_data = base_market_data.get("CL=F", {})
         oil_p = oil_data.get("price", 75.0)
         oil_c = oil_data.get("change", 0)
-        oil_price = f"<bdi>${format_num(oil_p)}</bdi>"
+        oil_price = f"${format_num(oil_p)}"
         oil_change = format_pct_colored(oil_c)
 
         gold_data = base_market_data.get("GC=F", {})
         gold_p = gold_data.get("price", 2350.0)
         gold_c = gold_data.get("change", 0)
-        gold_price = f"<bdi>${format_num(gold_p)}</bdi>"
+        gold_price = f"${format_num(gold_p)}"
         gold_change = format_pct_colored(gold_c)
 
         btc_data = base_market_data.get("BTC-USD", {})
         btc_p = btc_data.get("price", 65000.0)
         btc_c = btc_data.get("change", 0)
-        btc_price = f"<bdi>${format_num(btc_p)}</bdi>"
+        btc_price = f"${format_num(btc_p)}"
         btc_change = format_pct_colored(btc_c)
 
         portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
@@ -372,25 +377,28 @@ if __name__ == "__main__":
             "SWING_STOCKS_SECTION": sw_html,
         }
 
+        # הוספת תמיכה بلוגואים ונתונים לסקטורים (שלב 5)
         for s_key, s_ticker in sector_tickers_map.items():
             s_data = base_market_data.get(s_ticker, {})
             s_change = s_data.get("change", 0.0)
             sign = "+" if s_change > 0 else ""
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
-            replacements[f"SECTOR_{s_key}_PCT"] = f"(<bdi>{sign}{s_change:.2f}%</bdi>)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f'style=\'color: {color};\''
+            domain = DOMAIN_MAP.get(s_ticker, "spdrs.com")
+            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+            
+            replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
+            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color};'"
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
+            replacements[f"SECTOR_{s_key}_LOGO"] = logo_url
 
         for ticker, info in portfolio_buys.items():
             if not isinstance(info, dict):
                 continue
             
-            upper_ticker = ticker.upper().strip()
-            lower_ticker = ticker.lower().strip()
             buy_p = info.get("buy") or info.get("buyPrice") or 0.0
 
-            fetched_price_data = base_market_data.get(ticker, {}) or base_market_data.get(upper_ticker, {}) or base_market_data.get(lower_ticker, {})
+            fetched_price_data = base_market_data.get(ticker, {})
             curr_p = fetched_price_data.get("price")
             if not curr_p or curr_p == 0.0:
                 curr_p = buy_p
@@ -408,12 +416,12 @@ if __name__ == "__main__":
             color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
             shares_count = info.get("shares", 0)
-            company_name = info.get("name", upper_ticker)
+            company_name = info.get("name", ticker)
 
-            p_item = portfolio_analysis_map.get(ticker, {}) or portfolio_analysis_map.get(upper_ticker, {}) or portfolio_analysis_map.get(lower_ticker, {})
-            p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {upper_ticker}.")
-            p_news_title = p_item.get("news_title", f"עדכון שוק עבור {upper_ticker}")
-            p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {upper_ticker}.")
+            p_item = portfolio_analysis_map.get(ticker, {})
+            p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
+            p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
+            p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
             p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
 
             full_note_html = (
@@ -423,19 +431,18 @@ if __name__ == "__main__":
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
-            logo_url = get_logo_url(upper_ticker)
-            
-            # שלב 5 משתמש בלוגו של Google בדיוק כמו שלב 4, בלי לפגוע במבנה הקיים
-            title_with_logo = f"""<img src="{logo_url}" width="20" height="20" style="vertical-align: middle; margin-left: 6px; border-radius: 50%; background: white; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span>{company_name} (טיקר: {upper_ticker})</span>"""
+            domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
+            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
-            for t_variant in [upper_ticker, lower_ticker, ticker]:
-                replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
-                replacements[f"{t_variant}_PORT_SHARES"] = f"<bdi>{format_num(shares_count, 0)}</bdi>"
-                replacements[f"{t_variant}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
-                replacements[f"{t_variant}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
-                replacements[f"{t_variant}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
-                replacements[f"{t_variant}_PORT_STATUS"] = f'<bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
-                replacements[f"{t_variant}_PORT_NOTE"] = full_note_html
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+
+            replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
+            replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
+            replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
+            replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
+            replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
+            replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
+            replacements[f"{ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
             content = content.replace(f"{{{{{key}}}}}", str(val))
@@ -444,31 +451,18 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations with token configuration & forced timestamp to ensure update triggers
+        # Git operations
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        
-        if GITHUB_TOKEN and GITHUB_REPO:
-            subprocess.run(["git", "remote", "set-url", "origin", f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_REPO}.git"], check=True)
-
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        print("Git status output:\n", status.stdout)
-        
-        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
-            html_text = f.read()
-        html_text += f"\n<!-- Build timestamp: {now_il.isoformat()} -->"
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(html_text)
+        if OUTPUT_FILE in status.stdout:
+            subprocess.run(["git", "commit", "-m", f"Add Google domain favicons for all sections including sectors on {day_name}"], check=True)
+            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
+            subprocess.run(["git", "push"], check=True)
+            print("Successfully pushed changes to GitHub!")
 
-        subprocess.run(["git", "add", OUTPUT_FILE], check=True)
-        subprocess.run(["git", "commit", "-m", f"Keep Google favicons for stage 5 on {day_name}"], check=True)
-        subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-        subprocess.run(["git", "push"], check=True)
-        print("Successfully pushed changes to GitHub!")
-
-    except Exception as e:
-        print("CRITICAL ERROR IN SCRIPT:")
+    except:
         traceback.print_exc()
-        raise e
+        raise
