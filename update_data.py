@@ -74,6 +74,30 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
+DOMAIN_MAP = {
+    "NVDA": "nvidia.com",
+    "MSFT": "microsoft.com",
+    "AAPL": "apple.com",
+    "GOOGL": "google.com",
+    "AMZN": "amazon.com",
+    "AVGO": "broadcom.com",
+    "AMD": "amd.com",
+    "META": "meta.com",
+    "TSM": "tsmc.com",
+    "ASML": "asml.com",
+    "MU": "micron.com",
+    "SMCI": "supermicro.com",
+    "PLTR": "palantir.com",
+    "COIN": "coinbase.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
+    "ARM": "arm.com",
+    "MRVL": "marvell.com",
+    "QCOM": "qualcomm.com",
+    "TQQQ": "proshares.com"
+}
+
 LT_STOCKS_META = [
     {"ticker": "NVDA", "name": "NVIDIA Corporation", "desc": "מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.", "news": "ביקושים שיא לשבבי Blackwell. כדאי להחזיק ארוך טווח בשל מובילות שוק טכנולוגית חסרת מתחרים."},
     {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, מערכות הפעלה ושילוב כלי AI ארגוניים.", "news": "צמיחה חזקה בשירותי הענן והשקעות ענק בבינה מלאכותית, השקעה בטוחה ויציבה לטווח ארוך."},
@@ -198,12 +222,14 @@ def build_structured_stocks_html(stocks_meta, market_data):
         sign = "+" if change_val > 0 else ""
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
         change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
-        logo_url = f"https://s3-symbol-logo.tradingview.com/{ticker.lower()}.svg"
+        
+        domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
+        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'28\\' height=\\'28\\' viewBox=\\'0 0 28 28\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'10\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>{ticker}</text></svg>';" alt="{ticker}">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -377,8 +403,10 @@ if __name__ == "__main__":
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
-            logo_url = f"https://s3-symbol-logo.tradingview.com/{ticker.lower()}.svg"
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'%2338bdf8\\'><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'9\\' font-weight=\\'bold\\' fill=\\'%230f172a\\'>{ticker}</text></svg>';" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+            domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
+            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
 
             replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
@@ -402,7 +430,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Remove parqet completely on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Use Google domain favicons for clean logos on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
