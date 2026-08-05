@@ -239,7 +239,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
                 <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.style.display='none'">
-                <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
+                <span class="text-base font-bold text-white"><bdi>{name}</bdi> (<bdi>טיקר: {ticker}</bdi>):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
@@ -414,7 +414,9 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;" dir="ltr"><span style="font-weight: bold;">{company_name}</span> (<span dir="rtl">טיקר:</span> <span style="font-weight: bold;">{upper_ticker}</span>)</span><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain; margin-right: 8px;" alt="{upper_ticker}" onerror="this.style.display='none'">"""
+            
+            # שימוש ב־bdi לבידוד כיווניות כך שהסוגריים והשמות יוצגו בצורה מושלמת בסביבת RTL
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
             replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{upper_ticker}_PORT_SHARES"] = format_num(shares_count, 0)
@@ -438,7 +440,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix portfolio title bidi direction and logo layout on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix portfolio title bdi isolation and logo layout on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
