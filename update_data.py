@@ -124,7 +124,8 @@ def get_stock_logo_url(ticker, website=None):
     if not domain:
         domain = f"{clean_ticker.lower()}.com"
         
-    return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+    # שימוש בשירות Clearbit להצגת הלוגו הרשמי והאמיתי של החברה באיכות מעולה
+    return f"https://logo.clearbit.com/{domain}"
 
 LT_STOCKS_META = [
     {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, תוכנה, פתרונות AI וטכנולוגיה עסקית גלובלית.", "news": "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית גבוהה."},
