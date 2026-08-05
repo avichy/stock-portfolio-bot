@@ -32,7 +32,6 @@ def save_ai_cache(data):
         print(f"Error saving AI cache: {e}")
 
 def load_portfolio_buys():
-    # ניסיון טעינה ישירות מ-GitHub API כדי לקבל תמיד את המידע המעודכן ביותר
     if GITHUB_TOKEN and GITHUB_REPO:
         try:
             url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
@@ -45,7 +44,6 @@ def load_portfolio_buys():
         except Exception as e:
             print(f"Error loading from GitHub API: {e}")
 
-    # גיבוי מקומי למקרה הרצה מקומית
     if os.path.exists(PORTFOLIO_FILE):
         try:
             with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
@@ -55,14 +53,12 @@ def load_portfolio_buys():
     return {}
 
 def save_portfolio_buys(data):
-    # שמירה מקומית
     try:
         with open(PORTFOLIO_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving local portfolio.json: {e}")
 
-    # עדכון אוטומטי ב-GitHub דרך API
     if GITHUB_TOKEN and GITHUB_REPO:
         try:
             url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
@@ -134,15 +130,30 @@ day_name = {
     0: "שני", 1: "שלישי", 2: "רביעי", 3: "חמישי", 4: "שישי", 5: "שבת", 6: "ראשון",
 }[now_il.weekday()]
 
+# טיקרים של 11 הסקטורים המרכזיים בוול סטריט (SPDR ETFs)
+sector_tickers_map = {
+    "INFO_TECH": "XLK",
+    "FINANCIALS": "XLF",
+    "HEALTH": "XLV",
+    "CONS_DISC": "XLY",
+    "CONS_STAPLES": "XLP",
+    "ENERGY": "XLE",
+    "INDUSTRIALS": "XLI",
+    "MATERIALS": "XLB",
+    "COMM": "XLC",
+    "UTILITIES": "XLU",
+    "REAL_ESTATE": "XLRE"
+}
+
 base_market_tickers = [
     "GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX",
-] + list(portfolio_buys.keys())
+] + list(sector_tickers_map.values()) + list(portfolio_buys.keys())
 
 def fetch_market_data(tickers):
     market_data = {}
     for ticker in tickers:
         success = False
-        for attempt in range(3): # ניסיון חוזר למקרה של נפילה רגעית ב-Yahoo Finance
+        for attempt in range(3):
             try:
                 stock = yf.Ticker(ticker)
                 hist = stock.history(period="2d")
@@ -255,6 +266,17 @@ try:
         "BTC_PRICE": btc_price,
         "BTC_CHANGE": btc_change,
     }
+
+    # חישוב נתונים וצבעים ל-11 הסקטורים עבור שלב 2
+    for s_key, s_ticker in sector_tickers_map.items():
+        s_data = base_market_data.get(s_ticker, {})
+        s_change = s_data.get("change", 0.0)
+        sign = "+" if s_change > 0 else ""
+        color = "#2ecc71" if s_change >= 0 else "#e74c3c"
+        
+        replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
+        replacements[f"SECTOR_{s_key}_CLASS"] = f'style="color: {color};"'
+        replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
     # עדכון אוטומטי של כל מניה מתוך portfolio.json כולל כמות מניות
     for ticker, info in portfolio_buys.items():
