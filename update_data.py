@@ -424,8 +424,8 @@ if __name__ == "__main__":
 
             logo_url = get_logo_url(upper_ticker)
             
-            # תיקון כיווניות וסדור הופעת הלוגו, שם החברה והסוגריים בשלב 5
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px; direction: rtl;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span><bdi>{company_name}</bdi> <bdi>(טיקר: {upper_ticker})</bdi></span></span>"""
+            # כותרת נאוה ובטוחה שמתאימה למבנה המקורי של התבנית בלי לשבור את העיצוב
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span>{company_name} (טיקר: {upper_ticker})</span></span>"""
 
             for t_variant in [upper_ticker, lower_ticker, ticker]:
                 replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
@@ -455,7 +455,6 @@ if __name__ == "__main__":
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         print("Git status output:\n", status.stdout)
         
-        # חותמת זמן נסתרת לוודא ש־Git תמיד מזהה שינוי ומעדכן את האתר
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             html_text = f.read()
         html_text += f"\n<!-- Build timestamp: {now_il.isoformat()} -->"
@@ -463,7 +462,7 @@ if __name__ == "__main__":
             f.write(html_text)
 
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
-        subprocess.run(["git", "commit", "-m", f"Fix stage 5 title bidi order and logo layout on {day_name}"], check=True)
+        subprocess.run(["git", "commit", "-m", f"Stabilize stage 5 title layout and update site on {day_name}"], check=True)
         subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
         print("Successfully pushed changes to GitHub!")
