@@ -439,14 +439,18 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations
+        # Git operations with token configuration for GitHub Actions
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
+        
+        if GITHUB_TOKEN and GITHUB_REPO:
+            subprocess.run(["git", "remote", "set-url", "origin", f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_REPO}.git"], check=True)
+
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix portfolio title bdi isolation and logo layout on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Auto update index.html on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
