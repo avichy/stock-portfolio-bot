@@ -74,28 +74,41 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים נקי ויציב למניות ולתיק האישי
+# מיפוי דומיינים מורחב הכולל את כל 19 אחזקות התיק בשלב 5, מניות L/T, סווינג ומדדים
 DOMAIN_MAP = {
+    # אחזקות התיק בשלב 5 (19 אחזקות)
     "NVDA": "nvidia.com",
+    "AMD": "amd.com",
+    "MU": "micron.com",
+    "SNDK": "sandisk.com",
+    "WDC": "westerndigital.com",
+    "INTC": "intel.com",
+    "SIMO": "siliconmotion.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
+    "META": "meta.com",
+    "AMZN": "amazon.com",
+    "GOOGL": "google.com",
+    "GOOG": "google.com",
+    "TTWO": "take2games.com",
+    "WMT": "walmart.com",
+    "NFLX": "netflix.com",
+    "MA": "mastercard.com",
+    "IBIT": "ishares.com",
+    "GTEC": "gtec.com",
+    "TQQQ": "proshares.com",
+    # מניות נוספות לטווח ארוך וסווינג
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
-    "GOOGL": "google.com",
-    "AMZN": "amazon.com",
     "AVGO": "broadcom.com",
-    "AMD": "amd.com",
-    "META": "meta.com",
     "TSM": "tsmc.com",
     "ASML": "asml.com",
-    "MU": "micron.com",
     "SMCI": "supermicro.com",
     "PLTR": "palantir.com",
     "COIN": "coinbase.com",
-    "IREN": "iren.com",
-    "CIFR": "ciphermining.com",
     "ARM": "arm.com",
     "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com",
-    "TQQQ": "proshares.com"
+    "QCOM": "qualcomm.com"
 }
 
 LT_STOCKS_META = [
@@ -430,7 +443,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Stable favicon integration without blocking on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add all stage 5 portfolio asset favicons on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
