@@ -425,14 +425,14 @@ if __name__ == "__main__":
             logo_url = get_logo_url(upper_ticker)
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
 
-            # הגנה כפולה: תמיכה גם באותיות גדולות וגם באותיות קטנות עבור התבנית
             for t_variant in [upper_ticker, lower_ticker, ticker]:
                 replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
                 replacements[f"{t_variant}_PORT_SHARES"] = f"<bdi>{format_num(shares_count, 0)}</bdi>"
                 replacements[f"{t_variant}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
                 replacements[f"{t_variant}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
                 replacements[f"{t_variant}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
-                replacements[f"{t_variant}_PORT_STATUS"] = f'רווח: <bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
+                # תיקון קריטי: הוספת ה־bdi בלבד בלי המילה "רווח:" המיותרת שכפלה את הטקסט בתבנית
+                replacements[f"{t_variant}_PORT_STATUS"] = f'<bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
                 replacements[f"{t_variant}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
@@ -454,20 +454,18 @@ if __name__ == "__main__":
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         print("Git status output:\n", status.stdout)
         
-        # גם אם הסטטוס נראה ריק, נוסיף הערת עדכון אוטומטית לקובץ כדי ש־Git תמיד יזהה שינוי ויעדכן את האתר
-        if OUTPUT_FILE in status.stdout or True:
-            # הוספת הערת חותמת זמן נסתרת ב־HTML כדי לוודא ש־Git תמיד יבצע commit וידחוף את העדכון
-            with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
-                html_text = f.read()
-            html_text += f"\n<!-- Build timestamp: {now_il.isoformat()} -->"
-            with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-                f.write(html_text)
+        # חותמת זמן נסתרת לוודא ש־Git תמיד מזהה שינוי ומעדכן את האתר
+        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+            html_text = f.read()
+        html_text += f"\n<!-- Build timestamp: {now_il.isoformat()} -->"
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(html_text)
 
-            subprocess.run(["git", "add", OUTPUT_FILE], check=True)
-            subprocess.run(["git", "commit", "-m", f"Auto-update site data and bdi isolation on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-            subprocess.run(["git", "push"], check=True)
-            print("Successfully pushed changes to GitHub!")
+        subprocess.run(["git", "add", OUTPUT_FILE], check=True)
+        subprocess.run(["git", "commit", "-m", f"Fix portfolio status duplication and update site on {day_name}"], check=True)
+        subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
+        subprocess.run(["git", "push"], check=True)
+        print("Successfully pushed changes to GitHub!")
 
     except Exception as e:
         print("CRITICAL ERROR IN SCRIPT:")
