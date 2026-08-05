@@ -74,6 +74,32 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+LT_STOCKS_META = [
+    {"ticker": "NVDA", "name": "NVIDIA Corporation", "desc": "מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.", "news": "ביקושים שיא לשבבי Blackwell. כדאי להחזיק ארוך טווח בשל מובילות שוק טכנולוגית חסרת מתחרים."},
+    {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, מערכות הפעלה ושילוב כלי AI ארגוניים.", "news": "צמיחה חזקה בשירותי הענן והשקעות ענק בבינה מלאכותית, השקעה בטוחה ויציבה לטווח ארוך."},
+    {"ticker": "AAPL", "name": "Apple Inc.", "desc": "פיתוח מכשירי iPhone, שירותים דיגיטליים ואקוסיסטם מוביל.", "news": "השקות מוצרים חדשים ושילוב Apple Intelligence, יציבות פיננסית איתנה לשמירה על ערך."},
+    {"ticker": "GOOGL", "name": "Alphabet / Google", "desc": "מנוע חיפוש גלובלי, ענן ופיתוח מודלי הבינה המלאכותית Gemini.", "news": "התקדמות משמעותית במוניטין ה-AI והכנסות פרסום חזקות, מניה ראויה ומשתלמת להחזקה."},
+    {"ticker": "AMZN", "name": "Amazon.com, Inc.", "desc": "מובילת ענן גלובלית (AWS) וענקית מסחר אלקטרוני.", "news": "שיפור ניכר ברווחיות התפעולית של AWS וצמיחה בלוגיסטיקה, מנוע צמיחה מרכזי בתיק."},
+    {"ticker": "AVGO", "name": "Broadcom Inc.", "desc": "שבבי תקשורת מתקדמים ומעבדי AI ייעודיים (ASIC).", "news": "חוזים חדשים עם ענקיות טכנולוגיה, מציגה נתוני צמיחה מרשימים להשקעה ארוכת טווח."},
+    {"ticker": "AMD", "name": "Advanced Micro Devices", "desc": "פיתוח מעבדים וכרטיסים גרפיים לשווקי ה-PC והשרתים.", "news": "נתח שוק גדל בסדרת מעבדי EPYC וכרטיסי MI300, פוטנציאל רווח גבוה לטווח הרחוק."},
+    {"ticker": "META", "name": "Meta Platforms, Inc.", "desc": "הפעלת רשתות חברתיות מובילות ופיתוח מודלי קוד פתוח.", "news": "ייעול מבני דרסטי ושיפור מהיר בהכנסות מפרסום ממוקד AI, כדאי לשמור בתיק."},
+    {"ticker": "TSM", "name": "Taiwan Semiconductor", "desc": "בית היציקה הגדול בעולם המייצר את השבבים המתקדמים ביותר.", "news": "ביקוש אדיר לייצור שבבים עבור כל ענקיות הטכנולוגיה, עמוד תווך יציב והכרחי בתעשייה."},
+    {"ticker": "ASML", "name": "ASML Holding N.V.", "desc": "יצרנית בלעדית של מכונות ליטוגרפיה EUV לתעשיית השבבים.", "news": "מונופול עולמי ייחודי וקריטי לייצור שבבים מתקדמים, השקעה איכותית לטווח הארוך."}
+]
+
+SW_STOCKS_META = [
+    {"ticker": "MU", "name": "Micron Technology", "desc": "ייצור רכיבי זיכרון מתקדמים מסוג DRAM ו-NAND.", "news": "מחזור ביקוש חזק לזיכרונות HBM למרכזי נתונים, מתאים מאוד לסווינג קצר טווח."},
+    {"ticker": "SMCI", "name": "Super Micro Computer", "desc": "תשתיות שרתים מתקדמות ופתרונות קירור נוזלי למרכזי נתונים.", "news": "תנודתיות גבוהה במחיר בעקבות דוחות וביקושים, דורש מעקב צמוד למסחר סווינג."},
+    {"ticker": "PLTR", "name": "Palantir Technologies", "desc": "פלטפורמות אנליטיקה ובינה מלאכותית עסקית וביטחונית.", "news": "חוזים ממשלתיים חדשים וצמיחה מהירה במגזר המסחרי (AIP), מניה חזקה למסחר תנודתי."},
+    {"ticker": "COIN", "name": "Coinbase Global, Inc.", "desc": "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו.", "news": "קורלציה גבוהה לתנודות הביטקוין ושוק הקריפטו, מצוינת לסווינג מהיר בתקופות מומנטום."},
+    {"ticker": "IREN", "name": "Iris Energy Limited", "desc": "תשתיות מחשוב ענן ומרכזי נתונים עם דגש על אנרגיה ירוקה.", "news": "הרחבת פעילות ה-AI והתשתיות, תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג."},
+    {"ticker": "CIFR", "name": "Cipher Mining Inc.", "desc": "כרייה ותשתיות מחשוב בהספקים גבוהים.", "news": "התייעלות תפעולית והתרחבות פוטנציאלית לתשתיות AI, מתאימה למעקב סווינג סלקטיבי."},
+    {"ticker": "ARM", "name": "Arm Holdings plc", "desc": "תכנון ארכיטקטורת מעבדים חסכונית באנרגיה.", "news": "חדירה מואצת לשוק המחשבים הניידים והשרתים, פוטנציאל מומנטום טוב לסווינג."},
+    {"ticker": "MRVL", "name": "Marvell Technology", "desc": "פתרונות קישוריות מהירה ושבבים מותאמים אישית.", "news": "ביקושים גבוהים למתגים וקישוריות במרכזי נתונים מבוססי AI, מעקב סווינג כדאי."},
+    {"ticker": "QCOM", "name": "Qualcomm Incorporated", "desc": "שבבים סלולריים ומעבדים למחשבים אישיים מתקדמים.", "news": "כניסה אגרסיבית לשוק מחשבי ה-Copilot+ PC, מציגה תנועות מחיר מעניינות לסווינג."},
+    {"ticker": "TQQQ", "name": "ProShares UltraPro QQQ", "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק 100.", "news": "מתאימה אך ורק למסחר יומי או סווינג קצרצר עקב שחיקת מינוף לאורך זמן."}
+]
+
 def get_default_ai_insights():
     return {
         "SP500_ANALYSIS": "מדד S&P 500 ממשיך להיסחר סביב רמות מפתח תוך בחינת נתוני המאקרו והאינפלציה.",
@@ -95,30 +121,6 @@ def get_default_ai_insights():
         "ANALYST_POINT_2": "דגש על ניהול סיכונים קפדני ובחינה בררנית של דוחות כספיים רבעוניים.",
         "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה לפוזיציות.",
         "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות.",
-        "long_term_stocks": [
-            "<strong>NVIDIA (NVDA):</strong> מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.",
-            "<strong>Microsoft (MSFT):</strong> עוגן טכנולוגי חזק עם שליטה בענן (Azure) ושילוב כלי AI ארגוניים.",
-            "<strong>Apple (AAPL):</strong> יציבות פיננסית איתנה, בסיס משתמשים נאמן וצמיחה בשירותים.",
-            "<strong>Alphabet / Google (GOOG):</strong> שליטה מוחלטת בחיפוש, פרסום דיגיטלי ופיתוח מודלי Gemini מתקדמים.",
-            "<strong>Amazon (AMZN):</strong> מובילת ענן גלובלית (AWS) וענקית מסחר אלקטרוני עם יעילות תפעולית עולה.",
-            "<strong>Broadcom (AVGO):</strong> שחקנית מפתח בשבבי תקשורת מתקדמים ומעבדי AI ייעודיים (ASIC).",
-            "<strong>AMD (AMD):</strong> מתחרה מרכזית בשוק המעבדים והכרטיסים הגרפיים עם נתח שוק צומח בשרתים.",
-            "<strong>Meta Platforms (META):</strong> שליטה ברשתות החברתיות המרכזיות והשקעות חכמות בקוד פתוח ו-AI.",
-            "<strong>Taiwan Semiconductor (TSMC):</strong> בית היציקה המרכזי בעולם המייצר את השבבים המתקדמים ביותר.",
-            "<strong>ASML Holding (ASML):</strong> מונופול עולמי ייחודי של מכונות ליטוגרפיה אב-טיפוס לתעשיית השבבים."
-        ],
-        "swing_stocks": [
-            "<strong>Micron Technology (MU):</strong> מחזוריות חזקה בשוק הזיכרונות (DRAM/NAND) עם ביקוש שיא משרתי AI.",
-            "<strong>Super Micro Computer (SMCI):</strong> פתרונות שרתים וקירור נוזלי מתקדמים למרכזי נתונים.",
-            "<strong>Palantir Technologies (PLTR):</strong> ביקושים חזקים לפלטפורמות ניתוח נתונים ובינה מלאכותית צבאית ועסקית.",
-            "<strong>Coinbase Global (COIN):</strong> חשיפה תנודתית גבוהה למחזורי המסחר בשוק הקריפטו והביטקוין.",
-            "<strong>Iris Energy (IREN):</strong> תשתית מחשוב ענן ומרכזי נתונים עם דגש על אנרגיה ירוקה ויעילה.",
-            "<strong>Cipher Mining (CIFR):</strong> כרייה ותשתיות מחשוב בהספקים גבוהים עם ניהול פיננסי הדוק.",
-            "<strong>Arm Holdings (ARM):</strong> ארכיטקטורת מעבדים חסכונית שמתרחבת לעולמות ה-PC והשרתים.",
-            "<strong>Marvell Technology (MRVL):</strong> פתרונות קישוריות מהירה למרכזי נתונים ושבבי מותג מותאמים אישית.",
-            "<strong>Qualcomm (QCOM):</strong> מובילה בשבבי תקשורת סלולרית וכניסה אגרסיבית למעבדי מחשבי Copilot+ PC.",
-            "<strong>ProShares UltraPro QQQ (TQQQ):</strong> תעודת סל ממונפת (x3) למסחר תנודתי קצר טווח במדד הנאסד\"ק."
-        ],
         "portfolio_analysis": {}
     }
 
@@ -144,7 +146,7 @@ sector_tickers_map = {
 
 base_market_tickers = [
     "GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX",
-] + list(sector_tickers_map.values()) + list(portfolio_buys.keys())
+] + list(sector_tickers_map.values()) + list(portfolio_buys.keys()) + [s["ticker"] for s in LT_STOCKS_META] + [s["ticker"] for s in SW_STOCKS_META]
 
 def fetch_market_data(tickers):
     market_data = {}
@@ -174,10 +176,48 @@ def fetch_market_data(tickers):
                     success = True
                     break
             except Exception:
-                time.sleep(2)
+                time.sleep(1)
         if not success:
             market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
     return market_data
+
+def build_structured_stocks_html(stocks_meta, market_data):
+    html_parts = []
+    for s in stocks_meta:
+        ticker = s["ticker"]
+        name = s["name"]
+        desc = s["desc"]
+        news = s["news"]
+
+        data = market_data.get(ticker, {})
+        price = format_num(data.get("price", 0))
+        pre_market = format_num(data.get("pre_market", 0))
+        target = format_num(data.get("target", 0))
+        change_val = data.get("change", 0.0)
+
+        sign = "+" if change_val > 0 else ""
+        color = "#2ecc71" if change_val >= 0 else "#e74c3c"
+        change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
+        logo_url = f"https://s3-symbol-logo.tradingview.com/{ticker.lower()}.svg"
+
+        card_html = f"""
+        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
+            <div class="flex items-center gap-3 mb-3">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" onerror="this.src='https://assets.parqet.com/logos/symbol/{ticker}'" alt="{ticker}">
+                <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
+            </div>
+            <div class="text-sm text-gray-300 space-y-1">
+                <div><strong>מחיר נוכחי:</strong> ${price}</div>
+                <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
+                <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
+                <div><strong>רווח:</strong> {change_str}</div>
+                <div><strong>עיסוק החברה:</strong> {desc}</div>
+                <div><strong>חדשות ורציונל:</strong> {news}</div>
+            </div>
+        </div>
+        """
+        html_parts.append(card_html)
+    return "".join(html_parts)
 
 if __name__ == "__main__":
     try:
@@ -187,7 +227,7 @@ if __name__ == "__main__":
         time_str = now_il.strftime("%H:%M")
 
         ai_insights = load_ai_cache()
-        if not ai_insights or not ai_insights.get("long_term_stocks"):
+        if not ai_insights:
             ai_insights = get_default_ai_insights()
 
         sp500 = base_market_data.get("^GSPC", {})
@@ -240,11 +280,8 @@ if __name__ == "__main__":
         with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
             content = f.read()
 
-        lt_stocks = ai_insights.get("long_term_stocks", [])
-        lt_html = "".join([f"<p class=\"mb-2\">• {item}</p>" for item in lt_stocks]) if lt_stocks else "אין נתונים כרגע."
-
-        sw_stocks = ai_insights.get("swing_stocks", [])
-        sw_html = "".join([f"<p class=\"mb-2\">• {item}</p>" for item in sw_stocks]) if sw_stocks else "אין נתונים כרגע."
+        lt_html = build_structured_stocks_html(LT_STOCKS_META, base_market_data)
+        sw_html = build_structured_stocks_html(SW_STOCKS_META, base_market_data)
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
@@ -335,7 +372,7 @@ if __name__ == "__main__":
             full_note_html = (
                 f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
                 f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
-                f"<strong>תוכן חדשותי:</strong> {p_news_content}<br>"
+                f"<strong>תוכן חדשותي:</strong> {p_news_content}<br>"
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
@@ -360,7 +397,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Add full 10 stocks for long term and swing strategies for {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Update step 4 with structured layout for 20 stocks on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
