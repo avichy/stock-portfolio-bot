@@ -75,54 +75,19 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מילון דומיינים מורחב הכולל את כל מניות התיק וכלל הסקטורים
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
-    "AMD": "amd.com",
-    "MU": "micron.com",
-    "SNDK": "sandisk.com",
-    "WDC": "westerndigital.com",
-    "INTC": "intel.com",
-    "SIMO": "siliconmotion.com",
-    "IREN": "iren.com",
-    "CIFR": "ciphermining.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
     "GOOGL": "google.com",
-    "GOOG": "google.com",
     "AMZN": "amazon.com",
     "META": "meta.com",
-    "AVGO": "broadcom.com",
-    "TSM": "tsmc.com",
-    "ASML": "asml.com",
-    "SMCI": "supermicro.com",
-    "PLTR": "palantir.com",
-    "COIN": "coinbase.com",
-    "ARM": "arm.com",
-    "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com",
     "JPM": "jpmorganchase.com",
     "JNJ": "jnj.com",
     "XOM": "exxonmobil.com",
     "WMT": "walmart.com",
     "TSLA": "tesla.com",
-    "UNH": "unitedhealth.com",
-    "PG": "pg.com",
-    "CVX": "chevron.com",
-    "BRK-B": "berkshirehathaway.com",
-    "OXY": "oxy.com",
-    "NVO": "novonordisk.com",
-    "PYPL": "paypal.com",
-    "BA": "boeing.com",
-    "NEM": "newmont.com",
-    "TQQQ": "proshares.com",
-    "IBIT": "ishares.com",
-    "TTWO": "take2games.com",
-    "NFLX": "netflix.com",
-    "MA": "mastercard.com",
-    "GTEC": "gtec.com",
-    "BTC-USD": "bitcoin.org",
-    "ETH-USD": "ethereum.org"
+    "BTC-USD": "bitcoin.org"
 }
 
 def get_stock_logo_url(ticker, website=None):
@@ -276,7 +241,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -415,7 +380,7 @@ if __name__ == "__main__":
             if not isinstance(info, dict):
                 continue
             
-            buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
+            buy_p = info.get("buy") or info.get("buyPrice") or 0.0
 
             fetched_price_data = base_market_data.get(ticker, {})
             curr_p = fetched_price_data.get("price")
@@ -435,7 +400,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
             shares_count = info.get("shares", 0)
-            company_name = info.get("name") or fetched_price_data.get("name") or ticker
+            company_name = info.get("name", ticker)
             website = fetched_price_data.get("website")
 
             p_item = portfolio_analysis_map.get(ticker, {})
@@ -453,7 +418,7 @@ if __name__ == "__main__":
 
             logo_url = get_stock_logo_url(ticker, website)
 
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';"> {company_name} (טיקר: {ticker})</span>"""
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
 
             replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
@@ -476,7 +441,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site and portfolio with safe logo fallbacks on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix f-string syntax error and update site on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
