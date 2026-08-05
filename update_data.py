@@ -114,6 +114,7 @@ DOMAIN_MAP = {
 def get_logo_url(ticker):
     clean_ticker = ticker.split(".")[0].split("-")[0].replace("=", "").replace("^", "").upper()
     domain = DOMAIN_MAP.get(clean_ticker, f"{clean_ticker.lower()}.com")
+    # חזרה לשירות ה־Favicon של Google שעבד בצורה מצוינת בשלב 4
     return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
 LT_STOCKS_META = [
@@ -424,8 +425,8 @@ if __name__ == "__main__":
 
             logo_url = get_logo_url(upper_ticker)
             
-            # כותרת נאוה ובטוחה שמתאימה למבנה המקורי של התבנית בלי לשבור את העיצוב
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span>{company_name} (טיקר: {upper_ticker})</span></span>"""
+            # כותרת נקייה ובטוחה לטבלה באמצעות שירות Favicon של Google ויישור מותאם שלא שובר את ה־DOM
+            title_with_logo = f"""<img src="{logo_url}" width="20" height="20" style="vertical-align: middle; margin-left: 6px; border-radius: 50%; background: white; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span>{company_name} (טיקר: {upper_ticker})</span>"""
 
             for t_variant in [upper_ticker, lower_ticker, ticker]:
                 replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
@@ -462,7 +463,7 @@ if __name__ == "__main__":
             f.write(html_text)
 
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
-        subprocess.run(["git", "commit", "-m", f"Stabilize stage 5 title layout and update site on {day_name}"], check=True)
+        subprocess.run(["git", "commit", "-m", f"Restore Google favicon and safe table title layout on {day_name}"], check=True)
         subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
         print("Successfully pushed changes to GitHub!")
