@@ -152,7 +152,7 @@
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong><strong>:</strong> מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_STAPLES_CLASS}}>{{SECTOR_CONS_STAPLES_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong><strong>:</strong> נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" {{SECTOR_ENERGY_CLASS}}>{{SECTOR_ENERGY_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong><strong>:</strong> תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INDUSTRIALS_CLASS}}>{{SECTOR_INDUSTRIALS_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>:</strong> כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong><strong>:</strong> כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong><strong>:</strong> טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" {{SECTOR_COMM_CLASS}}>{{SECTOR_COMM_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong><strong>:</strong> חשמל ומים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_UTILITIES_CLASS}}>{{SECTOR_UTILITIES_PCT}}</span></div>
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong><strong>:</strong> קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_REAL_ESTATE_CLASS}}>{{SECTOR_REAL_ESTATE_PCT}}</span></div>
@@ -298,8 +298,66 @@
                 });
             });
 
-            // קריאה לפונקציה כדי להציג את מניות התיק בטעינת העמוד
+            // הצגת מניות התיק בטעינת העמוד
             renderPortfolio();
+
+            // אתחול גרף הסקטורים הדינמי לפי אחוזי השרת
+            const sectorCtx = document.getElementById('sectorChart');
+            if (sectorCtx) {
+                function parsePct(str) {
+                    if (!str || str.includes('{{')) return 0;
+                    // חילוץ בטוח של מספרים כולל סימן מינוס ונקודה עשרונית מתוך המחרוזת
+                    let clean = str.toString().replace(/[^0-9.-]/g, '');
+                    return parseFloat(clean) || 0;
+                }
+
+                const rawValues = [
+                    parsePct("{{SECTOR_INFO_TECH_PCT}}"),
+                    parsePct("{{SECTOR_FINANCIALS_PCT}}"),
+                    parsePct("{{SECTOR_HEALTH_PCT}}"),
+                    parsePct("{{SECTOR_CONS_DISC_PCT}}"),
+                    parsePct("{{SECTOR_CONS_STAPLES_PCT}}"),
+                    parsePct("{{SECTOR_ENERGY_PCT}}"),
+                    parsePct("{{SECTOR_INDUSTRIALS_PCT}}"),
+                    parsePct("{{SECTOR_MATERIALS_PCT}}"),
+                    parsePct("{{SECTOR_COMM_PCT}}"),
+                    parsePct("{{SECTOR_UTILITIES_PCT}}"),
+                    parsePct("{{SECTOR_REAL_ESTATE_PCT}}")
+                ];
+
+                const barColors = rawValues.map(val => val >= 0 ? '#22d3ee' : '#f87171');
+
+                new Chart(sectorCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'],
+                        datasets: [{
+                            label: 'שינוי יומי (%)',
+                            data: rawValues,
+                            backgroundColor: barColors,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#9ca3af', font: { size: 11 } },
+                                grid: { color: 'rgba(55, 65, 81, 0.5)' }
+                            },
+                            y: {
+                                ticks: { color: '#9ca3af' },
+                                grid: { color: 'rgba(55, 65, 81, 0.5)' }
+                            }
+                        }
+                    }
+                });
+            }
         });
 
         let portfolioStocks = [
