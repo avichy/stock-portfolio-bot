@@ -139,23 +139,23 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 2: סקירה סקטוריאלית מקיפה – 11 הסקטורים 💻📈</h2>
             
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow mb-4">
-                <canvas id="sectorChart" height="90"></canvas>
+                <canvas id="sectorChart" height="110"></canvas>
             </div>
 
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                 <p class="text-cyan-400 font-bold mb-3 text-sm">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">💻 <strong>טכנולוגיית מידע</strong> <span class="{{SECTOR_INFO_TECH_CLASS}}">{{SECTOR_INFO_TECH_PCT}}</span><strong>:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏦 <strong>פיננסים</strong> <span class="{{SECTOR_FINANCIALS_CLASS}}">{{SECTOR_FINANCIALS_PCT}}</span><strong>:</strong> בנקים, ביטוח ואשראי.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏥 <strong>שירותי בריאות</strong> <span class="{{SECTOR_HEALTH_CLASS}}">{{SECTOR_HEALTH_PCT}}</span><strong>:</strong> פארמה, ביוטכנולוגיה וציוד רפואי.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛍️ <strong>צרכנות מחזורית</strong> <span class="{{SECTOR_CONS_DISC_CLASS}}">{{SECTOR_CONS_DISC_PCT}}</span><strong>:</strong> קמעונאות, רכבים ומלונאות.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong> <span class="{{SECTOR_CONS_STAPLES_CLASS}}">{{SECTOR_CONS_STAPLES_PCT}}</span><strong>:</strong> מזון, משקאות ורשתות שיווק.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong> <span class="{{SECTOR_ENERGY_CLASS}}">{{SECTOR_ENERGY_PCT}}</span><strong>:</strong> נפט, גז ואנרגיה מתחדשת.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong> <span class="{{SECTOR_INDUSTRIALS_CLASS}}">{{SECTOR_INDUSTRIALS_PCT}}</span><strong>:</strong> תעופה, ביטחון ומכונות.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong> <span class="{{SECTOR_MATERIALS_CLASS}}">{{SECTOR_MATERIALS_PCT}}</span><strong>:</strong> כימיקלים ומתכות.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong> <span class="{{SECTOR_COMM_CLASS}}">{{SECTOR_COMM_PCT}}</span><strong>:</strong> טלקום ומדיה חברתית.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong> <span class="{{SECTOR_UTILITIES_CLASS}}">{{SECTOR_UTILITIES_PCT}}</span><strong>:</strong> חשמל ומים.</div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong> <span class="{{SECTOR_REAL_ESTATE_CLASS}}">{{SECTOR_REAL_ESTATE_PCT}}</span><strong>:</strong> קרנות REITs ונכסים מניבים.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">💻 <strong>טכנולוגיית מידע</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_INFO_TECH_CLASS}}">{{SECTOR_INFO_TECH_PCT}}</span><strong>:</strong> חומרה, שבבים, תוכנה ושירותי IT.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏦 <strong>פיננסים</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_FINANCIALS_CLASS}}">{{SECTOR_FINANCIALS_PCT}}</span><strong>:</strong> בנקים, ביטוח ואשראי.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏥 <strong>שירותי בריאות</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_HEALTH_CLASS}}">{{SECTOR_HEALTH_PCT}}</span><strong>:</strong> פארמה, ביוטכנולוגיה וציוד רפואי.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛍️ <strong>צרכנות מחזורית</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_CONS_DISC_CLASS}}">{{SECTOR_CONS_DISC_PCT}}</span><strong>:</strong> קמעונאות, רכבים ומלונאות.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_CONS_STAPLES_CLASS}}">{{SECTOR_CONS_STAPLES_PCT}}</span><strong>:</strong> מזון, משקאות ורשתות שיווק.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_ENERGY_CLASS}}">{{SECTOR_ENERGY_PCT}}</span><strong>:</strong> נפט, גז ואנרגיה מתחדשת.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_INDUSTRIALS_CLASS}}">{{SECTOR_INDUSTRIALS_PCT}}</span><strong>:</strong> תעופה, ביטחון ומכונות.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_MATERIALS_CLASS}}">{{SECTOR_MATERIALS_PCT}}</span><strong>:</strong> כימיקלים ומתכות.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_COMM_CLASS}}">{{SECTOR_COMM_PCT}}</span><strong>:</strong> טלקום ומדיה חברתית.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_UTILITIES_CLASS}}">{{SECTOR_UTILITIES_PCT}}</span><strong>:</strong> חשמל ומים.</div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong> <span dir="ltr" class="inline-block font-bold {{SECTOR_REAL_ESTATE_CLASS}}">{{SECTOR_REAL_ESTATE_PCT}}</span><strong>:</strong> קרנות REITs ונכסים מניבים.</div>
                 </div>
             </div>
         </div>
@@ -439,15 +439,26 @@
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['שבבים', 'ענן ו-AI', 'קריפטו'],
+                            labels: ['טכנולוגיית מידע', 'פיננסים', 'שירותי בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'שירותי תקשורת', 'תשתיות', 'נדל"ן'],
                             datasets: [{
-                                label: 'ביצועי סקטורים מובילים',
+                                label: 'ביצועי 11 הסקטורים',
                                 data: [
-                                    parseFloat('{{SECTOR_CHIP_PERF}}') || 0, 
-                                    parseFloat('{{SECTOR_CLOUD_PERF}}') || 0, 
-                                    parseFloat('{{SECTOR_CRYPTO_PERF}}') || 0
+                                    parseFloat('{{SECTOR_INFO_TECH_PERF}}') || 0, 
+                                    parseFloat('{{SECTOR_FINANCIALS_PERF}}') || 0, 
+                                    parseFloat('{{SECTOR_HEALTH_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_CONS_DISC_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_CONS_STAPLES_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_ENERGY_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_INDUSTRIALS_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_MATERIALS_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_COMM_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_UTILITIES_PERF}}') || 0,
+                                    parseFloat('{{SECTOR_REAL_ESTATE_PERF}}') || 0
                                 ],
-                                backgroundColor: ['#06b6d4', '#3b82f6', '#10b981'],
+                                backgroundColor: [
+                                    '#06b6d4', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                                    '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#84cc16', '#eab308'
+                                ],
                                 borderRadius: 6
                             }]
                         },
