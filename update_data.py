@@ -423,7 +423,9 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span style="font-weight: bold;"><bdi>{company_name}</bdi> (<bdi>טיקר: {upper_ticker}</bdi>)</span></span>"""
+            
+            # תיקון כיווניות וסדור הופעת הלוגו, שם החברה והסוגריים בשלב 5
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px; direction: rtl;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"><span><bdi>{company_name}</bdi> <bdi>(טיקר: {upper_ticker})</bdi></span></span>"""
 
             for t_variant in [upper_ticker, lower_ticker, ticker]:
                 replacements[f"{t_variant}_PORT_TITLE"] = title_with_logo
@@ -431,7 +433,6 @@ if __name__ == "__main__":
                 replacements[f"{t_variant}_PORT_CURRENT"] = f"<bdi>${format_num(curr_p)}</bdi>"
                 replacements[f"{t_variant}_PORT_PRE"] = f"<bdi>${format_num(pre_p)}</bdi>"
                 replacements[f"{t_variant}_PORT_TARGET"] = f"<bdi>${format_num(fetched_target)}</bdi>"
-                # תיקון קריטי: הוספת ה־bdi בלבד בלי המילה "רווח:" המיותרת שכפלה את הטקסט בתבנית
                 replacements[f"{t_variant}_PORT_STATUS"] = f'<bdi><span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span></bdi>'
                 replacements[f"{t_variant}_PORT_NOTE"] = full_note_html
 
@@ -462,7 +463,7 @@ if __name__ == "__main__":
             f.write(html_text)
 
         subprocess.run(["git", "add", OUTPUT_FILE], check=True)
-        subprocess.run(["git", "commit", "-m", f"Fix portfolio status duplication and update site on {day_name}"], check=True)
+        subprocess.run(["git", "commit", "-m", f"Fix stage 5 title bidi order and logo layout on {day_name}"], check=True)
         subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
         print("Successfully pushed changes to GitHub!")
