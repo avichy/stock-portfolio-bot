@@ -81,17 +81,23 @@ def get_default_ai_insights():
         "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן לתיק המסחר.",
         "VIX_ANALYSIS": "מדד התנודתיות משקף רמת רגיעה מתונה בשווקים ללא לחצים חריגים.",
         "DXY_ANALYSIS": "מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.",
-        "long_term_stocks": [],
-        "swing_stocks": [],
-        "portfolio_analysis": {},
         "USD_ILS_EXPLANATION": "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות המקומי.",
         "OIL_EXPLANATION": "משפיע ישירות על עלויות האנרגיה, התחבורה ושיעורי האינפלציה הגלובליים.",
         "GOLD_EXPLANATION": "משמש כנכס מקלט בטוח וגידור מרכזי מפני אי-יציבות גיאו-פוליטית.",
         "BTC_EXPLANATION": "אינדיקטור מוביל לסנטימנט סיכון ונזילות בנכסים אלטרנטיביים.",
-        "US_MARKET_MACRO_NEWS": "נתוני המאקרו ממשיכים להוות מנוע ניווט מרכזי עבור הבנק המרכזי והמשקיעים.",
-        "IL_MARKET_MACRO_NEWS": "השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות באזור.",
-        "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה.",
-        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות."
+        "US_MARKET_NEWS": "נתוני המאקרו בארה\"ב ממשיכים להוות מנוע ניווט מרכזי עבור הבנק המרכזי והמשקיעים.",
+        "IL_MARKET_NEWS": "השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות באזור.",
+        "CATALYST_EARNINGS": "דיווחים רבעוניים של חברות הטכנולוגיה והשבבים מובילים את נפחי המסחר.",
+        "CATALYST_MONETARY": "הודעות ריבית ומדיניות מוניטרית צפויות להשפיע על תשואות האג\"ח.",
+        "CATALYST_HARDWARE": "השקות מוצרי חומרה חדשים, שבבי AI ועדכוני תוכנה מתקדמים.",
+        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר סביב חברות השבבים, הענן והטכנולוגיה המובילות.",
+        "ANALYST_POINT_1": "האנליסטים צופים המשך צמיחה בהשקעות בתשתיות בינה מלאכותית (AI).",
+        "ANALYST_POINT_2": "דגש על ניהול סיכונים קפדני ובחינה בררנית של דוחות כספיים רבעוניים.",
+        "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה לפוזיציות.",
+        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות.",
+        "long_term_stocks": ["NVIDIA (NVDA): מובילת שוק השבבים וה-AI.", "AMD (AMD): מתחרה חזקה בשוק המעבדים והגרפיקה."],
+        "swing_stocks": ["Micron (MU): הזדמנות מסחר סווינג בעקבות מחזור הזיכרונות.", "IREN: חשיפה דינמית לתשתיות מחשוב וענן."],
+        "portfolio_analysis": {}
     }
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
@@ -212,6 +218,13 @@ if __name__ == "__main__":
         with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
             content = f.read()
 
+        # בניית קטעי HTML עבור מניות ארוכות טווח וסווינג
+        lt_stocks = ai_insights.get("long_term_stocks", [])
+        lt_html = "".join([f"<p>• {item}</p>" for item in lt_stocks]) if lt_stocks else "אין נתונים כרגע."
+
+        sw_stocks = ai_insights.get("swing_stocks", [])
+        sw_html = "".join([f"<p>• {item}</p>" for item in sw_stocks]) if sw_stocks else "אין נתונים כרגע."
+
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
             "DAY_NAME": day_name,
@@ -239,6 +252,22 @@ if __name__ == "__main__":
             "GOLD_CHANGE": gold_change,
             "BTC_PRICE": btc_price,
             "BTC_CHANGE": btc_change,
+            "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", ""),
+            "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", ""),
+            "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", ""),
+            "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", ""),
+            "US_MARKET_NEWS": ai_insights.get("US_MARKET_NEWS", ""),
+            "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_NEWS", ""),
+            "CATALYST_EARNINGS": ai_insights.get("CATALYST_EARNINGS", ""),
+            "CATALYST_MONETARY": ai_insights.get("CATALYST_MONETARY", ""),
+            "CATALYST_HARDWARE": ai_insights.get("CATALYST_HARDWARE", ""),
+            "COMMUNITY_SENTIMENT": ai_insights.get("COMMUNITY_SENTIMENT", ""),
+            "ANALYST_POINT_1": ai_insights.get("ANALYST_POINT_1", ""),
+            "ANALYST_POINT_2": ai_insights.get("ANALYST_POINT_2", ""),
+            "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", ""),
+            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""),
+            "LONG_TERM_STOCKS_SECTION": lt_html,
+            "SWING_STOCKS_SECTION": sw_html,
         }
 
         for s_key, s_ticker in sector_tickers_map.items():
@@ -310,12 +339,11 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix portfolio values and shares update for {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix missing template placeholders for {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
 
-    except Exception as e:
-        print("CRITICAL ERROR IN SCRIPT:")
+    except:
         traceback.print_exc()
-        raise e
+        raise
