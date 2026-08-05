@@ -75,7 +75,6 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי בסיסי נפוץ (כגיבוי מהיר), אך המערכת תומכת כעת בשליפה דינמית מלאה לכל טיקר
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "MSFT": "microsoft.com",
@@ -109,7 +108,6 @@ def get_stock_logo_url(ticker, website=None):
         
     return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
-# רשימות מרובות סקטורים לשלב 4 (השקעות לטווח ארוך ומסחר סווינג מכל תחומי הכלכלה)
 LT_STOCKS_META = [
     {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, תוכנה, פתרונות AI וטכנולוגיה עסקית גלובלית.", "news": "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית גבוהה."},
     {"ticker": "JPM", "name": "JPMorgan Chase & Co.", "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).", "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק."},
@@ -375,7 +373,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color;}'"
+            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color}'"
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
         for ticker, info in portfolio_buys.items():
@@ -437,14 +435,13 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations - עדכון קובץ ה-HTML וקובץ ה-JSON יחד ב-Git
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site, multi-sector stocks and dynamic logos on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix f-string syntax error and update site on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
