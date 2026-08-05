@@ -80,6 +80,7 @@ DOMAIN_MAP = {
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
     "GOOGL": "google.com",
+    "GOOG": "google.com",
     "AMZN": "amazon.com",
     "AVGO": "broadcom.com",
     "AMD": "amd.com",
@@ -95,8 +96,19 @@ DOMAIN_MAP = {
     "ARM": "arm.com",
     "MRVL": "marvell.com",
     "QCOM": "qualcomm.com",
-    "TQQQ": "proshares.com"
+    "TQQQ": "proshares.com",
+    "TSLA": "tesla.com",
+    "NFLX": "netflix.com",
+    "INTC": "intel.com",
+    "BTC": "bitcoin.org",
+    "ETH": "ethereum.org"
 }
+
+def get_logo_url(ticker):
+    # ניקוי הטיקר מסיומות כגון .TA, -USD, =, ^ כדי למצוא דומיין תקין
+    clean_ticker = ticker.split(".")[0].split("-")[0].replace("=", "").replace("^", "").upper()
+    domain = DOMAIN_MAP.get(clean_ticker, f"{clean_ticker.lower()}.com")
+    return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
 LT_STOCKS_META = [
     {"ticker": "NVDA", "name": "NVIDIA Corporation", "desc": "מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.", "news": "ביקושים שיא לשבבי Blackwell. כדאי להחזיק ארוך טווח בשל מובילות שוק טכנולוגית חסרת מתחרים."},
@@ -223,13 +235,12 @@ def build_structured_stocks_html(stocks_meta, market_data):
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
         change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
         
-        domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-        logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+        logo_url = get_logo_url(ticker)
 
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.style.display='none'">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -368,6 +379,8 @@ if __name__ == "__main__":
             if not isinstance(info, dict):
                 continue
             
+            # נורמליזציה של הטיקר לאותיות גדולות להתאמה מוחלטת לתבנית ה־HTML
+            upper_ticker = ticker.upper().strip()
             buy_p = info.get("buy") or info.get("buyPrice") or 0.0
 
             fetched_price_data = base_market_data.get(ticker, {})
@@ -388,12 +401,12 @@ if __name__ == "__main__":
             color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
             shares_count = info.get("shares", 0)
-            company_name = info.get("name", ticker)
+            company_name = info.get("name", upper_ticker)
 
             p_item = portfolio_analysis_map.get(ticker, {})
-            p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
-            p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-            p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
+            p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {upper_ticker}.")
+            p_news_title = p_item.get("news_title", f"עדכון שוק עבור {upper_ticker}")
+            p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {upper_ticker}.")
             p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
 
             full_note_html = (
@@ -403,18 +416,16 @@ if __name__ == "__main__":
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
-            domain = DOMAIN_MAP.get(ticker, f"{ticker.lower()}.com")
-            logo_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+            logo_url = get_logo_url(upper_ticker)
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{upper_ticker}" onerror="this.style.display='none'"> {company_name} (טיקר: {upper_ticker})</span>"""
 
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
-
-            replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
-            replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
-            replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
-            replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
-            replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
-            replacements[f"{ticker}_PORT_NOTE"] = full_note_html
+            replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
+            replacements[f"{upper_ticker}_PORT_SHARES"] = format_num(shares_count, 0)
+            replacements[f"{upper_ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
+            replacements[f"{upper_ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
+            replacements[f"{upper_ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
+            replacements[f"{upper_ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
+            replacements[f"{upper_ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
             content = content.replace(f"{{{{{key}}}}}", str(val))
@@ -430,7 +441,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Use Google domain favicons for clean logos on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix portfolio ticker case normalization for step 5 logos on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
