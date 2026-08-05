@@ -255,7 +255,6 @@ if __name__ == "__main__":
             if not isinstance(info, dict):
                 continue
             
-            # בדיקה בטוחה האם המפתח הוא 'buy' או 'buyPrice'
             buy_p = info.get("buy") or info.get("buyPrice") or 0.0
 
             fetched_price_data = base_market_data.get(ticker, {})
