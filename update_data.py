@@ -362,6 +362,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
             shares_count = info.get("shares", 0)
+            company_name = info.get("name", ticker)
 
             p_item = portfolio_analysis_map.get(ticker, {})
             p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
@@ -376,6 +377,10 @@ if __name__ == "__main__":
                 f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
             )
 
+            logo_url = f"https://s3-symbol-logo.tradingview.com/{ticker.lower()}.svg"
+            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" onerror="this.src='https://assets.parqet.com/logos/symbol/{ticker}'" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+
+            replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
             replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
             replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
             replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
@@ -397,7 +402,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update step 4 with structured layout for 20 stocks on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add company logo and ticker to step 5 portfolio items on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
