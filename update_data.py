@@ -124,7 +124,7 @@ def get_stock_logo_url(ticker, website=None):
     if not domain:
         domain = f"{clean_ticker.lower()}.com"
         
-    # שימוש בשירות Clearbit להצגת הלוגו הרשמי והאמיתי של החברה באיכות מעולה
+    # שימוש ישיר ב-Clearbit להצגת הלוגו הרשמי והאמיתי של החברה
     return f"https://logo.clearbit.com/{domain}"
 
 LT_STOCKS_META = [
