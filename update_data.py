@@ -75,19 +75,54 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+# מילון דומיינים מורחב הכולל את כל מניות השבבים, החומרה, הקריפטו וכלל הסקטורים למניעת לוגואים שבורים
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
+    "AMD": "amd.com",
+    "MU": "micron.com",
+    "SNDK": "sandisk.com",
+    "WDC": "westerndigital.com",
+    "INTC": "intel.com",
+    "SIMO": "siliconmotion.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
     "GOOGL": "google.com",
+    "GOOG": "google.com",
     "AMZN": "amazon.com",
     "META": "meta.com",
+    "AVGO": "broadcom.com",
+    "TSM": "tsmc.com",
+    "ASML": "asml.com",
+    "SMCI": "supermicro.com",
+    "PLTR": "palantir.com",
+    "COIN": "coinbase.com",
+    "ARM": "arm.com",
+    "MRVL": "marvell.com",
+    "QCOM": "qualcomm.com",
     "JPM": "jpmorganchase.com",
     "JNJ": "jnj.com",
     "XOM": "exxonmobil.com",
     "WMT": "walmart.com",
     "TSLA": "tesla.com",
-    "BTC-USD": "bitcoin.org"
+    "UNH": "unitedhealth.com",
+    "PG": "pg.com",
+    "CVX": "chevron.com",
+    "BRK-B": "berkshirehathaway.com",
+    "OXY": "oxy.com",
+    "NVO": "novonordisk.com",
+    "PYPL": "paypal.com",
+    "BA": "boeing.com",
+    "NEM": "newmont.com",
+    "TQQQ": "proshares.com",
+    "IBIT": "ishares.com",
+    "TTWO": "take2games.com",
+    "NFLX": "netflix.com",
+    "MA": "mastercard.com",
+    "GTEC": "gtec.com",
+    "BTC-USD": "bitcoin.org",
+    "ETH-USD": "ethereum.org"
 }
 
 def get_stock_logo_url(ticker, website=None):
@@ -441,7 +476,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix f-string syntax error and update site on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Expand DOMAIN_MAP for stage 5 portfolio logos on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
