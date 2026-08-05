@@ -95,8 +95,30 @@ def get_default_ai_insights():
         "ANALYST_POINT_2": "דגש על ניהול סיכונים קפדני ובחינה בררנית של דוחות כספיים רבעוניים.",
         "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות ופקודות הגנה לפוזיציות.",
         "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות.",
-        "long_term_stocks": ["NVIDIA (NVDA): מובילת שוק השבבים וה-AI.", "AMD (AMD): מתחרה חזקה בשוק המעבדים והגרפיקה."],
-        "swing_stocks": ["Micron (MU): הזדמנות מסחר סווינג בעקבות מחזור הזיכרונות.", "IREN: חשיפה דינמית לתשתיות מחשוב וענן."],
+        "long_term_stocks": [
+            "<strong>NVIDIA (NVDA):</strong> מובילת השוק הבלתי מעורערת בשבבי AI ותשתיות מחשוב על.",
+            "<strong>Microsoft (MSFT):</strong> עוגן טכנולוגי חזק עם שליטה בענן (Azure) ושילוב כלי AI ארגוניים.",
+            "<strong>Apple (AAPL):</strong> יציבות פיננסית איתנה, בסיס משתמשים נאמן וצמיחה בשירותים.",
+            "<strong>Alphabet / Google (GOOG):</strong> שליטה מוחלטת בחיפוש, פרסום דיגיטלי ופיתוח מודלי Gemini מתקדמים.",
+            "<strong>Amazon (AMZN):</strong> מובילת ענן גלובלית (AWS) וענקית מסחר אלקטרוני עם יעילות תפעולית עולה.",
+            "<strong>Broadcom (AVGO):</strong> שחקנית מפתח בשבבי תקשורת מתקדמים ומעבדי AI ייעודיים (ASIC).",
+            "<strong>AMD (AMD):</strong> מתחרה מרכזית בשוק המעבדים והכרטיסים הגרפיים עם נתח שוק צומח בשרתים.",
+            "<strong>Meta Platforms (META):</strong> שליטה ברשתות החברתיות המרכזיות והשקעות חכמות בקוד פתוח ו-AI.",
+            "<strong>Taiwan Semiconductor (TSMC):</strong> בית היציקה המרכזי בעולם המייצר את השבבים המתקדמים ביותר.",
+            "<strong>ASML Holding (ASML):</strong> מונופול עולמי ייחודי של מכונות ליטוגרפיה אב-טיפוס לתעשיית השבבים."
+        ],
+        "swing_stocks": [
+            "<strong>Micron Technology (MU):</strong> מחזוריות חזקה בשוק הזיכרונות (DRAM/NAND) עם ביקוש שיא משרתי AI.",
+            "<strong>Super Micro Computer (SMCI):</strong> פתרונות שרתים וקירור נוזלי מתקדמים למרכזי נתונים.",
+            "<strong>Palantir Technologies (PLTR):</strong> ביקושים חזקים לפלטפורמות ניתוח נתונים ובינה מלאכותית צבאית ועסקית.",
+            "<strong>Coinbase Global (COIN):</strong> חשיפה תנודתית גבוהה למחזורי המסחר בשוק הקריפטו והביטקוין.",
+            "<strong>Iris Energy (IREN):</strong> תשתית מחשוב ענן ומרכזי נתונים עם דגש על אנרגיה ירוקה ויעילה.",
+            "<strong>Cipher Mining (CIFR):</strong> כרייה ותשתיות מחשוב בהספקים גבוהים עם ניהול פיננסי הדוק.",
+            "<strong>Arm Holdings (ARM):</strong> ארכיטקטורת מעבדים חסכונית שמתרחבת לעולמות ה-PC והשרתים.",
+            "<strong>Marvell Technology (MRVL):</strong> פתרונות קישוריות מהירה למרכזי נתונים ושבבי מותג מותאמים אישית.",
+            "<strong>Qualcomm (QCOM):</strong> מובילה בשבבי תקשורת סלולרית וכניסה אגרסיבית למעבדי מחשבי Copilot+ PC.",
+            "<strong>ProShares UltraPro QQQ (TQQQ):</strong> תעודת סל ממונפת (x3) למסחר תנודתי קצר טווח במדד הנאסד\"ק."
+        ],
         "portfolio_analysis": {}
     }
 
@@ -165,7 +187,7 @@ if __name__ == "__main__":
         time_str = now_il.strftime("%H:%M")
 
         ai_insights = load_ai_cache()
-        if not ai_insights:
+        if not ai_insights or not ai_insights.get("long_term_stocks"):
             ai_insights = get_default_ai_insights()
 
         sp500 = base_market_data.get("^GSPC", {})
@@ -218,12 +240,11 @@ if __name__ == "__main__":
         with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
             content = f.read()
 
-        # בניית קטעי HTML עבור מניות ארוכות טווח וסווינג
         lt_stocks = ai_insights.get("long_term_stocks", [])
-        lt_html = "".join([f"<p>• {item}</p>" for item in lt_stocks]) if lt_stocks else "אין נתונים כרגע."
+        lt_html = "".join([f"<p class=\"mb-2\">• {item}</p>" for item in lt_stocks]) if lt_stocks else "אין נתונים כרגע."
 
         sw_stocks = ai_insights.get("swing_stocks", [])
-        sw_html = "".join([f"<p>• {item}</p>" for item in sw_stocks]) if sw_stocks else "אין נתונים כרגע."
+        sw_html = "".join([f"<p class=\"mb-2\">• {item}</p>" for item in sw_stocks]) if sw_stocks else "אין נתונים כרגע."
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
@@ -339,7 +360,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix missing template placeholders for {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add full 10 stocks for long term and swing strategies for {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
