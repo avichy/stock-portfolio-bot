@@ -74,7 +74,6 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "MSFT": "microsoft.com",
@@ -415,8 +414,6 @@ if __name__ == "__main__":
             )
 
             logo_url = get_logo_url(upper_ticker)
-            
-            # תיקון כיווניות (Bidi) לסוגריים ולשמות באנגלית כדי שלא יתפכו בתוך אזור RTL
             title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;" dir="ltr"><span style="font-weight: bold;">{company_name}</span> (<span dir="rtl">טיקר:</span> <span style="font-weight: bold;">{upper_ticker}</span>)</span><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain; margin-right: 8px;" alt="{upper_ticker}" onerror="this.style.display='none'">"""
 
             replacements[f"{upper_ticker}_PORT_TITLE"] = title_with_logo
@@ -441,7 +438,7 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", -m, f"Fix portfolio title bidi direction and logo layout on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Fix portfolio title bidi direction and logo layout on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
