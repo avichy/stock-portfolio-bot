@@ -79,7 +79,6 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
-# מילון דומיינים מדויק המותאם בדיוק לכל הטיקרים שבקובץ הנתונים שלך (בדיקה תעשה באותיות גדולות)
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
     "AMD": "amd.com",
@@ -264,7 +263,8 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=microsoft.com&sz=128';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                <span class="inline-flex items-center justify-center w-7 h-7 bg-gray-700 text-white text-xs font-bold rounded-full" style="display: none;">{ticker}</span>
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -310,9 +310,9 @@ if __name__ == "__main__":
         dxy_price = format_num(dxy_data.get("price", 0))
         dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
-        usd_ils_p = usd_ils_data.get("price", 3.00)
-        if not usd_ils_p or usd_ils_p <= 0:
-            usd_ils_p = 3.00
+        usd_ils_p = usd_ils_data.get("price", 3.65)
+        if not usd_ils_p or usd_ils_p <= 3.0:
+            usd_ils_p = 3.65
         usd_ils_c = usd_ils_data.get("change", 0)
         usd_ils_price = f"{format_num(usd_ils_p)}₪"
         usd_ils_change = format_pct_colored(usd_ils_c)
@@ -445,7 +445,11 @@ if __name__ == "__main__":
 
                 logo_url = get_stock_logo_url(ticker, website)
 
-                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=microsoft.com&sz=128';"> {company_name} (טיקר: {ticker})</span>"""
+                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;">
+                    <img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span style="display: none; align-items: center; justify-content: center; width: 24px; height: 24px; background: #374151; color: white; font-size: 10px; font-weight: bold; border-radius: 50%;">{ticker}</span>
+                    {company_name} (טיקר: {ticker})
+                </span>"""
 
                 replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
                 replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
