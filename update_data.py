@@ -23,8 +23,8 @@ def load_ai_cache():
         try:
             with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Warning: Error loading AI cache: {e}")
     return {}
 
 def save_ai_cache(data):
@@ -32,7 +32,7 @@ def save_ai_cache(data):
         with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
-        print(f"Error saving AI cache: {e}")
+        print(f"Warning: Error saving AI cache: {e}")
 
 def load_portfolio_buys():
     if GITHUB_TOKEN and GITHUB_REPO:
@@ -43,16 +43,20 @@ def load_portfolio_buys():
             if response.status_code == 200:
                 file_data = response.json()
                 content = base64.b64decode(file_data["content"]).decode("utf-8")
-                return json.loads(content)
+                parsed = json.loads(content)
+                if isinstance(parsed, dict):
+                    return parsed
         except Exception as e:
-            print(f"Error loading from GitHub API: {e}")
+            print(f"Warning: Error loading from GitHub API: {e}")
 
     if os.path.exists(PORTFOLIO_FILE):
         try:
             with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                parsed = json.load(f)
+                if isinstance(parsed, dict):
+                    return parsed
         except Exception as e:
-            print(f"Error loading local portfolio.json: {e}")
+            print(f"Warning: Error loading local portfolio.json: {e}")
     return {}
 
 portfolio_buys = load_portfolio_buys()
@@ -77,34 +81,68 @@ def format_pct_colored(val):
 
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
+    "AMD": "amd.com",
+    "MU": "micron.com",
+    "SNDK": "sandisk.com",
+    "WDC": "westerndigital.com",
+    "INTC": "intel.com",
+    "SIMO": "siliconmotion.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
     "GOOGL": "google.com",
+    "GOOG": "google.com",
     "AMZN": "amazon.com",
     "META": "meta.com",
+    "AVGO": "broadcom.com",
+    "TSM": "tsmc.com",
+    "ASML": "asml.com",
+    "SMCI": "supermicro.com",
+    "PLTR": "palantir.com",
+    "COIN": "coinbase.com",
+    "ARM": "arm.com",
+    "MRVL": "marvell.com",
+    "QCOM": "qualcomm.com",
     "JPM": "jpmorganchase.com",
     "JNJ": "jnj.com",
     "XOM": "exxonmobil.com",
     "WMT": "walmart.com",
     "TSLA": "tesla.com",
-    "BTC-USD": "bitcoin.org"
+    "UNH": "unitedhealth.com",
+    "PG": "pg.com",
+    "CVX": "chevron.com",
+    "BRK-B": "berkshirehathaway.com",
+    "OXY": "oxy.com",
+    "NVO": "novonordisk.com",
+    "PYPL": "paypal.com",
+    "BA": "boeing.com",
+    "NEM": "newmont.com",
+    "TQQQ": "proshares.com",
+    "IBIT": "ishares.com",
+    "TTWO": "take2games.com",
+    "NFLX": "netflix.com",
+    "MA": "mastercard.com",
+    "GTEC": "gtec.com",
+    "BTC-USD": "bitcoin.org",
+    "ETH-USD": "ethereum.org"
 }
 
 def get_stock_logo_url(ticker, website=None):
     domain = None
-    if ticker in DOMAIN_MAP:
-        domain = DOMAIN_MAP[ticker]
-    elif website:
-        try:
+    try:
+        if ticker in DOMAIN_MAP:
+            domain = DOMAIN_MAP[ticker]
+        elif website:
             parsed_url = urllib.parse.urlparse(website)
             netloc = parsed_url.netloc
             if netloc:
                 domain = netloc.replace("www.", "")
-        except Exception:
-            pass
+    except Exception:
+        pass
     
     if not domain:
-        domain = f"{ticker.lower()}.com"
+        domain = f"{str(ticker).lower()}.com"
         
     return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
 
@@ -178,9 +216,13 @@ sector_tickers_map = {
     "REAL_ESTATE": "XLRE"
 }
 
-base_market_tickers = [
-    "GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX",
-] + list(sector_tickers_map.values()) + list(portfolio_buys.keys()) + [s["ticker"] for s in LT_STOCKS_META] + [s["ticker"] for s in SW_STOCKS_META]
+base_market_tickers = list(set(
+    ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX"] +
+    list(sector_tickers_map.values()) +
+    list(portfolio_buys.keys()) +
+    [s["ticker"] for s in LT_STOCKS_META] +
+    [s["ticker"] for s in SW_STOCKS_META]
+))
 
 def fetch_market_data(tickers):
     market_data = {}
@@ -190,7 +232,7 @@ def fetch_market_data(tickers):
             try:
                 stock = yf.Ticker(ticker)
                 hist = stock.history(period="2d")
-                info = stock.info
+                info = stock.info or {}
                 target_mean = info.get("targetMeanPrice")
                 website = info.get("website")
                 
@@ -199,13 +241,13 @@ def fetch_market_data(tickers):
                     pre_market_val = hist["Open"].iloc[-1]
 
                 if not hist.empty:
-                    current_price = round(hist["Close"].iloc[-1], 2)
-                    prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else current_price
-                    change = round(((current_price - prev_close) / prev_close) * 100, 2)
+                    current_price = round(float(hist["Close"].iloc[-1]), 2)
+                    prev_close = float(hist["Close"].iloc[-2]) if len(hist) > 1 else current_price
+                    change = round(((current_price - prev_close) / prev_close) * 100, 2) if prev_close else 0.0
                     market_data[ticker] = {
                         "price": current_price,
                         "change": change,
-                        "target": target_mean if target_mean else 0.0,
+                        "target": float(target_mean) if target_mean else 0.0,
                         "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
                         "website": website
                     }
@@ -241,7 +283,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -265,7 +307,7 @@ if __name__ == "__main__":
         time_str = now_il.strftime("%H:%M")
 
         ai_insights = load_ai_cache()
-        if not ai_insights:
+        if not isinstance(ai_insights, dict) or not ai_insights:
             ai_insights = get_default_ai_insights()
 
         sp500 = base_market_data.get("^GSPC", {})
@@ -288,6 +330,8 @@ if __name__ == "__main__":
         dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
         usd_ils_p = usd_ils_data.get("price", 3.65)
+        if not usd_ils_p or usd_ils_p <= 0:
+            usd_ils_p = 3.65
         usd_ils_c = usd_ils_data.get("change", 0)
         usd_ils_price = f"{format_num(usd_ils_p)}₪"
         usd_ils_change = format_pct_colored(usd_ils_c)
@@ -311,6 +355,8 @@ if __name__ == "__main__":
         btc_change = format_pct_colored(btc_c)
 
         portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
+        if not isinstance(portfolio_analysis_map, dict):
+            portfolio_analysis_map = {}
 
         if not os.path.exists(TEMPLATE_FILE):
             raise FileNotFoundError(f"Template file '{TEMPLATE_FILE}' not found in directory!")
@@ -379,54 +425,56 @@ if __name__ == "__main__":
         for ticker, info in portfolio_buys.items():
             if not isinstance(info, dict):
                 continue
-            
-            buy_p = info.get("buy") or info.get("buyPrice") or 0.0
+            try:
+                buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
 
-            fetched_price_data = base_market_data.get(ticker, {})
-            curr_p = fetched_price_data.get("price")
-            if not curr_p or curr_p == 0.0:
-                curr_p = buy_p
-            
-            fetched_target = fetched_price_data.get("target", 0.0)
-            if not fetched_target or fetched_target == 0.0:
-                fetched_target = buy_p * 1.25 if buy_p > 0 else 100.0
+                fetched_price_data = base_market_data.get(ticker, {})
+                curr_p = fetched_price_data.get("price")
+                if not curr_p or curr_p == 0.0:
+                    curr_p = buy_p
+                
+                fetched_target = fetched_price_data.get("target", 0.0)
+                if not fetched_target or fetched_target == 0.0:
+                    fetched_target = buy_p * 1.25 if buy_p > 0 else 100.0
 
-            pre_p = fetched_price_data.get("pre_market", 0.0)
-            if not pre_p or pre_p == 0.0:
-                pre_p = curr_p
+                pre_p = fetched_price_data.get("pre_market", 0.0)
+                if not pre_p or pre_p == 0.0:
+                    pre_p = curr_p
 
-            ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
-            sign = "+" if ret > 0 else ""
-            color = "#2ecc71" if ret >= 0 else "#e74c3c"
+                ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
+                sign = "+" if ret > 0 else ""
+                color = "#2ecc71" if ret >= 0 else "#e74c3c"
 
-            shares_count = info.get("shares", 0)
-            company_name = info.get("name", ticker)
-            website = fetched_price_data.get("website")
+                shares_count = info.get("shares", 0)
+                company_name = info.get("name") or fetched_price_data.get("name") or ticker
+                website = fetched_price_data.get("website")
 
-            p_item = portfolio_analysis_map.get(ticker, {})
-            p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
-            p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-            p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
-            p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
+                p_item = portfolio_analysis_map.get(ticker, {})
+                p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
+                p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
+                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
+                p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
 
-            full_note_html = (
-                f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
-                f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
-                f"<strong>תוכן חדשותي:</strong> {p_news_content}<br>"
-                f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
-            )
+                full_note_html = (
+                    f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
+                    f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
+                    f"<strong>תוכן חדשותي:</strong> {p_news_content}<br>"
+                    f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
+                )
 
-            logo_url = get_stock_logo_url(ticker, website)
+                logo_url = get_stock_logo_url(ticker, website)
 
-            title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}"> {company_name} (טיקר: {ticker})</span>"""
+                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;"><img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128';"> {company_name} (טיקר: {ticker})</span>"""
 
-            replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
-            replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
-            replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
-            replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
-            replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
-            replacements[f"{ticker}_PORT_NOTE"] = full_note_html
+                replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
+                replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
+                replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
+                replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
+                replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
+                replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
+                replacements[f"{ticker}_PORT_NOTE"] = full_note_html
+            except Exception as ex:
+                print(f"Error processing portfolio item {ticker}: {ex}")
 
         for key, val in replacements.items():
             content = content.replace(f"{{{{{key}}}}}", str(val))
@@ -441,11 +489,11 @@ if __name__ == "__main__":
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Fix f-string syntax error and update site on {day_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Update site and portfolio safely on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
 
-    except:
+    except Exception as e:
         traceback.print_exc()
         raise
