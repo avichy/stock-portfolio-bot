@@ -70,32 +70,43 @@ def format_pct_colored(val):
         num = float(val)
         sign = "+" if num > 0 else ""
         color = "#2ecc71" if num >= 0 else "#e74c3c"
-        return f'<span style=\'color: {color}; font-weight: bold;\'>{sign}{num:.2f}%</span>'
+        return f"<span style='color: {color}; font-weight: bold;'>{sign}{num:.2f}%</span>"
     except (ValueError, TypeError):
         return str(val)
 
-# מיפוי דומיינים מדויק לשליפת הלוגו האמיתי של כל חברה בצורה נקייה ויציבה
+# מיפוי דומיינים מורחב הכולל את כל אחזקות התיק בשלב 5 והמניות האחרות
 DOMAIN_MAP = {
     "NVDA": "nvidia.com",
+    "AMD": "amd.com",
+    "MU": "micron.com",
+    "SNDK": "sandisk.com",
+    "WDC": "westerndigital.com",
+    "INTC": "intel.com",
+    "SIMO": "siliconmotion.com",
+    "IREN": "iren.com",
+    "CIFR": "ciphermining.com",
+    "META": "meta.com",
+    "AMZN": "amazon.com",
+    "GOOGL": "google.com",
+    "GOOG": "google.com",
+    "TTWO": "take2games.com",
+    "WMT": "walmart.com",
+    "NFLX": "netflix.com",
+    "MA": "mastercard.com",
+    "IBIT": "ishares.com",
+    "GTEC": "gtec.com",
+    "TQQQ": "proshares.com",
     "MSFT": "microsoft.com",
     "AAPL": "apple.com",
-    "GOOGL": "google.com",
-    "AMZN": "amazon.com",
     "AVGO": "broadcom.com",
-    "AMD": "amd.com",
-    "META": "meta.com",
     "TSM": "tsmc.com",
     "ASML": "asml.com",
-    "MU": "micron.com",
     "SMCI": "supermicro.com",
     "PLTR": "palantir.com",
     "COIN": "coinbase.com",
-    "IREN": "iren.com",
-    "CIFR": "ciphermining.com",
     "ARM": "arm.com",
     "MRVL": "marvell.com",
-    "QCOM": "qualcomm.com",
-    "TQQQ": "proshares.com"
+    "QCOM": "qualcomm.com"
 }
 
 LT_STOCKS_META = [
@@ -361,7 +372,7 @@ if __name__ == "__main__":
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f'style=\'color: {color};\''
+            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color;}'"
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
 
         for ticker, info in portfolio_buys.items():
@@ -413,7 +424,7 @@ if __name__ == "__main__":
             replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
             replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
             replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
-            replacements[f"{ticker}_PORT_STATUS"] = f'רווח: <span style=\'color: {color}; font-weight: bold;\'>{sign}{ret:.2f}%</span>'
+            replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
             replacements[f"{ticker}_PORT_NOTE"] = full_note_html
 
         for key, val in replacements.items():
@@ -423,14 +434,14 @@ if __name__ == "__main__":
             f.write(content)
         print("Successfully generated index.html!")
 
-        # Git operations
+        # Git operations - תיקון הכללת קובץ ה-JSON כדי שהשינויים יישמרו ויעודכנו בשרת
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "add", OUTPUT_FILE], check=True)
+        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Use Google domain favicons for clean logos on {day_name}"], check=True)
+        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
+            subprocess.run(["git", "commit", "-m", f"Update site and portfolio data on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
