@@ -171,7 +171,6 @@ def fetch_market_data(tickers):
                 hist = stock.history(period="2d")
                 info = stock.info or {}
                 target_mean = info.get("targetMeanPrice")
-                website = info.get("website")
                 
                 pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
                 if not pre_market_val and not hist.empty:
@@ -185,15 +184,14 @@ def fetch_market_data(tickers):
                         "price": current_price,
                         "change": change,
                         "target": float(target_mean) if target_mean else 0.0,
-                        "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price,
-                        "website": website
+                        "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price
                     }
                     success = True
                     break
             except Exception:
                 time.sleep(1)
         if not success:
-            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0, "website": None}
+            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
     return market_data
 
 def build_structured_stocks_html(stocks_meta, market_data):
