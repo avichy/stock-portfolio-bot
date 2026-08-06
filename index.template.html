@@ -363,7 +363,7 @@
                                  class="rounded-full bg-white p-0.5 object-contain" 
                                  onerror="this.onerror=null; this.src='${fallbackLogo}';" 
                                  alt="${stock.symbol}">
-                            <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
+                            <strong>${stock.name}</strong><span dir="rtl">(טיקר: <span dir="ltr" class="font-bold">${cleanSymbol}</span>)</span>
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
                         קנייה: <strong>$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
@@ -411,21 +411,21 @@
                         data: {
                             name: name,
                             shares: shares,
-                            buy: buyPrice,
-                            buyPrice: buyPrice
+                            buyPrice: buyPrice,
+                            buy: buyPrice
                         }
                     })
                 });
 
                 if (response.ok) {
-                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} עודכנה ב-GitHub בהצלחה! 🚀`;
+                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} עודכנה ב-GitHub! 🚀 מפעיל עדכון נתונים...`;
 
                     nameInput.value = '';
                     symbolInput.value = '';
                     sharesInput.value = '';
                     buyInput.value = '';
 
-                    setTimeout(() => { location.reload(); }, 1500);
+                    setTimeout(() => { location.reload(); }, 2000);
                 } else {
                     const errData = await response.json();
                     if (statusMsg) statusMsg.innerText = `שגיאה בעדכון: ${errData.error || 'נכשל'}`;
@@ -449,10 +449,12 @@
             const stock = portfolioStocks[index];
             if (!stock || !stock.symbol) return;
 
-            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${stock.symbol}?`)) return;
+            const symbol = stock.symbol.trim().toUpperCase();
+
+            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
 
             const statusMsg = document.getElementById('status-msg');
-            if (statusMsg) statusMsg.innerText = `מוחק את ${stock.symbol} מ-GitHub... ⏳`;
+            if (statusMsg) statusMsg.innerText = `מוחק את ${symbol} מ-GitHub... ⏳`;
 
             try {
                 const response = await fetch('/api/update-portfolio', {
@@ -460,13 +462,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'delete',
-                        symbol: stock.symbol
+                        symbol: symbol
                     })
                 });
 
                 if (response.ok) {
-                    if (statusMsg) statusMsg.innerText = `המניה ${stock.symbol} נמחקה מ-GitHub! 🚀`;
-                    setTimeout(() => { location.reload(); }, 1500);
+                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} נמחקה מ-GitHub! 🚀`;
+                    setTimeout(() => { location.reload(); }, 2000);
                 } else {
                     const errData = await response.json();
                     if (statusMsg) statusMsg.innerText = `שגיאה במחיקה: ${errData.error || 'נכשל'}`;
