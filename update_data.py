@@ -9,7 +9,7 @@ import urllib.parse
 import pytz
 import requests
 import yfinance as yf
-import google.generativeai as genai
+from google import genai
 
 AI_CACHE_FILE = "ai_cache.json"
 PORTFOLIO_FILE = "portfolio.json"
@@ -20,8 +20,7 @@ GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -138,17 +137,30 @@ def get_default_ai_insights():
         "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות בכל הסקטורים.",
         "long_term_stocks": LT_STOCKS_META,
         "swing_stocks": SW_STOCKS_META,
-        "portfolio_analysis": {}
+        "market_news": [
+            {
+                "news_link": "https://www.investing.com",
+                "news_title": "שיחות עם איראן בממוקד; תוצאות Sandisk ובלוק - מה מניע את השווקים",
+                "news_content": "אירועים גיאו-פוליטיים מרכזיים במזרח התיכון לצד דוחות כספיים משמעותיים מעצבים את סנטימנט המסחר ומייצרים תנודתיות רוחבית בסקטורים השונים.",
+                "news_impact": "השפעה ישירה על מניות הטכנולוגיה, מחירי האנרגיה ותיאבון הסיכון של משקיעים בשוק."
+            },
+            {
+                "news_link": "https://www.investing.com",
+                "news_title": "ביטקוין מתקרב ל-$65,000 על רקע תקוות להסכם הורמוז וזרימות ETF משפורות",
+                "news_content": "שוק הקריפטו רושם תמיכה לאחר שמתן האותות לייצוב גיאופוליטי והקלה בלחצים באזור מצר הורמוז עודדו את תיאבון הסיכון בנכסים דיגיטליים.",
+                "news_impact": "מחזק את הסנטימנט החיובי בנכסים אלטרנטיביים ומדדי הסיכון המרכזיים."
+            }
+        ]
     }
 
 def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
-    if not GEMINI_API_KEY:
-        print("❌ ERROR: GEMINI_API_KEY is missing! Using defaults.")
+    if not client:
+        print("❌ ERROR: Gemini Client is missing! Using defaults.")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
     try:
-        print("🤖 Connecting to Gemini AI to generate cross-sector market insights and select Stage 4 stocks...")
+        print("🤖 Connecting to Gemini AI to generate cross-sector market insights, market news, and select Stage 4 stocks...")
         market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
         portfolio_tickers = list(portfolio_stocks.keys())
 
@@ -182,12 +194,13 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
 19. ACTION_RECOMMENDATIONS_TEXT
 20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח (Long-Term Core) המפוזרות חובה על פני סקטורים שונים לחלוטין (למשל: בנקים, אנרגיה, בריאות, קמעונאות, טכנולוגיה וכו'). כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
 21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג (Swing Trading) המייצגות הזדמנויות מגוונות מססקטורים שונים בהתאם לתנודתיות. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
-22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר יש אובייקט עם השדות: rationale, news_link, news_title, news_content, news_impact.
+22. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי, מלחמות, דוחות, מאקרו ומזרח תיכון בסגנון אתרי חדשות מובילים כמו Investing. כל פריט יהיה אובייקט הכולל בדיוק את השדות: news_link, news_title, news_content, news_impact.
 """
 
-        # שימוש במודל התקין והזמין gemini-1.5-flash
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt,
+        )
         
         raw_text = response.text.strip()
         print("--- RAW AI RESPONSE RECEIVED ---")
@@ -320,21 +333,23 @@ def build_structured_stocks_html(stocks_meta, market_data):
         html_parts.append(card_html)
     return "".join(html_parts)
 
-def build_portfolio_news_html(portfolio_buys, portfolio_analysis_map, base_market_data):
+def build_market_news_html(ai_insights):
+    market_news_list = ai_insights.get("market_news", [])
+    if not isinstance(market_news_list, list) or not market_news_list:
+        return '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות כרגע.</div>'
+
     html_parts = []
-    for ticker, info in portfolio_buys.items():
-        if not isinstance(info, dict):
+    for item in market_news_list:
+        if not isinstance(item, dict):
             continue
-        company_name = info.get("name") or base_market_data.get(ticker, {}).get("name") or ticker
-        p_item = portfolio_analysis_map.get(ticker, {})
-        p_link = p_item.get("news_link", "#")
-        p_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-        p_content = p_item.get("news_content", f"סקירת נתונים פיננסיים וחדשות עבור {ticker}.")
-        p_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
+        p_link = item.get("news_link", "https://www.investing.com")
+        p_title = item.get("news_title", "עדכון שוק גלובלי")
+        p_content = item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים.")
+        p_impact = item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק.")
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold">חדשות {company_name} (סמל: {ticker})</h3>
+            <h3 class="text-cyan-400 font-semibold">{p_title}</h3>
             <p>🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
             <p><strong>תוכן הכתבה המלא:</strong> {p_content}</p>
@@ -343,8 +358,6 @@ def build_portfolio_news_html(portfolio_buys, portfolio_analysis_map, base_marke
         """
         html_parts.append(card_html)
     
-    if not html_parts:
-        return '<div class="text-gray-400 text-right" dir="rtl">אין מניות בתיק כרגע להצגת חדשות.</div>'
     return "".join(html_parts)
 
 if __name__ == "__main__":
@@ -415,10 +428,6 @@ if __name__ == "__main__":
         btc_price = f"${format_num(btc_p)}"
         btc_change = format_pct_colored(btc_c)
 
-        portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
-        if not isinstance(portfolio_analysis_map, dict):
-            portfolio_analysis_map = {}
-
         if not os.path.exists(TEMPLATE_FILE):
             raise FileNotFoundError(f"Template file '{TEMPLATE_FILE}' not found in directory!")
 
@@ -430,7 +439,7 @@ if __name__ == "__main__":
 
         lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
         sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
-        news_html = build_portfolio_news_html(portfolio_buys, portfolio_analysis_map, base_market_data)
+        news_html = build_market_news_html(ai_insights)
 
         portfolio_js_list = []
         for ticker, info in portfolio_buys.items():
@@ -450,19 +459,6 @@ if __name__ == "__main__":
                 shares_count = info.get("shares", 0)
                 company_name = info.get("name") or fetched_price_data.get("name") or ticker
 
-                p_item = portfolio_analysis_map.get(ticker, {})
-                p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
-                p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
-                p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
-
-                full_note_html = (
-                    f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
-                    f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
-                    f"<strong>תוכן חדשותי:</strong> {p_news_content}<br>"
-                    f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
-                )
-
                 portfolio_js_list.append({
                     "name": company_name,
                     "symbol": ticker,
@@ -472,7 +468,7 @@ if __name__ == "__main__":
                     "pre": f"${format_num(pre_p)}",
                     "target": f"${format_num(fetched_target)}",
                     "status": f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>",
-                    "note": full_note_html
+                    "note": f"מעקב פוזיציה עבור {ticker}"
                 })
             except Exception as ex:
                 print(f"Error processing portfolio stock {ticker}: {ex}")
