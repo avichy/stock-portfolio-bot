@@ -9,6 +9,7 @@ import urllib.parse
 import pytz
 import requests
 import yfinance as yf
+import google.generativeai as genai
 
 AI_CACHE_FILE = "ai_cache.json"
 PORTFOLIO_FILE = "portfolio.json"
@@ -17,6 +18,10 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -26,6 +31,14 @@ def load_ai_cache():
         except Exception as e:
             print(f"Warning: Error loading AI cache: {e}")
     return {}
+
+def save_ai_cache(data):
+    try:
+        with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        print("Successfully saved AI cache.")
+    except Exception as e:
+        print(f"Warning: Error saving AI cache: {e}")
 
 def load_portfolio_buys():
     if GITHUB_TOKEN and GITHUB_REPO:
@@ -123,8 +136,78 @@ def get_default_ai_insights():
         "ANALYST_POINT_2": "דגש על בחינה בררנית של דוחות כספיים וביצועי חברות מובילות בכל ענף.",
         "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות רוחבי ופקודות הגנה לפוזיציות.",
         "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות בכל הסקטורים.",
+        "long_term_stocks": LT_STOCKS_META,
+        "swing_stocks": SW_STOCKS_META,
         "portfolio_analysis": {}
     }
+
+def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
+    if not GEMINI_API_KEY:
+        print("❌ ERROR: GEMINI_API_KEY is missing! Using defaults.")
+        cached = load_ai_cache()
+        return cached if cached else get_default_ai_insights()
+
+    try:
+        print("🤖 Connecting to Gemini AI to generate cross-sector market insights and select Stage 4 stocks...")
+        market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
+        portfolio_tickers = list(portfolio_stocks.keys())
+
+        prompt = f"""
+אתה אנליסט שוק הון בכיר וגלובלי. על בסיס נתוני השוק הנוכחיים הבאים:
+{json.dumps(market_summary, ensure_ascii=False)}
+
+ועבור מניות התיק האישי של המשתמש: {portfolio_tickers}
+
+הנחיה קריטית: הניתוחים, החדשות והסקירות חייבים לכסות את כל סקטורי שוק ההון באופן רוחבי ומקיף (כגון פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות בסיסית ומחזורית, תעשייה, חומרי גלם ונדל"ן) ולא להתרכז בסקטור אחד בלבד.
+
+אנא החזר אך ורק אובייקט JSON תקין (ללא מעטפות markdown וללא טקסט נוסף סביב) הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
+1. SP500_ANALYSIS
+2. NASDAQ_ANALYSIS
+3. DOW_ANALYSIS
+4. VIX_ANALYSIS
+5. DXY_ANALYSIS
+6. USD_ILS_EXPLANATION
+7. OIL_EXPLANATION
+8. GOLD_EXPLANATION
+9. BTC_EXPLANATION
+10. US_MARKET_NEWS (חדשות וסקירה המשלבות את כלל הסקטורים הכלכליים בארה"ב)
+11. IL_MARKET_NEWS
+12. CATALYST_EARNINGS
+13. CATALYST_MONETARY
+14. CATALYST_HARDWARE (או זרזים רוחביים לכלל התעשיות והטכנולוגיה)
+15. COMMUNITY_SENTIMENT
+16. ANALYST_POINT_1
+17. ANALYST_POINT_2
+18. RISK_MANAGEMENT_TEXT
+19. ACTION_RECOMMENDATIONS_TEXT
+20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח (Long-Term Core) המפוזרות חובה על פני סקטורים שונים לחלוטין (למשל: בנקים, אנרגיה, בריאות, קמעונאות, טכנולוגיה וכו'). כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
+21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג (Swing Trading) המייצגות הזדמנויות מגוונות מססקטורים שונים בהתאם לתנודתיות. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
+22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר יש אובייקט עם השדות: rationale, news_title, news_content, news_impact.
+"""
+
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        
+        raw_text = response.text.strip()
+        print("--- RAW AI RESPONSE RECEIVED ---")
+        print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
+        print("--------------------------------")
+
+        clean_text = raw_text
+        if clean_text.startswith("```json"):
+            clean_text = clean_text[7:]
+        if clean_text.endswith("```"):
+            clean_text = clean_text[:-3]
+        clean_text = clean_text.strip()
+
+        parsed_ai_data = json.loads(clean_text)
+        print("Successfully parsed AI response into JSON!")
+        return parsed_ai_data
+
+    except Exception as e:
+        print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
+        cached = load_ai_cache()
+        return cached if cached else get_default_ai_insights()
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
@@ -146,12 +229,16 @@ sector_tickers_map = {
     "REAL_ESTATE": "XLRE"
 }
 
+cached_ai_init = load_ai_cache()
+init_lt = cached_ai_init.get("long_term_stocks", LT_STOCKS_META)
+init_sw = cached_ai_init.get("swing_stocks", SW_STOCKS_META)
+
 base_market_tickers = list(set(
     ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX"] +
     list(sector_tickers_map.values()) +
     list(portfolio_buys.keys()) +
-    [s["ticker"] for s in LT_STOCKS_META] +
-    [s["ticker"] for s in SW_STOCKS_META]
+    [s["ticker"] for s in init_lt if isinstance(s, dict) and "ticker" in s] +
+    [s["ticker"] for s in init_sw if isinstance(s, dict) and "ticker" in s]
 ))
 
 def fetch_market_data(tickers):
@@ -189,11 +276,16 @@ def fetch_market_data(tickers):
 
 def build_structured_stocks_html(stocks_meta, market_data):
     html_parts = []
+    if not isinstance(stocks_meta, list):
+        stocks_meta = LT_STOCKS_META
+
     for s in stocks_meta:
-        ticker = s["ticker"]
-        name = s["name"]
-        desc = s["desc"]
-        news = s["news"]
+        if not isinstance(s, dict):
+            continue
+        ticker = s.get("ticker", "")
+        name = s.get("name", ticker)
+        desc = s.get("desc", "")
+        news = s.get("news", "")
 
         data = market_data.get(ticker, {})
         price = format_num(data.get("price", 0))
@@ -229,14 +321,27 @@ def build_structured_stocks_html(stocks_meta, market_data):
 
 if __name__ == "__main__":
     try:
-        print("Fetching market data...")
+        print("Fetching initial market data...")
         base_market_data = fetch_market_data(base_market_tickers)
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        ai_insights = load_ai_cache()
-        if not isinstance(ai_insights, dict) or not ai_insights:
-            ai_insights = get_default_ai_insights()
+        ai_insights = fetch_ai_insights_from_gemini(base_market_data, portfolio_buys)
+        if ai_insights and isinstance(ai_insights, dict):
+            save_ai_cache(ai_insights)
+        else:
+            ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
+
+        new_lt = ai_insights.get("long_term_stocks", [])
+        new_sw = ai_insights.get("swing_stocks", [])
+        extra_tickers = []
+        for s in new_lt + new_sw:
+            if isinstance(s, dict) and "ticker" in s and s["ticker"] not in base_market_data:
+                extra_tickers.append(s["ticker"])
+        if extra_tickers:
+            print(f"Fetching market data for extra AI-selected tickers: {extra_tickers}")
+            extra_data = fetch_market_data(extra_tickers)
+            base_market_data.update(extra_data)
 
         sp500 = base_market_data.get("^GSPC", {})
         nasdaq = base_market_data.get("^NDX", {})
@@ -292,8 +397,11 @@ if __name__ == "__main__":
         with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
             content = f.read()
 
-        lt_html = build_structured_stocks_html(LT_STOCKS_META, base_market_data)
-        sw_html = build_structured_stocks_html(SW_STOCKS_META, base_market_data)
+        lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
+
+        lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
+        sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
 
         # בניית מערך המניות דינמית לחלוטין מתוך portfolio.json
         portfolio_js_list = []
@@ -406,11 +514,11 @@ if __name__ == "__main__":
 
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE], check=True)
+        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE, AI_CACHE_FILE], check=True)
 
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site and portfolio safely on {day_name}"], check=True)
+        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
+            subprocess.run(["git", "commit", "-m", f"Update site, portfolio and cross-sector AI insights safely on {day_name}"], check=True)
             subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
             print("Successfully pushed changes to GitHub!")
