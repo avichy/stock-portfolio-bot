@@ -270,8 +270,7 @@
                 });
             });
 
-            // טעינת התיק מתוך קובץ ה-JSON באופן דינמי
-            loadPortfolioData();
+            renderPortfolio();
 
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
@@ -320,21 +319,27 @@
             }
         });
 
-        let portfolioStocks = [];
-
-        async function loadPortfolioData() {
-            try {
-                const response = await fetch('portfolio.json');
-                if (response.ok) {
-                    portfolioStocks = await response.json();
-                    renderPortfolio();
-                } else {
-                    console.error('לא ניתן לטעון את קובץ ה-JSON');
-                }
-            } catch (error) {
-                console.error('שגיאה בטעינת התיק:', error);
-            }
-        }
+        let portfolioStocks = [
+            { name: "NVIDIA", symbol: "NVDA", shares: 3, buyPrice: 184.90, current: "{{NVDA_PORT_CURRENT}}", pre: "{{NVDA_PORT_PRE}}", target: "{{NVDA_PORT_TARGET}}", status: "{{NVDA_PORT_STATUS}}", note: "{{NVDA_PORT_NOTE}}" },
+            { name: "Advanced Micro Devices", symbol: "AMD", shares: 20, buyPrice: 211.34, current: "{{AMD_PORT_CURRENT}}", pre: "{{AMD_PORT_PRE}}", target: "{{AMD_PORT_TARGET}}", status: "{{AMD_PORT_STATUS}}", note: "{{AMD_PORT_NOTE}}" },
+            { name: "Micron Technology", symbol: "MU", shares: 6, buyPrice: 316.32, current: "{{MU_PORT_CURRENT}}", pre: "{{MU_PORT_PRE}}", target: "{{MU_PORT_TARGET}}", status: "{{MU_PORT_STATUS}}", note: "{{MU_PORT_NOTE}}" },
+            { name: "SanDisk", symbol: "SNDK", shares: 4, buyPrice: 630.26, current: "{{SNDK_PORT_CURRENT}}", pre: "{{SNDK_PORT_PRE}}", target: "{{SNDK_PORT_TARGET}}", status: "{{SNDK_PORT_STATUS}}", note: "{{SNDK_PORT_NOTE}}" },
+            { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
+            { name: "Intel", symbol: "INTC", shares: 20, buyPrice: 43.05, current: "{{INTC_PORT_CURRENT}}", pre: "{{INTC_PORT_PRE}}", target: "{{INTC_PORT_TARGET}}", status: "{{INTC_PORT_STATUS}}", note: "{{INTC_PORT_NOTE}}" },
+            { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
+            { name: "Iris Energy", symbol: "IREN", shares: 54, buyPrice: 52.75, current: "{{IREN_PORT_CURRENT}}", pre: "{{IREN_PORT_PRE}}", target: "{{IREN_PORT_TARGET}}", status: "{{IREN_PORT_STATUS}}", note: "{{IREN_PORT_NOTE}}" },
+            { name: "Cipher Mining", symbol: "CIFR", shares: 28, buyPrice: 17.50, current: "{{CIFR_PORT_CURRENT}}", pre: "{{CIFR_PORT_PRE}}", target: "{{CIFR_PORT_TARGET}}", status: "{{CIFR_PORT_STATUS}}", note: "{{CIFR_PORT_NOTE}}" },
+            { name: "Meta Platforms", symbol: "META", shares: 2, buyPrice: 661.00, current: "{{META_PORT_CURRENT}}", pre: "{{META_PORT_PRE}}", target: "{{META_PORT_TARGET}}", status: "{{META_PORT_STATUS}}", note: "{{META_PORT_NOTE}}" },
+            { name: "Amazon", symbol: "AMZN", shares: 6, buyPrice: 229.29, current: "{{AMZN_PORT_CURRENT}}", pre: "{{AMZN_PORT_PRE}}", target: "{{AMZN_PORT_TARGET}}", status: "{{AMZN_PORT_STATUS}}", note: "{{AMZN_PORT_NOTE}}" },
+            { name: "Alphabet / Google", symbol: "GOOG", shares: 4, buyPrice: 317.95, current: "{{GOOG_PORT_CURRENT}}", pre: "{{GOOG_PORT_PRE}}", target: "{{GOOG_PORT_TARGET}}", status: "{{GOOG_PORT_STATUS}}", note: "{{GOOG_PORT_NOTE}}" },
+            { name: "Take-Two Interactive", symbol: "TTWO", shares: 5, buyPrice: 235.50, current: "{{TTWO_PORT_CURRENT}}", pre: "{{TTWO_PORT_PRE}}", target: "{{TTWO_PORT_TARGET}}", status: "{{TTWO_PORT_STATUS}}", note: "{{TTWO_PORT_NOTE}}" },
+            { name: "Walmart", symbol: "WMT", shares: 16, buyPrice: 119.45, current: "{{WMT_PORT_CURRENT}}", pre: "{{WMT_PORT_PRE}}", target: "{{WMT_PORT_TARGET}}", status: "{{WMT_PORT_STATUS}}", note: "{{WMT_PORT_NOTE}}" },
+            { name: "Netflix", symbol: "NFLX", shares: 14, buyPrice: 94.03, current: "{{NFLX_PORT_CURRENT}}", pre: "{{NFLX_PORT_PRE}}", target: "{{NFLX_PORT_TARGET}}", status: "{{NFLX_PORT_STATUS}}", note: "{{NFLX_PORT_NOTE}}" },
+            { name: "Mastercard", symbol: "MA", shares: 4, buyPrice: 503.99, current: "{{MA_PORT_CURRENT}}", pre: "{{MA_PORT_PRE}}", target: "{{MA_PORT_TARGET}}", status: "{{MA_PORT_STATUS}}", note: "{{MA_PORT_NOTE}}" },
+            { name: "iShares Bitcoin Trust", symbol: "IBIT", shares: 14, buyPrice: 60.48, current: "{{IBIT_PORT_CURRENT}}", pre: "{{IBIT_PORT_PRE}}", target: "{{IBIT_PORT_TARGET}}", status: "{{IBIT_PORT_STATUS}}", note: "{{IBIT_PORT_NOTE}}" },
+            { name: "Greenland Technologies", symbol: "GTEC", shares: 260, buyPrice: 1.27, current: "{{GTEC_PORT_CURRENT}}", pre: "{{GTEC_PORT_PRE}}", target: "{{GTEC_PORT_TARGET}}", status: "{{GTEC_PORT_STATUS}}", note: "{{GTEC_PORT_NOTE}}" },
+            { name: "ProShares UltraPro QQQ", symbol: "TQQQ", shares: 28, buyPrice: 56.53, current: "{{TQQQ_PORT_CURRENT}}", pre: "{{TQQQ_PORT_PRE}}", target: "{{TQQQ_PORT_TARGET}}", status: "{{TQQQ_PORT_STATUS}}", note: "{{TQQQ_PORT_NOTE}}" }
+        ];
 
         function renderPortfolio() {
             const container = document.getElementById('portfolio-container');
@@ -345,7 +350,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
                 
-                const cleanSymbol = (stock.symbol || '').trim().toUpperCase();
+                const cleanSymbol = stock.symbol.trim().toUpperCase();
                 const primaryLogo = `https://assets.parqet.com/logos/symbol/${cleanSymbol}`;
                 const cleanSymbolLower = cleanSymbol.toLowerCase().replace(/[-.]/g, '');
                 const fallbackLogo = `https://s3-symbol-logo.tradingview.com/${cleanSymbolLower}.svg`;
@@ -361,12 +366,12 @@
                             <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
-                        קנייה: <strong>$${(stock.buyPrice || 0).toFixed(2)}</strong><br>
-                        מחיר נוכחי: <strong>${stock.current || 'N/A'}</strong><br>
-                        מחיר טרום פתיחה: <strong>${stock.pre || 'N/A'}</strong><br>
-                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target || 'N/A'}</strong><br>
-                        <strong>${stock.status || ''}</strong><br>
-                        <span class="text-gray-400">חדשות ורציונל: ${stock.note || ''}</span>
+                        קנייה: <strong>$${stock.buyPrice.toFixed(2)}</strong><br>
+                        מחיר נוכחי: <strong>${stock.current}</strong><br>
+                        מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
+                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
+                        <strong>${stock.status}</strong><br>
+                        <span class="text-gray-400">חדשות ורציונל: ${stock.note}</span>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
                         <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
