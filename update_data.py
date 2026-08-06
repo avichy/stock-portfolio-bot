@@ -182,10 +182,11 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
 19. ACTION_RECOMMENDATIONS_TEXT
 20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח (Long-Term Core) המפוזרות חובה על פני סקטורים שונים לחלוטין (למשל: בנקים, אנרגיה, בריאות, קמעונאות, טכנולוגיה וכו'). כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
 21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג (Swing Trading) המייצגות הזדמנויות מגוונות מססקטורים שונים בהתאם לתנודתיות. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
-22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר יש אובייקט עם השדות: rationale, news_title, news_content, news_impact.
+22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר יש אובייקט עם השדות: rationale, news_link, news_title, news_content, news_impact.
 """
 
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # שימוש במודל התקין והזמין gemini-1.5-flash
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
         
         raw_text = response.text.strip()
@@ -319,6 +320,33 @@ def build_structured_stocks_html(stocks_meta, market_data):
         html_parts.append(card_html)
     return "".join(html_parts)
 
+def build_portfolio_news_html(portfolio_buys, portfolio_analysis_map, base_market_data):
+    html_parts = []
+    for ticker, info in portfolio_buys.items():
+        if not isinstance(info, dict):
+            continue
+        company_name = info.get("name") or base_market_data.get(ticker, {}).get("name") or ticker
+        p_item = portfolio_analysis_map.get(ticker, {})
+        p_link = p_item.get("news_link", "#")
+        p_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
+        p_content = p_item.get("news_content", f"סקירת נתונים פיננסיים וחדשות עבור {ticker}.")
+        p_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
+
+        card_html = f"""
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
+            <h3 class="text-cyan-400 font-semibold">חדשות {company_name} (סמל: {ticker})</h3>
+            <p>🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+            <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
+            <p><strong>תוכן הכתבה המלא:</strong> {p_content}</p>
+            <p>🚀 <strong>מה זה אומר בקשר למניה:</strong> {p_impact}</p>
+        </div>
+        """
+        html_parts.append(card_html)
+    
+    if not html_parts:
+        return '<div class="text-gray-400 text-right" dir="rtl">אין מניות בתיק כרגע להצגת חדשות.</div>'
+    return "".join(html_parts)
+
 if __name__ == "__main__":
     try:
         print("Fetching initial market data...")
@@ -402,8 +430,8 @@ if __name__ == "__main__":
 
         lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
         sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
+        news_html = build_portfolio_news_html(portfolio_buys, portfolio_analysis_map, base_market_data)
 
-        # בניית מערך המניות דינמית לחלוטין מתוך portfolio.json
         portfolio_js_list = []
         for ticker, info in portfolio_buys.items():
             if not isinstance(info, dict):
@@ -493,6 +521,7 @@ if __name__ == "__main__":
             "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""),
             "LONG_TERM_STOCKS_SECTION": lt_html,
             "SWING_STOCKS_SECTION": sw_html,
+            "PORTFOLIO_NEWS_SECTION": news_html,
         }
 
         for s_key, s_ticker in sector_tickers_map.items():
