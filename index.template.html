@@ -198,7 +198,7 @@
             </div>
 
             <div id="portfolio-container" class="space-y-3">
-                <!-- יתמלא דינמית על ידי JavaScript -->
+                <!-- יתמלא דינמית על ידי פייתון -->
             </div>
         </div>
 
@@ -255,22 +255,17 @@
             tabButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tabNum = btn.getAttribute('data-tab');
-
                     tabContents.forEach(el => el.classList.add('hidden'));
-
                     const targetTab = document.getElementById('tab-' + tabNum);
                     if (targetTab) {
                         targetTab.classList.remove('hidden');
                     }
-
                     tabButtons.forEach(b => {
                         b.className = "tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none transition";
                     });
                     btn.className = "tab-btn px-3.5 py-2 text-sm font-medium rounded-lg text-cyan-400 bg-gray-700 shadow focus:outline-none transition";
                 });
             });
-
-            renderPortfolio();
 
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
@@ -319,69 +314,6 @@
             }
         });
 
-        let portfolioStocks = [
-            { name: "NVIDIA", symbol: "NVDA", shares: 3, buyPrice: 184.90, current: "{{NVDA_PORT_CURRENT}}", pre: "{{NVDA_PORT_PRE}}", target: "{{NVDA_PORT_TARGET}}", status: "{{NVDA_PORT_STATUS}}", note: "{{NVDA_PORT_NOTE}}" },
-            { name: "Advanced Micro Devices", symbol: "AMD", shares: 20, buyPrice: 211.34, current: "{{AMD_PORT_CURRENT}}", pre: "{{AMD_PORT_PRE}}", target: "{{AMD_PORT_TARGET}}", status: "{{AMD_PORT_STATUS}}", note: "{{AMD_PORT_NOTE}}" },
-            { name: "Micron Technology", symbol: "MU", shares: 6, buyPrice: 316.32, current: "{{MU_PORT_CURRENT}}", pre: "{{MU_PORT_PRE}}", target: "{{MU_PORT_TARGET}}", status: "{{MU_PORT_STATUS}}", note: "{{MU_PORT_NOTE}}" },
-            { name: "SanDisk", symbol: "SNDK", shares: 4, buyPrice: 630.26, current: "{{SNDK_PORT_CURRENT}}", pre: "{{SNDK_PORT_PRE}}", target: "{{SNDK_PORT_TARGET}}", status: "{{SNDK_PORT_STATUS}}", note: "{{SNDK_PORT_NOTE}}" },
-            { name: "Western Digital", symbol: "WDC", shares: 6, buyPrice: 223.23, current: "{{WDC_PORT_CURRENT}}", pre: "{{WDC_PORT_PRE}}", target: "{{WDC_PORT_TARGET}}", status: "{{WDC_PORT_STATUS}}", note: "{{WDC_PORT_NOTE}}" },
-            { name: "Intel", symbol: "INTC", shares: 20, buyPrice: 43.05, current: "{{INTC_PORT_CURRENT}}", pre: "{{INTC_PORT_PRE}}", target: "{{INTC_PORT_TARGET}}", status: "{{INTC_PORT_STATUS}}", note: "{{INTC_PORT_NOTE}}" },
-            { name: "Silicon Motion", symbol: "SIMO", shares: 30, buyPrice: 131.32, current: "{{SIMO_PORT_CURRENT}}", pre: "{{SIMO_PORT_PRE}}", target: "{{SIMO_PORT_TARGET}}", status: "{{SIMO_PORT_STATUS}}", note: "{{SIMO_PORT_NOTE}}" },
-            { name: "Iris Energy", symbol: "IREN", shares: 54, buyPrice: 52.75, current: "{{IREN_PORT_CURRENT}}", pre: "{{IREN_PORT_PRE}}", target: "{{IREN_PORT_TARGET}}", status: "{{IREN_PORT_STATUS}}", note: "{{IREN_PORT_NOTE}}" },
-            { name: "Cipher Mining", symbol: "CIFR", shares: 28, buyPrice: 17.50, current: "{{CIFR_PORT_CURRENT}}", pre: "{{CIFR_PORT_PRE}}", target: "{{CIFR_PORT_TARGET}}", status: "{{CIFR_PORT_STATUS}}", note: "{{CIFR_PORT_NOTE}}" },
-            { name: "Meta Platforms", symbol: "META", shares: 2, buyPrice: 661.00, current: "{{META_PORT_CURRENT}}", pre: "{{META_PORT_PRE}}", target: "{{META_PORT_TARGET}}", status: "{{META_PORT_STATUS}}", note: "{{META_PORT_NOTE}}" },
-            { name: "Amazon", symbol: "AMZN", shares: 6, buyPrice: 229.29, current: "{{AMZN_PORT_CURRENT}}", pre: "{{AMZN_PORT_PRE}}", target: "{{AMZN_PORT_TARGET}}", status: "{{AMZN_PORT_STATUS}}", note: "{{AMZN_PORT_NOTE}}" },
-            { name: "Alphabet / Google", symbol: "GOOG", shares: 4, buyPrice: 317.95, current: "{{GOOG_PORT_CURRENT}}", pre: "{{GOOG_PORT_PRE}}", target: "{{GOOG_PORT_TARGET}}", status: "{{GOOG_PORT_STATUS}}", note: "{{GOOG_PORT_NOTE}}" },
-            { name: "Take-Two Interactive", symbol: "TTWO", shares: 5, buyPrice: 235.50, current: "{{TTWO_PORT_CURRENT}}", pre: "{{TTWO_PORT_PRE}}", target: "{{TTWO_PORT_TARGET}}", status: "{{TTWO_PORT_STATUS}}", note: "{{TTWO_PORT_NOTE}}" },
-            { name: "Walmart", symbol: "WMT", shares: 16, buyPrice: 119.45, current: "{{WMT_PORT_CURRENT}}", pre: "{{WMT_PORT_PRE}}", target: "{{WMT_PORT_TARGET}}", status: "{{WMT_PORT_STATUS}}", note: "{{WMT_PORT_NOTE}}" },
-            { name: "Netflix", symbol: "NFLX", shares: 14, buyPrice: 94.03, current: "{{NFLX_PORT_CURRENT}}", pre: "{{NFLX_PORT_PRE}}", target: "{{NFLX_PORT_TARGET}}", status: "{{NFLX_PORT_STATUS}}", note: "{{NFLX_PORT_NOTE}}" },
-            { name: "Mastercard", symbol: "MA", shares: 4, buyPrice: 503.99, current: "{{MA_PORT_CURRENT}}", pre: "{{MA_PORT_PRE}}", target: "{{MA_PORT_TARGET}}", status: "{{MA_PORT_STATUS}}", note: "{{MA_PORT_NOTE}}" },
-            { name: "iShares Bitcoin Trust", symbol: "IBIT", shares: 14, buyPrice: 60.48, current: "{{IBIT_PORT_CURRENT}}", pre: "{{IBIT_PORT_PRE}}", target: "{{IBIT_PORT_TARGET}}", status: "{{IBIT_PORT_STATUS}}", note: "{{IBIT_PORT_NOTE}}" },
-            { name: "Greenland Technologies", symbol: "GTEC", shares: 260, buyPrice: 1.27, current: "{{GTEC_PORT_CURRENT}}", pre: "{{GTEC_PORT_PRE}}", target: "{{GTEC_PORT_TARGET}}", status: "{{GTEC_PORT_STATUS}}", note: "{{GTEC_PORT_NOTE}}" },
-            { name: "ProShares UltraPro QQQ", symbol: "TQQQ", shares: 28, buyPrice: 56.53, current: "{{TQQQ_PORT_CURRENT}}", pre: "{{TQQQ_PORT_PRE}}", target: "{{TQQQ_PORT_TARGET}}", status: "{{TQQQ_PORT_STATUS}}", note: "{{TQQQ_PORT_NOTE}}" }
-        ];
-
-        function renderPortfolio() {
-            const container = document.getElementById('portfolio-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            portfolioStocks.forEach((stock, index) => {
-                const card = document.createElement('div');
-                card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
-                
-                const cleanSymbol = stock.symbol.trim().toUpperCase();
-                const primaryLogo = `https://assets.parqet.com/logos/symbol/${cleanSymbol}`;
-                const cleanSymbolLower = cleanSymbol.toLowerCase().replace(/[-.]/g, '');
-                const fallbackLogo = `https://s3-symbol-logo.tradingview.com/${cleanSymbolLower}.svg`;
-
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <img src="${primaryLogo}" 
-                                 width="24" height="24" 
-                                 class="rounded-full bg-white p-0.5 object-contain" 
-                                 onerror="this.onerror=null; this.src='${fallbackLogo}';" 
-                                 alt="${stock.symbol}">
-                            <strong>${stock.name}</strong><span dir="rtl">(טיקר:<span dir="ltr" class="font-bold">${cleanSymbol}</span>)</span>
-                        </div>
-                        מספר מניות: ${stock.shares} מניות<br>
-                        קנייה: <strong>$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
-                        מחיר נוכחי: <strong>${stock.current}</strong><br>
-                        מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
-                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
-                        <strong>${stock.status}</strong><br>
-                        <span class="text-gray-400">חדשות ורציונל: ${stock.note}</span>
-                    </div>
-                    <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
-                        <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
-                        <button onclick="deleteStock(${index})" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-xs transition">מחק 🗑️</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
         async function addOrUpdateStock() {
             const nameInput = document.getElementById('stock-name');
             const symbolInput = document.getElementById('stock-symbol');
@@ -418,12 +350,10 @@
 
                 if (response.ok) {
                     if (statusMsg) statusMsg.innerText = `המניה ${symbol} עודכנה ב-GitHub! 🚀 מפעיל עדכון נתונים...`;
-
                     nameInput.value = '';
                     symbolInput.value = '';
                     sharesInput.value = '';
                     buyInput.value = '';
-
                     setTimeout(() => { location.reload(); }, 2000);
                 } else {
                     const errData = await response.json();
@@ -435,21 +365,8 @@
             }
         }
 
-        function loadStockForUpdate(index) {
-            const stock = portfolioStocks[index];
-            document.getElementById('stock-name').value = stock.name;
-            document.getElementById('stock-symbol').value = stock.symbol;
-            document.getElementById('stock-shares').value = stock.shares;
-            document.getElementById('stock-buy').value = stock.buyPrice;
-            window.scrollTo({ top: document.getElementById('tab-5').offsetTop, behavior: 'smooth' });
-        }
-
-        async function deleteStock(index) {
-            const stock = portfolioStocks[index];
-            if (!stock || !stock.symbol) return;
-
-            const symbol = stock.symbol.trim().toUpperCase();
-
+        async function deleteStock(symbol) {
+            symbol = symbol.trim().toUpperCase();
             if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
 
             const statusMsg = document.getElementById('status-msg');
@@ -479,9 +396,8 @@
         }
 
         function exportPortfolioJson() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioStocks, null, 2));
             const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("href", '/api/update-portfolio');
             downloadAnchor.setAttribute("download", "portfolio.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
