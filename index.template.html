@@ -45,7 +45,6 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                
                 <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
                     <div class="space-y-3 text-sm">
@@ -170,6 +169,30 @@
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
             
+            <!-- הגדרות סנכרון ל-GitHub -->
+            <div class="bg-gray-800/90 border border-cyan-500/40 p-3 rounded-xl shadow mb-2 text-xs text-gray-300 space-y-2">
+                <details>
+                    <summary class="font-bold text-cyan-400 cursor-pointer flex items-center justify-between">
+                        ⚙️ הגדרות סנכרון אוטומטי ל-GitHub (עבור סנכרון בין כל המכשירים)
+                        <span class="text-[10px] text-gray-400">(לחץ לפתיחה)</span>
+                    </summary>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-2 border-t border-gray-700">
+                        <div>
+                            <label class="block mb-1">GitHub Personal Access Token (PAT):</label>
+                            <input type="password" id="gh-token-input" placeholder="ghp_xxxx..." class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-gray-100 font-mono">
+                        </div>
+                        <div>
+                            <label class="block mb-1">GitHub Repo (username/repo-name):</label>
+                            <input type="text" id="gh-repo-input" placeholder="user/stock-portfolio-bot" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-gray-100 font-mono" dir="ltr">
+                        </div>
+                    </div>
+                    <div class="mt-2 text-[11px] text-gray-400">
+                        הטוקן נשמר אך ורק בזיכרון המקומי של הדפדפן שלך (LocalStorage). ברגע שמוזן, כל מניה שתשמור תתעדכן ב-GitHub ותסתנכרן לכל המחשבים והטלפונים!
+                    </div>
+                </details>
+            </div>
+
+            <!-- טופס הוספה/עדכון מניה -->
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
                 <h3 class="text-base font-bold text-cyan-400">הוספה או עדכון מניה</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -191,9 +214,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-4 flex-wrap">
-                    <button onclick="addOrUpdateStock()" class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-semibold px-4 py-2 rounded-lg text-sm transition shadow">שמור/עדכן מניה</button>
+                    <button onclick="addOrUpdateStock()" id="save-btn" class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-semibold px-4 py-2 rounded-lg text-sm transition shadow">שמור/עדכן מניה</button>
                     <button onclick="exportPortfolioJson()" class="bg-gray-700 hover:bg-gray-600 text-cyan-300 font-semibold px-4 py-2 rounded-lg text-sm transition shadow">הורד כקובץ JSON 📥</button>
-                    <span id="status-msg" class="text-xs text-yellow-400"></span>
+                    <span id="status-msg" class="text-xs text-yellow-400 font-semibold"></span>
                 </div>
             </div>
 
@@ -248,6 +271,9 @@
     </main>
 
     <script>
+        // המערך מוזרק באופן דינמי מקובץ הפייתון
+        let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
+
         document.addEventListener('DOMContentLoaded', () => {
             const tabButtons = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -255,7 +281,6 @@
             tabButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tabNum = btn.getAttribute('data-tab');
-
                     tabContents.forEach(el => el.classList.add('hidden'));
 
                     const targetTab = document.getElementById('tab-' + tabNum);
@@ -270,9 +295,18 @@
                 });
             });
 
-            // טעינת התיק מתוך קובץ ה-JSON באופן דינמי
-            loadPortfolioData();
+            // טעינת הגדרות GitHub שנשמרו בדפדפן
+            const savedToken = localStorage.getItem('gh_token');
+            const savedRepo = localStorage.getItem('gh_repo');
+            if (savedToken) document.getElementById('gh-token-input').value = savedToken;
+            if (savedRepo) document.getElementById('gh-repo-input').value = savedRepo;
 
+            document.getElementById('gh-token-input')?.addEventListener('input', (e) => localStorage.setItem('gh_token', e.target.value.trim()));
+            document.getElementById('gh-repo-input')?.addEventListener('input', (e) => localStorage.setItem('gh_repo', e.target.value.trim()));
+
+            renderPortfolio();
+
+            // גרף הסקטורים
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
                 function parsePct(str) {
@@ -320,32 +354,6 @@
             }
         });
 
-        let portfolioStocks = [];
-
-        async function loadPortfolioData() {
-            try {
-                const response = await fetch('portfolio.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // המרה בטוחה למערך תמיד, בין אם ה-JSON מגיע כמערך או כאובייקט
-                    if (Array.isArray(data)) {
-                        portfolioStocks = data;
-                    } else if (data && typeof data === 'object') {
-                        portfolioStocks = Object.values(data);
-                    } else {
-                        portfolioStocks = [];
-                    }
-
-                    renderPortfolio();
-                } else {
-                    console.error('לא ניתן לטעון את קובץ ה-JSON');
-                }
-            } catch (error) {
-                console.error('שגיאה בטעינת התיק:', error);
-            }
-        }
-
         function renderPortfolio() {
             const container = document.getElementById('portfolio-container');
             if (!container) return;
@@ -355,7 +363,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
                 
-                const cleanSymbol = (stock.symbol || '').trim().toUpperCase();
+                const cleanSymbol = stock.symbol.trim().toUpperCase();
                 const primaryLogo = `https://assets.parqet.com/logos/symbol/${cleanSymbol}`;
                 const cleanSymbolLower = cleanSymbol.toLowerCase().replace(/[-.]/g, '');
                 const fallbackLogo = `https://s3-symbol-logo.tradingview.com/${cleanSymbolLower}.svg`;
@@ -371,12 +379,12 @@
                             <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
-                        קנייה: <strong>$${(stock.buyPrice || 0).toFixed(2)}</strong><br>
-                        מחיר נוכחי: <strong>${stock.current || 'N/A'}</strong><br>
-                        מחיר טרום פתיחה: <strong>${stock.pre || 'N/A'}</strong><br>
-                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target || 'N/A'}</strong><br>
-                        <strong>${stock.status || ''}</strong><br>
-                        <span class="text-gray-400">חדשות ורציונל: ${stock.note || ''}</span>
+                        קנייה: <strong>$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
+                        מחיר נוכחי: <strong>${stock.current}</strong><br>
+                        מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
+                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
+                        <strong>${stock.status}</strong><br>
+                        <span class="text-gray-400">${stock.note}</span>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
                         <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
@@ -387,7 +395,28 @@
             });
         }
 
-        function addOrUpdateStock() {
+        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend
+        async function fetchLiveStockData(symbol) {
+            try {
+                const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const result = data.chart.result[0];
+                    const meta = result.meta;
+                    const price = meta.regularMarketPrice;
+                    return {
+                        price: price,
+                        prePrice: meta.preMarketPrice || price,
+                        target: price * 1.22
+                    };
+                }
+            } catch (e) {
+                console.log("Could not fetch live quote, using purchase price fallback.");
+            }
+            return null;
+        }
+
+        async function addOrUpdateStock() {
             const nameInput = document.getElementById('stock-name');
             const symbolInput = document.getElementById('stock-symbol');
             const sharesInput = document.getElementById('stock-shares');
@@ -400,38 +429,111 @@
             const buyPrice = parseFloat(buyInput.value);
 
             if (!name || !symbol || isNaN(shares) || isNaN(buyPrice)) {
+                statusMsg.style.color = "#f87171";
                 statusMsg.innerText = "אנא מלא את כל השדות בצורה תקינה.";
                 return;
             }
 
-            const existingIndex = portfolioStocks.findIndex(s => s.symbol === symbol);
-            if (existingIndex !== -1) {
-                portfolioStocks[existingIndex].name = name;
-                portfolioStocks[existingIndex].shares = shares;
-                portfolioStocks[existingIndex].buyPrice = buyPrice;
-                statusMsg.innerText = `המניה ${symbol} עודכנה בהצלחה!`;
-            } else {
-                portfolioStocks.push({
-                    name: name,
-                    symbol: symbol,
-                    shares: shares,
-                    buyPrice: buyPrice,
-                    current: `$${buyPrice.toFixed(2)}`,
-                    pre: `$${buyPrice.toFixed(2)}`,
-                    target: `$${(buyPrice * 1.2).toFixed(2)}`,
-                    status: "רווח: <span style='color: #2ecc71; font-weight: bold;'>0.00%</span>",
-                    note: "מניה חדשה שנוספה לתיק."
-                });
-                statusMsg.innerText = `המניה ${symbol} נוספה בהצלחה!`;
+            statusMsg.style.color = "#facc15";
+            statusMsg.innerText = "שולף נתוני שוק עדכניים ושומר...";
+
+            let currentPrice = buyPrice;
+            let preMarketPrice = buyPrice;
+            let targetPrice = buyPrice * 1.20;
+
+            const liveData = await fetchLiveStockData(symbol);
+            if (liveData) {
+                currentPrice = liveData.price;
+                preMarketPrice = liveData.prePrice;
+                targetPrice = liveData.target;
             }
 
-            nameInput.value = '';
-            symbolInput.value = '';
-            sharesInput.value = '';
-            buyInput.value = '';
+            const ret = ((currentPrice - buyPrice) / buyPrice) * 100;
+            const sign = ret > 0 ? "+" : "";
+            const color = ret >= 0 ? "#2ecc71" : "#e74c3c";
 
+            const stockObj = {
+                name: name,
+                symbol: symbol,
+                shares: shares,
+                buyPrice: buyPrice,
+                current: `$${currentPrice.toFixed(2)}`,
+                pre: `$${preMarketPrice.toFixed(2)}`,
+                target: `$${targetPrice.toFixed(2)}`,
+                status: `רווח: <span style='color: ${color}; font-weight: bold;'>${sign}${ret.toFixed(2)}%</span>`,
+                note: `<strong>רציונל וניתוח:</strong> פוזיציה חדשה/מעודכנת בתיק המסחר.<br><strong>השפעה על הפוזיציה:</strong> מעקב פעיל אחרי ביצועי השוק.`
+            };
+
+            const existingIndex = portfolioStocks.findIndex(s => s.symbol === symbol);
+            if (existingIndex !== -1) {
+                portfolioStocks[existingIndex] = stockObj;
+            } else {
+                portfolioStocks.push(stockObj);
+            }
+
+            clearForm();
             renderPortfolio();
-            setTimeout(() => { statusMsg.innerText = ''; }, 3000);
+
+            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)
+            const synced = await syncToGithubRepo();
+            if (synced) {
+                statusMsg.style.color = "#4ade80";
+                statusMsg.innerText = `המניה ${symbol} נשמרה וסונכרנה ל-GitHub בהצלחה! 🎉`;
+            } else {
+                statusMsg.style.color = "#facc15";
+                statusMsg.innerText = `המניה ${symbol} עודכנה מקומית. להורדת ה-JSON לחץ 'הורד כקובץ JSON'.`;
+            }
+
+            setTimeout(() => { statusMsg.innerText = ''; }, 4000);
+        }
+
+        async function syncToGithubRepo() {
+            const token = localStorage.getItem('gh_token') || document.getElementById('gh-token-input')?.value;
+            const repo = localStorage.getItem('gh_repo') || document.getElementById('gh-repo-input')?.value;
+
+            if (!token || !repo) return false;
+
+            try {
+                // לבנות קובץ portfolio.json מעודכן
+                const portfolioDict = {};
+                portfolioStocks.forEach(s => {
+                    portfolioDict[s.symbol] = {
+                        buy: s.buyPrice,
+                        shares: s.shares,
+                        name: s.name
+                    };
+                });
+
+                const contentStr = JSON.stringify(portfolioDict, null, 4);
+                const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+
+                // לקבל את ה-SHA הנוכחי של הקובץ
+                const getUrl = `https://api.github.com/repos/${repo}/contents/portfolio.json`;
+                const headers = { "Authorization": `token ${token}`, "Content-Type": "application/json" };
+                
+                const getRes = await fetch(getUrl, { headers });
+                let sha = "";
+                if (getRes.ok) {
+                    const fileInfo = await getRes.json();
+                    sha = fileInfo.sha;
+                }
+
+                // עדכון הקובץ ב-GitHub
+                const putRes = await fetch(getUrl, {
+                    method: "PUT",
+                    headers,
+                    body: JSON.stringify({
+                        message: `Update portfolio via web UI`,
+                        content: encodedContent,
+                        sha: sha
+                    })
+                });
+
+                return putRes.ok;
+            } catch (e) {
+                console.error("GitHub Sync error:", e);
+                return false;
+            }
         }
 
         function loadStockForUpdate(index) {
@@ -443,15 +545,32 @@
             window.scrollTo({ top: document.getElementById('tab-5').offsetTop, behavior: 'smooth' });
         }
 
-        function deleteStock(index) {
-            if (confirm(`האם אתה בטוח שברצונך למחוק את ${portfolioStocks[index].symbol}?`)) {
+        async function deleteStock(index) {
+            const symbol = portfolioStocks[index].symbol;
+            if (confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) {
                 portfolioStocks.splice(index, 1);
                 renderPortfolio();
+                await syncToGithubRepo();
             }
         }
 
+        function clearForm() {
+            document.getElementById('stock-name').value = '';
+            document.getElementById('stock-symbol').value = '';
+            document.getElementById('stock-shares').value = '';
+            document.getElementById('stock-buy').value = '';
+        }
+
         function exportPortfolioJson() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioStocks, null, 2));
+            const portfolioDict = {};
+            portfolioStocks.forEach(s => {
+                portfolioDict[s.symbol] = {
+                    buy: s.buyPrice,
+                    shares: s.shares,
+                    name: s.name
+                };
+            });
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioDict, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", "portfolio.json");
