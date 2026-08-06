@@ -400,10 +400,11 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # בדיקה האם העת הנוכחית נופלת בחלונות הזמן המוגדרים לביצוע שאילתת AI
+        # בדיקה האם העת הנוכחית נופלת אך ורק באחד משלושת חלונות ה-AI המדויקים (10:10, 16:10, 00:10)
         is_ai_time = (
-            (current_hour == 0 and 8 <= current_minute <= 15) or
-            (current_hour >= 10 and current_hour <= 23 and current_minute in [10, 30, 40])
+            (current_hour == 10 and 10 <= current_minute <= 15) or
+            (current_hour == 16 and 10 <= current_minute <= 15) or
+            (current_hour == 0 and 10 <= current_minute <= 15)
         )
 
         if is_ai_time:
@@ -590,26 +591,4 @@ if __name__ == "__main__":
             
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
             replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color}'"
-            replacements[f"SECTOR_{s_key}_PERF"] = s_change
-
-        for key, val in replacements.items():
-            content = content.replace(f"{{{{{key}}}}}", str(val))
-
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(content)
-        print("Successfully generated index.html!")
-
-        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
-        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE, AI_CACHE_FILE], check=True)
-
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site, portfolio and daily cross-sector AI insights with Investing news on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-            subprocess.run(["git", "push"], check=True)
-            print("Successfully pushed changes to GitHub!")
-
-    except Exception as e:
-        traceback.print_exc()
-        raise
+            replacements[f"SECTOR_{s_key}_PERF"] = s
