@@ -400,11 +400,10 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # בדיקה האם העת הנוכחית נופלת באחד מ-3 החלונות שנקבעו לביצוע שאילתת AI (10:10-10:25, 16:10-16:25, 00:10-00:25)
+        # בדיקה האם העת הנוכחית נופלת בחלונות הזמן המוגדרים לביצוע שאילתת AI
         is_ai_time = (
-            (current_hour == 10 and 10 <= current_minute <= 25) or
-            (current_hour == 16 and 10 <= current_minute <= 25) or
-            (current_hour == 0 and 10 <= current_minute <= 25)
+            (current_hour == 0 and 8 <= current_minute <= 15) or
+            (current_hour >= 10 and current_hour <= 23 and current_minute in [10, 30, 40])
         )
 
         if is_ai_time:
