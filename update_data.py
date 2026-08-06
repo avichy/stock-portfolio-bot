@@ -142,31 +142,34 @@ def get_default_ai_insights():
         "market_news": [
             {
                 "news_link": "https://www.investing.com",
-                "news_title": "שיחות עם איראן בממוקד; תוצאות Sandisk ובלוק - מה מניע את השווקים",
-                "news_content": "אירועים גיאו-פוליטיים מרכזיים במזרח התיכון לצד דוחות כספיים משמעותיים מעצבים את סנטימנט המסחר ומייצרים תנודתיות רוחבית בסקטורים השונים.",
+                "news_title": "עדכון שוק יומי - מה מניע את השווקים",
+                "news_content": "אירועים גיאו-פוליטיים מרכזיים לצד דוחות כספיים משמעותיים מעצבים את סנטימנט המסחר ומייצרים תנודתיות רוחבית בסקטורים השונים.",
                 "news_impact": "השפעה ישירה על מניות הטכנולוגיה, מחירי האנרגיה ותיאבון הסיכון של משקיעים בשוק."
             }
         ]
     }
 
-def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
+def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_name):
     if not client:
         print("❌ ERROR: Gemini Client is missing! Using defaults.")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
     try:
-        print("🤖 Connecting to Gemini AI to generate cross-sector market insights, market news, and select Stage 4 stocks...")
+        print(f"🤖 Connecting to Gemini AI to generate daily cross-sector market insights for {day_name}, {date_str}...")
         market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
         portfolio_tickers = list(portfolio_stocks.keys())
 
         prompt = f"""
-אתה אנליסט שוק הון בכיר וגלובלי. על בסיס נתוני השוק הנוכחיים הבאים:
+אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
+על בסיס נתוני השוק הנוכחיים הבאים להיום:
 {json.dumps(market_summary, ensure_ascii=False)}
 
 ועבור מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-הנחיה קריטית: הניתוחים, החדשות והסקירות חייבים לכסות את כל סקטורי שוק ההון באופן רוחבי ומקיף (כגון פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות בסיסית ומחזורית, תעשייה, חומרי גלם ונדל"ן) ולא להתרכז בסקטור אחד בלבד.
+הנחיות קריטיות, נוקשות ומחייבות:
+1. עדכניות יומית מוחלטת (95% דיוק ורעננות לזמן אמת של היום הספציפי הזה - {date_str}): כל החדשות, הדיווחים, האירועים הגיאו-פוליטיים, דוחות החברות ומגמות המאקרו חייבים להיות מעודכנים להיום ממש, ברמה היומית הגבוהה ביותר. חל איסור מוחלט למחזר ידיעות ישנות, גנריות או פגי תוקף.
+2. כיסוי רוחבי מלא: הניתוחים, החדשות והסקירות חייבים לכסות את כל סקטורי שוק ההון באופן רוחבי ומקיף (כגון פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות בסיסית ומחזורית, תעשייה, חומרי גלם ונדל"ן) ולא להתרכז בסקטור אחד בלבד.
 
 אנא החזר אך ורק אובייקט JSON תקין (ללא מעטפות markdown וללא טקסט נוסף סביב) הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
 1. SP500_ANALYSIS
@@ -191,7 +194,7 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
 20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
 21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
 22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר אובייקט עם השדות: rationale, news_link, news_title, news_content, news_impact.
-23. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי, מלחמות, דוחות ומאקרו בסגנון Investing. כל פריט יהיה אובייקט עם השדות: news_link, news_title, news_content, news_impact.
+23. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי, מלחמות, דוחות ומאקרו בסגנון Investing מעודכניות להיום. כל פריט יהיה אובייקט עם השדות: news_link, news_title, news_content, news_impact.
 """
 
         response = client.models.generate_content(
@@ -207,361 +210,4 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks):
         clean_text = raw_text
         if clean_text.startswith("```json"):
             clean_text = clean_text[7:]
-        if clean_text.endswith("```"):
-            clean_text = clean_text[:-3]
-        clean_text = clean_text.strip()
-
-        parsed_ai_data = json.loads(clean_text)
-        print("Successfully parsed AI response into JSON!")
-        return parsed_ai_data
-
-    except Exception as e:
-        print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
-        cached = load_ai_cache()
-        return cached if cached else get_default_ai_insights()
-
-israel_tz = pytz.timezone("Asia/Jerusalem")
-now_il = datetime.now(israel_tz)
-day_name = {
-    0: "שני", 1: "שלישי", 2: "רביעי", 3: "חמישי", 4: "שישי", 5: "שבת", 6: "ראשון",
-}[now_il.weekday()]
-
-sector_tickers_map = {
-    "INFO_TECH": "XLK",
-    "FINANCIALS": "XLF",
-    "HEALTH": "XLV",
-    "CONS_DISC": "XLY",
-    "CONS_STAPLES": "XLP",
-    "ENERGY": "XLE",
-    "INDUSTRIALS": "XLI",
-    "MATERIALS": "XLB",
-    "COMM": "XLC",
-    "UTILITIES": "XLU",
-    "REAL_ESTATE": "XLRE"
-}
-
-cached_ai_init = load_ai_cache()
-init_lt = cached_ai_init.get("long_term_stocks", LT_STOCKS_META)
-init_sw = cached_ai_init.get("swing_stocks", SW_STOCKS_META)
-
-base_market_tickers = list(set(
-    ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX"] +
-    list(sector_tickers_map.values()) +
-    list(portfolio_buys.keys()) +
-    [s["ticker"] for s in init_lt if isinstance(s, dict) and "ticker" in s] +
-    [s["ticker"] for s in init_sw if isinstance(s, dict) and "ticker" in s]
-))
-
-def fetch_market_data(tickers):
-    market_data = {}
-    for ticker in tickers:
-        success = False
-        for attempt in range(3):
-            try:
-                stock = yf.Ticker(ticker)
-                hist = stock.history(period="2d")
-                info = stock.info or {}
-                target_mean = info.get("targetMeanPrice")
-                
-                pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
-                if not pre_market_val and not hist.empty:
-                    pre_market_val = hist["Open"].iloc[-1]
-
-                if not hist.empty:
-                    current_price = round(float(hist["Close"].iloc[-1]), 2)
-                    prev_close = float(hist["Close"].iloc[-2]) if len(hist) > 1 else current_price
-                    change = round(((current_price - prev_close) / prev_close) * 100, 2) if prev_close else 0.0
-                    market_data[ticker] = {
-                        "price": current_price,
-                        "change": change,
-                        "target": float(target_mean) if target_mean else 0.0,
-                        "pre_market": round(float(pre_market_val), 2) if pre_market_val else current_price
-                    }
-                    success = True
-                    break
-            except Exception:
-                time.sleep(1)
-        if not success:
-            market_data[ticker] = {"price": 0.0, "change": 0.0, "target": 0.0, "pre_market": 0.0}
-    return market_data
-
-def build_structured_stocks_html(stocks_meta, market_data):
-    html_parts = []
-    if not isinstance(stocks_meta, list):
-        stocks_meta = LT_STOCKS_META
-
-    for s in stocks_meta:
-        if not isinstance(s, dict):
-            continue
-        ticker = s.get("ticker", "")
-        name = s.get("name", ticker)
-        desc = s.get("desc", "")
-        news = s.get("news", "")
-
-        data = market_data.get(ticker, {})
-        price = format_num(data.get("price", 0))
-        pre_market = format_num(data.get("pre_market", 0))
-        target = format_num(data.get("target", 0))
-        change_val = data.get("change", 0.0)
-
-        sign = "+" if change_val > 0 else ""
-        color = "#2ecc71" if change_val >= 0 else "#e74c3c"
-        change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
-        
-        logo_url = get_stock_logo_url(ticker)
-        clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
-
-        card_html = f"""
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
-            <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
-                <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1">
-                <div><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
-                <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
-                <div><strong>רווח:</strong> {change_str}</div>
-                <div><strong>עיסוק החברה:</strong> {desc}</div>
-                <div><strong>חדשות ורציונל:</strong> {news}</div>
-            </div>
-        </div>
-        """
-        html_parts.append(card_html)
-    return "".join(html_parts)
-
-def build_market_news_html(ai_insights):
-    market_news_list = ai_insights.get("market_news", [])
-    if not isinstance(market_news_list, list) or not market_news_list:
-        return '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות כרגע.</div>'
-
-    html_parts = []
-    for item in market_news_list:
-        if not isinstance(item, dict):
-            continue
-        p_link = item.get("news_link", "https://www.investing.com")
-        p_title = item.get("news_title", "עדכון שוק גלובלי")
-        p_content = item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים.")
-        p_impact = item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק.")
-
-        card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold">{p_title}</h3>
-            <p>🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
-            <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
-            <p><strong>תוכן הכתבה המלא:</strong> {p_content}</p>
-            <p>🚀 <strong>מה זה אומר בקשר למניה / לשוק:</strong> {p_impact}</p>
-        </div>
-        """
-        html_parts.append(card_html)
-    
-    return "".join(html_parts)
-
-if __name__ == "__main__":
-    try:
-        print("Fetching initial market data...")
-        base_market_data = fetch_market_data(base_market_tickers)
-        date_str = now_il.strftime("%d.%m.%Y")
-        time_str = now_il.strftime("%H:%M")
-
-        ai_insights = fetch_ai_insights_from_gemini(base_market_data, portfolio_buys)
-        if ai_insights and isinstance(ai_insights, dict):
-            save_ai_cache(ai_insights)
-        else:
-            ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
-
-        new_lt = ai_insights.get("long_term_stocks", [])
-        new_sw = ai_insights.get("swing_stocks", [])
-        extra_tickers = []
-        for s in new_lt + new_sw:
-            if isinstance(s, dict) and "ticker" in s and s["ticker"] not in base_market_data:
-                extra_tickers.append(s["ticker"])
-        if extra_tickers:
-            print(f"Fetching market data for extra AI-selected tickers: {extra_tickers}")
-            extra_data = fetch_market_data(extra_tickers)
-            base_market_data.update(extra_data)
-
-        sp500 = base_market_data.get("^GSPC", {})
-        nasdaq = base_market_data.get("^NDX", {})
-        dji = base_market_data.get("^DJI", {})
-        vix = base_market_data.get("^VIX", {})
-        usd_ils_data = base_market_data.get("USDILS=X", {})
-        dxy_data = base_market_data.get("DX-Y.NYB", {})
-
-        sp500_price = format_num(sp500.get("price", 0))
-        sp500_change = format_pct_colored(sp500.get("change", 0))
-        nasdaq_price = format_num(nasdaq.get("price", 0))
-        nasdaq_change = format_pct_colored(nasdaq.get("change", 0))
-        dji_price = format_num(dji.get("price", 0))
-        dji_change = format_pct_colored(dji.get("change", 0))
-        vix_price = format_num(vix.get("price", 0))
-        vix_change = format_pct_colored(vix.get("change", 0))
-        
-        dxy_price = format_num(dxy_data.get("price", 0))
-        dxy_change = format_pct_colored(dxy_data.get("change", 0))
-
-        usd_ils_p = usd_ils_data.get("price", 3.65)
-        if not usd_ils_p or usd_ils_p <= 3.0:
-            usd_ils_p = 3.65
-        usd_ils_c = usd_ils_data.get("change", 0)
-        usd_ils_price = f"{format_num(usd_ils_p)}₪"
-        usd_ils_change = format_pct_colored(usd_ils_c)
-
-        oil_data = base_market_data.get("CL=F", {})
-        oil_p = oil_data.get("price", 75.0)
-        oil_c = oil_data.get("change", 0)
-        oil_price = f"${format_num(oil_p)}"
-        oil_change = format_pct_colored(oil_c)
-
-        gold_data = base_market_data.get("GC=F", {})
-        gold_p = gold_data.get("price", 2350.0)
-        gold_c = gold_data.get("change", 0)
-        gold_price = f"${format_num(gold_p)}"
-        gold_change = format_pct_colored(gold_c)
-
-        btc_data = base_market_data.get("BTC-USD", {})
-        btc_p = btc_data.get("price", 65000.0)
-        btc_c = btc_data.get("change", 0)
-        btc_price = f"${format_num(btc_p)}"
-        btc_change = format_pct_colored(btc_c)
-
-        portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
-        if not isinstance(portfolio_analysis_map, dict):
-            portfolio_analysis_map = {}
-
-        if not os.path.exists(TEMPLATE_FILE):
-            raise FileNotFoundError(f"Template file '{TEMPLATE_FILE}' not found in directory!")
-
-        with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
-            content = f.read()
-
-        lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-        sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
-
-        lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
-        sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
-        news_html = build_market_news_html(ai_insights)
-
-        portfolio_js_list = []
-        for ticker, info in portfolio_buys.items():
-            if not isinstance(info, dict):
-                continue
-            try:
-                buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
-                fetched_price_data = base_market_data.get(ticker, {})
-                curr_p = fetched_price_data.get("price") or buy_p
-                fetched_target = fetched_price_data.get("target") or (buy_p * 1.20 if buy_p > 0 else 100.0)
-                pre_p = fetched_price_data.get("pre_market") or curr_p
-
-                ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
-                sign = "+" if ret > 0 else ""
-                color = "#2ecc71" if ret >= 0 else "#e74c3c"
-
-                shares_count = info.get("shares", 0)
-                company_name = info.get("name") or fetched_price_data.get("name") or ticker
-
-                p_item = portfolio_analysis_map.get(ticker, {})
-                p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
-                p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
-                p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
-
-                full_note_html = (
-                    f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
-                    f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
-                    f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
-                )
-
-                portfolio_js_list.append({
-                    "name": company_name,
-                    "symbol": ticker,
-                    "shares": shares_count,
-                    "buyPrice": buy_p,
-                    "current": f"${format_num(curr_p)}",
-                    "pre": f"${format_num(pre_p)}",
-                    "target": f"${format_num(fetched_target)}",
-                    "status": f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>",
-                    "note": full_note_html
-                })
-            except Exception as ex:
-                print(f"Error processing portfolio stock {ticker}: {ex}")
-
-        replacements = {
-            "LAST_UPDATED": f"{date_str} | {time_str}",
-            "DAY_NAME": day_name,
-            "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
-            "PORTFOLIO_STOCKS_JSON": json.dumps(portfolio_js_list, ensure_ascii=False),
-            "SP500_PRICE": sp500_price,
-            "SP500_PCT": sp500_change,
-            "NASDAQ_PRICE": nasdaq_price,
-            "NASDAQ_PCT": nasdaq_change,
-            "DOW_PRICE": dji_price,
-            "DOW_PCT": dji_change,
-            "VIX_PRICE": vix_price,
-            "VIX_PCT": vix_change,
-            "DXY_PRICE": dxy_price,
-            "DXY_PCT": dxy_change,
-            "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", ""),
-            "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", ""),
-            "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", ""),
-            "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", ""),
-            "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", ""),
-            "USD_ILS": usd_ils_price,
-            "USD_ILS_CHANGE": usd_ils_change,
-            "OIL_PRICE": oil_price,
-            "OIL_CHANGE": oil_change,
-            "GOLD_PRICE": gold_price,
-            "GOLD_CHANGE": gold_change,
-            "BTC_PRICE": btc_price,
-            "BTC_CHANGE": btc_change,
-            "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", ""),
-            "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", ""),
-            "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", ""),
-            "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", ""),
-            "US_MARKET_NEWS": ai_insights.get("US_MARKET_NEWS", ""),
-            "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_NEWS", ""),
-            "CATALYST_EARNINGS": ai_insights.get("CATALYST_EARNINGS", ""),
-            "CATALYST_MONETARY": ai_insights.get("CATALYST_MONETARY", ""),
-            "CATALYST_HARDWARE": ai_insights.get("CATALYST_HARDWARE", ""),
-            "COMMUNITY_SENTIMENT": ai_insights.get("COMMUNITY_SENTIMENT", ""),
-            "ANALYST_POINT_1": ai_insights.get("ANALYST_POINT_1", ""),
-            "ANALYST_POINT_2": ai_insights.get("ANALYST_POINT_2", ""),
-            "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", ""),
-            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""),
-            "LONG_TERM_STOCKS_SECTION": lt_html,
-            "SWING_STOCKS_SECTION": sw_html,
-            "PORTFOLIO_NEWS_SECTION": news_html,
-        }
-
-        for s_key, s_ticker in sector_tickers_map.items():
-            s_data = base_market_data.get(s_ticker, {})
-            s_change = s_data.get("change", 0.0)
-            sign = "+" if s_change > 0 else ""
-            color = "#2ecc71" if s_change >= 0 else "#e74c3c"
-            
-            replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color}'"
-            replacements[f"SECTOR_{s_key}_PERF"] = s_change
-
-        for key, val in replacements.items():
-            content = content.replace(f"{{{{{key}}}}}", str(val))
-
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(content)
-        print("Successfully generated index.html!")
-
-        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
-        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE, AI_CACHE_FILE], check=True)
-
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site, portfolio and cross-sector AI insights safely on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-            subprocess.run(["git", "push"], check=True)
-            print("Successfully pushed changes to GitHub!")
-
-    except Exception as e:
-        traceback.print_exc()
-        raise
+        if clean_text.endswith("
