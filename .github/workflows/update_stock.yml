@@ -52,7 +52,7 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html portfolio.json || true
+          git add index.html portfolio.json ai_cache.json || true
           
           if git diff --cached --quiet; then
             echo "No changes to commit."
