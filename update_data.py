@@ -249,11 +249,7 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
         return parsed_ai_data
 
     except Exception as e:
-        error_str = str(e)
-        if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "quota" in error_str.lower():
-            print(f"🚨 QUOTA ERROR (429 / Resource Exhausted): חריגה ממכסת ה-AI! משתמש בנתונים השמורים (Cache) עד שהמכסה תתאפס. פירוט השגיאה: {e}")
-        else:
-            print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
+        print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
@@ -404,11 +400,11 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # בדיקה האם העת הנוכחית נופלת באחד מ-3 החלונות שנקבעו לביצוע שאילתת AI (סביב 10:05, 16:05, 00:05)
+        # בדיקה האם העת הנוכחית נופלת באחד מ-3 החלונות שנקבעו לביצוע שאילתת AI (10:10-10:25, 16:10-16:25, 00:10-00:25)
         is_ai_time = (
-            (current_hour == 10 and 0 <= current_minute <= 15) or
-            (current_hour == 16 and 0 <= current_minute <= 15) or
-            (current_hour == 0 and 0 <= current_minute <= 15)
+            (current_hour == 10 and 10 <= current_minute <= 25) or
+            (current_hour == 16 and 10 <= current_minute <= 25) or
+            (current_hour == 0 and 10 <= current_minute <= 25)
         )
 
         if is_ai_time:
