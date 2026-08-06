@@ -249,7 +249,11 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
         return parsed_ai_data
 
     except Exception as e:
-        print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
+        error_str = str(e)
+        if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str or "quota" in error_str.lower():
+            print(f"🚨 QUOTA ERROR (429 / Resource Exhausted): חריגה ממכסת ה-AI! משתמש בנתונים השמורים (Cache) עד שהמכסה תתאפס. פירוט השגיאה: {e}")
+        else:
+            print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
