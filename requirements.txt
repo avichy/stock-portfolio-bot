@@ -2,4 +2,4 @@ flask
 yfinance
 pytz
 requests
-google-generativeai
+google-genai
