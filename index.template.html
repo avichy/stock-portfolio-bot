@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דו"ח סקייל שוק ההון המלא – מותאם אישית  </title>
+    <title>דו"ח סקייל שוק ההון המלא – מותאם אישית לתיק הטכנולוגיה והשבבים</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -327,7 +327,16 @@
                 const response = await fetch('portfolio.json');
                 if (response.ok) {
                     const data = await response.json();
-                    portfolioStocks = Array.isArray(data) ? data : Object.values(data);
+                    
+                    // המרה בטוחה למערך תמיד, בין אם ה-JSON מגיע כמערך או כאובייקט
+                    if (Array.isArray(data)) {
+                        portfolioStocks = data;
+                    } else if (data && typeof data === 'object') {
+                        portfolioStocks = Object.values(data);
+                    } else {
+                        portfolioStocks = [];
+                    }
+
                     renderPortfolio();
                 } else {
                     console.error('לא ניתן לטעון את קובץ ה-JSON');
