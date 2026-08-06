@@ -16,7 +16,7 @@
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div class="text-xs text-gray-400 mt-3">
-                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong><span dir="ltr">06.08.2026 | 03:17</span></strong></span>
+                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong><span dir="ltr">06.08.2026 | 03:33</span></strong></span>
             </div>
         </div>
     </header>
@@ -66,7 +66,7 @@
                             <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">מדד התנודתיות משקף רמת רגיעה מתונה בשווקים ללא לחצים חריגים.</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>99.67</strong> (<span class="text-cyan-300"><span style='color: #e74c3c; font-weight: bold;'>-0.22%</span></span>)<br>
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>99.65</strong> (<span class="text-cyan-300"><span style='color: #e74c3c; font-weight: bold;'>-0.24%</span></span>)<br>
                             <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.</span></span>
                         </p>
                     </div>
@@ -81,13 +81,13 @@
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$74.94</strong> (<span class="text-cyan-300"><span style='color: #e74c3c; font-weight: bold;'>-1.10%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$74.69</strong> (<span class="text-cyan-300"><span style='color: #e74c3c; font-weight: bold;'>-1.43%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">משפיע ישירות על עלויות האנרגיה, התחבורה ושיעורי האינפלציה הגלובליים.</span></p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$4,325.60</strong> (<span class="text-cyan-300"><span style='color: #2ecc71; font-weight: bold;'>+5.62%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$4,340.60</strong> (<span class="text-cyan-300"><span style='color: #2ecc71; font-weight: bold;'>+5.99%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">משמש כנכס מקלט בטוח וגידור מרכזי מפני אי-יציבות גיאו-פוליטית.</span></p>
                     </div>
 
@@ -96,7 +96,7 @@
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>$64,523.90</strong> (<span class="text-cyan-300"><span style='color: #2ecc71; font-weight: bold;'>0.00%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>$64,628.25</strong> (<span class="text-cyan-300"><span style='color: #2ecc71; font-weight: bold;'>0.00%</span></span>)</p>
                         <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">אינדיקטור מוביל לסנטימנט סיכון ונזילות בנכסים אלטרנטיביים.</span></p>
                     </div>
                 </div>
@@ -663,7 +663,7 @@
                                  class="rounded-full bg-white p-0.5 object-contain" 
                                  onerror="this.onerror=null; this.src='${fallbackLogo}';" 
                                  alt="${stock.symbol}">
-                            <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
+                            <strong>${stock.name}</strong><span dir="rtl">(טיקר: <span dir="ltr" class="font-bold">${cleanSymbol}</span>)</span>
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
                         קנייה: <strong>$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
@@ -711,21 +711,21 @@
                         data: {
                             name: name,
                             shares: shares,
-                            buy: buyPrice,
-                            buyPrice: buyPrice
+                            buyPrice: buyPrice,
+                            buy: buyPrice
                         }
                     })
                 });
 
                 if (response.ok) {
-                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} עודכנה ב-GitHub בהצלחה! 🚀`;
+                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} עודכנה ב-GitHub! 🚀 מפעיל עדכון נתונים...`;
 
                     nameInput.value = '';
                     symbolInput.value = '';
                     sharesInput.value = '';
                     buyInput.value = '';
 
-                    setTimeout(() => { location.reload(); }, 1500);
+                    setTimeout(() => { location.reload(); }, 2000);
                 } else {
                     const errData = await response.json();
                     if (statusMsg) statusMsg.innerText = `שגיאה בעדכון: ${errData.error || 'נכשל'}`;
@@ -749,10 +749,12 @@
             const stock = portfolioStocks[index];
             if (!stock || !stock.symbol) return;
 
-            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${stock.symbol}?`)) return;
+            const symbol = stock.symbol.trim().toUpperCase();
+
+            if (!confirm(`האם אתה בטוח שברצונך למחוק את ${symbol}?`)) return;
 
             const statusMsg = document.getElementById('status-msg');
-            if (statusMsg) statusMsg.innerText = `מוחק את ${stock.symbol} מ-GitHub... ⏳`;
+            if (statusMsg) statusMsg.innerText = `מוחק את ${symbol} מ-GitHub... ⏳`;
 
             try {
                 const response = await fetch('/api/update-portfolio', {
@@ -760,13 +762,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'delete',
-                        symbol: stock.symbol
+                        symbol: symbol
                     })
                 });
 
                 if (response.ok) {
-                    if (statusMsg) statusMsg.innerText = `המניה ${stock.symbol} נמחקה מ-GitHub! 🚀`;
-                    setTimeout(() => { location.reload(); }, 1500);
+                    if (statusMsg) statusMsg.innerText = `המניה ${symbol} נמחקה מ-GitHub! 🚀`;
+                    setTimeout(() => { location.reload(); }, 2000);
                 } else {
                     const errData = await response.json();
                     if (statusMsg) statusMsg.innerText = `שגיאה במחיקה: ${errData.error || 'נכשל'}`;
