@@ -27,6 +27,13 @@ def load_ai_cache():
             print(f"Warning: Error loading AI cache: {e}")
     return {}
 
+def save_ai_cache(data):
+    try:
+        with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Warning: Error saving AI cache: {e}")
+
 def load_portfolio_buys():
     if GITHUB_TOKEN and GITHUB_REPO:
         try:
@@ -295,57 +302,10 @@ if __name__ == "__main__":
         lt_html = build_structured_stocks_html(LT_STOCKS_META, base_market_data)
         sw_html = build_structured_stocks_html(SW_STOCKS_META, base_market_data)
 
-        # בניית מערך המניות דינמית לחלוטין מתוך portfolio.json
-        portfolio_js_list = []
-        for ticker, info in portfolio_buys.items():
-            if not isinstance(info, dict):
-                continue
-            try:
-                buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
-                fetched_price_data = base_market_data.get(ticker, {})
-                curr_p = fetched_price_data.get("price") or buy_p
-                fetched_target = fetched_price_data.get("target") or (buy_p * 1.20 if buy_p > 0 else 100.0)
-                pre_p = fetched_price_data.get("pre_market") or curr_p
-
-                ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
-                sign = "+" if ret > 0 else ""
-                color = "#2ecc71" if ret >= 0 else "#e74c3c"
-
-                shares_count = info.get("shares", 0)
-                company_name = info.get("name") or fetched_price_data.get("name") or ticker
-
-                p_item = portfolio_analysis_map.get(ticker, {})
-                p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
-                p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
-                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
-                p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
-
-                full_note_html = (
-                    f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
-                    f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
-                    f"<strong>תוכן חדשותי:</strong> {p_news_content}<br>"
-                    f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
-                )
-
-                portfolio_js_list.append({
-                    "name": company_name,
-                    "symbol": ticker,
-                    "shares": shares_count,
-                    "buyPrice": buy_p,
-                    "current": f"${format_num(curr_p)}",
-                    "pre": f"${format_num(pre_p)}",
-                    "target": f"${format_num(fetched_target)}",
-                    "status": f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>",
-                    "note": full_note_html
-                })
-            except Exception as ex:
-                print(f"Error processing portfolio stock {ticker}: {ex}")
-
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
             "DAY_NAME": day_name,
             "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
-            "PORTFOLIO_STOCKS_JSON": json.dumps(portfolio_js_list, ensure_ascii=False),
             "SP500_PRICE": sp500_price,
             "SP500_PCT": sp500_change,
             "NASDAQ_PRICE": nasdaq_price,
@@ -396,6 +356,63 @@ if __name__ == "__main__":
             replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
             replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color}'"
             replacements[f"SECTOR_{s_key}_PERF"] = s_change
+
+        for ticker, info in portfolio_buys.items():
+            if not isinstance(info, dict):
+                continue
+            try:
+                buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
+
+                fetched_price_data = base_market_data.get(ticker, {})
+                curr_p = fetched_price_data.get("price")
+                if not curr_p or curr_p == 0.0:
+                    curr_p = float(info.get("currentPrice") or buy_p)
+                
+                fetched_target = fetched_price_data.get("target", 0.0)
+                if not fetched_target or fetched_target == 0.0:
+                    fetched_target = buy_p * 1.25 if buy_p > 0 else 100.0
+
+                pre_p = fetched_price_data.get("pre_market", 0.0)
+                if not pre_p or pre_p == 0.0:
+                    pre_p = curr_p
+
+                ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
+                sign = "+" if ret > 0 else ""
+                color = "#2ecc71" if ret >= 0 else "#e74c3c"
+
+                shares_count = info.get("shares", 0)
+                company_name = info.get("name") or fetched_price_data.get("name") or ticker
+
+                p_item = portfolio_analysis_map.get(ticker, {})
+                p_rationale = p_item.get("rationale", f"ניתוח טכני ומאקרו עבור {ticker}.")
+                p_news_title = p_item.get("news_title", f"עדכון שוק עבור {ticker}")
+                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים עבור {ticker}.")
+                p_news_impact = p_item.get("news_impact", "השפעה מתונה על ניהול הפוזיציה.")
+
+                full_note_html = (
+                    f"<strong>רציונל וניתוח:</strong> {p_rationale}<br>"
+                    f"<strong>כותרת חדשותית:</strong> {p_news_title}<br>"
+                    f"<strong>תוכן חדשותי:</strong> {p_news_content}<br>"
+                    f"<strong>השפעה על הפוזיציה:</strong> {p_news_impact}"
+                )
+
+                logo_url = get_stock_logo_url(ticker)
+                clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
+
+                title_with_logo = f"""<span style="display: inline-flex; align-items: center; gap: 8px;">
+                    <img src="{logo_url}" width="24" height="24" style="border-radius: 50%; background: white; padding: 1px; object-fit: contain;" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
+                    {company_name} (טיקר: {ticker})
+                </span>"""
+
+                replacements[f"{ticker}_PORT_TITLE"] = title_with_logo
+                replacements[f"{ticker}_PORT_SHARES"] = format_num(shares_count, 0)
+                replacements[f"{ticker}_PORT_CURRENT"] = f"${format_num(curr_p)}"
+                replacements[f"{ticker}_PORT_PRE"] = f"${format_num(pre_p)}"
+                replacements[f"{ticker}_PORT_TARGET"] = f"${format_num(fetched_target)}"
+                replacements[f"{ticker}_PORT_STATUS"] = f"רווח: <span style='color: {color}; font-weight: bold;'>{sign}{ret:.2f}%</span>"
+                replacements[f"{ticker}_PORT_NOTE"] = full_note_html
+            except Exception as ex:
+                print(f"Error processing portfolio item {ticker}: {ex}")
 
         for key, val in replacements.items():
             content = content.replace(f"{{{{{key}}}}}", str(val))
