@@ -229,7 +229,7 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
 """
 
             response = client.models.generate_content(
-                model='gemini-2.0-flash',
+                model='gemini-1.5-flash',
                 contents=prompt,
             )
             
@@ -413,7 +413,6 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # הפעלת AI אך ורק בשעות 10:10, 16:10, 00:10 (עם טווח של עד 5 דקות למקרה של עיכוב)
         is_ai_time = (
             (current_hour == 10 and 10 <= current_minute <= 15) or
             (current_hour == 16 and 10 <= current_minute <= 15) or
