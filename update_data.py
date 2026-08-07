@@ -179,13 +179,15 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
-    try:
-        print(f"🤖 Connecting to Gemini AI to generate daily cross-sector market insights for {day_name}, {date_str}...")
-        market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
-        portfolio_tickers = list(portfolio_stocks.keys())
-        headlines_text = "\n".join([f"- {h}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            print(f"🤖 Connecting to Gemini AI to generate daily cross-sector market insights for {day_name}, {date_str} (Attempt {attempt + 1}/{max_retries})...")
+            market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
+            portfolio_tickers = list(portfolio_stocks.keys())
+            headlines_text = "\n".join([f"- {h}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
 
-        prompt = f"""
+            prompt = f"""
 אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
 
 להלן כותרות חדשות שוק ההון העדכניות ביותר שנלקחו ישירות מאתר Investing.com:
@@ -226,32 +228,43 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
 23. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי מתוך חדשות Investing, דוחות ומאקרו מעודכניות להיום. כל פריט יהיה אובייקט עם השדות: news_link, news_title, news_content, news_impact.
 """
 
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt,
-        )
-        
-        raw_text = response.text.strip()
-        print("--- RAW AI RESPONSE RECEIVED ---")
-        print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
-        print("--------------------------------")
+            response = client.models.generate_content(
+                model='gemini-2.0-flash',
+                contents=prompt,
+            )
+            
+            raw_text = response.text.strip()
+            print("--- RAW AI RESPONSE RECEIVED ---")
+            print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
+            print("--------------------------------")
 
-        clean_text = raw_text
-        bb = "```"
-        if clean_text.startswith(bb + "json"):
-            clean_text = clean_text[7:]
-        if clean_text.endswith(bb):
-            clean_text = clean_text[:-3]
-        clean_text = clean_text.strip()
+            clean_text = raw_text
+            bb = "```"
+            if clean_text.startswith(bb + "json"):
+                clean_text = clean_text[7:]
+            if clean_text.endswith(bb):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
 
-        parsed_ai_data = json.loads(clean_text)
-        print("Successfully parsed AI response into JSON!")
-        return parsed_ai_data
+            parsed_ai_data = json.loads(clean_text)
+            print("Successfully parsed AI response into JSON!")
+            return parsed_ai_data
 
-    except Exception as e:
-        print(f"⚠️ ERROR while calling Gemini API or parsing response: {e}")
-        cached = load_ai_cache()
-        return cached if cached else get_default_ai_insights()
+        except Exception as e:
+            print(f"⚠️ Attempt {attempt + 1} failed while calling Gemini API or parsing response: {e}")
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                if attempt < max_retries - 1:
+                    sleep_time = 60 * (attempt + 1)
+                    print(f"⏳ Rate limit hit. Waiting {sleep_time} seconds before retrying...")
+                    time.sleep(sleep_time)
+                    continue
+            if attempt == max_retries - 1:
+                print("⚠️ All AI retries exhausted. Falling back to cache.")
+                cached = load_ai_cache()
+                return cached if cached else get_default_ai_insights()
+
+    cached = load_ai_cache()
+    return cached if cached else get_default_ai_insights()
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
