@@ -15,8 +15,14 @@
                 דו"ח סקייל שוק ההון המלא ליום {{DAY_NAME}} - מותאם אישית 📊
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
+            <!-- המיקום הנוכחי שלך -->
             <div class="text-xs text-gray-400 mt-3">
-                עודכן לאחרונה: <span id="last-updated" class="font-semibold text-cyan-300"><strong><span dir="ltr">{{LAST_UPDATED}}</span></strong></span>
+             עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">{{LAST_UPDATED}}</span>
+            </div>
+
+            <!-- הוסף את השורה החדשה מתחתיו -->
+            <div class="text-xs text-gray-400 mt-1">
+            עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">{{AI_LAST_UPDATED}}</span>
             </div>
         </div>
     </header>
