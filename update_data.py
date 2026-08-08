@@ -415,7 +415,6 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # הפעלת AI אך ורק בשעות 10:10, 16:10, 00:10 (עם טווח של עד 5 דקות למקרה של עיכוב)
         is_ai_time = (
             (current_hour == 10 and 10 <= current_minute <= 15) or
             (current_hour == 16 and 10 <= current_minute <= 15) or
