@@ -140,7 +140,7 @@ SW_STOCKS_META = [
 ]
 
 def get_default_ai_insights():
-    return {
+    defaults = {
         "SP500_ANALYSIS": "מדד S&P 500 ממשיך להיסחר סביב רמות מפתח תוך בחינת נתוני המאקרו והאינפלציה.",
         "NASDAQ_ANALYSIS": "מדד הטכנולוגיה מוביל את הסנטימנט בשוק עם דגש על חדשנות ובינה מלאכותית.",
         "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן רחב לתיק המסחר.",
@@ -172,6 +172,8 @@ def get_default_ai_insights():
             }
         ]
     }
+    defaults["ai_updated_at"] = datetime.now(pytz.timezone("Asia/Jerusalem")).strftime("%d.%m.%Y | %H:%M")
+    return defaults
 
 def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_name, investing_headlines):
     if not client:
@@ -249,6 +251,8 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             clean_text = clean_text.strip()
 
             parsed_ai_data = json.loads(clean_text)
+            # הוספת חותמת זמן מתי ה-AI יצר את הניתוח בהצלחה
+            parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
             print("Successfully parsed AI response into JSON!")
             return parsed_ai_data
 
@@ -552,6 +556,7 @@ if __name__ == "__main__":
 
         replacements = {
             "LAST_UPDATED": f"{date_str} | {time_str}",
+            "AI_LAST_UPDATED": ai_insights.get("ai_updated_at", f"{date_str} | {time_str}"),
             "DAY_NAME": day_name,
             "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
             "PORTFOLIO_STOCKS_JSON": json.dumps(portfolio_js_list, ensure_ascii=False),
