@@ -229,7 +229,7 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
 """
 
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model='gemini-2.5-flash',
                 contents=prompt,
             )
             
@@ -619,10 +619,10 @@ if __name__ == "__main__":
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
             subprocess.run(["git", "commit", "-m", f"Update site, portfolio and daily cross-sector AI insights with Investing news on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
+            subprocess.run(["git", "pull", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
-            print("Successfully pushed changes to GitHub!")
-
+        else:
+            print("No changes to commit.")
     except Exception as e:
+        print(f"Error in main execution: {e}")
         traceback.print_exc()
-        raise
