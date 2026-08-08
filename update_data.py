@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 import pytz
 import requests
 import yfinance as yf
-from google import genai
+from groq import Groq
 
 AI_CACHE_FILE = "ai_cache.json"
 PORTFOLIO_FILE = "portfolio.json"
@@ -20,10 +20,10 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
-# אתחול הלקוח של גוגל
-client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+# אתחול הלקוח של Groq
+client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -173,16 +173,16 @@ def get_default_ai_insights():
         ]
     }
 
-def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_name, investing_headlines):
+def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_name, investing_headlines):
     if not client:
-        print("❌ ERROR: Gemini Client is missing! Using cached/defaults.")
+        print("❌ ERROR: Groq Client is missing! Using cached/defaults.")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
     max_retries = 3
     for attempt in range(max_retries):
         try:
-            print(f"🤖 Connecting to Gemini AI to generate daily cross-sector market insights for {day_name}, {date_str} (Attempt {attempt + 1}/{max_retries})...")
+            print(f"🤖 Connecting to Groq AI to generate daily cross-sector market insights for {day_name}, {date_str} (Attempt {attempt + 1}/{max_retries})...")
             market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
             portfolio_tickers = list(portfolio_stocks.keys())
             headlines_text = "\n".join([f"- {h}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
@@ -228,12 +228,14 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
 23. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי מתוך חדשות Investing, דוחות ומאקרו מעודכניות להיום. כל פריט יהיה אובייקט עם השדות: news_link, news_title, news_content, news_impact.
 """
 
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=prompt,
+            response = client.chat.completions.create(
+                model='llama-3.3-70b-versatile',
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
             )
             
-            raw_text = response.text.strip()
+            raw_text = response.choices[0].message.content.strip()
             print("--- RAW AI RESPONSE RECEIVED ---")
             print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
             print("--------------------------------")
@@ -251,7 +253,7 @@ def fetch_ai_insights_from_gemini(market_data, portfolio_stocks, date_str, day_n
             return parsed_ai_data
 
         except Exception as e:
-            print(f"⚠️ Attempt {attempt + 1} failed while calling Gemini API or parsing response: {e}")
+            print(f"⚠️ Attempt {attempt + 1} failed while calling Groq API or parsing response: {e}")
             if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
                 if attempt < max_retries - 1:
                     sleep_time = 60 * (attempt + 1)
@@ -413,6 +415,7 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
+        # הפעלת AI אך ורק בשעות 10:10, 16:10, 00:10 (עם טווח של עד 5 דקות למקרה של עיכוב)
         is_ai_time = (
             (current_hour == 10 and 10 <= current_minute <= 15) or
             (current_hour == 16 and 10 <= current_minute <= 15) or
@@ -422,7 +425,7 @@ if __name__ == "__main__":
         if is_ai_time:
             print(f"🕒 Time matches AI schedule ({current_hour:02d}:{current_minute:02d}). Fetching fresh Investing RSS news & AI insights...")
             investing_headlines = fetch_investing_news()
-            ai_insights = fetch_ai_insights_from_gemini(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
+            ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
             if ai_insights and isinstance(ai_insights, dict):
                 save_ai_cache(ai_insights)
             else:
@@ -619,10 +622,10 @@ if __name__ == "__main__":
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
             subprocess.run(["git", "commit", "-m", f"Update site, portfolio and daily cross-sector AI insights with Investing news on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "--rebase"], check=True)
+            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
             subprocess.run(["git", "push"], check=True)
-        else:
-            print("No changes to commit.")
+            print("Successfully pushed changes to GitHub!")
+
     except Exception as e:
-        print(f"Error in main execution: {e}")
         traceback.print_exc()
+        raise
