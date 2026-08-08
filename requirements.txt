@@ -3,3 +3,4 @@ yfinance
 pytz
 requests
 google-genai
+groq
