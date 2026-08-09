@@ -153,10 +153,9 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
-    attempt_round = 1
-    # לולאה אינסופית שממשיכה לנסות שוב ושוב עד שהקריאה תצליח לחלוטין
-    while True:
-        print(f"🔄 Starting Groq AI request round {attempt_round}...")
+    max_rounds = 2  # מגביל ל-2 סבבים מלאים על כל המפתחות כדי לא להיתקע לנצח
+    for attempt_round in range(1, max_rounds + 1):
+        print(f"🔄 Starting Groq AI request round {attempt_round}/{max_rounds}...")
         for key_name, api_key in api_keys:
             try:
                 client = Groq(api_key=api_key)
@@ -229,12 +228,12 @@ You must output valid JSON.
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
                     print(f"⏳ Rate limit hit on {key_name}. Rotating to next key...")
                 else:
-                    print(f"🔄 Connection/Network error. Waiting 10 seconds before trying next key...")
-                time.sleep(10)
+                    print(f"🔄 Connection/Network error. Waiting a few seconds before trying next key...")
+                time.sleep(5)
 
-        print(f"⚠️ Finished round {attempt_round} with all keys failing. Waiting 30 seconds before starting next retry round...")
-        attempt_round += 1
-        time.sleep(30)
+    print("⚠️ All AI retries and keys exhausted across all rounds. Falling back to cache.")
+    cached = load_ai_cache()
+    return cached if cached else {}
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
@@ -380,7 +379,7 @@ if __name__ == "__main__":
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with persistent retry loop...")
+        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with retry loop...")
         investing_headlines = fetch_investing_news()
         ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
         
@@ -486,7 +485,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
