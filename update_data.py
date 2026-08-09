@@ -201,6 +201,7 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             headlines_text = "\n".join([f"- {h}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
 
             prompt = f"""
+You must output valid JSON.
 אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
 
 להלן כותרות חדשות שוק ההון העדכניות ביותר שנלקחו ישירות מאתר Investing.com:
@@ -211,12 +212,9 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 
 ועבור מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-הנחיות קריטיות, נוקשות ומחייבות למבנה ה-JSON:
-1. עדכניות יומית מוחלטת (95% דיוק ורעננות לזמן אמת של היום הספציפי הזה - {date_str}) על בסיס כותרות Investing.com שסופקו.
-2. חובה להימנע לחלוטין משימוש במרכאות כפולות (") בתוך הטקסטים עצמם כדי לא לשבור את המבנה.
-3. כיסוי רוחבי מלא של כל סקטורי שוק ההון.
-
-אנא החזר אך ורק אובייקט JSON תקין הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
+הנחיות קריטיות:
+1. עדכניות יומית מוחלטת ליום {date_str}.
+2. החזר אובייקט JSON תקין הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -236,10 +234,10 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 17. ANALYST_POINT_2
 18. RISK_MANAGEMENT_TEXT
 19. ACTION_RECOMMENDATIONS_TEXT
-20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
-21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג. כל פריט יהיה אובייקט עם השדות: ticker, name, desc, news.
-22. portfolio_analysis: אובייקט שבו המפתחות הם הטיקרים של מניות התיק האישי, ועבור כל טיקר אובייקט עם השדות: rationale, news_link, news_title, news_content, news_impact.
-23. market_news: מערך (array) של 5 עד 7 ידיעות חדשותיות כלליות ומרכזיות על שוק ההון הגלובלי מתוך חדשות Investing, דוחות ומאקרו מעודכניות להיום. כל פריט יהיה אובייקט עם השדות: news_link, news_title, news_content, news_impact.
+20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח (טיקר, שם, תיאור, חדשות).
+21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג (טיקר, שם, תיאור, חדשות).
+22. portfolio_analysis: אובייקט עבור מניות התיק האישי (rationale, news_link, news_title, news_content, news_impact).
+23. market_news: מערך של 5 עד 7 ידיעות חדשותיות ממרכז חדשות Investing (news_link, news_title, news_content, news_impact).
 """
 
             response = client.chat.completions.create(
