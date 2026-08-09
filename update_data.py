@@ -211,11 +211,12 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 
 ועבור מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-הנחיות קריטיות, נוקשות ומחייבות:
-1. עדכניות יומית מוחלטת (95% דיוק ורעננות לזמן אמת של היום הספציפי הזה - {date_str}) על בסיס כותרות Investing.com שסופקו. כל החדשות, הדיווחים, האירועים הגיאו-פוליטיים, דוחות החברות ומגמות המאקרו חייבים להיות מעודכנים להיום ממש, ברמה היומית הגבוהה ביותר. חל איסור מוחלט למחזר ידיעות ישנות, גנריות או פגי תוקף.
-2. כיסוי רוחבי מלא: הניתוחים, החדשות והסקירות חייבים לכסות את כל סקטורי שוק ההון באופן רוחבי ומקיף (כגון פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות בסיסית ומחזורית, תעשייה, חומרי גלם ונדל"ן).
+הנחיות קריטיות, נוקשות ומחייבות למבנה ה-JSON:
+1. עדכניות יומית מוחלטת (95% דיוק ורעננות לזמן אמת של היום הספציפי הזה - {date_str}) על בסיס כותרות Investing.com שסופקו.
+2. חובה להימנע לחלוטין משימוש במרכאות כפולות (") בתוך הטקסטים עצמם (השתמש בגרש בודד ' במידת הצורך), כדי לא לשבור את מבנה ה-JSON.
+3. כיסוי רוחבי מלא של כל סקטורי שוק ההון (פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות, תעשייה ועוד).
 
-אנא החזר אך ורק אובייקט JSON תקין (ללא מעטפות markdown וללא טקסט נוסף סביב) הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
+אנא החזר אך ורק אובייקט JSON תקין לחלוטין (ללא מעטפות markdown וללא טקסט נוסף סביב) הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -429,14 +430,11 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        is_ai_time = (
-            (current_hour == 10 and 10 <= current_minute <= 15) or
-            (current_hour == 16 and 40 <= current_minute <= 45) or
-            (current_hour == 0 and 10 <= current_minute <= 15)
-        )
+        # מוגדר כ-True כדי להכריח עדכון AI מיד בריצה הנוכחית
+        is_ai_time = True
 
         if is_ai_time:
-            print(f"🕒 Time matches AI schedule ({current_hour:02d}:{current_minute:02d}). Fetching fresh Investing RSS news & AI insights...")
+            print(f"🕒 Forcing AI update & fetching fresh Investing RSS news & AI insights...")
             investing_headlines = fetch_investing_news()
             ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
             if ai_insights and isinstance(ai_insights, dict):
@@ -444,7 +442,6 @@ if __name__ == "__main__":
             else:
                 ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
         else:
-            print(f"⏳ Not an AI scheduled slot ({current_hour:02d}:{current_minute:02d}). Using cached AI insights to save quota.")
             ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
 
         new_lt = ai_insights.get("long_term_stocks", [])
@@ -546,7 +543,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
