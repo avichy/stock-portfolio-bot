@@ -146,54 +146,6 @@ SW_STOCKS_META = [
     {"ticker": "TQQQ", "name": "ProShares UltraPro QQQ", "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק.", "news": "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר."}
 ]
 
-def get_default_ai_insights():
-    defaults = {
-        "SP500_ANALYSIS": "מדד S&P 500 ממשיך להיסחר סביב רמות מפתח תוך בחינת נתוני המאקרו והאינפלציה.",
-        "NASDAQ_ANALYSIS": "מדד הטכנולוגיה מוביל את הסנטימנט בשוק עם דגש על חדשנות ובינה מלאכותית.",
-        "DOW_ANALYSIS": "מניות הערך במדד הדאו ג'ונס מספקות יציבות ועוגן רחב לתיק המסחר.",
-        "VIX_ANALYSIS": "מדד התנודתיות משקף רמת רגיעה מתונה בשווקים ללא לחצים חריגים.",
-        "DXY_ANALYSIS": "מדד הדולר העולמי נסחר במגמה מעורבת אל מול המטבעות המרכזיים.",
-        "USD_ILS_EXPLANATION": "השפעה ישירה על עלות ייבוא, מוצרים דולריים ותיק ההשקעות המקומי.",
-        "OIL_EXPLANATION": "משפיע ישירות על עלויות האנרגיה, התחבורה ושיעורי האינפלציה הגלובליים.",
-        "GOLD_EXPLANATION": "משמש כנכס מקלט בטוח וגידור מרכזי מפני אי-יציבות גיאו-פוליטית.",
-        "BTC_EXPLANATION": "אינדיקטור מוביל לסנטימנט סיכון ונזילות בנכסים אלטרנטיביים.",
-        "US_MARKET_NEWS": "השוק האמריקאי פותח שלב מסחר דינמי המונע מציפיות המשקיעים למדיניות הפדרל ריזרב, נתוני אינפלציה מתעדכנים ודוחות כספיים רבעוניים של חברות הענק. תנועות ההון מציגות מעבר סלקטיבי בין סקטור הטכנולוגיה למניות הערך המסורתיות.",
-        "IL_MARKET_NEWS": "השוק המקומי בישראל מתמודד עם תנודות בשער החליפין של השקל אל מול הדולר והאירו, לצד השפעות הנתונים הגיאופוליטיים והכלכליים באזור על הבורסה בתל אביב ועל פעילות המשקיעים הזרים במשק.",
-        "CATALYST_EARNINGS": "דיווחים רבעוניים מגוונים מכלל סקטורי המשק מובילים את נפחי המסחר.",
-        "CATALYST_MONETARY": "הודעות ריבית ומדיניות מוניטרית צפויות להשפיע על תשואות האג\"ח.",
-        "CATALYST_HARDWARE": "השקות מוצרים, חדשנות טכנולוגית והתפתחויות רוחביות בכלל הענפים.",
-        "COMMUNITY_SENTIMENT": "סנטימנט חיובי זהיר סביב נכסים מובילים והזדמנויות סלקטיביות.",
-        "ANALYST_POINT_1": "האנליסטים ממליצים על פיזור סקטוריאלי רחב וניהול סיכונים קפדני.",
-        "ANALYST_POINT_2": "דגש על בחינה בררנית של דוחות כספיים וביצועי חברות מובילות בכל ענף.",
-        "RISK_MANAGEMENT_TEXT": "ניהול סיכונים קפדני באמצעות פיזור השקעות רוחבי ופקודות הגנה לפוזיציות.",
-        "ACTION_RECOMMENDATIONS_TEXT": "בחינה מדודה של פוזיציות קיימות והיערכות להזדמנויות סלקטיביות בכל הסקטורים.",
-        "long_term_stocks": LT_STOCKS_META,
-        "swing_stocks": SW_STOCKS_META,
-        "portfolio_analysis": {},
-        "market_news": [
-            {
-                "news_link": "https://www.investing.com/news/stock-market-news",
-                "news_title": "וול סטריט נערכת לנתוני האינפלציה והריבית הקרובים",
-                "news_content": "המשקיעים ממתינים בדריכות לפרסום מדד המחירים לצרכן בארה\"ב שיכתיב את צעדיו הבאים של הפד.",
-                "news_impact": "השפעה ישירה על תשואות האג\"ח, סקטור הטכנולוגיה ומגמת המדדים המובילים."
-            },
-            {
-                "news_link": "https://www.investing.com/news/economy",
-                "news_title": "התפתחויות בשוק האנרגיה ומחירי הנפט הגלובליים",
-                "news_content": "מחירי הנפט מגיבים לשינויים בביקושים הגלובליים ולהחלטות הייצור של מדינות אופ\"ק.",
-                "news_impact": "השפעה ישירה על מניות האנרגיה בתיק ועל מדדי העלויות והתחבורה."
-            },
-            {
-                "news_link": "https://www.investing.com/news/cryptocurrency-news",
-                "news_title": "תנודתיות בשווקים הדיגיטליים ובנכסי הסיכון",
-                "news_content": "הביטקוין ונכסי הקריפטו נסחרים סביב רמות התנגדות קריטיות עם מחזורי מסחר ערים.",
-                "news_impact": "משמש כאינדיקטור מוביל לתיאבון הסיכון של משקיעים קצרי טווח."
-            }
-        ]
-    }
-    defaults["ai_updated_at"] = datetime.now(pytz.timezone("Asia/Jerusalem")).strftime("%d.%m.%Y | %H:%M")
-    return defaults
-
 def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_name, investing_headlines):
     api_keys = get_all_groq_keys()
     if not api_keys:
@@ -201,18 +153,20 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
-    max_attempts = max(3, len(api_keys) * 2)
-    for attempt in range(max_attempts):
-        key_name, api_key = api_keys[attempt % len(api_keys)]
-        try:
-            client = Groq(api_key=api_key)
-            print(f"🤖 Connecting to Groq AI using {key_name} for {day_name}, {date_str} (Attempt {attempt + 1})...")
-            
-            market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
-            portfolio_tickers = list(portfolio_stocks.keys())
-            headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
+    attempt_round = 1
+    # לולאה אינסופית שממשיכה לנסות שוב ושוב עד שהקריאה תצליח לחלוטין
+    while True:
+        print(f"🔄 Starting Groq AI request round {attempt_round}...")
+        for key_name, api_key in api_keys:
+            try:
+                client = Groq(api_key=api_key)
+                print(f"🤖 Connecting to Groq AI using {key_name} for {day_name}, {date_str}...")
+                
+                market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
+                portfolio_tickers = list(portfolio_stocks.keys())
+                headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
 
-            prompt = f"""
+                prompt = f"""
 You must output valid JSON.
 אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
 
@@ -252,35 +206,35 @@ You must output valid JSON.
 23. market_news: מערך של 5 ידיעות חדשותיות שונות לחלוטין זו מזו מתוך הכותרות שסופקו למעלה. כל פריט חייב לכלול: news_link, news_title, news_content, news_impact.
 """
 
-            response = client.chat.completions.create(
-                model='llama-3.3-70b-versatile',
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                response_format={"type": "json_object"}
-            )
-            
-            raw_text = response.choices[0].message.content.strip()
-            print("--- RAW AI RESPONSE RECEIVED ---")
-            print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
-            print("--------------------------------")
+                response = client.chat.completions.create(
+                    model='llama-3.3-70b-versatile',
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                    response_format={"type": "json_object"}
+                )
+                
+                raw_text = response.choices[0].message.content.strip()
+                print("--- RAW AI RESPONSE RECEIVED ---")
+                print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
+                print("--------------------------------")
 
-            parsed_ai_data = json.loads(raw_text)
-            parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
-            print("Successfully parsed AI response into JSON using key:", key_name)
-            return parsed_ai_data
+                parsed_ai_data = json.loads(raw_text)
+                parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
+                print("Successfully parsed AI response into JSON using key:", key_name)
+                return parsed_ai_data
 
-        except Exception as e:
-            print(f"⚠️ Attempt {attempt + 1} failed with {key_name}: {e}")
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
-                print(f"⏳ Rate limit hit on {key_name}. Rotating to next available key...")
-                continue
-            else:
-                time.sleep(2)
+            except Exception as e:
+                print(f"⚠️ Attempt failed with {key_name}: {e}")
+                if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
+                    print(f"⏳ Rate limit hit on {key_name}. Rotating to next key...")
+                else:
+                    print(f"🔄 Connection/Network error. Waiting 10 seconds before trying next key...")
+                time.sleep(10)
 
-    print("⚠️ All AI retries and keys exhausted. Falling back to cache.")
-    cached = load_ai_cache()
-    return cached if cached else get_default_ai_insights()
+        print(f"⚠️ Finished round {attempt_round} with all keys failing. Waiting 30 seconds before starting next retry round...")
+        attempt_round += 1
+        time.sleep(30)
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
@@ -426,15 +380,12 @@ if __name__ == "__main__":
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with key rotation...")
+        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with persistent retry loop...")
         investing_headlines = fetch_investing_news()
         ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
         
         if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
             save_ai_cache(ai_insights)
-        else:
-            print("⚠️ AI response failed or invalid. Falling back to cache.")
-            ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
 
         new_lt = ai_insights.get("long_term_stocks", [])
         new_sw = ai_insights.get("swing_stocks", [])
