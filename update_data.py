@@ -21,7 +21,6 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-# אתחול הלקוח של Groq עם מעבר אוטומטי בין מפתחות במקרה הצורך
 def get_groq_client():
     keys = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
     for key_name in keys:
@@ -103,7 +102,6 @@ def get_stock_logo_url(ticker):
     return f"https://assets.parqet.com/logos/symbol/{clean_ticker}"
 
 def fetch_investing_news():
-    """שולף את כותרות החדשות האחרונות מ-RSS של אתר Investing.com"""
     url = "https://www.investing.com/rss/news.rss"
     req = urllib.request.Request(
         url, 
@@ -116,9 +114,12 @@ def fetch_investing_news():
             news_items = []
             for item in root.findall('.//item'):
                 title = item.find('title')
+                link = item.find('link')
                 if title is not None and title.text:
-                    news_items.append(title.text)
-            print(f"Successfully fetched {len(news_items)} headlines from Investing.com RSS.")
+                    item_title = title.text
+                    item_link = link.text if link is not None and link.text else "https://www.investing.com/news/latest-news"
+                    news_items.append({"title": item_title, "link": item_link})
+            print(f"Successfully fetched {len(news_items)} headlines with links from Investing.com RSS.")
             return news_items[:20]
     except Exception as e:
         print(f"Warning: Error fetching Investing RSS: {e}")
@@ -161,8 +162,8 @@ def get_default_ai_insights():
         "OIL_EXPLANATION": "משפיע ישירות על עלויות האנרגיה, התחבורה ושיעורי האינפלציה הגלובליים.",
         "GOLD_EXPLANATION": "משמש כנכס מקלט בטוח וגידור מרכזי מפני אי-יציבות גיאו-פוליטית.",
         "BTC_EXPLANATION": "אינדיקטור מוביל לסנטימנט סיכון ונזילות בנכסים אלטרנטיביים.",
-        "US_MARKET_NEWS": "נתוני המאקרו בארה\"ב ממשיכים להוות מנוע ניווט מרכזי עבור הבנק המרכזי והמשקיעים.",
-        "IL_MARKET_NEWS": "השוק המקומי מגיב להתפתחויות הביטחוניות והכלכליות באזור.",
+        "US_MARKET_NEWS": "השוק האמריקאי פותח שלב מסחר דינמי המונע מציפיות המשקיעים למדיניות הפדרל ריזרב, נתוני אינפלציה מתעדכנים ודוחות כספיים רבעוניים של חברות הענק. תנועות ההון מציגות מעבר סלקטיבי בין סקטור הטכנולוגיה למניות הערך המסורתיות.",
+        "IL_MARKET_NEWS": "השוק המקומי בישראל מתמודד עם תנודות בשער החליפין של השקל אל מול הדולר והאירו, לצד השפעות הנתונים הגיאופוליטיים והכלכליים באזור על הבורסה בתל אביב ועל פעילות המשקיעים הזרים במשק.",
         "CATALYST_EARNINGS": "דיווחים רבעוניים מגוונים מכלל סקטורי המשק מובילים את נפחי המסחר.",
         "CATALYST_MONETARY": "הודעות ריבית ומדיניות מוניטרית צפויות להשפיע על תשואות האג\"ח.",
         "CATALYST_HARDWARE": "השקות מוצרים, חדשנות טכנולוגית והתפתחויות רוחביות בכלל הענפים.",
@@ -176,10 +177,22 @@ def get_default_ai_insights():
         "portfolio_analysis": {},
         "market_news": [
             {
-                "news_link": "https://www.investing.com",
-                "news_title": "עדכון שוק יומי - מה מניע את השווקים",
-                "news_content": "אירועים גיאו-פוליטיים מרכזיים לצד דוחות כספיים משמעותיים מעצבים את סנטימנט המסחר ומייצרים תנודתיות רוחבית בסקטורים השונים.",
-                "news_impact": "השפעה ישירה על מניות הטכנולוגיה, מחירי האנרגיה ותיאבון הסיכון של משקיעים בשוק."
+                "news_link": "https://www.investing.com/news/stock-market-news",
+                "news_title": "וול סטריט נערכת לנתוני האינפלציה והריבית הקרובים",
+                "news_content": "המשקיעים ממתינים בדריכות לפרסום מדד המחירים לצרכן בארה\"ב שיכתיב את צעדיו הבאים של הפד.",
+                "news_impact": "השפעה ישירה על תשואות האג\"ח, סקטור הטכנולוגיה ומגמת המדדים המובילים."
+            },
+            {
+                "news_link": "https://www.investing.com/news/economy",
+                "news_title": "התפתחויות בשוק האנרגיה ומחירי הנפט הגלובליים",
+                "news_content": "מחירי הנפט מגיבים לשינויים בביקושים הגלובליים ולהחלטות הייצור של מדינות אופ\"ק.",
+                "news_impact": "השפעה ישירה על מניות האנרגיה בתיק ועל מדדי העלויות והתחבורה."
+            },
+            {
+                "news_link": "https://www.investing.com/news/cryptocurrency-news",
+                "news_title": "תנודתיות בשווקים הדיגיטליים ובנכסי הסיכון",
+                "news_content": "הביטקוין ונכסי הקריפטו נסחרים סביב רמות התנגדות קריטיות עם מחזורי מסחר ערים.",
+                "news_impact": "משמש כאינדיקטור מוביל לתיאבון הסיכון של משקיעים קצרי טווח."
             }
         ]
     }
@@ -198,14 +211,15 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             print(f"🤖 Connecting to Groq AI to generate daily cross-sector market insights for {day_name}, {date_str} (Attempt {attempt + 1}/{max_retries})...")
             market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
             portfolio_tickers = list(portfolio_stocks.keys())
-            headlines_text = "\n".join([f"- {h}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
+            
+            headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
 
             prompt = f"""
 You must output valid JSON.
 אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
 
-להלן כותרות חדשות שוק ההון העדכניות ביותר שנלקחו ישירות מאתר Investing.com:
-{headlines_text}
+להלן כותרות חדשות וקישורים עדכניים מתוך אתר Investing.com:
+{headlines_formatted}
 
 על בסיס כותרות אלו ונתוני השוק הנוכחיים הבאים להיום:
 {json.dumps(market_summary, ensure_ascii=False)}
@@ -224,8 +238,8 @@ You must output valid JSON.
 7. OIL_EXPLANATION
 8. GOLD_EXPLANATION
 9. BTC_EXPLANATION
-10. US_MARKET_NEWS
-11. IL_MARKET_NEWS
+10. US_MARKET_NEWS: פסקה מפורטת, רחבה ועשירה של לפחות 3-4 משפטים המנתחת בהרחבה את מצב השוק האמריקאי, נתוני המאקרו, והשפעות הריבית והאינפלציה.
+11. IL_MARKET_NEWS: פסקה מפורטת, רחבה ועשירה של לפחות 3-4 משפטים המנתחת בהרחבה את מצב השוק הישראלי, שער החליפין, וההשפעות הגיאופוליטיות והכלכליות המקומיות.
 12. CATALYST_EARNINGS
 13. CATALYST_MONETARY
 14. CATALYST_HARDWARE
@@ -236,8 +250,8 @@ You must output valid JSON.
 19. ACTION_RECOMMENDATIONS_TEXT
 20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח (טיקר, שם, תיאור, חדשות).
 21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג (טיקר, שם, תיאור, חדשות).
-22. portfolio_analysis: אובייקט עבור מניות התיק האישי (rationale, news_link, news_title, news_content, news_impact).
-23. market_news: מערך של 5 עד 7 ידיעות חדשותיות ממרכז חדשות Investing (news_link, news_title, news_content, news_impact).
+22. portfolio_analysis: אובייקט שבו המפתחות חייבים להיות בדיוק הטיקרים של מניות התיק האישי של המשתמש ({portfolio_tickers}). עבור כל טיקר, הספק אובייקט הכולל: rationale, news_link, news_title, news_content, news_impact.
+23. market_news: מערך של 5 ידיעות חדשותיות שונות לחלוטין זו מזו מתוך הכותרות שסופקו למעלה. כל פריט חייב לכלול: news_link, news_title, news_content, news_impact.
 """
 
             response = client.chat.completions.create(
@@ -375,7 +389,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
                 <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
-                <div><strong>רווח:</strong> {change_str}</div>
+                <div><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל יומי:</strong> {news}</div>
             </div>
@@ -421,15 +435,15 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # בדיקה האם השעה הנוכחית תואמת בדיוק לאחד משלושת העדכונים המוגדרים (10:10, 16:40, 23:40)
         is_ai_time = (
             (current_hour == 10 and current_minute == 10) or
             (current_hour == 16 and current_minute == 40) or
-            (current_hour == 23 and current_minute == 40)
+            (current_hour == 23 and current_minute == 40) or
+            not cached_ai_init
         )
 
         if is_ai_time:
-            print(f"🕒 Scheduled AI update time reached. Fetching fresh Investing RSS news & AI insights...")
+            print(f"🕒 Fetching fresh Investing RSS news & AI insights...")
             investing_headlines = fetch_investing_news()
             ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
             if ai_insights and isinstance(ai_insights, dict):
@@ -437,7 +451,7 @@ if __name__ == "__main__":
             else:
                 ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
         else:
-            print(f"🕒 Not an AI update time (Current: {current_hour}:{current_minute}). Using cached AI insights.")
+            print(f"🕒 Using cached AI insights.")
             ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
 
         new_lt = ai_insights.get("long_term_stocks", [])
@@ -531,10 +545,10 @@ if __name__ == "__main__":
                 company_name = info.get("name") or fetched_price_data.get("name") or ticker
 
                 p_item = portfolio_analysis_map.get(ticker, {})
-                p_rationale = p_item.get("rationale", f"ניתוח יומי עבור {ticker}.")
-                p_news_title = p_item.get("news_title", f"עדכון שוק יומי עבור {ticker}")
-                p_news_content = p_item.get("news_content", f"סקירת נתונים פיננסיים יומיים עבור {ticker}.")
-                p_news_impact = p_item.get("news_impact", "השפעה יומית על ניהול הפוזיציה.")
+                p_rationale = p_item.get("rationale", f"ניתוח יומי מעמיק לפוזיציית {ticker} והתנהלות סביב רמות המחיר.")
+                p_news_title = p_item.get("news_title", f"עדכון שוק מרכזי עבור {ticker}")
+                p_news_content = p_item.get("news_content", f"סקירת חדשות ואירועים אחרונים המשפיעים ישירות על {ticker}.")
+                p_news_impact = p_item.get("news_impact", "השפעה ישירה על ניהול הפוזיציה ותזמון הפעולות בתיק.")
 
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
