@@ -213,10 +213,10 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 
 הנחיות קריטיות, נוקשות ומחייבות למבנה ה-JSON:
 1. עדכניות יומית מוחלטת (95% דיוק ורעננות לזמן אמת של היום הספציפי הזה - {date_str}) על בסיס כותרות Investing.com שסופקו.
-2. חובה להימנע לחלוטין משימוש במרכאות כפולות (") בתוך הטקסטים עצמם (השתמש בגרש בודד ' במידת הצורך), כדי לא לשבור את מבנה ה-JSON.
-3. כיסוי רוחבי מלא של כל סקטורי שוק ההון (פיננסים, בריאות, אנרגיה, טכנולוגיה, צרכנות, תעשייה ועוד).
+2. חובה להימנע לחלוטין משימוש במרכאות כפולות (") בתוך הטקסטים עצמם כדי לא לשבור את המבנה.
+3. כיסוי רוחבי מלא של כל סקטורי שוק ההון.
 
-אנא החזר אך ורק אובייקט JSON תקין לחלוטין (ללא מעטפות markdown וללא טקסט נוסף סביב) הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
+אנא החזר אך ורק אובייקט JSON תקין הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -246,7 +246,8 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 model='llama-3.3-70b-versatile',
                 messages=[
                     {"role": "user", "content": prompt}
-                ]
+                ],
+                response_format={"type": "json_object"}
             )
             
             raw_text = response.choices[0].message.content.strip()
@@ -254,15 +255,7 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
             print("--------------------------------")
 
-            clean_text = raw_text
-            bb = "```"
-            if clean_text.startswith(bb + "json"):
-                clean_text = clean_text[7:]
-            if clean_text.endswith(bb):
-                clean_text = clean_text[:-3]
-            clean_text = clean_text.strip()
-
-            parsed_ai_data = json.loads(clean_text)
+            parsed_ai_data = json.loads(raw_text)
             parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
             print("Successfully parsed AI response into JSON!")
             return parsed_ai_data
@@ -377,7 +370,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='[https://s3-symbol-logo.tradingview.com/](https://s3-symbol-logo.tradingview.com/){clean_symbol_lower}.svg';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1">
@@ -402,7 +395,7 @@ def build_market_news_html(ai_insights):
     for item in market_news_list:
         if not isinstance(item, dict):
             continue
-        p_link = item.get("news_link", "[https://www.investing.com](https://www.investing.com)")
+        p_link = item.get("news_link", "https://www.investing.com")
         p_title = item.get("news_title", "עדכון שוק יומי")
         p_content = item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים להיום.")
         p_impact = item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק היומית.")
@@ -430,7 +423,6 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # מוגדר כ-True כדי להכריח עדכון AI מיד בריצה הנוכחית
         is_ai_time = True
 
         if is_ai_time:
@@ -543,7 +535,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
