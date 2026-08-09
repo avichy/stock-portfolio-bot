@@ -51,10 +51,3 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html portfolio.json ai_cache.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Automated portfolio update [skip ci]" && git push)
-
-      - name: Trigger Vercel Deployment
-        if: env.VERCEL_DEPLOY_HOOK != ''
-        env:
-          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-        run: |
-          curl -X POST "$VERCEL_DEPLOY_HOOK"
