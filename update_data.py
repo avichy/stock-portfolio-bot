@@ -429,11 +429,11 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-is_ai_time = (
-    (current_hour == 10 and 10 <= current_minute <= 15) or
-    (current_hour == 16 and 40 <= current_minute <= 45) or
-    (current_hour == 0 and 10 <= current_minute <= 15)
-)
+        is_ai_time = (
+            (current_hour == 10 and 10 <= current_minute <= 15) or
+            (current_hour == 16 and 40 <= current_minute <= 45) or
+            (current_hour == 0 and 10 <= current_minute <= 15)
+        )
 
         if is_ai_time:
             print(f"🕒 Time matches AI schedule ({current_hour:02d}:{current_minute:02d}). Fetching fresh Investing RSS news & AI insights...")
