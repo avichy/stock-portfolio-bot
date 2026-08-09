@@ -421,10 +421,15 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        is_ai_time = True
+        # בדיקה האם השעה הנוכחית תואמת בדיוק לאחד משלושת העדכונים המוגדרים (10:10, 16:40, 23:40)
+        is_ai_time = (
+            (current_hour == 10 and current_minute == 10) or
+            (current_hour == 16 and current_minute == 40) or
+            (current_hour == 23 and current_minute == 40)
+        )
 
         if is_ai_time:
-            print(f"🕒 Forcing AI update & fetching fresh Investing RSS news & AI insights...")
+            print(f"🕒 Scheduled AI update time reached. Fetching fresh Investing RSS news & AI insights...")
             investing_headlines = fetch_investing_news()
             ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
             if ai_insights and isinstance(ai_insights, dict):
@@ -432,6 +437,7 @@ if __name__ == "__main__":
             else:
                 ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
         else:
+            print(f"🕒 Not an AI update time (Current: {current_hour}:{current_minute}). Using cached AI insights.")
             ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
 
         new_lt = ai_insights.get("long_term_stocks", [])
@@ -533,7 +539,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
