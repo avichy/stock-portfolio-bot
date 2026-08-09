@@ -2,12 +2,15 @@ name: Stock Portfolio Update & Deploy
 
 on:
   schedule:
-    - cron: '10 7 * * *'   # 10:10 שעון ישראל (07:10 UTC)
-    - cron: '40 13 * * *'  # 16:40 שעון ישראל (13:40 UTC)
-    - cron: '40 20 * * *'  # 23:40 שעון ישראל (20:40 UTC)
+    - cron: '10 7 * * *'    # 10:10 שעון ישראל (07:10 UTC)
+    - cron: '40 13 * * *'   # 16:40 שעון ישראל (13:40 UTC)
+    - cron: '40 20 * * *'   # 23:40 שעון ישראל (20:40 UTC)
   push:
     branches:
       - main
+
+permissions:
+  contents: write
 
 jobs:
   update-and-deploy:
