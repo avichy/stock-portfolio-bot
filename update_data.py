@@ -20,6 +20,7 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
+GITHUB_EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
 
 def get_groq_client():
     keys = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
@@ -439,6 +440,7 @@ if __name__ == "__main__":
             (current_hour == 10 and current_minute == 10) or
             (current_hour == 16 and current_minute == 40) or
             (current_hour == 23 and current_minute == 40) or
+            GITHUB_EVENT_NAME == "workflow_dispatch" or
             not cached_ai_init
         )
 
@@ -553,7 +555,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
@@ -624,21 +626,19 @@ if __name__ == "__main__":
             s_change = s_data.get("change", 0.0)
             sign = "+" if s_change > 0 else ""
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
-            
-            replacements[f"SECTOR_{s_key}_PCT"] = f"({sign}{s_change:.2f}%)"
-            replacements[f"SECTOR_{s_key}_CLASS"] = f"style='color: {color}'"
-            replacements[f"SECTOR_{s_key}_PERF"] = s_change
+            s_price = format_num(s_data.get("price", 0))
+            replacements[f"{s_key}_PRICE"] = f"${s_price}"
+            replacements[f"{s_key}_PCT"] = f"<span style='color: {color}; font-weight: bold;'>{sign}{s_change:.2f}%</span>"
 
-        for key, val in replacements.items():
-            content = content.replace(f"{{{{{key}}}}}", str(val))
+        for k, v in replacements.items():
+            content = content.replace("{{" + k + "}}", str(v))
 
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(content)
-        print("Successfully generated index.html!")
 
-        subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
-        subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
-        subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE, AI_CACHE_FILE], check=True)
+        print(f"Successfully generated {OUTPUT_FILE}!")
+
     except Exception as e:
-        print(f"Error in main execution: {e}")
+        print(f"❌ Critical Error in main execution: {e}")
         traceback.print_exc()
+        exit(1)
