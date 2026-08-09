@@ -1,0 +1,189 @@
+{
+    "SP500_ANALYSIS": "מדד S&P 500 מראה עלייה של 0.62% ביום 10.08.2026, עם תמונה חיובית בשוק.",
+    "NASDAQ_ANALYSIS": "מדד NASDAQ מראה עלייה של 1.19% ביום 10.08.2026, עם התאוששות במגזר הטכנולוגי.",
+    "DOW_ANALYSIS": "מדד DOW מראה עלייה של 0.28% ביום 10.08.2026, עם תמונה מעורבת בשוק.",
+    "VIX_ANALYSIS": "מדד VIX יורד ב-1.65% ביום 10.08.2026, מראה על ירידה בתשומת לב לסיכון.",
+    "DXY_ANALYSIS": "מדד DXY (דולר אמריקאי) מראה על תמונה יציבה ביום 10.08.2026.",
+    "USD_ILS_EXPLANATION": "שער החליפין בין דולר אמריקאי לשקל ישראלי נמוך ב-0.21% ביום 10.08.2026.",
+    "OIL_EXPLANATION": "מחיר הנפט מראה על תמונה יציבה ביום 10.08.2026, עם מחיר נוכחי של 78.18 דולר לברל.",
+    "GOLD_EXPLANATION": "מחיר הזהב מראה על תמונה יציבה ביום 10.08.2026, עם מחיר נוכחי של 4399.7 דולר לאונקיה.",
+    "BTC_EXPLANATION": "מחיר הביטקוין מראה על עלייה של 0.5% ביום 10.08.2026, עם מחיר נוכחי של 65228.79 דולר.",
+    "US_MARKET_NEWS": "השוק האמריקאי מראה תמונה חיובית ביום 10.08.2026, עם עלייה במדדים המרכזיים. נתוני המאקרו מראים על צמיחה כלכלית, אך האינפלציה והריבית עדיין מהוות אתגר. ה-Fed ממשיך לנקוט במדיניות מוניטרית מרככת, אך ההשפעות על השוק הן מעורבות.",
+    "IL_MARKET_NEWS": "השוק הישראלי מראה תמונה מעורבת ביום 10.08.2026, עם השפעות גיאופוליטיות וכלכליות מקומיות. שער החליפין ממשיך להיות נמוך, אך ההשפעות על השוק הן מורכבות.",
+    "CATALYST_EARNINGS": "דוחות הרווחים של החברות מראים על תמונה מעורבת, עם חלק מהחברות מראים רווחים חיוביים וחלק אחר מראים הפסדים.",
+    "CATALYST_MONETARY": "מדיניות ה-Fed ממשיכה להיות מרכזית, עם השפעות על השוק.",
+    "CATALYST_HARDWARE": "מגזר החומרה מראה על תמונה חיובית, עם עלייה במכירות ורווחים.",
+    "COMMUNITY_SENTIMENT": "דעת הקהל בשוק היא מעורבת, עם חלק מהמשקיעים מראים אופטימיות וחלק אחר מראים פסימיות.",
+    "ANALYST_POINT_1": "המומחים שוק מראים על תמונה חיובית, עם הצפי לצמיחה כלכלית.",
+    "ANALYST_POINT_2": "המומחים שוק מראים על תמונה מעורבת, עם הצפי להמשך האינפלציה והריבית.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חשוב בשוק, עם הצורך להיות מוכן לשינויים בתנאים הכלכליים.",
+    "ACTION_RECOMMENDATIONS_TEXT": "המלצות לפעולה הן להיות זהירים ולנקוט במדיניות משמרת, עם הצורך להיות מוכן לשינויים בשוק.",
+    "long_term_stocks": [
+        {
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "description": "חברת טכנולוגיה",
+            "news": "NVIDIA מראה עלייה במכירות"
+        },
+        {
+            "ticker": "AMD",
+            "name": "AMD",
+            "description": "חברת טכנולוגיה",
+            "news": "AMD מראה עלייה במכירות"
+        },
+        {
+            "ticker": "MU",
+            "name": "Micron Technology",
+            "description": "חברת טכנולוגיה",
+            "news": "Micron Technology מראה עלייה במכירות"
+        },
+        {
+            "ticker": "SNDK",
+            "name": "SanDisk",
+            "description": "חברת טכנולוגיה",
+            "news": "SanDisk מראה עלייה במכירות"
+        },
+        {
+            "ticker": "WDC",
+            "name": "Western Digital",
+            "description": "חברת טכנולוגיה",
+            "news": "Western Digital מראה עלייה במכירות"
+        },
+        {
+            "ticker": "INTC",
+            "name": "Intel",
+            "description": "חברת טכנולוגיה",
+            "news": "Intel מראה עלייה במכירות"
+        },
+        {
+            "ticker": "SIMO",
+            "name": "Silicon Motion Technology",
+            "description": "חברת טכנולוגיה",
+            "news": "Silicon Motion Technology מראה עלייה במכירות"
+        },
+        {
+            "ticker": "IREN",
+            "name": "Irene Energy",
+            "description": "חברת אנרגיה",
+            "news": "Irene Energy מראה עלייה במכירות"
+        },
+        {
+            "ticker": "CIFR",
+            "name": "Cipher",
+            "description": "חברת טכנולוגיה",
+            "news": "Cipher מראה עלייה במכירות"
+        },
+        {
+            "ticker": "META",
+            "name": "Meta Platforms",
+            "description": "חברת טכנולוגיה",
+            "news": "Meta Platforms מראה עלייה במכירות"
+        },
+        {
+            "ticker": "AMZN",
+            "name": "Amazon",
+            "description": "חברת מסחר",
+            "news": "Amazon מראה עלייה במכירות"
+        }
+    ],
+    "swing_stocks": [
+        {
+            "ticker": "TTWO",
+            "name": "Take-Two Interactive",
+            "description": "חברת משחקים",
+            "news": "Take-Two Interactive מראה עלייה במכירות"
+        },
+        {
+            "ticker": "WMT",
+            "name": "Walmart",
+            "description": "חברת מסחר",
+            "news": "Walmart מראה עלייה במכירות"
+        },
+        {
+            "ticker": "NFLX",
+            "name": "Netflix",
+            "description": "חברת בידור",
+            "news": "Netflix מראה עלייה במכירות"
+        },
+        {
+            "ticker": "MA",
+            "name": "Mastercard",
+            "description": "חברת שירותים פיננסיים",
+            "news": "Mastercard מראה עלייה במכירות"
+        },
+        {
+            "ticker": "IBIT",
+            "name": "iBit",
+            "description": "חברת טכנולוגיה",
+            "news": "iBit מראה עלייה במכירות"
+        },
+        {
+            "ticker": "GTEC",
+            "name": "Gtec",
+            "description": "חברת טכנולוגיה",
+            "news": "Gtec מראה עלייה במכירות"
+        },
+        {
+            "ticker": "TQQQ",
+            "name": "TQQQ",
+            "description": "קרן סל",
+            "news": "TQQQ מראה עלייה במכירות"
+        },
+        {
+            "ticker": "GOOG",
+            "name": "Alphabet",
+            "description": "חברת טכנולוגיה",
+            "news": "Alphabet מראה עלייה במכירות"
+        },
+        {
+            "ticker": "XLP",
+            "name": "SPDR Consumer Staples ETF",
+            "description": "קרן סל",
+            "news": "SPDR Consumer Staples ETF מראה עלייה במכירות"
+        },
+        {
+            "ticker": "JNJ",
+            "name": "Johnson & Johnson",
+            "description": "חברת תרופות",
+            "news": "Johnson & Johnson מראה עלייה במכירות"
+        }
+    ],
+    "portfolio_analysis": {
+        "NVDA": {
+            "rationale": "NVIDIA היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/nvidia-earnings-beat-estimates-4847753",
+            "news_title": "NVIDIA דוחות רווחים טובים מהצפוי",
+            "news_content": "NVIDIA הודיעה על רווחים טובים מהצפוי, עם עלייה במכירות",
+            "news_impact": "הידיעה השפיעה חיובית על המניה"
+        },
+        "AMD": {
+            "rationale": "AMD היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/amd-earnings-beat-estimates-4847752",
+            "news_title": "AMD דוחות רווחים טובים מהצפוי",
+            "news_content": "AMD הודיעה על רווחים טובים מהצפוי, עם עלייה במכירות",
+            "news_impact": "הידיעה השפיעה חיובית על המניה"
+        },
+        "MU": {
+            "rationale": "Micron Technology היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/micron-technology-earnings-beat-estimates-4847751",
+            "news_title": "Micron Technology דוחות רווחים טובים מהצפוי",
+            "news_content": "Micron Technology הודיעה על רווחים טובים מהצפוי, עם עלייה במכירות",
+            "news_impact": "הידיעה השפיעה חיובית על המניה"
+        },
+        "SNDK": {
+            "rationale": "SanDisk היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/sandisk-earnings-beat-estimates-4847750",
+            "news_title": "SanDisk דוחות רווחים טובים מהצפוי",
+            "news_content": "SanDisk הודיעה על רווחים טובים מהצפוי, עם עלייה במכירות",
+            "news_impact": "הידיעה השפיעה חיובית על המניה"
+        },
+        "WDC": {
+            "rationale": "Western Digital היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/western-digital-earnings-beat-estimates-4847749",
+            "news_title": "Western Digital דוחות רווחים טובים מהצפוי",
+            "news_content": "Western Digital הודיעה על רווחים טובים מהצפוי, עם עלייה במכירות",
+            "news_impact": "הידיעה השפיעה חיובית על המניה"
+        }
+    },
+    "ai_updated_at": "10.08.2026 | 01:08"
+}
