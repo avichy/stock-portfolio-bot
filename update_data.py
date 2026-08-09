@@ -21,19 +21,14 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-def get_groq_client():
-    keys = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
-    for key_name in keys:
+def get_all_groq_keys():
+    keys_env = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
+    valid_keys = []
+    for key_name in keys_env:
         api_key = os.environ.get(key_name)
         if api_key:
-            try:
-                return Groq(api_key=api_key)
-            except Exception as e:
-                print(f"Warning: Failed to initialize Groq with {key_name}: {e}")
-                continue
-    return None
-
-client = get_groq_client()
+            valid_keys.append((key_name, api_key))
+    return valid_keys
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -200,18 +195,21 @@ def get_default_ai_insights():
     return defaults
 
 def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_name, investing_headlines):
-    if not client:
-        print("❌ ERROR: Groq Client is missing! Using cached/defaults.")
+    api_keys = get_all_groq_keys()
+    if not api_keys:
+        print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
         cached = load_ai_cache()
         return cached if cached else get_default_ai_insights()
 
-    max_retries = 3
-    for attempt in range(max_retries):
+    max_attempts = max(3, len(api_keys) * 2)
+    for attempt in range(max_attempts):
+        key_name, api_key = api_keys[attempt % len(api_keys)]
         try:
-            print(f"🤖 Connecting to Groq AI to generate daily cross-sector market insights for {day_name}, {date_str} (Attempt {attempt + 1}/{max_retries})...")
+            client = Groq(api_key=api_key)
+            print(f"🤖 Connecting to Groq AI using {key_name} for {day_name}, {date_str} (Attempt {attempt + 1})...")
+            
             market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
             portfolio_tickers = list(portfolio_stocks.keys())
-            
             headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
 
             prompt = f"""
@@ -269,22 +267,18 @@ You must output valid JSON.
 
             parsed_ai_data = json.loads(raw_text)
             parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
-            print("Successfully parsed AI response into JSON!")
+            print("Successfully parsed AI response into JSON using key:", key_name)
             return parsed_ai_data
 
         except Exception as e:
-            print(f"⚠️ Attempt {attempt + 1} failed while calling Groq API or parsing response: {e}")
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-                if attempt < max_retries - 1:
-                    sleep_time = 60 * (attempt + 1)
-                    print(f"⏳ Rate limit hit. Waiting {sleep_time} seconds before retrying...")
-                    time.sleep(sleep_time)
-                    continue
-            if attempt == max_retries - 1:
-                print("⚠️ All AI retries exhausted. Falling back to cache.")
-                cached = load_ai_cache()
-                return cached if cached else get_default_ai_insights()
+            print(f"⚠️ Attempt {attempt + 1} failed with {key_name}: {e}")
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
+                print(f"⏳ Rate limit hit on {key_name}. Rotating to next available key...")
+                continue
+            else:
+                time.sleep(2)
 
+    print("⚠️ All AI retries and keys exhausted. Falling back to cache.")
     cached = load_ai_cache()
     return cached if cached else get_default_ai_insights()
 
@@ -432,7 +426,7 @@ if __name__ == "__main__":
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq...")
+        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with key rotation...")
         investing_headlines = fetch_investing_news()
         ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
         
