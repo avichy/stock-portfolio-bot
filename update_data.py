@@ -20,7 +20,6 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
-GITHUB_EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
 
 def get_groq_client():
     keys = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
@@ -433,27 +432,14 @@ if __name__ == "__main__":
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        current_hour = now_il.hour
-        current_minute = now_il.minute
-
-        is_ai_time = (
-            (current_hour == 10 and current_minute == 10) or
-            (current_hour == 16 and current_minute == 40) or
-            (current_hour == 23 and current_minute == 40) or
-            GITHUB_EVENT_NAME == "workflow_dispatch" or
-            not cached_ai_init
-        )
-
-        if is_ai_time:
-            print(f"🕒 Fetching fresh Investing RSS news & AI insights...")
-            investing_headlines = fetch_investing_news()
-            ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
-            if ai_insights and isinstance(ai_insights, dict):
-                save_ai_cache(ai_insights)
-            else:
-                ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
+        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq...")
+        investing_headlines = fetch_investing_news()
+        ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
+        
+        if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
+            save_ai_cache(ai_insights)
         else:
-            print(f"🕒 Using cached AI insights.")
+            print("⚠️ AI response failed or invalid. Falling back to cache.")
             ai_insights = cached_ai_init if cached_ai_init else get_default_ai_insights()
 
         new_lt = ai_insights.get("long_term_stocks", [])
