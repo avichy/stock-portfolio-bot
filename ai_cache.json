@@ -1,183 +1,185 @@
 {
-    "SP500_ANALYSIS": "מדד SP500 נסגר עם עלייה של 0.62% ביום המסחר האחרון, כאשר המדד הראה יציבות ועמידה בפני הלחץ הגובר בשוק. המדד נתמך על ידי ענף הטכנולוגיה, שהובל על ידי עלייה של 1.42% במדד XLK.",
-    "NASDAQ_ANALYSIS": "מדד NASDAQ עלה ב-1.19% ביום המסחר האחרון, כשהמדד הובל על ידי עלייה של 2.27% ב-NVDA ו-1.84% ב-INTC. המדד הראה חוזק ויציבות, עם תשומת לב מיוחדת לחברות הטכנולוגיה.",
-    "DOW_ANALYSIS": "מדד DOW עלה ב-0.28% ביום המסחר האחרון, כשהמדד הובל על ידי עלייה של 0.96% ב-BA. המדד הראה יציבות, אך נפגע מירידה של 1.21% ב-AMD.",
-    "VIX_ANALYSIS": "מדד VIX ירד ב-1.65% ביום המסחר האחרון, כשהמדד הראה ירידה בחששות ובאי-ודאויות בשוק. המדד נתמך על ידי עלייה של 0.62% ב-SP500.",
-    "DXY_ANALYSIS": "מדד DXY נותר יציב עם שינוי של 0.0% ביום המסחר האחרון, כשהמדד הראה יציבות בשוק המטבעות.",
-    "USD_ILS_EXPLANATION": "שער החליפין של הדולר האמריקני לשקל ישראלי ירד ב-0.21% ביום המסחר האחרון, כשהשקל הישראלי התחזק מול הדולר.",
-    "OIL_EXPLANATION": "מחיר הנפט נותר יציב עם שינוי של 0.0% ביום המסחר האחרון, כשמחיר הנפט הראה יציבות בשוק.",
-    "GOLD_EXPLANATION": "מחיר הזהב נותר יציב עם שינוי של 0.0% ביום המסחר האחרון, כשמחיר הזהב הראה יציבות בשוק.",
-    "BTC_EXPLANATION": "מחיר הביטקוין עלה ב-0.29% ביום המסחר האחרון, כשמחיר הביטקוין הראה עלייה וחוזק בשוק.",
-    "US_MARKET_NEWS": "השוק האמריקני הראה יציבות וחוזק, כשמדדי המניות הגדולים עלו ביום המסחר האחרון.",
-    "IL_MARKET_NEWS": "השוק הישראלי הושפע מירידה בשער החליפין של הדולר, כשהשקל הישראלי התחזק מול הדולר ביום המסחר האחרון.",
-    "CATALYST_EARNINGS": "דוחות הרווחים של CEVA ו-Berkshire Hathaway הם בין האירועים המשמעותיים ביותר בשוק בימים הקרובים, ויכולים להשפיע על המניות.",
-    "CATALYST_MONETARY": "ה-Fed עשוי להשפיע על השוק בקרוב, כשהתעריפים וההחלטות שלהם יכולים לשנות את היציבות בשוק.",
-    "CATALYST_HARDWARE": "הסדרה החדשה של Texas Instruments עשויה להשפיע על המניות של חברות החומרה, ולשנות את היציבות בשוק.",
-    "COMMUNITY_SENTIMENT": "הרוחות בשוק הן חיוביות, עם תשומת לב לחברות הטכנולוגיה ולמניות המובילות.",
-    "ANALYST_POINT_1": "ה-SP500 עשוי להמשיך לעלות, כשהמדד הובל על ידי עלייה של 1.42% במדד XLK.",
-    "ANALYST_POINT_2": "ה-NASDAQ עשוי להמשיך לעלות, כשהמדד הובל על ידי עלייה של 2.27% ב-NVDA.",
-    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חשוב ביותר בתקופה זו, כשהשוק הוא לא יציב וקיימים סיכונים רבים.",
-    "ACTION_RECOMMENDATIONS_TEXT": "מומלץ להשקיע במניות מובילות, כמו NVDA, AMD, MU, ולנהל סיכונים בקפידה.",
+    "SP500_ANALYSIS": "המדד S&P 500 נסגר עם עליה של 0.62% ביום 10.08.2026, עם מחיר סגירה של 7757.64, מה שמראה על המשך היציבות בשוק.",
+    "NASDAQ_ANALYSIS": "הנאסד\"ק רשם עליה של 1.19% ב-10.08.2026, עם מחיר סגירה של 29722.3, הודות לביצועים חזקים של מניות טכנולוגיה.",
+    "DOW_ANALYSIS": "הדאו ג'ונס נסגר עם עליה של 0.28% ב-10.08.2026, עם מחיר סגירה של 54036.93, כאשר המניות הגדולות תרמו ליציבות.",
+    "VIX_ANALYSIS": "מדד ה-VIX ירד ב-1.65% עד ל-14.9, מה שמראה על ירידה בתפיסת הסיכון בקרב המשקיעים.",
+    "DXY_ANALYSIS": "מדד הדולר האמריקני (DXY) נותר יציב עם עליה קלה, מה שמראה על התייצבות בשווקים.",
+    "USD_ILS_EXPLANATION": "שער החליפין של הדולר האמריקני לשקל ישראלי (USDILS) ירד ב-0.21% ל-3.0, מה что משפיע על היבוא והיצוא הישראלי.",
+    "OIL_EXPLANATION": "מחיר הנפט (CL=F) נותר יציב, עם מחיר סגירה של 78.18, הודות ליציבות בהיצע וביקוש.",
+    "GOLD_EXPLANATION": "מחיר הזהב (GC=F) נותר יציב, עם מחיר סגירה של 4399.7, כאשר הזהב משמש כנכס מקלט.",
+    "BTC_EXPLANATION": "מחיר הביטקוין (BTC-USD) עלה ב-0.36% עד ל-65140.25, המראה על המשך העניין במטבעות דיגיטליים.",
+    "US_MARKET_NEWS": "השוק האמריקני הראה עליות קלות, עם עליות במדדים הגדולים.",
+    "IL_MARKET_NEWS": "השוק הישראלי הושפע מהתייצבות בשווקים העולמיים.",
+    "CATALYST_EARNINGS": "דוחות רווחים של חברות גדולות יכולים להשפיע על השוק.",
+    "CATALYST_MONETARY": "החלטות של הבנקים המרכזיים יכולות להשפיע על המדיניות המוניטרית.",
+    "CATALYST_HARDWARE": "חדשות על חברות טכנולוגיה יכולות להשפיע על השוק.",
+    "COMMUNITY_SENTIMENT": "דעות הקהילה מראות על אופטימיות כללית.",
+    "ANALYST_POINT_1": "השוק הוא משתנה, ויש לשקול השקעות בהתאם.",
+    "ANALYST_POINT_2": "מניות טכנולוגיה הן מגמה עולה.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חלק חשוב בהשקעות.",
+    "ACTION_RECOMMENDATIONS_TEXT": "יש לבצע החלטות השקעה באופן מחושב.",
     "long_term_stocks": [
         {
             "ticker": "NVDA",
             "name": "NVIDIA",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 2.27% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "NVIDIA רשמה עליה של 2.27%"
         },
         {
             "ticker": "AMD",
-            "name": "AMD",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 1.21% ביום המסחר האחרון"
+            "name": "Advanced Micro Devices",
+            "description": "חברת טכנולוגיה",
+            "news": "AMD רשמה ירידה של 1.21%"
         },
         {
             "ticker": "MU",
             "name": "Micron Technology",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 0.44% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Micron Technology רשמה ירידה של 0.44%"
         },
         {
             "ticker": "SNDK",
-            "name": "Sandisk",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 3.68% ביום המסחר האחרון"
+            "name": "SanDisk",
+            "description": "חברת טכנולוגיה",
+            "news": "SanDisk רשמה ירידה של 3.68%"
         },
         {
             "ticker": "WDC",
             "name": "Western Digital",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 3.81% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Western Digital רשמה ירידה של 3.81%"
         },
         {
             "ticker": "INTC",
             "name": "Intel",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 1.84% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Intel רשמה עליה של 1.84%"
         },
         {
             "ticker": "SIMO",
             "name": "Silicon Motion",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 4.23% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Silicon Motion רשמה ירידה של 4.23%"
         },
         {
             "ticker": "IREN",
             "name": "Iren",
-            "desc": "חברת אנרגיה מובילה",
-            "news": "עלייה של 8.7% ביום המסחר האחרון"
+            "description": "חברת אנרגיה",
+            "news": "Iren רשמה עליה של 8.7%"
         },
         {
             "ticker": "CIFR",
             "name": "Cipher",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 5.66% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Cipher רשמה ירידה של 5.66%"
         },
         {
             "ticker": "META",
-            "name": "Meta",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 0.37% ביום המסחר האחרון"
+            "name": "Meta Platforms",
+            "description": "חברת טכנולוגיה",
+            "news": "Meta Platforms רשמה עליה של 0.37%"
         }
     ],
     "swing_stocks": [
         {
             "ticker": "NVDA",
             "name": "NVIDIA",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 2.27% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "NVIDIA רשמה עליה של 2.27%"
         },
         {
             "ticker": "AMD",
-            "name": "AMD",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 1.21% ביום המסחר האחרון"
+            "name": "Advanced Micro Devices",
+            "description": "חברת טכנולוגיה",
+            "news": "AMD רשמה ירידה של 1.21%"
         },
         {
             "ticker": "MU",
             "name": "Micron Technology",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 0.44% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Micron Technology רשמה ירידה של 0.44%"
         },
         {
             "ticker": "SNDK",
-            "name": "Sandisk",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 3.68% ביום המסחר האחרון"
+            "name": "SanDisk",
+            "description": "חברת טכנולוגיה",
+            "news": "SanDisk רשמה ירידה של 3.68%"
         },
         {
             "ticker": "WDC",
             "name": "Western Digital",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 3.81% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Western Digital רשמה ירידה של 3.81%"
         },
         {
             "ticker": "INTC",
             "name": "Intel",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 1.84% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Intel רשמה עליה של 1.84%"
         },
         {
             "ticker": "SIMO",
             "name": "Silicon Motion",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 4.23% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Silicon Motion רשמה ירידה של 4.23%"
         },
         {
             "ticker": "IREN",
             "name": "Iren",
-            "desc": "חברת אנרגיה מובילה",
-            "news": "עלייה של 8.7% ביום המסחר האחרון"
+            "description": "חברת אנרגיה",
+            "news": "Iren רשמה עליה של 8.7%"
         },
         {
             "ticker": "CIFR",
             "name": "Cipher",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "ירידה של 5.66% ביום המסחר האחרון"
+            "description": "חברת טכנולוגיה",
+            "news": "Cipher רשמה ירידה של 5.66%"
         },
         {
-            "ticker": "META",
-            "name": "Meta",
-            "desc": "חברת טכנולוגיה מובילה",
-            "news": "עלייה של 0.37% ביום המסחר האחרון"
+            "ticker": "TTWO",
+            "name": "Take-Two Interactive",
+            "description": "חברת משחקים",
+            "news": "Take-Two Interactive רשמה עליה של 6.04%"
         }
     ],
     "portfolio_analysis": {
-        "NVDA": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "NVIDIA רוכשת את Arm",
-            "news_content": "NVIDIA רוכשת את Arm בעסקה של 40 מיליארד דולר",
-            "news_impact": "עלייה של 2.27% ביום המסחר האחרון"
-        },
-        "AMD": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "AMD משיקה את ה-EPYC 7003",
-            "news_content": "AMD משיקה את ה-EPYC 7003, מעבד חדש עבור שרתים",
-            "news_impact": "ירידה של 1.21% ביום המסחר האחרון"
-        },
-        "MU": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Micron Technology משיקה את ה-CRU",
-            "news_content": "Micron Technology משיקה את ה-CRU, זיכרון חדש",
-            "news_impact": "ירידה של 0.44% ביום המסחר האחרון"
-        },
-        "SNDK": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Sandisk משיקה את ה-iXpand",
-            "news_content": "Sandisk משיקה את ה-iXpand, כרטיס זיכרון חדש",
-            "news_impact": "ירידה של 3.68% ביום המסחר האחרון"
-        },
-        "WDC": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Western Digital משיקה את ה-Ultrastar",
-            "news_content": "Western Digital משיקה את ה-Ultrastar, דיסק קשיח חדש",
-            "news_impact": "ירידה של 3.81% ביום המסחר האחרון"
-        }
+        "rationale": "הפורטפוליו מורכב ממניות טכנולוגיה ואנרגיה",
+        "news_link": "https://www.investing.com/",
+        "news_title": "מניות טכנולוגיה ואנרגיה רשמו עליות",
+        "news_content": "מניות טכנולוגיה ואנרגיה היו במוקד השוק ביום 10.08.2026, עם עליות ב-NVIDIA, Intel, ו-Iren.",
+        "news_impact": "החדשות השפיעו על הפורטפוליו באופן חיובי"
     },
-    "ai_updated_at": "10.08.2026 | 00:31"
+    "market_news": [
+        {
+            "news_link": "https://www.investing.com/",
+            "news_title": "Russia stocks lower at close of trade",
+            "news_content": "המניות הרוסיות רשמו ירידה בסוף היום",
+            "news_impact": "הירידה השפיעה על השוק העולמי"
+        },
+        {
+            "news_link": "https://www.investing.com/",
+            "news_title": "Yemen’s Houthis attack Saudi refinery",
+            "news_content": "ה-Houthis תקפו בית זיקוק בערב הסעודית",
+            "news_impact": "התקיפה השפיעה על מחירי הנפט"
+        },
+        {
+            "news_link": "https://www.investing.com/",
+            "news_title": "Bitcoin hits overbought MFI at $65,500 resistance",
+            "news_content": "הביטקוין הגיע לרמה של 65,500 דולר",
+            "news_impact": "המחיר השפיע על השוק הדיגיטלי"
+        },
+        {
+            "news_link": "https://www.investing.com/",
+            "news_title": "Iran says Oman deal is in ’final stages’",
+            "news_content": "הסכם עם עומאן נמצא בשלבים הסופיים",
+            "news_impact": "ההסכם יכול להשפיע על היחסים האזוריים"
+        },
+        {
+            "news_link": "https://www.investing.com/",
+            "news_title": "Trump says U.S. is ’low-keying it’ with Iran",
+            "news_content": "טראמפ אמר שארצות הברית מנהלת מדיניות של ’_low-key’ עם איראן",
+            "news_impact": "המדיניות תכלול השלכות על היחסים הבינלאומיים"
+        }
+    ],
+    "ai_updated_at": "10.08.2026 | 00:36"
 }
