@@ -151,9 +151,9 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
     if not api_keys:
         print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
         cached = load_ai_cache()
-        return cached if cached else get_default_ai_insights()
+        return cached if cached else {}
 
-    max_rounds = 2  # מגביל ל-2 סבבים מלאים על כל המפתחות כדי לא להיתקע לנצח
+    max_rounds = 2  # מגביל ל-2 סבבים מלאים על כל המפתחות
     for attempt_round in range(1, max_rounds + 1):
         print(f"🔄 Starting Groq AI request round {attempt_round}/{max_rounds}...")
         for key_name, api_key in api_keys:
@@ -226,10 +226,11 @@ You must output valid JSON.
             except Exception as e:
                 print(f"⚠️ Attempt failed with {key_name}: {e}")
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
-                    print(f"⏳ Rate limit hit on {key_name}. Rotating to next key...")
+                    print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds for minute limit to reset...")
+                    time.sleep(65)  # המתנה של מעל דקה כדי לתת למגבלת הדקה להתאפס
                 else:
-                    print(f"🔄 Connection/Network error. Waiting a few seconds before trying next key...")
-                time.sleep(5)
+                    print(f"🔄 Connection/Network error. Waiting 5 seconds before trying next key...")
+                    time.sleep(5)
 
     print("⚠️ All AI retries and keys exhausted across all rounds. Falling back to cache.")
     cached = load_ai_cache()
@@ -485,7 +486,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
