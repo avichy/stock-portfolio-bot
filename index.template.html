@@ -175,27 +175,10 @@
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
             
-            <!-- הגדרות סנכרון ל-GitHub -->
-            <div class="bg-gray-800/90 border border-cyan-500/40 p-3 rounded-xl shadow mb-2 text-xs text-gray-300 space-y-2">
-                <details>
-                    <summary class="font-bold text-cyan-400 cursor-pointer flex items-center justify-between">
-                        ⚙️ הגדרות סנכרון אוטומטי ל-GitHub (עבור סנכרון בין כל המכשירים)
-                        <span class="text-[10px] text-gray-400">(לחץ לפתיחה)</span>
-                    </summary>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-2 border-t border-gray-700">
-                        <div>
-                            <label class="block mb-1">GitHub Personal Access Token (PAT):</label>
-                            <input type="password" id="gh-token-input" placeholder="ghp_xxxx..." class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-gray-100 font-mono">
-                        </div>
-                        <div>
-                            <label class="block mb-1">GitHub Repo (username/repo-name):</label>
-                            <input type="text" id="gh-repo-input" placeholder="user/stock-portfolio-bot" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-gray-100 font-mono" dir="ltr">
-                        </div>
-                    </div>
-                    <div class="mt-2 text-[11px] text-gray-400">
-                        הטוקן נשמר אך ורק בזיכרון המקומי של הדפדפן שלך (LocalStorage). ברגע שמוזן, כל מניה שתשמור תתעדכן ב-GitHub ותסתנכרן לכל המחשבים והטלפונים!
-                    </div>
-                </details>
+            <!-- הגדרות סנכרון מוסתרות שנטענות אוטומטית מהקוד -->
+            <div class="hidden">
+                <input type="password" id="gh-token-input" value="YOUR_TOKEN_HERE">
+                <input type="text" id="gh-repo-input" value="avichy/stock-portfolio-bot">
             </div>
 
             <!-- טופס הוספה/עדכון מניה -->
@@ -264,7 +247,7 @@
     </main>
 
     <script>
-        // המערך מוזרק באופן דינמי מקובץ הפייתון
+        // המערך מוזרק באופן דינמי מקובץ הפייתון[cite: 2]
         let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -288,18 +271,9 @@
                 });
             });
 
-            // טעינת הגדרות GitHub שנשמרו בדפדפן
-            const savedToken = localStorage.getItem('gh_token');
-            const savedRepo = localStorage.getItem('gh_repo');
-            if (savedToken) document.getElementById('gh-token-input').value = savedToken;
-            if (savedRepo) document.getElementById('gh-repo-input').value = savedRepo;
-
-            document.getElementById('gh-token-input')?.addEventListener('input', (e) => localStorage.setItem('gh_token', e.target.value.trim()));
-            document.getElementById('gh-repo-input')?.addEventListener('input', (e) => localStorage.setItem('gh_repo', e.target.value.trim()));
-
             renderPortfolio();
 
-            // גרף הסקטורים
+            // גרף הסקטורים[cite: 2]
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
                 function parsePct(str) {
@@ -388,7 +362,7 @@
             });
         }
 
-        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend
+        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend[cite: 2]
         async function fetchLiveStockData(symbol) {
             try {
                 const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
@@ -467,7 +441,7 @@
             clearForm();
             renderPortfolio();
 
-            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)
+            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)[cite: 2]
             const synced = await syncToGithubRepo();
             if (synced) {
                 statusMsg.style.color = "#4ade80";
@@ -481,13 +455,13 @@
         }
 
         async function syncToGithubRepo() {
-            const token = localStorage.getItem('gh_token') || document.getElementById('gh-token-input')?.value;
-            const repo = localStorage.getItem('gh_repo') || document.getElementById('gh-repo-input')?.value;
+            const token = document.getElementById('gh-token-input')?.value;
+            const repo = document.getElementById('gh-repo-input')?.value;
 
             if (!token || !repo) return false;
 
             try {
-                // לבנות קובץ portfolio.json מעודכן
+                // לבנות קובץ portfolio.json מעודכן[cite: 2]
                 const portfolioDict = {};
                 portfolioStocks.forEach(s => {
                     portfolioDict[s.symbol] = {
@@ -500,7 +474,7 @@
                 const contentStr = JSON.stringify(portfolioDict, null, 4);
                 const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
 
-                // לקבל את ה-SHA הנוכחי של הקובץ
+                // לקבל את ה-SHA הנוכחי של הקובץ[cite: 2]
                 const getUrl = `https://api.github.com/repos/${repo}/contents/portfolio.json`;
                 const headers = { "Authorization": `token ${token}`, "Content-Type": "application/json" };
                 
@@ -511,7 +485,7 @@
                     sha = fileInfo.sha;
                 }
 
-                // עדכון הקובץ ב-GitHub
+                // עדכון הקובץ ב-GitHub[cite: 2]
                 const putRes = await fetch(getUrl, {
                     method: "PUT",
                     headers,
