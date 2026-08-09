@@ -477,9 +477,9 @@ if __name__ == "__main__":
         dxy_price = format_num(dxy_data.get("price", 0))
         dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
-        usd_ils_p = usd_ils_data.get("price", 3.65)
-        if not usd_ils_p or usd_ils_p <= 3.0:
-            usd_ils_p = 3.65
+usd_ils_p = usd_ils_data.get("price", 3.00)
+if not usd_ils_p or usd_ils_p <= 1.0:
+    usd_ils_p = 3.00
         usd_ils_c = usd_ils_data.get("change", 0)
         usd_ils_price = f"{format_num(usd_ils_p)}₪"
         usd_ils_change = format_pct_colored(usd_ils_c)
