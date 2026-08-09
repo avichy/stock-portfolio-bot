@@ -20,10 +20,21 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
-# אתחול הלקוח של Groq
-client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+# אתחול הלקוח של Groq עם מעבר אוטומטי בין מפתחות במקרה הצורך
+def get_groq_client():
+    keys = ["GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"]
+    for key_name in keys:
+        api_key = os.environ.get(key_name)
+        if api_key:
+            try:
+                return Groq(api_key=api_key)
+            except Exception as e:
+                print(f"Warning: Failed to initialize Groq with {key_name}: {e}")
+                continue
+    return None
+
+client = get_groq_client()
 
 def load_ai_cache():
     if os.path.exists(AI_CACHE_FILE):
@@ -251,7 +262,6 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             clean_text = clean_text.strip()
 
             parsed_ai_data = json.loads(clean_text)
-            # הוספת חותמת זמן מתי ה-AI יצר את הניתוח בהצלחה
             parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
             print("Successfully parsed AI response into JSON!")
             return parsed_ai_data
@@ -622,14 +632,6 @@ if __name__ == "__main__":
         subprocess.run(["git", "config", "--global", "user.name", "github-actions[bot]"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
         subprocess.run(["git", "add", OUTPUT_FILE, PORTFOLIO_FILE, AI_CACHE_FILE], check=True)
-
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-        if OUTPUT_FILE in status.stdout or PORTFOLIO_FILE in status.stdout or AI_CACHE_FILE in status.stdout:
-            subprocess.run(["git", "commit", "-m", f"Update site, portfolio and daily cross-sector AI insights with Investing news on {day_name}"], check=True)
-            subprocess.run(["git", "pull", "origin", "main", "--rebase"], check=True)
-            subprocess.run(["git", "push"], check=True)
-            print("Successfully pushed changes to GitHub!")
-
     except Exception as e:
+        print(f"Error in main execution: {e}")
         traceback.print_exc()
-        raise
