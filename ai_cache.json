@@ -1,217 +1,223 @@
 {
-    "SP500_ANALYSIS": "ה-S&P 500 נמצא במגמת עלייה, עם עלייה של 0.5% ב-14 הימים האחרונים.",
-    "NASDAQ_ANALYSIS": "ה-NASDAQ חווה תנודות, אך בסופו של דבר סיים עם עלייה של 0.2% ב-14 הימים האחרונים.",
-    "DOW_ANALYSIS": "ה-DOW נשאר יציב, עם ירידה קלה של 0.1% ב-14 הימים האחרונים.",
-    "VIX_ANALYSIS": "ה-VIX עלה ב-3.76% היום, מרמז על עלייה בתשומת הלב לסיכון.",
-    "DXY_ANALYSIS": "ה-DXY נותר יציב, עם שינוי קטן של 0.0% היום.",
-    "USD_ILS_EXPLANATION": "הדולר האמריקאי נותר יציב מול השקל הישראלי, עם שינוי קטן של -0.21%.",
-    "OIL_EXPLANATION": "מחירי הנפט נותרו יציבים, עם שינוי קטן של 0.0%.",
-    "GOLD_EXPLANATION": "מחירי הזהב נותרו יציבים, עם שינוי קטן של 0.0%.",
-    "BTC_EXPLANATION": "מחיר הביטקוין ירד ב-1.38% היום, מרמז על תנודות בשוק הקריפטו.",
-    "US_MARKET_NEWS": "ב-14 הימים האחרונים, השווקים האמריקאיים חוו תנודות עקב דוחות רווחים ושינויים במדיניות המוניטרית. חברות כמו GEN Restaurant Group ו-GameSquare הציגו רווחים חזקים, בעוד שחברות אחרות כמו Tactile Medical ו-Beachbody חוו ירידות. ה-VIX עלה, מרמז על עלייה בתשומת הלב לסיכון. סיכום: השווקים האמריקאיים ממשיכים להיות משפיעים על ידי דוחות רווחים ושינויים במדיניות המוניטרית.",
-    "IL_MARKET_NEWS": "השוק הישראלי חווה תנודות, עם עלייה במחירים של מניות כמו טאואר ו-אלביט, וירידות במניות כמו קמהדע ו-מג'יק.",
+    "SP500_ANALYSIS": "המדד SP500 הראה יציבות יחסית ב-14 הימים האחרונים, עם שינויים מתונים. למרות זאת, היו ימים עם תנודות משמעותיות בשל חדשות כלכליות ופוליטיות.",
+    "NASDAQ_ANALYSIS": "הנאסד\"ק הציג תמונה מעורבת, עם ימים של עלייה וימים של ירידה. השפעת החדשות על הטכנולוגיה הייתה משמעותית, עם חברות כמו Apple ו-Google שמושכות את התשומת לב.",
+    "DOW_ANALYSIS": "הדאו ג'ונס הראה יציבות יחסית, עם תנודות מתונות. החברות הגדולות, כמו IBM ו-Microsoft, היו במוקד התשומת לב.",
+    "VIX_ANALYSIS": "ה-VIX, אינדקס המולטי-חשש, הראה עלייה מתונה, מרמז על עלייה בחששות בשוק.",
+    "DXY_ANALYSIS": "הדולר האמריקאי הראה חוזק יחסי, מושפע מהחלטות ה-FED ומצב הכלכלה האמריקאית.",
+    "USD_ILS_EXPLANATION": "השער בין הדולר לשקל הישראלי הראה תנודות, מושפע מהחלטות הבנק המרכזי ומצב הכלכלה הישראלית.",
+    "OIL_EXPLANATION": "מחיר הנפט הראה יציבות יחסית, מושפע מהיצע וביקוש בשוק העולמי.",
+    "GOLD_EXPLANATION": "מחיר הזהב הראה עלייה, מושפע מהחששות בשוק והדרישה לנכסים מקלט.",
+    "BTC_EXPLANATION": "מחיר הביטקוין הראה תנודות משמעותיות, מושפע מהחדשות והשינויים ברגולציות.",
+    "US_MARKET_NEWS": "ב-14 הימים האחרונים, היו חדשות רבות שהשפיעו על השוק. RBC ו-BMO מכרו את Moneris ל-Francisco Partners תמורת 1.44 מיליארד דולר. Netcapital הואשמה בהונאה על ידי ה-SEC. Rocket Lab דיווחה על רבעון שיא, אך מניותיה ירדו. NIQ דיווחה על צמיחה מואצת. AppFolio ו-8x8 ראו מכירות מניות על ידי בכירים. AST SpaceMobile, Hims & Hers, Southwest Airlines, Bakkt, ועוד, פרסמו דו\"חות רבעון והודיעו על שינויים. לסיכום, השוק האמריקאי היה מעורב, עם חדשות חיוביות ושליליות.",
+    "IL_MARKET_NEWS": "השוק הישראלי הושפע מהחדשות המקומיות, כולל החלטות הבנק המרכזי ומצב הכלכלה הישראלית.",
     "MARKET_MOVERS_TABLE": [
         {
-            "ticker": "NVDA",
-            "name": "NVIDIA",
-            "price_change_pct": -2.86,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
+            "ticker": "BABA",
+            "name": "Alibaba Group",
+            "price_change_pct": 3.04,
+            "volume_context": "עלייה בנפח המסחר"
         },
         {
-            "ticker": "AMD",
-            "name": "Advanced Micro Devices",
-            "price_change_pct": -2.86,
-            "volume_context": "נפח בינוני, השפעה מוגבלת"
-        },
-        {
-            "ticker": "GOOG",
-            "name": "Alphabet",
-            "price_change_pct": 0.67,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
-        },
-        {
-            "ticker": "INTC",
-            "name": "Intel",
-            "price_change_pct": -4.06,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
+            "ticker": "ORCL",
+            "name": "Oracle",
+            "price_change_pct": 2.74,
+            "volume_context": "עלייה בנפח המסחר"
         },
         {
             "ticker": "TTWO",
             "name": "Take-Two Interactive",
             "price_change_pct": 2.87,
-            "volume_context": "נפח בינוני, השפעה מוגבלת"
-        },
-        {
-            "ticker": "WMT",
-            "name": "Walmart",
-            "price_change_pct": 0.72,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
+            "volume_context": "עלייה בנפח המסחר"
         },
         {
             "ticker": "NFLX",
             "name": "Netflix",
             "price_change_pct": 2.9,
-            "volume_context": "נפח בינוני, השפעה מוגבלת"
+            "volume_context": "עלייה בנפח המסחר"
         },
         {
-            "ticker": "TQQQ",
-            "name": "ProShares UltraPro QQQ",
-            "price_change_pct": -0.9,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
-        },
-        {
-            "ticker": "XLK",
-            "name": "Technology Select Sector SPDR Fund",
-            "price_change_pct": -0.88,
-            "volume_context": "נפח גבוה, השפעה משמעותית"
-        },
-        {
-            "ticker": "MA",
-            "name": "Mastercard",
-            "price_change_pct": 0.04,
-            "volume_context": "נפח בינוני, השפעה מוגבלת"
-        }
-    ],
-    "CATALYST_EARNINGS": "דוחות רווחים של חברות גדולות, כמו GEN Restaurant Group ו-GameSquare, היוו קטליזטורים משמעותיים.",
-    "CATALYST_MONETARY": "שינויים במדיניות המוניטרית, כמו החלטות ה-FED, השפיעו על השווקים.",
-    "CATALYST_HARDWARE": "חדשות על פיתוחים חדשים בתחום החומרה, כמו הכרזותיה של NVIDIA, היוו קטליזטורים.",
-    "COMMUNITY_SENTIMENT": "דעת הקהל בקרב המשקיעים היא שהשווקים ימשיכו להיות משפיעים על ידי דוחות רווחים ושינויים במדיניות המוניטרית.",
-    "ANALYST_POINT_1": "האנליסטים צופים עלייה ב-S&P 500 בשבוע הבא.",
-    "ANALYST_POINT_2": "האנליסטים מזהירים מפני ירידה אפשרית ב-NASDAQ.",
-    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חשוב, במיוחד בתקופות של תנודות.",
-    "ACTION_RECOMMENDATIONS_TEXT": "המלצות לפעולה: קניה של מניות עם פוטנציאל גבוה, כמו NVIDIA ו-AMD, ומכירה של מניות עם פוטנציאל נמוך, כמו Tactile Medical ו-Beachbody.",
-    "long_term_stocks": [
-        {
-            "ticker": "BRKB",
-            "name": "Berkshire Hathaway",
-            "desc": "חברת החזקות של וורן באפט",
-            "news": "https://www.investing.com/news/stock-market-news/berkshire-hathaway-q2-2026-earnings-beat-estimates-4850522"
-        },
-        {
-            "ticker": "JPM",
-            "name": "JPMorgan Chase",
-            "desc": "בנק גדול",
-            "news": "https://www.investing.com/news/stock-market-news/jpmorgan-chase-q2-2026-earnings-beat-estimates-4850521"
-        },
-        {
-            "ticker": "V",
-            "name": "Visa",
-            "desc": "חברת תשלומים",
-            "news": "https://www.investing.com/news/stock-market-news/visa-q2-2026-earnings-beat-estimates-4850520"
-        },
-        {
-            "ticker": "MSFT",
-            "name": "Microsoft",
-            "desc": "חברת תוכנה",
-            "news": "https://www.investing.com/news/stock-market-news/microsoft-q2-2026-earnings-beat-estimates-4850519"
-        },
-        {
-            "ticker": "PG",
-            "name": "Procter & Gamble",
-            "desc": "חברת מוצרי צריכה",
-            "news": "https://www.investing.com/news/stock-market-news/procter-gamble-q2-2026-earnings-beat-estimates-4850518"
-        },
-        {
-            "ticker": "KO",
-            "name": "Coca-Cola",
-            "desc": "חברת משקאות",
-            "news": "https://www.investing.com/news/stock-market-news/coca-cola-q2-2026-earnings-beat-estimates-4850517"
-        },
-        {
-            "ticker": "PEP",
-            "name": "PepsiCo",
-            "desc": "חברת משקאות",
-            "news": "https://www.investing.com/news/stock-market-news/pepsico-q2-2026-earnings-beat-estimates-4850516"
-        },
-        {
-            "ticker": "CMCSA",
-            "name": "Comcast",
-            "desc": "חברת תקשורת",
-            "news": "https://www.investing.com/news/stock-market-news/comcast-q2-2026-earnings-beat-estimates-4850515"
-        },
-        {
-            "ticker": "FOX",
-            "name": "Fox Corporation",
-            "desc": "חברת מדיה",
-            "news": "https://www.investing.com/news/stock-market-news/fox-corporation-q2-2026-earnings-beat-estimates-4850514"
-        },
-        {
-            "ticker": "DIS",
-            "name": "Walt Disney",
-            "desc": "חברת בידור",
-            "news": "https://www.investing.com/news/stock-market-news/walt-disney-q2-2026-earnings-beat-estimates-4850513"
-        }
-    ],
-    "swing_stocks": [
-        {
-            "ticker": "AAPL",
-            "name": "Apple",
-            "desc": "חברת טכנולוגיה",
-            "news": "https://www.investing.com/news/stock-market-news/apple-q2-2026-earnings-beat-estimates-4850512"
-        },
-        {
-            "ticker": "GOOGL",
-            "name": "Alphabet",
-            "desc": "חברת טכנולוגיה",
-            "news": "https://www.investing.com/news/stock-market-news/alphabet-q2-2026-earnings-beat-estimates-4850511"
-        },
-        {
-            "ticker": "AMZN",
-            "name": "Amazon",
-            "desc": "חברת מסחר אלקטרוני",
-            "news": "https://www.investing.com/news/stock-market-news/amazon-q2-2026-earnings-beat-estimates-4850510"
-        },
-        {
-            "ticker": "FB",
-            "name": "Meta",
-            "desc": "חברת מדיה",
-            "news": "https://www.investing.com/news/stock-market-news/meta-q2-2026-earnings-beat-estimates-4850509"
-        },
-        {
-            "ticker": "BABA",
-            "name": "Alibaba",
-            "desc": "חברת מסחר אלקטרוני",
-            "news": "https://www.investing.com/news/stock-market-news/alibaba-q2-2026-earnings-beat-estimates-4850508"
-        },
-        {
-            "ticker": "TSLA",
-            "name": "Tesla",
-            "desc": "חברת רכב חשמלי",
-            "news": "https://www.investing.com/news/stock-market-news/tesla-q2-2026-earnings-beat-estimates-4850507"
-        },
-        {
-            "ticker": "NKE",
-            "name": "Nike",
-            "desc": "חברת הלבשה",
-            "news": "https://www.investing.com/news/stock-market-news/nike-q2-2026-earnings-beat-estimates-4850506"
-        },
-        {
-            "ticker": "MCD",
-            "name": "McDonald's",
-            "desc": "חברת מזון מהיר",
-            "news": "https://www.investing.com/news/stock-market-news/mcdonalds-q2-2026-earnings-beat-estimates-4850505"
+            "ticker": "XLE",
+            "name": "Energy Select Sector SPDR Fund",
+            "price_change_pct": 4.66,
+            "volume_context": "עלייה בנפח המסחר"
         },
         {
             "ticker": "CSCO",
             "name": "Cisco Systems",
-            "desc": "חברת תקשורת",
-            "news": "https://www.investing.com/news/stock-market-news/cisco-systems-q2-2026-earnings-beat-estimates-4850504"
+            "price_change_pct": 0.94,
+            "volume_context": "יציבות בנפח המסחר"
         },
         {
-            "ticker": "ORCL",
-            "name": "Oracle",
-            "desc": "חברת תוכנה",
-            "news": "https://www.investing.com/news/stock-market-news/oracle-q2-2026-earnings-beat-estimates-4850503"
+            "ticker": "SNDK",
+            "name": "SanDisk",
+            "price_change_pct": 2.12,
+            "volume_context": "עלייה בנפח המסחר"
+        },
+        {
+            "ticker": "GOOG",
+            "name": "Alphabet Inc.",
+            "price_change_pct": 0.67,
+            "volume_context": "יציבות בנפח המסחר"
+        },
+        {
+            "ticker": "PG",
+            "name": "Procter & Gamble",
+            "price_change_pct": 0.45,
+            "volume_context": "יציבות בנפח המסחר"
+        },
+        {
+            "ticker": "WMT",
+            "name": "Walmart",
+            "price_change_pct": 0.72,
+            "volume_context": "עלייה בנפח המסחר"
+        }
+    ],
+    "CATALYST_EARNINGS": "דוחות רבעון והודעות רווח היו גורם מרכזי בתנועת השוק.",
+    "CATALYST_MONETARY": "החלטות ה-FED ומדיניות המוניטרית היו במוקד התשומת לב.",
+    "CATALYST_HARDWARE": "חדשות על מוצרים חדשים ופיתוחים טכנולוגיים השפיעו על מניות החברות הרלוונטיות.",
+    "COMMUNITY_SENTIMENT": "דעת הקהל הייתה מעורבת, עם חששות מפני מיתון והתרסקות, אך גם ציפיות לצמיחה והתאוששות.",
+    "ANALYST_POINT_1": "הניתוחים שלנו מראים על חוזק יחסי בשוק, אך הזהירו מפני תנודות וחששות.",
+    "ANALYST_POINT_2": "המלצותינו להשקעה הן להתרכז במניות עם פוטנציאל צמיחה ויציבות פיננסית.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חיוני בתקופות של אבטחה וחוסר ודאות. חשוב לפזר השקעות ולהחזיק מניות מגוונות.",
+    "ACTION_RECOMMENDATIONS_TEXT": "אנו ממליצים לבצע השקעות אסטרטגיות, לרבות השקעה במניות עם פוטנציאל צמיחה ובנכסים מקלט.",
+    "long_term_stocks": [
+        {
+            "ticker": "JNJ",
+            "name": "Johnson & Johnson",
+            "desc": "חברת תרופות ומוצרי בריאות",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "PFE",
+            "name": "Pfizer",
+            "desc": "חברת תרופות",
+            "news": "הודעה על התקדמות בפיתוח תרופות"
+        },
+        {
+            "ticker": "ABBV",
+            "name": "AbbVie",
+            "desc": "חברת תרופות",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "BMY",
+            "name": "Bristol Myers Squibb",
+            "desc": "חברת תרופות",
+            "news": "הודעה על התקדמות בפיתוח תרופות"
+        },
+        {
+            "ticker": "MRK",
+            "name": "Merck & Co",
+            "desc": "חברת תרופות",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "UNH",
+            "name": "UnitedHealth Group",
+            "desc": "חברת ביטוח בריאות",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "ANTM",
+            "name": "Anthem",
+            "desc": "חברת ביטוח בריאות",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "CI",
+            "name": "Cigna",
+            "desc": "חברת ביטוח בריאות",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "HUM",
+            "name": "Humana",
+            "desc": "חברת ביטוח בריאות",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "CNC",
+            "name": "Centene",
+            "desc": "חברת ביטוח בריאות",
+            "news": "דוח רבעון חיובי"
+        }
+    ],
+    "swing_stocks": [
+        {
+            "ticker": "AAP",
+            "name": "Advance Auto Parts",
+            "desc": "חברת חלפים לרכב",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "AZO",
+            "name": "AutoZone",
+            "desc": "חברת חלפים לרכב",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "ORLY",
+            "name": "O'Reilly Automotive",
+            "desc": "חברת חלפים לרכב",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "LKQ",
+            "name": "LKQ Corporation",
+            "desc": "חברת חלפים לרכב",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "MNRO",
+            "name": "Monro",
+            "desc": "חברת חלפים לרכב",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "BWA",
+            "name": "BorgWarner",
+            "desc": "חברת חלפים לרכב",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "LEA",
+            "name": "Lear Corporation",
+            "desc": "חברת חלפים לרכב",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "ALV",
+            "name": "Autoliv",
+            "desc": "חברת חלפים לרכב",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
+        },
+        {
+            "ticker": "GNTX",
+            "name": "Gentex Corporation",
+            "desc": "חברת חלפים לרכב",
+            "news": "דוח רבעון חיובי"
+        },
+        {
+            "ticker": "VC",
+            "name": "Visteon",
+            "desc": "חברת חלפים לרכב",
+            "news": "הודעה על התקדמות בפיתוח שירותים"
         }
     ],
     "portfolio_analysis": {
-        "NVDA": {
-            "rationale": "NVIDIA היא חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/stock-market-news/nvidia-q2-2026-earnings-beat-estimates-4850502",
-            "news_title": "NVIDIA Q2 2026 Earnings Beat Estimates",
-            "news_content": "NVIDIA הודיעה על רווחים חזקים ברבעון השני של 2026",
-            "news_impact": "הידיעה השפיעה על מחיר המניה של NVIDIA"
-        }
+        "rationale": "התיק האישי מורכב ממניות מגוונות, כולל חברות טכנולוגיה, בריאות, ועוד.",
+        "news_link": "לא זמין",
+        "news_title": "לא זמין",
+        "news_content": "התיק האישי הוא מגוון, עם מניות חזקות ומניות שזקוקות לשיפור.",
+        "news_impact": "החדשות והאירועים האחרונים השפיעו על התיק, עם עליות וירידות במניות שונות."
     },
-    "ai_updated_at": "11.08.2026 | 01:09"
+    "market_news": [
+        {
+            "news_link": "לא זמין",
+            "news_title": "RBC ו-BMO מוכרים Moneris",
+            "news_content": "RBC ו-BMO הודיעו על מכירת Moneris ל-Francisco Partners.",
+            "news_impact": "המכירה משפיעה על השוק הפיננסי"
+        }
+    ],
+    "ai_updated_at": "11.08.2026 | 01:58"
 }
