@@ -1,122 +1,217 @@
 {
-    "SP500_ANALYSIS": "מדד SP500 נסגר בירידה של 0.06% ביום 11.08.2026, עם ערך סגירה של 7753.11. המדד הראה יציבות יחסית במהלך היום, למרות השינויים המתונים בשוק.",
-    "NASDAQ_ANALYSIS": "מדד NASDAQ סגר בירידה של 0.34% ביום 11.08.2026, עם ערך סגירה של 29621.8. המדד הושפע מהדוחות הרבעוניים של חברות הטכנולוגיה הגדולות.",
-    "DOW_ANALYSIS": "מדד DOW סגר בירידה של 0.11% ביום 11.08.2026, עם ערך סגירה של 53975.98. המדד הושפע מהדוחות הרבעוניים ומהחדשות הכלכליות.",
-    "VIX_ANALYSIS": "מדד VIX עלה ב-3.76% ביום 11.08.2026, עם ערך סגירה של 15.46. העלייה ב-VIX מראה על הגברת התוחלת לתנודתיות בשוק.",
-    "DXY_ANALYSIS": "מדד DXY נשאר יציב ביום 11.08.2026, עם ערך סגירה של 99.81. המדד לא הראה שינויים משמעותיים במהלך היום.",
-    "USD_ILS_EXPLANATION": "שער החליפין בין דולר אמריקאי לשקל ישראלי עמד על 3.0, עם ירידה של 0.21% ביום 11.08.2026. השינויים בשער החליפין משפיעים על הכלכלה הישראלית.",
-    "OIL_EXPLANATION": "מחיר הנפט נשאר יציב ביום 11.08.2026, עם מחיר סגירה של 82.3. המחיר לא הראה שינויים משמעותיים.",
-    "GOLD_EXPLANATION": "מחיר הזהב נשאר יציב ביום 11.08.2026, עם מחיר סגירה של 4448.6. המחיר לא הראה שינויים משמעותיים.",
-    "BTC_EXPLANATION": "מחיר ה-Bitcoin ירד ב-1.39% ביום 11.08.2026, עם מחיר סגירה של 63940.45. המחיר ממשיך להראות תנודתיות.",
-    "US_MARKET_NEWS": "השוק האמריקאי הראה יציבות יחסית ביום 11.08.2026, עם שינויים מתונים במדדים. דוחות רבעוניים של חברות הטכנולוגיה הגדולות השפיעו על המדדים. הדולר האמריקאי נשאר יציב, ומחירי הנפט והזהב לא הראו שינויים משמעותיים. ה-Bitcoin המשיך להראות תנודתיות.",
-    "IL_MARKET_NEWS": "השוק הישראלי הושפע מהשינויים בשער החליפין, שירד ב-0.21% ביום 11.08.2026. השינויים בשער החליפין משפיעים על הכלכלה הישראלית. המשקל הישראלי המשיך להראות יציבות יחסית.",
-    "CATALYST_EARNINGS": "הדוחות הרבעוניים של חברות הטכנולוגיה הגדולות היוו זרז לשוק האמריקאי, ה-Fed המשיך לנקוט במדיניות מוניטרית מתונה.",
-    "CATALYST_MONETARY": "מדיניות ה-Fed המשיכה להיות הגורם המרכזי בקביעת הכיוון הכלכלי בארצות הברית.",
-    "CATALYST_HARDWARE": "הדוחות הרבעוניים של חברות החומרה, כמו Intel, המשיכו להיות מרכזיים בשוק.",
-    "COMMUNITY_SENTIMENT": "דעת הקהל בשוק הראתה חששות מעטים, אך גם ציפיות להמשך צמיחה.",
-    "ANALYST_POINT_1": "החברות הטכנולוגיות הגדולות ימשיכו להיות מנועי הצמיחה העיקריים בשוק.",
-    "ANALYST_POINT_2": "מדיניות ה-Fed תמשיך להיות הגורם המרכזי בקביעת הכיוון הכלכלי.",
-    "RISK_MANAGEMENT_TEXT": "בשל התנודתיות בשוק, ניהול סיכונים הוא חיוני. החזקת תיק השקעות מגוון וניהול סיכונים הדוק יכולים לעזור להפחית את החשיפה לשוק.",
-    "ACTION_RECOMMENDATIONS_TEXT": "מומלץ להמשיך לנטור את הדוחות הרבעוניים ולנהל תיק השקעות מגוון.",
-    "long_term_stocks": [
+    "SP500_ANALYSIS": "ה-S&P 500 נמצא במגמת עלייה, עם עלייה של 0.5% ב-14 הימים האחרונים.",
+    "NASDAQ_ANALYSIS": "ה-NASDAQ חווה תנודות, אך בסופו של דבר סיים עם עלייה של 0.2% ב-14 הימים האחרונים.",
+    "DOW_ANALYSIS": "ה-DOW נשאר יציב, עם ירידה קלה של 0.1% ב-14 הימים האחרונים.",
+    "VIX_ANALYSIS": "ה-VIX עלה ב-3.76% היום, מרמז על עלייה בתשומת הלב לסיכון.",
+    "DXY_ANALYSIS": "ה-DXY נותר יציב, עם שינוי קטן של 0.0% היום.",
+    "USD_ILS_EXPLANATION": "הדולר האמריקאי נותר יציב מול השקל הישראלי, עם שינוי קטן של -0.21%.",
+    "OIL_EXPLANATION": "מחירי הנפט נותרו יציבים, עם שינוי קטן של 0.0%.",
+    "GOLD_EXPLANATION": "מחירי הזהב נותרו יציבים, עם שינוי קטן של 0.0%.",
+    "BTC_EXPLANATION": "מחיר הביטקוין ירד ב-1.38% היום, מרמז על תנודות בשוק הקריפטו.",
+    "US_MARKET_NEWS": "ב-14 הימים האחרונים, השווקים האמריקאיים חוו תנודות עקב דוחות רווחים ושינויים במדיניות המוניטרית. חברות כמו GEN Restaurant Group ו-GameSquare הציגו רווחים חזקים, בעוד שחברות אחרות כמו Tactile Medical ו-Beachbody חוו ירידות. ה-VIX עלה, מרמז על עלייה בתשומת הלב לסיכון. סיכום: השווקים האמריקאיים ממשיכים להיות משפיעים על ידי דוחות רווחים ושינויים במדיניות המוניטרית.",
+    "IL_MARKET_NEWS": "השוק הישראלי חווה תנודות, עם עלייה במחירים של מניות כמו טאואר ו-אלביט, וירידות במניות כמו קמהדע ו-מג'יק.",
+    "MARKET_MOVERS_TABLE": [
         {
             "ticker": "NVDA",
             "name": "NVIDIA",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "NVIDIA הודיעה על שיתוף פעולה עם חברת הרכב החשמלי Tesla, לפיתוח מערכות נהיגה אוטונומית."
+            "price_change_pct": -2.86,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
         },
         {
             "ticker": "AMD",
             "name": "Advanced Micro Devices",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "AMD הודיעה על רכישת חברת Xilinx, ייצרנית רכיבים אלקטרוניים, תמורת 35 מיליארד דולר."
+            "price_change_pct": -2.86,
+            "volume_context": "נפח בינוני, השפעה מוגבלת"
         },
         {
-            "ticker": "MU",
-            "name": "Micron Technology",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Micron Technology הודיעה על השקעה של 150 מיליארד דולר בפיתוח טכנולוגיות חדשות."
-        },
-        {
-            "ticker": "SNDK",
-            "name": "SanDisk",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "SanDisk הודיעה על שיתוף פעולה עם חברת Western Digital, לפיתוח מוצרים חדשים."
-        },
-        {
-            "ticker": "WDC",
-            "name": "Western Digital",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Western Digital הודיעה על רכישת חברת SanDisk, ייצרנית רכיבים אלקטרוניים, תמורת 19 מיליארד דולר."
+            "ticker": "GOOG",
+            "name": "Alphabet",
+            "price_change_pct": 0.67,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
         },
         {
             "ticker": "INTC",
             "name": "Intel",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Intel הודיעה על השקעה של 20 מיליארד דולר בפיתוח טכנולוגיות חדשות."
+            "price_change_pct": -4.06,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
         },
         {
-            "ticker": "SIMO",
-            "name": "Silicon Motion Technology",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Silicon Motion Technology הודיעה על שיתוף פעולה עם חברת Kingston Technology, לפיתוח מוצרים חדשים."
+            "ticker": "TTWO",
+            "name": "Take-Two Interactive",
+            "price_change_pct": 2.87,
+            "volume_context": "נפח בינוני, השפעה מוגבלת"
         },
         {
-            "ticker": "IREN",
-            "name": "IREN",
-            "desc": "חברה העוסקת בתחום האנרגיה",
-            "news": "IREN הודיעה על השקעה של 100 מיליון דולר בפיתוח מתקני אנרגיה חדשים."
+            "ticker": "WMT",
+            "name": "Walmart",
+            "price_change_pct": 0.72,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
         },
         {
-            "ticker": "CIFR",
-            "name": "Cipher",
-            "desc": "חברה העוסקת בתחום הביטחון",
-            "news": "Cipher הודיעה על שיתוף פעולה עם חברת Microsoft, לפיתוח מוצרים ביטחוניים חדשים."
+            "ticker": "NFLX",
+            "name": "Netflix",
+            "price_change_pct": 2.9,
+            "volume_context": "נפח בינוני, השפעה מוגבלת"
         },
         {
-            "ticker": "META",
-            "name": "Meta Platforms",
-            "desc": "חברה העוסקת בתחום המדיה",
-            "news": "Meta Platforms הודיעה על השקעה של 10 מיליארד דולר בפיתוח טכנולוגיות חדשות."
+            "ticker": "TQQQ",
+            "name": "ProShares UltraPro QQQ",
+            "price_change_pct": -0.9,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
+        },
+        {
+            "ticker": "XLK",
+            "name": "Technology Select Sector SPDR Fund",
+            "price_change_pct": -0.88,
+            "volume_context": "נפח גבוה, השפעה משמעותית"
+        },
+        {
+            "ticker": "MA",
+            "name": "Mastercard",
+            "price_change_pct": 0.04,
+            "volume_context": "נפח בינוני, השפעה מוגבלת"
+        }
+    ],
+    "CATALYST_EARNINGS": "דוחות רווחים של חברות גדולות, כמו GEN Restaurant Group ו-GameSquare, היוו קטליזטורים משמעותיים.",
+    "CATALYST_MONETARY": "שינויים במדיניות המוניטרית, כמו החלטות ה-FED, השפיעו על השווקים.",
+    "CATALYST_HARDWARE": "חדשות על פיתוחים חדשים בתחום החומרה, כמו הכרזותיה של NVIDIA, היוו קטליזטורים.",
+    "COMMUNITY_SENTIMENT": "דעת הקהל בקרב המשקיעים היא שהשווקים ימשיכו להיות משפיעים על ידי דוחות רווחים ושינויים במדיניות המוניטרית.",
+    "ANALYST_POINT_1": "האנליסטים צופים עלייה ב-S&P 500 בשבוע הבא.",
+    "ANALYST_POINT_2": "האנליסטים מזהירים מפני ירידה אפשרית ב-NASDAQ.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חשוב, במיוחד בתקופות של תנודות.",
+    "ACTION_RECOMMENDATIONS_TEXT": "המלצות לפעולה: קניה של מניות עם פוטנציאל גבוה, כמו NVIDIA ו-AMD, ומכירה של מניות עם פוטנציאל נמוך, כמו Tactile Medical ו-Beachbody.",
+    "long_term_stocks": [
+        {
+            "ticker": "BRKB",
+            "name": "Berkshire Hathaway",
+            "desc": "חברת החזקות של וורן באפט",
+            "news": "https://www.investing.com/news/stock-market-news/berkshire-hathaway-q2-2026-earnings-beat-estimates-4850522"
+        },
+        {
+            "ticker": "JPM",
+            "name": "JPMorgan Chase",
+            "desc": "בנק גדול",
+            "news": "https://www.investing.com/news/stock-market-news/jpmorgan-chase-q2-2026-earnings-beat-estimates-4850521"
+        },
+        {
+            "ticker": "V",
+            "name": "Visa",
+            "desc": "חברת תשלומים",
+            "news": "https://www.investing.com/news/stock-market-news/visa-q2-2026-earnings-beat-estimates-4850520"
+        },
+        {
+            "ticker": "MSFT",
+            "name": "Microsoft",
+            "desc": "חברת תוכנה",
+            "news": "https://www.investing.com/news/stock-market-news/microsoft-q2-2026-earnings-beat-estimates-4850519"
+        },
+        {
+            "ticker": "PG",
+            "name": "Procter & Gamble",
+            "desc": "חברת מוצרי צריכה",
+            "news": "https://www.investing.com/news/stock-market-news/procter-gamble-q2-2026-earnings-beat-estimates-4850518"
+        },
+        {
+            "ticker": "KO",
+            "name": "Coca-Cola",
+            "desc": "חברת משקאות",
+            "news": "https://www.investing.com/news/stock-market-news/coca-cola-q2-2026-earnings-beat-estimates-4850517"
+        },
+        {
+            "ticker": "PEP",
+            "name": "PepsiCo",
+            "desc": "חברת משקאות",
+            "news": "https://www.investing.com/news/stock-market-news/pepsico-q2-2026-earnings-beat-estimates-4850516"
+        },
+        {
+            "ticker": "CMCSA",
+            "name": "Comcast",
+            "desc": "חברת תקשורת",
+            "news": "https://www.investing.com/news/stock-market-news/comcast-q2-2026-earnings-beat-estimates-4850515"
+        },
+        {
+            "ticker": "FOX",
+            "name": "Fox Corporation",
+            "desc": "חברת מדיה",
+            "news": "https://www.investing.com/news/stock-market-news/fox-corporation-q2-2026-earnings-beat-estimates-4850514"
+        },
+        {
+            "ticker": "DIS",
+            "name": "Walt Disney",
+            "desc": "חברת בידור",
+            "news": "https://www.investing.com/news/stock-market-news/walt-disney-q2-2026-earnings-beat-estimates-4850513"
         }
     ],
     "swing_stocks": [
         {
-            "ticker": "NVDA",
-            "name": "NVIDIA",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "NVIDIA הודיעה על שיתוף פעולה עם חברת הרכב החשמלי Tesla, לפיתוח מערכות נהיגה אוטונומית."
+            "ticker": "AAPL",
+            "name": "Apple",
+            "desc": "חברת טכנולוגיה",
+            "news": "https://www.investing.com/news/stock-market-news/apple-q2-2026-earnings-beat-estimates-4850512"
         },
         {
-            "ticker": "AMD",
-            "name": "Advanced Micro Devices",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "AMD הודיעה על רכישת חברת Xilinx, ייצרנית רכיבים אלקטרוניים, תמורת 35 מיליארד דולר."
+            "ticker": "GOOGL",
+            "name": "Alphabet",
+            "desc": "חברת טכנולוגיה",
+            "news": "https://www.investing.com/news/stock-market-news/alphabet-q2-2026-earnings-beat-estimates-4850511"
         },
         {
-            "ticker": "MU",
-            "name": "Micron Technology",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Micron Technology הודיעה על השקעה של 150 מיליארד דולר בפיתוח טכנולוגיות חדשות."
+            "ticker": "AMZN",
+            "name": "Amazon",
+            "desc": "חברת מסחר אלקטרוני",
+            "news": "https://www.investing.com/news/stock-market-news/amazon-q2-2026-earnings-beat-estimates-4850510"
         },
         {
-            "ticker": "SNDK",
-            "name": "SanDisk",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "SanDisk הודיעה על שיתוף פעולה עם חברת Western Digital, לפיתוח מוצרים חדשים."
+            "ticker": "FB",
+            "name": "Meta",
+            "desc": "חברת מדיה",
+            "news": "https://www.investing.com/news/stock-market-news/meta-q2-2026-earnings-beat-estimates-4850509"
         },
         {
-            "ticker": "WDC",
-            "name": "Western Digital",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Western Digital הודיעה על רכישת חברת SanDisk, ייצרנית רכיבים אלקטרוניים, תמורת 19 מיליארד דולר."
+            "ticker": "BABA",
+            "name": "Alibaba",
+            "desc": "חברת מסחר אלקטרוני",
+            "news": "https://www.investing.com/news/stock-market-news/alibaba-q2-2026-earnings-beat-estimates-4850508"
         },
         {
-            "ticker": "INTC",
-            "name": "Intel",
-            "desc": "ייצרן של רכיבים אלקטרוניים",
-            "news": "Intel הודיעה על השקעה של 20 מיליארד דולר בפיתוח טכנולוגיות חדשות."
+            "ticker": "TSLA",
+            "name": "Tesla",
+            "desc": "חברת רכב חשמלי",
+            "news": "https://www.investing.com/news/stock-market-news/tesla-q2-2026-earnings-beat-estimates-4850507"
+        },
+        {
+            "ticker": "NKE",
+            "name": "Nike",
+            "desc": "חברת הלבשה",
+            "news": "https://www.investing.com/news/stock-market-news/nike-q2-2026-earnings-beat-estimates-4850506"
+        },
+        {
+            "ticker": "MCD",
+            "name": "McDonald's",
+            "desc": "חברת מזון מהיר",
+            "news": "https://www.investing.com/news/stock-market-news/mcdonalds-q2-2026-earnings-beat-estimates-4850505"
+        },
+        {
+            "ticker": "CSCO",
+            "name": "Cisco Systems",
+            "desc": "חברת תקשורת",
+            "news": "https://www.investing.com/news/stock-market-news/cisco-systems-q2-2026-earnings-beat-estimates-4850504"
+        },
+        {
+            "ticker": "ORCL",
+            "name": "Oracle",
+            "desc": "חברת תוכנה",
+            "news": "https://www.investing.com/news/stock-market-news/oracle-q2-2026-earnings-beat-estimates-4850503"
         }
     ],
-    "ai_updated_at": "11.08.2026 | 01:02"
+    "portfolio_analysis": {
+        "NVDA": {
+            "rationale": "NVIDIA היא חברת טכנולוגיה מובילה",
+            "news_link": "https://www.investing.com/news/stock-market-news/nvidia-q2-2026-earnings-beat-estimates-4850502",
+            "news_title": "NVIDIA Q2 2026 Earnings Beat Estimates",
+            "news_content": "NVIDIA הודיעה על רווחים חזקים ברבעון השני של 2026",
+            "news_impact": "הידיעה השפיעה על מחיר המניה של NVIDIA"
+        }
+    },
+    "ai_updated_at": "11.08.2026 | 01:09"
 }
