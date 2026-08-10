@@ -160,7 +160,7 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
             try:
                 client = Groq(
                     api_key=api_key,
-                    base_url="https://groq-proxy.avichy65.workers.dev/openai/v1"
+                    base_url="https://groq-proxy.avichy65.workers.dev"
                 )
                 print(f"🤖 Connecting to Groq AI using {key_name} for {day_name}, {date_str}...")
 
