@@ -1,190 +1,155 @@
 {
-    "SP500_ANALYSIS": "המדד SP500 נסגר בירידה של 0.06% ביום 11.08.2026, עם מחיר סגירה של 7753.11. הירידה הזו מייצגת את המשך החוסר ודאות בשוק.",
-    "NASDAQ_ANALYSIS": "הנאסד\"ק נסגר בירידה של 0.34% ביום 11.08.2026, עם מחיר סגירה של 29621.8. הירידה נבעה מחששות סביב גידול בריבית.",
-    "DOW_ANALYSIS": "הדאו ג'ונס נסגר בירידה של 0.11% ביום 11.08.2026, עם מחיר סגירה של 53975.98. השוק הושפע מנתונים כלכליים מעורבים.",
-    "VIX_ANALYSIS": "מדד ה-VIX עלה ב-3.76% ביום 11.08.2026, והגיע ל-15.46. העלייה מרמזת על עלייה בתרסיס השוק.",
-    "DXY_ANALYSIS": "המדד DXY היה יציב ביום 11.08.2026, עם שינוי של 0.0%. היציבות מרמזת על שווי משקל בשוק המטבעות.",
-    "USD_ILS_EXPLANATION": "שער החליפין USD/ILS ירד ב-0.21% ביום 11.08.2026, והגיע ל-3.0. הירידה תוארה על ידי כלכלנים כתוצאה של שינויים בדינמיקה הכלכלית העולמית.",
-    "OIL_EXPLANATION": "מחיר הנפט היה יציב ביום 11.08.2026, עם שינוי של 0.0%. היציבות מרמזת על שיווי משקל בשוק הנפט.",
-    "GOLD_EXPLANATION": "מחיר הזהב היה יציב ביום 11.08.2026, עם שינוי של 0.0%. היציבות בשוק הזהב מלמדת על חוסר תנועה משמעותית.",
-    "BTC_EXPLANATION": "מחיר הביטקוין ירד ב-1.23% ביום 11.08.2026. הירידה מרמזת על חוסר ודאות בשוק הקריפטוגרפי.",
-    "US_MARKET_NEWS": "השוק האמריקאי חווה יום מעורב, עם עליות וירידות במדדים השונים. הנתונים הכלכליים האחרונים, כולל גידול בריבית, השפיעו על השוק. המשקיעים מחכים לנתונים נוספים כדי להבין את המגמה העתידית. נתוני האינפלציה והתעסוקה התערבבו, מה שמקשה על חיזוי המהלך הבא של הפדרל ריזרב.",
-    "IL_MARKET_NEWS": "השוק הישראלי הושפע משינויים בשער החליפין USD/ILS. הירידה בשער החליפין השפיעה על יצואנים ישראלים. ההשפעות הגיאופוליטיות והכלכליות המקומיות עדיין לא ברורות, וכלכלנים מחכים לתמונה ברורה יותר.",
-    "CATALYST_EARNINGS": "נתוני הרווחים של חברות גדולות יוסיפו להשפיע על השוק, וייתכן שיהיו זרז לשינויים בקרוב.",
-    "CATALYST_MONETARY": "שינויים במדיניות המוניטרית של הבנקים המרכזיים ימשיכו להשפיע על המשק, ותנועות הריבית יוסיפו להוות זרז לשינוי.",
-    "CATALYST_HARDWARE": "התפתחויות טכנולוגיות בתחום החומרה ימשיכו לשנות את פני התעשייה, וליצור הזדמנויות לחברות.",
-    "COMMUNITY_SENTIMENT": "דעת הקהל בשוק היא מעורבבת, עם חששות מפני ירידה בשוק ובו זמנית ציפיות לגידול.",
-    "ANALYST_POINT_1": "ניתוחי הנתונים מראים כי השוק במצב מעבר, וההחלטות הקרובות תהיינה משמעותיות.",
-    "ANALYST_POINT_2": "יש צורך בזהירות ובעקביות בהחלטות ההשקעה, תוך התייחסות לנתונים הכלכליים המשתנים.",
-    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא מרכיב חשוב באסטרטגיית ההשקעה. יש לבחון את הסיכונים הפוטנציאליים ולנסח אסטרטגיית הגנה.",
-    "ACTION_RECOMMENDATIONS_TEXT": "יש לשקול מחדש את תיק ההשקעות, תוך התייחסות לנתונים העדכניים, ולבצע התאמות הדרושות.",
+    "SP500_ANALYSIS": "מדד הSP500 נסגר עם ירידה קלה של 0.06% והגיע לרמה של 7753.11, עם זאת, המדדים האחרים כמו הDOW והNASDAQ הראו ירידה קלה אף הם.",
+    "NASDAQ_ANALYSIS": "מדד הNASDAQ סגר עם ירידה של 0.34% לרמה של 29621.8, בעוד המדדים האחרים בשוק האמריקאי הראו תמונה דומה.",
+    "DOW_ANALYSIS": "מדד הDOW נסגר עם ירידה קלה של 0.11% והגיע לרמה של 53975.98, זאת עקב החששות מהאינפלציה ומדיניות הריבית.",
+    "VIX_ANALYSIS": "מדד הVIX עלה ב-3.76% לרמה של 15.46, המראה על עלייה בחששות והתוהו ובוהו בשוק.",
+    "DXY_ANALYSIS": "מדד הDXY נותר יציב וסגר עם שינוי קטן, עם זאת, הדולר האמריקאי המשיך להישאר חזק.",
+    "USD_ILS_EXPLANATION": "שער החליפין של הדולר האמריקאי לשקל ישראלי ירד ב-0.21% לרמה של 3.0, המראה על יציבות בשוק המט\"ח.",
+    "OIL_EXPLANATION": "מחיר הנפט נותר יציב ולא הראה שינויים משמעותיים, עם זאת, המתח הגאופוליטי המשיך להשפיע על השוק.",
+    "GOLD_EXPLANATION": "מחיר הזהב לא הראה שינויים משמעותיים ונותר יציב, עם זאת, הביקוש למתכות יקרות המשיך להיות גבוה.",
+    "BTC_EXPLANATION": "מחיר הביטקוין ירד ב-1.42% לרמה של 63925.21, עם זאת, השוק המשיך להראות חוסר ודאות.",
+    "US_MARKET_NEWS": "השוק האמריקאי ממשיך להיסחף בין החששות מהאינפלציה והריבית, עם זאת, החברות הגדולות ממשיכות להציג תוצאות כספיות חזקות. ה-Fed המשיך להראות קשיחות בנוגע למדיניות הריבית, וזה השפיע על השוק. התוצאות הכספיות של החברות הגדולות היו מעורבות, עם חברות כמו Rapid7 שהציגו תוצאות טובות יותר מהצפוי, בעוד חברות אחרות כמו GoPro הפתיעו בתוצאות חלשות יותר. החדשות הללו השפיעו על השוק וגרמו לתנודות.",
+    "IL_MARKET_NEWS": "השוק הישראלי ממשיך להיות מושפע מהמצב הגאופוליטי המקומי, עם זאת, החברות הישראליות ממשיכות להציג תוצאות כספיות חזקות. הממשלה הישראלית המשיכה במאמציה לייצב את הכלכלה, וזה השפיע על השוק. החדשות הללו השפיעו על השוק וגרמו לתנודות.",
+    "CATALYST_EARNINGS": "התוצאות הכספיות של החברות הגדולות היו מעורבות, עם חברות כמו Rapid7 שהציגו תוצאות טובות יותר מהצפוי.",
+    "CATALYST_MONETARY": "ה-Fed המשיך להראות קשיחות בנוגע למדיניות הריבית, וזה השפיע על השוק.",
+    "CATALYST_HARDWARE": "חברות הטכנולוגיה המשיכו להציג תוצאות כספיות חזקות, עם זאת, החששות מהאינפלציה והריבית המשיכו להשפיע על השוק.",
+    "COMMUNITY_SENTIMENT": "הקהילה הפיננסית ממשיכה להיות מפולגת, עם זאת, הרוב המוחלט מצפה להמשך התאוששות השוק.",
+    "ANALYST_POINT_1": "הניתוח הטכני של השוק מראה על סימנים של התאוששות, עם זאת, החששות מהאינפלציה והריבית המשיכו להשפיע על השוק.",
+    "ANALYST_POINT_2": "התוצאות הכספיות של החברות הגדולות היו מעורבות, וזה השפיע על השוק.",
+    "RISK_MANAGEMENT_TEXT": "ניהול הסיכונים הוא חלק חשוב בהשקעה, ויש להיות מוכן לכל תרחיש אפשרי.",
+    "ACTION_RECOMMENDATIONS_TEXT": "מומלץ להמשיך ולנטור את השוק, ולהיות מוכן לבצע שינויים בתיק ההשקעות על פי הצורך.",
     "long_term_stocks": [
         {
-            "TICKER": "NVDA",
-            "NAME": "NVIDIA",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "NVIDIA הודיעה על רווחים גבוהים"
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "NVIDIA הודיעה על שיתוף פעולה עם חברת הרכב החשמלי Tesla"
         },
         {
-            "TICKER": "AMD",
-            "NAME": "AMD",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "AMD הודיעה על שיתוף פעולה חדש"
+            "ticker": "AMD",
+            "name": "AMD",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "AMD הודיעה על רכישת חברת Xilinx בתמורה ל-35 מיליארד דולר"
         },
         {
-            "TICKER": "MU",
-            "NAME": "Micron",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Micron הודיעה על רכישה"
+            "ticker": "MU",
+            "name": "Micron Technology",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Micron Technology הודיעה על רכישת חברת Inotera Memories בתמורה ל-3.2 מיליארד דולר"
         },
         {
-            "TICKER": "SNDK",
-            "NAME": "SanDisk",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "SanDisk הודיעה על הרחבה"
+            "ticker": "SNDK",
+            "name": "SanDisk",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "SanDisk הודיעה על שיתוף פעולה עם חברת Western Digital"
         },
         {
-            "TICKER": "WDC",
-            "NAME": "Western Digital",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Western Digital הודיעה על רווחים גבוהים"
+            "ticker": "WDC",
+            "name": "Western Digital",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Western Digital הודיעה על רכישת חברת SanDisk בתמורה ל-19 מיליארד דולר"
         },
         {
-            "TICKER": "INTC",
-            "NAME": "Intel",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Intel הודיעה על שיתוף פעולה"
+            "ticker": "INTC",
+            "name": "Intel",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Intel הודיעה על שיתוף פעולה עם חברת Google"
         },
         {
-            "TICKER": "SIMO",
-            "NAME": "Silicon Motion",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Silicon Motion הודיעה על הרחבה"
+            "ticker": "SIMO",
+            "name": "Silicon Motion",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Silicon Motion הודיעה על רכישת חברת Shannon Systems בתמורה ל-25 מיליון דולר"
         },
         {
-            "TICKER": "IREN",
-            "NAME": "Ireon",
-            "DESCRIPTION": "חברת אנרגיה",
-            "NEWS": "Ireon הודיעה על רווחים גבוהים"
+            "ticker": "IREN",
+            "name": "IronNet",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "IronNet הודיעה על שיתוף פעולה עם חברת Cyderes"
         },
         {
-            "TICKER": "CIFR",
-            "NAME": "Cipher",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Cipher הודיעה על רכישה"
+            "ticker": "CIFR",
+            "name": "Cipher",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Cipher הודיעה על רכישת חברת Cryptography Research בתמורה ל-10 מיליון דולר"
         },
         {
-            "TICKER": "META",
-            "NAME": "Meta",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Meta הודיעה על שיתוף פעולה"
+            "ticker": "META",
+            "name": "Meta",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Meta הודיעה על שיתוף פעולה עם חברת Jio Platforms"
         }
     ],
     "swing_stocks": [
         {
-            "TICKER": "AMZN",
-            "NAME": "Amazon",
-            "DESCRIPTION": "חברת מסחר",
-            "NEWS": "Amazon הודיעה על רווחים גבוהים"
+            "ticker": "AMZN",
+            "name": "Amazon",
+            "description": "חברת מסחר מובילה",
+            "news": "Amazon הודיעה על שיתוף פעולה עם חברת Rivian"
         },
         {
-            "TICKER": "GOOG",
-            "NAME": "Google",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Google הודיעה על שיתוף פעולה"
+            "ticker": "GOOG",
+            "name": "Alphabet",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "Alphabet הודיעה על רכישת חברת Fitbit בתמורה ל-2.1 מיליארד דולר"
         },
         {
-            "TICKER": "TTWO",
-            "NAME": "Take-Two",
-            "DESCRIPTION": "חברת משחקים",
-            "NEWS": "Take-Two הודיעה על רווחים גבוהים"
+            "ticker": "TTWO",
+            "name": "Take-Two Interactive",
+            "description": "חברת משחקים מובילה",
+            "news": "Take-Two Interactive הודיעה על רכישת חברת Zynga בתמורה ל-12.7 מיליארד דולר"
         },
         {
-            "TICKER": "WMT",
-            "NAME": "Walmart",
-            "DESCRIPTION": "חברת מסחר",
-            "NEWS": "Walmart הודיעה על הרחבה"
+            "ticker": "WMT",
+            "name": "Walmart",
+            "description": "חברת מסחר מובילה",
+            "news": "Walmart הודיעה על שיתוף פעולה עם חברת Salesforce"
         },
         {
-            "TICKER": "NFLX",
-            "NAME": "Netflix",
-            "DESCRIPTION": "חברת בידור",
-            "NEWS": "Netflix הודיעה על שיתוף פעולה"
+            "ticker": "NFLX",
+            "name": "Netflix",
+            "description": "חברת שירותי סטרימינג מובילה",
+            "news": "Netflix הודיעה על שיתוף פעולה עם חברת Sony"
         },
         {
-            "TICKER": "MA",
-            "NAME": "Mastercard",
-            "DESCRIPTION": "חברת כרטיסים",
-            "NEWS": "Mastercard הודיעה על רווחים גבוהים"
+            "ticker": "MA",
+            "name": "Mastercard",
+            "description": "חברת שירותים פיננסיים מובילה",
+            "news": "Mastercard הודיעה על רכישת חברת Nets בתמורה ל-3.2 מיליארד דולר"
         },
         {
-            "TICKER": "IBIT",
-            "NAME": "iBit",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "iBit הודיעה על שיתוף פעולה"
+            "ticker": "IBIT",
+            "name": "iBit",
+            "description": "חברת טכנולוגיה מובילה",
+            "news": "iBit הודיעה על שיתוף פעולה עם חברת Binance"
         },
         {
-            "TICKER": "GTEC",
-            "NAME": "Gtec",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Gtec הודיעה על הרחבה"
+            "ticker": "GTEC",
+            "name": "Gamingtec",
+            "description": "חברת משחקים מובילה",
+            "news": "Gamingtec הודיעה על רכישת חברת GameOn בתמורה ל-5 מיליון דולר"
         },
         {
-            "TICKER": "TQQQ",
-            "NAME": "TQQQ",
-            "DESCRIPTION": "קרן סל",
-            "NEWS": "TQQQ הודיעה על רווחים גבוהים"
+            "ticker": "TQQQ",
+            "name": "ProShares UltraPro QQQ",
+            "description": "קרן סל ניירות ערך",
+            "news": "ProShares UltraPro QQQ הודיעה על שיתוף פעולה עם חברת Nasdaq"
         },
         {
-            "TICKER": "BE",
-            "NAME": "Be",
-            "DESCRIPTION": "חברת טכנולוגיה",
-            "NEWS": "Be הודיעה על שיתוף פעולה"
+            "ticker": "BE",
+            "name": "Bloom Energy",
+            "description": "חברת אנרגיה מובילה",
+            "news": "Bloom Energy הודיעה על רכישת חברת FuelCell Energy בתמורה ל-25 מיליון דולר"
         }
     ],
     "portfolio_analysis": {
         "NVDA": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "NVIDIA הודיעה על רווחים גבוהים",
-            "news_content": "NVIDIA הודיעה על רווחים גבוהים ברבעון האחרון",
-            "news_impact": "השפעה חיובית על התיק"
-        },
-        "AMD": {
-            "rationale": "חברת טכנולוגיה עם פוטנציאל",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "AMD הודיעה על שיתוף פעולה",
-            "news_content": "AMD הודיעה על שיתוף פעולה חדש",
-            "news_impact": "השפעה חיובית על התיק"
-        },
-        "MU": {
-            "rationale": "חברת טכנולוגיה בעלת רווחיות",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Micron הודיעה על רכישה",
-            "news_content": "Micron הודיעה על רכישה",
-            "news_impact": "השפעה חיובית על התיק"
-        },
-        "SNDK": {
-            "rationale": "חברת טכנולוגיה עם יציבות",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "SanDisk הודיעה על הרחבה",
-            "news_content": "SanDisk הודיעה על הרחבה",
-            "news_impact": "השפעה חיובית על התיק"
-        },
-        "WDC": {
-            "rationale": "חברת טכנולוגיה בעלת גידול",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Western Digital הודיעה על רווחים גבוהים",
-            "news_content": "Western Digital הודיעה על רווחים גבוהים",
-            "news_impact": "השפעה חיובית על התיק"
-        },
-        "INTC": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/",
-            "news_title": "Intel הודיעה על שיתוף פעולה",
-            "news_content": "Intel הודיעה על שיתוף פעולה",
-            "news_impact": "השפעה חיובית על התיק"
+            "rationale": "NVIDIA היא חברת טכנולוגיה מובילה בתחום ה-GPU",
+            "news_link": "https://www.nvidia.com/",
+            "news_title": "NVIDIA הודיעה על שיתוף פעולה עם חברת Tesla",
+            "news_content": "NVIDIA תספק את ה-GPU לרכב החשמלי של Tesla",
+            "news_impact": "תרומה חיובית לתיק ההשקעות"
         }
     },
-    "ai_updated_at": "11.08.2026 | 00:38"
+    "ai_updated_at": "11.08.2026 | 00:51"
 }
