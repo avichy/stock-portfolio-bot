@@ -96,13 +96,9 @@ def format_ai_text(text):
     if not isinstance(text, str):
         return str(text)
     
-    # ניקוי סוגריים וסימנים מיותרים שה-AI עשוי לפלוט
     cleaned = text.replace("{", "").replace("}", "").replace("[\"", "").replace("\"]", "").replace('"', "")
-    
-    # הוספת ירידות שורה ומרווחים נקיים לפני כל מספר סעיף
     for i in range(1, 10):
         cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>{i}.</strong>")
-    
     return cleaned
 
 def get_stock_logo_url(ticker):
@@ -407,14 +403,18 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        force_ai = os.environ.get("RUN_AI", "false").lower() == "true"
+        # זיהוי האם זו ריצה אוטומטית של ה-Cron או ריצה ידנית.
+        # אם מריצים ידנית (למשל מגיטהאב או מקומית), משתנה ה-IS_CRON לא מוגדר ולכן ה-AI ירוץ תמיד!
+        is_cron_run = os.environ.get("IS_CRON", "false").lower() == "true"
+
         is_ai_time = (
             (current_hour == 10 and current_minute == 10) or
             (current_hour == 16 and current_minute == 40) or
             (current_hour == 23 and current_minute == 40)
         )
         
-        run_ai = force_ai or is_ai_time
+        # אם זו לא ריצת קרון (כלומר ריצה ידנית), או שזו שעת קרון ייעודית של AI – נריץ AI!
+        run_ai = (not is_cron_run) or is_ai_time
 
         investing_headlines = fetch_investing_news()
 
