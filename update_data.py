@@ -153,7 +153,7 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
         cached = load_ai_cache()
         return cached if cached else {}
 
-    max_rounds = 2  # מגביל ל-2 סבבים מלאים על כל המפתחות
+    max_rounds = 2
     for attempt_round in range(1, max_rounds + 1):
         print(f"🔄 Starting Groq AI request round {attempt_round}/{max_rounds}...")
         for key_name, api_key in api_keys:
@@ -202,9 +202,9 @@ You must output valid JSON.
 17. ANALYST_POINT_2
 18. RISK_MANAGEMENT_TEXT
 19. ACTION_RECOMMENDATIONS_TEXT
-20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח. **הנחיה קריטית:** אסור לכלול ברשימה זו אף מניה שנמצאת בתיק האישי של המשתמש ({portfolio_tickers}). בחר מניות אחרות.
-21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג. **הנחיה קריטית:** אסור לכלול ברשימה זו אף מניה שנמצאת בתיק האישי של המשתמש ({portfolio_tickers}). בחר מניות אחרות.
-22. portfolio_analysis: אובייקט שבו המפתחות חייבים להיות בדיוק הטיקרים של מניות התיק האישי של המשתמש ({portfolio_tickers}). עבור כל טיקר, הספק אובייקט הכולל: rationale, news_link, news_title, news_content, news_impact. (חובה לכתוב תוכן אמיתי, מפורט ועשיר שמתבסס על החדשות שסופקו: ציין במפורש עם מי נעשה שיתוף הפעולה, מה בדיוק נרכש, סכומים, מוצרים או פרטים טכניים מלאים. אסור בתכלית האיסור לכתוב משפטים סתמיים וכלליים כמו 'הודיעה על שיתוף פעולה' או 'הודיעה על רכישה' בלי לפרט את כל ההקשר).
+20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח. כל פריט חייב לכלול: "ticker", "name", "desc", "news" (כתוב תוכן חדשותי עשיר ומפורט הכולל את ההקשר המלא, שמות חברות או מוצרים, בלי תשובות קצרות או כלליות).
+21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג. כל פריט חייב לכלול: "ticker", "name", "desc", "news" (תוכן מפורט, עשיר וספציפי).
+22. portfolio_analysis: אובייקט שבו המפתחות חייבים להיות בדיוק הטיקרים של מניות התיק האישי של המשתמש ({portfolio_tickers}). עבור כל טיקר, הספק אובייקט הכולל בדיוק את השדות הבאים: rationale, news_link, news_title, news_content, news_impact. (חובה לכתוב תוכן אמיתי, מפורט ועשיר שמתבסס על החדשות שסופקו: ציין במפורש עם מי נעשה שיתוף הפעולה, מה בדיוק נרכש, סכומים, מוצרים או פרטים טכניים מלאים. אסור בתכלית האיסור לכתוב משפטים סתמיים וכלליים כמו 'הודיעה על שיתוף פעולה' או 'הודיעה על רכישה' בלי לפרט את כל ההקשר).
 23. market_news: מערך של 5 ידיעות חדשותיות שונות לחלוטין זו מזו מתוך הכותרות שסופקו למעלה. כל פריט חייב לכלול: news_link, news_title, news_content, news_impact.
 """
 
@@ -230,7 +230,7 @@ You must output valid JSON.
                 print(f"⚠️ Attempt failed with {key_name}: {e}")
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
                     print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds for minute limit to reset...")
-                    time.sleep(65)  # המתנה של מעל דקה כדי לתת למגבלת הדקה להתאפס
+                    time.sleep(65)
                 else:
                     print(f"🔄 Connection/Network error. Waiting 5 seconds before trying next key...")
                     time.sleep(5)
