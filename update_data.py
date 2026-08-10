@@ -92,6 +92,19 @@ def format_pct_colored(val):
     except (ValueError, TypeError):
         return str(val)
 
+def format_ai_text(text):
+    if not isinstance(text, str):
+        return str(text)
+    
+    # ניקוי סוגריים וסימנים מיותרים שה-AI עשוי לפלוט
+    cleaned = text.replace("{", "").replace("}", "").replace("[\"", "").replace("\"]", "").replace('"', "")
+    
+    # הוספת ירידות שורה ומרווחים נקיים לפני כל מספר סעיף
+    for i in range(1, 10):
+        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>{i}.</strong>")
+    
+    return cleaned
+
 def get_stock_logo_url(ticker):
     clean_ticker = str(ticker).strip().upper()
     parqet_ticker = clean_ticker.replace("-", ".")
@@ -169,16 +182,19 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור אמיתי: {h['link']}" for h in investing_headlines]) if investing_headlines else "אין כותרות זמינות."
 
                 prompt = f"""
-You must output valid JSON.
+You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב ניתוח מעמיק, עשיר, מפורט מאוד ולא תמציתי. 
+כתוב ניתוח מעמיק, עשיר, מפורט מאוד, ארוך ולא תמציתי כלל. 
 
 **הנחיות קשיחות לניתוחים המאקרו (שלב 1):**
-עבור כל מדד או נכס, וכן עבור US_MARKET_NEWS ו-IL_MARKET_NEWS, עליך לכתוב בצורה מפורטת ומסודרת לפי סעיפים ברורים:
-1. **מה קורה בשוק ההון וגורמים משפיעים:** הסבר מורחב על האירועים המאקרו-כלכליים, הנתונים והחדשות.
-2. **תרחיש עלייה (אם השוק יעלה):** מה זה אומר על השוק, אילו סקטורים ירוויחו ולמה בדיוק.
-3. **תרחיש ירידה (אם השוק ירד):** מה זה אומר על השוק, מהן ההשלכות ואיפה הסיכון המרכזי.
-4. **השפעה ישירה על השוק הישראלי:** התייחסות פרטנית לשקל-דולר, ת"א 35 והכלכלה המקומית.
+עבור כל מדד או נכס (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS), וכן עבור שאר השדות, עליך לכתוב טקסט מפורט המחולק לארבעה סעיפים ברורים הממוספרים בדיוק כך:
+1. ניתוח מורחב של המגמה בשוק ההון והגורמים המאקרו-כלכליים המשפיעים.
+2. תרחיש עלייה מפורט ואיזה סקטורים ירוויחו מכך.
+3. תרחיש ירידה מפורט ומהם סיכוני הרוחב בשוק.
+4. השפעה ישירה וניתוח פרטני על השוק הישראלי והשקל-דולר.
+
+**הנחיות קשיחות לשלב 3 (אירועים וזרזים מרכזיים - Catalysts):**
+עבור CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, כתוב לפחות 3 סעיפים מפורטים וארוכים (1., 2., 3.) עם הסבר מלא על דוחות רווחים, מדיניות מוניטרית, והשקות טכנולוגיה.
 
 **הנחיות קשיחות לשלב 8 (חדשות מניות ושווקים):**
 השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **10 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית (`news_title`), ולכתוב תוכן מפורט (`news_content`) והשפעה פיננסית (`news_impact`). אסור בשום אופן לרשום "קישור לא זמין" או להמציא קישורים!
@@ -193,19 +209,19 @@ You must output valid JSON.
 
 מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
-1. SP500_ANALYSIS (ניתוח מורחב, מפורט, כולל סעיפי עלייה וירידה)
-2. NASDAQ_ANALYSIS (ניתוח מורחב, מפורט, כולל סעיפי עלייה וירידה)
-3. DOW_ANALYSIS (ניתוח מורחב, מפורט)
-4. VIX_ANALYSIS (ניתוח מורחב, מפורט)
-5. DXY_ANALYSIS (ניתוח מורחב, מפורט)
-6. USD_ILS_EXPLANATION (ניתוח מורחב ומפורט על השקל-דולר)
-7. OIL_EXPLANATION (ניתוח מורחב ומפורט)
-8. GOLD_EXPLANATION (ניתוח מורחב ומפורט)
-9. BTC_EXPLANATION (ניתוח מורחב ומפורט)
-10. US_MARKET_NEWS: ניתוח טקסטואלי מפורט, ארוך ועשיר של הגורמים המשפיעים בשווקים ב-14 הימים האחרונים ועד היום כולל סעיפים ברורים.
-11. IL_MARKET_NEWS: ניתוח מפורט מאוד של השוק הישראלי והשפעות מקומיות לאורך התקופה.
-12. MARKET_MOVERS_TABLE: מערך (array) של בדיוק 10 מניות מובילות, כל אחת מכילה: "ticker", "name", "price_change_pct", "volume_context".
+החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק (ללא סוגריים מסולסלים בתוך הטקסט):
+1. SP500_ANALYSIS
+2. NASDAQ_ANALYSIS
+3. DOW_ANALYSIS
+4. VIX_ANALYSIS
+5. DXY_ANALYSIS
+6. USD_ILS_EXPLANATION
+7. OIL_EXPLANATION
+8. GOLD_EXPLANATION
+9. BTC_EXPLANATION
+10. US_MARKET_NEWS
+11. IL_MARKET_NEWS
+12. MARKET_MOVERS_TABLE
 13. CATALYST_EARNINGS
 14. CATALYST_MONETARY
 15. CATALYST_HARDWARE
@@ -214,10 +230,10 @@ You must output valid JSON.
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news - טקסט נקי בלבד). אסור לכלול מניות מהתיק ({portfolio_tickers}).
-22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news - טקסט נקי בלבד). אסור לכלול מניות מהתיק ({portfolio_tickers}).
-23. portfolio_analysis: אובייקט עבור מניות התיק האישי ({portfolio_tickers}) הכולל: rationale, news_link, news_title, news_content, news_impact (עם פירוט מלא ועשיר).
-24. market_news: מערך של לפחות 10 ידיעות חדשותיות שונות (news_link עם הקישור האמיתי מהרשימה, news_title, news_content, news_impact) עבור שלב 8.
+21. long_term_stocks
+22. swing_stocks
+23. portfolio_analysis
+24. market_news
 """
 
                 response = client.chat.completions.create(
@@ -355,8 +371,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         html_parts.append(card_html)
     return "".join(html_parts)
 
-def build_market_news_html(ai_insights):
-    market_news_list = ai_insights.get("market_news", [])
+def build_market_news_html(market_news_list):
     if not isinstance(market_news_list, list) or not market_news_list:
         return '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות כרגע.</div>'
 
@@ -366,8 +381,8 @@ def build_market_news_html(ai_insights):
             continue
         p_link = item.get("news_link", "https://www.investing.com")
         p_title = item.get("news_title", "עדכון שוק יומי")
-        p_content = item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים להיום.")
-        p_impact = item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק היומית.")
+        p_content = format_ai_text(item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים להיום."))
+        p_impact = format_ai_text(item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק היומית."))
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
@@ -389,15 +404,42 @@ if __name__ == "__main__":
         date_str = now_il.strftime("%d.%m.%Y")
         time_str = now_il.strftime("%H:%M")
 
-        print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with retry loop...")
+        current_hour = now_il.hour
+        current_minute = now_il.minute
+
+        force_ai = os.environ.get("RUN_AI", "false").lower() == "true"
+        is_ai_time = (
+            (current_hour == 10 and current_minute == 10) or
+            (current_hour == 16 and current_minute == 40) or
+            (current_hour == 23 and current_minute == 40)
+        )
+        
+        run_ai = force_ai or is_ai_time
+
         investing_headlines = fetch_investing_news()
-        ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
 
-        if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
-            save_ai_cache(ai_insights)
+        ai_insights = {}
+        if run_ai:
+            print(f"🤖 AI Update triggered for {time_str} (Israel Time)...")
+            ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
+            if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
+                save_ai_cache(ai_insights)
+        else:
+            print(f"⚡ Yahoo-only update triggered for {time_str} (Israel Time). Loading AI cache...")
+            ai_insights = load_ai_cache()
 
-        new_lt = ai_insights.get("long_term_stocks", [])
-        new_sw = ai_insights.get("swing_stocks", [])
+        if not ai_insights.get("market_news") and investing_headlines:
+            ai_insights["market_news"] = [
+                {
+                    "news_link": h["link"],
+                    "news_title": h["title"],
+                    "news_content": "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת הכלכלית של Investing.com.",
+                    "news_impact": "מעקב יומי אחר התפתחויות הרוחב בשווקים הפיננסיים והשפעתן על התיק."
+                } for h in investing_headlines[:12]
+            ]
+
+        new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
         extra_tickers = []
         for s in new_lt + new_sw:
             if isinstance(s, dict) and "ticker" in s and s["ticker"] not in base_market_data:
@@ -451,7 +493,6 @@ if __name__ == "__main__":
         btc_price = f"${format_num(btc_p)}"
         btc_change = format_pct_colored(btc_c)
 
-        # Build sector chart JSON for Stage 2 graph
         sector_chart_list = []
         for s_name, s_ticker in sector_tickers_map.items():
             s_data = base_market_data.get(s_ticker, {})
@@ -475,7 +516,7 @@ if __name__ == "__main__":
 
         lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
         sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
-        news_html = build_market_news_html(ai_insights)
+        news_html = build_market_news_html(ai_insights.get("market_news", []))
 
         portfolio_js_list = []
         for ticker, info in portfolio_buys.items():
@@ -496,15 +537,15 @@ if __name__ == "__main__":
                 company_name = info.get("name") or fetched_price_data.get("name") or ticker
 
                 p_item = portfolio_analysis_map.get(ticker, {})
-                p_rationale = p_item.get("rationale", f"ניתוח יומי מעמיק לפוזיציית {ticker} והתנהלות סביב רמות המחיר.")
+                p_rationale = format_ai_text(p_item.get("rationale", f"ניתוח יומי מעמיק לפוזיציית {ticker} והתנהלות סביב רמות המחיר."))
                 p_news_title = p_item.get("news_title", f"עדכון שוק מרכזי עבור {ticker}")
-                p_news_content = p_item.get("news_content", f"סקירת חדשות ואירועים אחרונים המשפיעים ישירות על {ticker}.")
-                p_news_impact = p_item.get("news_impact", "השפעה ישירה על ניהול הפוזיציה ותזמון הפעולות בתיק.")
+                p_news_content = format_ai_text(p_item.get("news_content", f"סקירת חדשות ואירועים אחרונים המשפיעים ישירות על {ticker}."))
+                p_news_impact = format_ai_text(p_item.get("news_impact", "השפעה ישירה על ניהול הפוזיציה ותזמון הפעולות בתיק."))
 
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
@@ -539,11 +580,11 @@ if __name__ == "__main__":
             "VIX_PCT": vix_change,
             "DXY_PRICE": dxy_price,
             "DXY_PCT": dxy_change,
-            "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", ""),
-            "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", ""),
-            "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", ""),
-            "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", ""),
-            "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", ""),
+            "SP500_ANALYSIS": format_ai_text(ai_insights.get("SP500_ANALYSIS", "")),
+            "NASDAQ_ANALYSIS": format_ai_text(ai_insights.get("NASDAQ_ANALYSIS", "")),
+            "DOW_ANALYSIS": format_ai_text(ai_insights.get("DOW_ANALYSIS", "")),
+            "VIX_ANALYSIS": format_ai_text(ai_insights.get("VIX_ANALYSIS", "")),
+            "DXY_ANALYSIS": format_ai_text(ai_insights.get("DXY_ANALYSIS", "")),
             "USD_ILS": usd_ils_price,
             "USD_ILS_CHANGE": usd_ils_change,
             "OIL_PRICE": oil_price,
@@ -552,20 +593,20 @@ if __name__ == "__main__":
             "GOLD_CHANGE": gold_change,
             "BTC_PRICE": btc_price,
             "BTC_CHANGE": btc_change,
-            "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", ""),
-            "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", ""),
-            "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", ""),
-            "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", ""),
-            "US_MARKET_NEWS": ai_insights.get("US_MARKET_NEWS", ""),
-            "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_NEWS", ""),
-            "CATALYST_EARNINGS": ai_insights.get("CATALYST_EARNINGS", ""),
-            "CATALYST_MONETARY": ai_insights.get("CATALYST_MONETARY", ""),
-            "CATALYST_HARDWARE": ai_insights.get("CATALYST_HARDWARE", ""),
-            "COMMUNITY_SENTIMENT": ai_insights.get("COMMUNITY_SENTIMENT", ""),
-            "ANALYST_POINT_1": ai_insights.get("ANALYST_POINT_1", ""),
-            "ANALYST_POINT_2": ai_insights.get("ANALYST_POINT_2", ""),
-            "RISK_MANAGEMENT_TEXT": ai_insights.get("RISK_MANAGEMENT_TEXT", ""),
-            "ACTION_RECOMMENDATIONS_TEXT": ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""),
+            "USD_ILS_EXPLANATION": format_ai_text(ai_insights.get("USD_ILS_EXPLANATION", "")),
+            "OIL_EXPLANATION": format_ai_text(ai_insights.get("OIL_EXPLANATION", "")),
+            "GOLD_EXPLANATION": format_ai_text(ai_insights.get("GOLD_EXPLANATION", "")),
+            "BTC_EXPLANATION": format_ai_text(ai_insights.get("BTC_EXPLANATION", "")),
+            "US_MARKET_NEWS": format_ai_text(ai_insights.get("US_MARKET_NEWS", "")),
+            "IL_MARKET_NEWS": format_ai_text(ai_insights.get("IL_MARKET_NEWS", "")),
+            "CATALYST_EARNINGS": format_ai_text(ai_insights.get("CATALYST_EARNINGS", "")),
+            "CATALYST_MONETARY": format_ai_text(ai_insights.get("CATALYST_MONETARY", "")),
+            "CATALYST_HARDWARE": format_ai_text(ai_insights.get("CATALYST_HARDWARE", "")),
+            "COMMUNITY_SENTIMENT": format_ai_text(ai_insights.get("COMMUNITY_SENTIMENT", "")),
+            "ANALYST_POINT_1": format_ai_text(ai_insights.get("ANALYST_POINT_1", "")),
+            "ANALYST_POINT_2": format_ai_text(ai_insights.get("ANALYST_POINT_2", "")),
+            "RISK_MANAGEMENT_TEXT": format_ai_text(ai_insights.get("RISK_MANAGEMENT_TEXT", "")),
+            "ACTION_RECOMMENDATIONS_TEXT": format_ai_text(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")),
             "LONG_TERM_STOCKS_SECTION": lt_html,
             "SWING_STOCKS_SECTION": sw_html,
             "PORTFOLIO_NEWS_SECTION": news_html,
@@ -577,8 +618,8 @@ if __name__ == "__main__":
             sign = "+" if s_change > 0 else ""
             color = "#2ecc71" if s_change >= 0 else "#e74c3c"
             s_price = format_num(s_data.get("price", 0))
-            replacements[f"{s_key}_PRICE"] = f"${s_price}"
-            replacements[f"{s_key}_PCT"] = f"<span style='color: {color}; font-weight: bold;'>{sign}{s_change:.2f}%</span>"
+            replacements[f"SECTOR_{s_key}_PRICE"] = f"${s_price}"
+            replacements[f"SECTOR_{s_key}_PCT"] = f"<span style='color: {color}; font-weight: bold;'>{sign}{s_change:.2f}%</span>"
 
         for k, v in replacements.items():
             content = content.replace("{{" + k + "}}", str(v))
