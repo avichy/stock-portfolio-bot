@@ -158,9 +158,12 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
         print(f"🔄 Starting Groq AI request round {attempt_round}/{max_rounds}...")
         for key_name, api_key in api_keys:
             try:
-                client = Groq(api_key=api_key)
+                client = Groq(
+                    api_key=api_key,
+                    base_url="https://groq-proxy.avichy65.workers.dev/openai/v1"
+                )
                 print(f"🤖 Connecting to Groq AI using {key_name} for {day_name}, {date_str}...")
-                
+
                 market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
                 portfolio_tickers = list(portfolio_stocks.keys())
                 headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
@@ -212,7 +215,7 @@ You must output valid JSON.
                     ],
                     response_format={"type": "json_object"}
                 )
-                
+
                 raw_text = response.choices[0].message.content.strip()
                 print("--- RAW AI RESPONSE RECEIVED ---")
                 print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
@@ -278,7 +281,7 @@ def fetch_market_data(tickers):
                 hist = stock.history(period="2d")
                 info = stock.info or {}
                 target_mean = info.get("targetMeanPrice")
-                
+
                 pre_market_val = info.get("preMarketPrice") or info.get("open") or info.get("regularMarketOpen")
                 if not pre_market_val and not hist.empty:
                     pre_market_val = hist["Open"].iloc[-1]
@@ -323,7 +326,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         sign = "+" if change_val > 0 else ""
         color = "#2ecc71" if change_val >= 0 else "#e74c3c"
         change_str = f"<span style='color: {color}; font-weight: bold;'>{sign}{change_val:.2f}%</span>"
-        
+
         logo_url = get_stock_logo_url(ticker)
         clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
@@ -370,7 +373,7 @@ def build_market_news_html(ai_insights):
         </div>
         """
         html_parts.append(card_html)
-    
+
     return "".join(html_parts)
 
 if __name__ == "__main__":
@@ -383,7 +386,7 @@ if __name__ == "__main__":
         print(f"🕒 Fetching fresh Investing RSS news & AI insights from Groq with retry loop...")
         investing_headlines = fetch_investing_news()
         ai_insights = fetch_ai_insights_from_groq(base_market_data, portfolio_buys, date_str, day_name, investing_headlines)
-        
+
         if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
             save_ai_cache(ai_insights)
 
@@ -413,7 +416,7 @@ if __name__ == "__main__":
         dji_change = format_pct_colored(dji.get("change", 0))
         vix_price = format_num(vix.get("price", 0))
         vix_change = format_pct_colored(vix.get("change", 0))
-        
+
         dxy_price = format_num(dxy_data.get("price", 0))
         dxy_change = format_pct_colored(dxy_data.get("change", 0))
 
