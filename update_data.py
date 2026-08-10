@@ -96,10 +96,8 @@ def format_ai_text(text):
     if not isinstance(text, str):
         return str(text)
     
-    # ניקוי תווים מיותרים
     cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
     
-    # הבטחת הפרדה מוחלטת לשורות חדשות עבור כל מספר סעיף בצורה מרווחת וקריאה
     for i in range(1, 10):
         cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>סעיף {i}:</strong>")
     
@@ -184,7 +182,7 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 prompt = f"""
 You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב ניתוח מעמיק, עשיר, מפורט מאוד, **ארוך ומمצה** (אל תתמצת ואל תחסוך במילים כלל, כתוב פסקאות עמוקות). 
+כתוב ניתוח מעמיק, עשיר, מפורט מאוד, **ארוך וממצה** (אל תתמצת ואל תחסוך במילים כלל, כתוב פסקאות עמוקות). 
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
 לכל סעיפי הניתוח המאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
@@ -557,7 +555,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div class='mb-2'><strong>רציונל וניתוח:</strong><br>{p_rationale}</div>"
                     f"<div class='mb-2'><strong>כותרת חדשותית:</strong><br>{p_news_title}</div>"
-                    f"<div class='mb-2'><strong>תוכן חדשותי:</strong><br>{p_news_content}</div>"
+                    f"<div class='mb-2'><strong>תוכן חדשותي:</strong><br>{p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
                 )
 
