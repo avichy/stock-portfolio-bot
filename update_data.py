@@ -96,9 +96,13 @@ def format_ai_text(text):
     if not isinstance(text, str):
         return str(text)
     
-    cleaned = text.replace("{", "").replace("}", "").replace("[\"", "").replace("\"]", "").replace('"', "")
+    # ניקיון תווים מיותרים
+    cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+    
+    # הבטחת הפרדה מוחלטת לשורות חדשות עבור כל מספר סעיף
     for i in range(1, 10):
-        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>{i}.</strong>")
+        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>סעיף {i}:</strong>")
+    
     return cleaned
 
 def get_stock_logo_url(ticker):
@@ -107,7 +111,7 @@ def get_stock_logo_url(ticker):
     return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
 
 def fetch_investing_news():
-    url = "https://www.investing.com/rss/news.rss"
+    url = "https://il.investing.com/rss/news.rss"
     req = urllib.request.Request(
         url, 
         headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
@@ -122,10 +126,10 @@ def fetch_investing_news():
                 link = item.find('link')
                 if title is not None and title.text and link is not None and link.text:
                     news_items.append({"title": title.text.strip(), "link": link.text.strip()})
-            print(f"Successfully fetched {len(news_items)} headlines with links from Investing.com RSS.")
+            print(f"Successfully fetched {len(news_items)} headlines in Hebrew from il.investing.com RSS.")
             return news_items[:15]
     except Exception as e:
-        print(f"Warning: Error fetching Investing RSS: {e}")
+        print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
         return []
 
 LT_STOCKS_META = [
@@ -175,29 +179,26 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
                 portfolio_tickers = list(portfolio_stocks.keys())
                 
-                headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור אמיתי: {h['link']}" for h in investing_headlines]) if investing_headlines else "אין כותרות זמינות."
+                headlines_formatted = "\n".join([f"- כותרת בעברית: {h['title']} | קישור אמיתי: {h['link']}" for h in investing_headlines]) if investing_headlines else "אין כותרות זמינות."
 
                 prompt = f"""
 You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב ניתוח מעמיק, עשיר, מפורט מאוד, ארוך ולא תמציתי כלל. 
+כתוב ניתוח מעמיק, עשיר, מפורט מאוד, **ארוך וממצה** (אל תתמצת ואל תחסוך במילים). 
 
-**הנחיות קשיחות לניתוחים המאקרו (שלב 1):**
-עבור כל מדד או נכס (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS), וכן עבור שאר השדות, עליך לכתוב טקסט מפורט המחולק לארבעה סעיפים ברורים הממוספרים בדיוק כך:
-1. ניתוח מורחב של המגמה בשוק ההון והגורמים המאקרו-כלכליים המשפיעים.
-2. תרחיש עלייה מפורט ואיזה סקטורים ירוויחו מכך.
-3. תרחיש ירידה מפורט ומהם סיכוני הרוחב בשוק.
-4. השפעה ישירה וניתוח פרטני על השוק הישראלי והשקל-דולר.
+**הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
+לכל סעיפי הניתוח המאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+אסור באיסור חמור שיהיו סוגריים מסולסלים {} או סוגריים מרובעים [] בתוך ערכי הטקסט!
 
 **הנחיות קשיחות לשלב 3 (אירועים וזרזים מרכזיים - Catalysts):**
-עבור CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, כתוב לפחות 3 סעיפים מפורטים וארוכים (1., 2., 3.) עם הסבר מלא על דוחות רווחים, מדיניות מוניטרית, והשקות טכנולוגיה.
+עבור CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, כתוב לפחות 3 סעיפים מפורטים וארוכים מאוד (1., 2., 3.) שכל אחד מהם מתחיל בשורה חדשה עם הסבר מקצועי מלא.
 
 **הנחיות קשיחות לשלב 8 (חדשות מניות ושווקים):**
-השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **10 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית (`news_title`), ולכתוב תוכן מפורט (`news_content`) והשפעה פיננסית (`news_impact`). אסור בשום אופן לרשום "קישור לא זמין" או להמציא קישורים!
+השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **10 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית בעברית (`news_title`), ולכתוב תוכן מפורט בעברית (`news_content`) והשפעה פיננסית (`news_impact`). אסור בשום אופן לרשום "קישור לא זמין" או להמציא קישורים!
 
 היום הוא {day_name}, בתאריך {date_str}.
 
-רשימת הכתובות והקישורים האמיתיים מתוך Investing.com לשימוש בשלב 8:
+רשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית לשימוש בשלב 8:
 {headlines_formatted}
 
 נתוני השוק הנוכחיים:
@@ -205,7 +206,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 
 מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק (ללא סוגריים מסולסלים בתוך הטקסט):
+החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק (ללא סוגריים מסולסלים בתוך ערכי הטקסט):
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -226,8 +227,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (חובה להחזיר כמערך/רשימה של אובייקטים)
-22. swing_stocks (חובה להחזיר כמערך/רשימה של אובייקטים)
+21. long_term_stocks (חובה להחזיר כמערך של אובייקטים)
+22. swing_stocks (חובה להחזיר כמערך של אובייקטים)
 23. portfolio_analysis
 24. market_news
 """
@@ -379,18 +380,18 @@ def build_market_news_html(market_news_list):
     for item in market_news_list:
         if not isinstance(item, dict):
             continue
-        p_link = item.get("news_link", "https://www.investing.com")
+        p_link = item.get("news_link", "https://il.investing.com")
         p_title = item.get("news_title", "עדכון שוק יומי")
         p_content = format_ai_text(item.get("news_content", "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים להיום."))
         p_impact = format_ai_text(item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק היומית."))
 
         card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold">{p_title}</h3>
-            <p>🔗 <strong>קישור אמיתי למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300 text-right" dir="rtl">
+            <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
+            <p>🔗 <strong>קישור אמיתי למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
-            <p><strong>תוכן הכתבה המלא:</strong> {p_content}</p>
-            <p>🚀 <strong>מה זה אומר בקשר למניה / לשוק:</strong> {p_impact}</p>
+            <div class="leading-relaxed"><strong>תוכן הכתבה המלא:</strong><br>{p_content}</div>
+            <div class="leading-relaxed"><strong>מה זה אומר בקשר למניה / לשוק:</strong><br>{p_impact}</div>
         </div>
         """
         html_parts.append(card_html)
@@ -433,7 +434,7 @@ if __name__ == "__main__":
                 {
                     "news_link": h["link"],
                     "news_title": h["title"],
-                    "news_content": "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת הכלכלית של Investing.com.",
+                    "news_content": "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת של Investing.com בעברית.",
                     "news_impact": "מעקב יומי אחר התפתחויות הרוחב בשווקים הפיננסיים והשפעתן על התיק."
                 } for h in investing_headlines[:12]
             ]
@@ -554,10 +555,10 @@ if __name__ == "__main__":
                 p_news_impact = format_ai_text(p_item.get("news_impact", "השפעה ישירה על ניהול הפוזיציה ותזמון הפעולות בתיק."))
 
                 full_note_html = (
-                    f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
-                    f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
-                    f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
+                    f"<div class='mb-2'><strong>רציונל וניתוח:</strong><br>{p_rationale}</div>"
+                    f"<div class='mb-2'><strong>כותרת חדשותית:</strong><br>{p_news_title}</div>"
+                    f"<div class='mb-2'><strong>תוכן חדשותי:</strong><br>{p_news_content}</div>"
+                    f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
                 )
 
                 portfolio_js_list.append({
@@ -612,7 +613,7 @@ if __name__ == "__main__":
             "IL_MARKET_NEWS": format_ai_text(ai_insights.get("IL_MARKET_NEWS", "")),
             "CATALYST_EARNINGS": format_ai_text(ai_insights.get("CATALYST_EARNINGS", "")),
             "CATALYST_MONETARY": format_ai_text(ai_insights.get("CATALYST_MONETARY", "")),
-            "CATALYST_HARDWARE": format_ai_text(ai_insights.get("CATALYST_HARDWARE", "")),
+            "CATALYST_HARDWARE": format_ai_text(ai_insights.>get("CATALYST_HARDWARE", "")),
             "COMMUNITY_SENTIMENT": format_ai_text(ai_insights.get("COMMUNITY_SENTIMENT", "")),
             "ANALYST_POINT_1": format_ai_text(ai_insights.get("ANALYST_POINT_1", "")),
             "ANALYST_POINT_2": format_ai_text(ai_insights.get("ANALYST_POINT_2", "")),
