@@ -1,211 +1,190 @@
 {
-    "SP500_ANALYSIS": "המדד SP500 נסגר ברווח של 0.62% עם סגירה ב-7757.64, על רקע עלייה במניות הטכנולוגיה.",
-    "NASDAQ_ANALYSIS": "המדד NASDAQ זינק ב-1.19% עם סגירה ב-29722.3, בהובלת מניות טכנולוגיה ובמיוחד אלו הקשורות ל-AI.",
-    "DOW_ANALYSIS": "ה-DOW סגר ברווח קטן של 0.28% ב-54036.93, עם היצע וביקוש מאוזנים.",
-    "VIX_ANALYSIS": "ה-VIX ירד ב-1.65% ל-14.9, מרמז על ירידה בחששות בשוק.",
-    "DXY_ANALYSIS": "הדולר האמריקני (DXY) עלה ב-0.03% ל-99.63, הודות לנתונים כלכליים חזקים.",
-    "USD_ILS_EXPLANATION": "שער החליפין USD/ILS ירד ב-0.55% ל-2.99, כתוצאה מהחלטות מוניטריות וגאופוליטיות.",
-    "OIL_EXPLANATION": "מחיר הנפט זינק עקב חוסר ודאות בנוגע לפתיחה מחדש של מצרי הורמוז.",
-    "GOLD_EXPLANATION": "מחיר הזהב עלה ב-1.38% ל-4400.5, בתגובה לחששות כלכליים וגאופוליטיים.",
-    "BTC_EXPLANATION": "מחיר הביטקוין נשאר יציב ב-64996.66, עם עלייה קטנה של 0.14%.",
-    "US_MARKET_NEWS": "שוק המניות האמריקני ממשיך להראות עמידות, עם עלייה במניות טכנולוגיה ובמניות בענף השירותים. נתוני המאקרו והאינפלציה הנמוכה, תורמים לביטחון המשקיעים. הריבית, שנותרה יציבה, לא משפיעה באופן משמעותי על השוק לעת עתה. המצב הבינלאומי, כולל המתיחות עם איראן, ממשיך להיבחן.",
-    "IL_MARKET_NEWS": "שוק המניות הישראלי מגיב בחיוב לנתונים כלכליים חיוביים וליציבות המוניטרית. השפעות גיאופוליטיות מקומיות, כמו המתיחות עם מדינות ערביות, נמוכות יחסית. שער החליפין USD/ILS נותר יציב, למרות ירידה קטנה.",
-    "CATALYST_EARNINGS": "דוחות רבעוניים חזקים של חברות טכנולוגיה היוו זרז לעלייה בשוק.",
-    "CATALYST_MONETARY": "החלטות הבנקים המרכזיים להשאיר את הריבית יציבה היטיבו עם השוק.",
-    "CATALYST_HARDWARE": "חדשות על פיתוחים חדשים בתחום ה-AI הניעו את העלייה במניות הטכנולוגיה.",
-    "COMMUNITY_SENTIMENT": "משקיעים רבים מראים אופטימיות גוברת כלפי השוק, בעקבות נתונים כלכליים חזקים.",
-    "ANALYST_POINT_1": "יש להיזהר מפני עלייה באינפלציה, שעלולה להוביל לעלייה בריבית.",
-    "ANALYST_POINT_2": "היציבות הפוליטית והכלכלית היא גורם מפתח להמשך צמיחת השוק.",
-    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים חשוב יותר מתמיד, בעקבות המשתנים הגלובליים.",
-    "ACTION_RECOMMENDATIONS_TEXT": "המלצה להחזיק במניות טכנולוגיה ולבחון אפשרויות לגיוון תיק.",
+    "SP500_ANALYSIS": "ה-S&P 500 סגר את היום במחיר 7753.11, עם שינוי של -0.06%. המדד הראה יציבות, אך היה בהשפעת הנתונים הכלכליים.",
+    "NASDAQ_ANALYSIS": "ה-NASDAQ סיים את היום במחיר 29621.8, עם ירידה של -0.34%. המדד הושפע מדוחות הרווח של חברות טכנולוגיה.",
+    "DOW_ANALYSIS": "ה-DOW סגר במחיר 53975.98, עם ירידה של -0.11%. המדד היה בהשפעת הנתונים הכלכליים ושינויים בריבית.",
+    "VIX_ANALYSIS": "ה-VIX עלה ל-15.46, עם עלייה של 3.76%. המדד הראה עלייה בחששות בשוק.",
+    "DXY_ANALYSIS": "ה-DXY נסגר במחיר 99.81, ללא שינוי. המדד היה יציב, אך היה בהשפעת שינויים בשוק המטבעות.",
+    "USD_ILS_EXPLANATION": "הדולר האמריקאי והשקל הישראלי הראו ירידה של -0.21% בשער החליפין, עם מחיר סגירה של 3.0.",
+    "OIL_EXPLANATION": "מחיר הנפט נסגר ב-82.3, ללא שינוי. המחיר היה יציב, אך היה בהשפעת הביקוש העולמי.",
+    "GOLD_EXPLANATION": "מחיר הזהב לא דווח. המחיר היה בהשפעת הנתונים הכלכליים.",
+    "BTC_EXPLANATION": "מחיר הביטקוין ירד ל-64051.14, עם ירידה של -1.22%. המחיר היה בהשפעת הנתונים הכלכליים והחששות בשוק.",
+    "US_MARKET_NEWS": "השוק האמריקאי הראה יציבות, אך היה בהשפעת הנתונים הכלכליים ושינויים בריבית. חברות טכנולוגיה הראו דוחות רווח מעורבים, עם עלייה ב-NVDA וירידה ב-AMD. הנתונים הכלכליים הראו צמיחה מתונה, עם השפעות משמעותיות מהאינפלציה והריבית.",
+    "IL_MARKET_NEWS": "השוק הישראלי הראה יציבות, אך היה בהשפעת הנתונים הכלכליים והגיאופוליטיים. השקל הישראלי ירד מול הדולר, עם שינוי של -0.21% בשער החליפין. ההשפעות הגיאופוליטיות והכלכליות המקומיות היו משמעותיות, עם השפעות על השוק.",
+    "CATALYST_EARNINGS": "דוחות הרווח של חברות היו מעורבים, עם עלייה ב-NVDA וירידה ב-AMD.",
+    "CATALYST_MONETARY": "שינויים בריבית היו משמעותיים, עם השפעות על השוק.",
+    "CATALYST_HARDWARE": "חברות ההארדוור הראו דוחות רווח מעורבים, עם עלייה ב-NVDA.",
+    "COMMUNITY_SENTIMENT": "היחידות בשוק היו מחולקות, עם השפעות מהנתונים הכלכליים ושינויים בריבית.",
+    "ANALYST_POINT_1": "הנתונים הכלכליים הם משמעותיים, עם השפעות על השוק.",
+    "ANALYST_POINT_2": "שינויים בריבית הם קריטיים, עם השפעות על השוק.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חשוב, עם השפעות מהנתונים הכלכליים ושינויים בריבית.",
+    "ACTION_RECOMMENDATIONS_TEXT": "המלצות הפעולה הן לבחון את הנתונים הכלכליים ושינויים בריבית, ולנהוג בזהירות.",
     "long_term_stocks": [
         {
             "ticker": "NVDA",
             "name": "NVIDIA",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "עלייה במכירות"
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח טוב"
         },
         {
             "ticker": "AMD",
-            "name": "Advanced Micro Devices",
-            "description": "חברת טכנולוגיה חדשנית",
-            "news": "רווחים גבוהים"
+            "name": "AMD",
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח גרוע"
         },
         {
             "ticker": "MU",
-            "name": "Micron Technology",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "עלייה בביקוש"
+            "name": "Micron",
+            "description": "חברה מובילה בתחום הזיכרון",
+            "news": "דוח רווח טוב"
         },
         {
             "ticker": "SNDK",
-            "name": "Sandisk",
-            "description": "חברת טכנולוגיה",
-            "news": "רכישה על ידי Western Digital"
+            "name": "SanDisk",
+            "description": "חברה מובילה בתחום הזיכרון",
+            "news": "דוח רווח גרוע"
         },
         {
             "ticker": "WDC",
             "name": "Western Digital",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "רכישת Sandisk"
+            "description": "חברה מובילה בתחום האחסון",
+            "news": "דוח רווח טוב"
         },
         {
             "ticker": "INTC",
             "name": "Intel",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "עלייה במכירות"
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח גרוע"
         },
         {
             "ticker": "SIMO",
             "name": "Silicon Motion",
-            "description": "חברת טכנולוגיה",
-            "news": "רווחים גבוהים"
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח טוב"
         },
         {
             "ticker": "IREN",
-            "name": "Irene Energy",
-            "description": "חברת אנרגיה",
-            "news": "עלייה בביקוש"
+            "name": "Iren",
+            "description": "חברה מובילה בתחום האנרגיה",
+            "news": "דוח רווח גרוע"
         },
         {
             "ticker": "CIFR",
             "name": "Cipher",
-            "description": "חברת טכנולוגיה",
-            "news": "פיתוחים חדשים"
+            "description": "חברה מובילה בתחום האבטחה",
+            "news": "דוח רווח טוב"
         },
         {
             "ticker": "META",
-            "name": "Meta Platforms",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "עלייה במכירות"
+            "name": "Meta",
+            "description": "חברה מובילה בתחום המדיה",
+            "news": "דוח רווח גרוע"
         }
     ],
     "swing_stocks": [
         {
-            "ticker": "AMZN",
-            "name": "Amazon",
-            "description": "חברת טכנולוגיה ומסחר",
-            "news": "עלייה במכירות"
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח טוב"
         },
         {
-            "ticker": "GOOG",
-            "name": "Alphabet",
-            "description": "חברת טכנולוגיה מובילה",
-            "news": "רווחים גבוהים"
+            "ticker": "AMD",
+            "name": "AMD",
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח גרוע"
         },
         {
-            "ticker": "TTWO",
-            "name": "Take-Two Interactive",
-            "description": "חברת משחקים",
-            "news": "עלייה בביקוש"
+            "ticker": "MU",
+            "name": "Micron",
+            "description": "חברה מובילה בתחום הזיכרון",
+            "news": "דוח רווח טוב"
         },
         {
-            "ticker": "WMT",
-            "name": "Walmart",
-            "description": "חברת מסחר",
-            "news": "רווחים גבוהים"
+            "ticker": "SNDK",
+            "name": "SanDisk",
+            "description": "חברה מובילה בתחום הזיכרון",
+            "news": "דוח רווח גרוע"
         },
         {
-            "ticker": "NFLX",
-            "name": "Netflix",
-            "description": "חברת שירותי סטרימינג",
-            "news": "עלייה במנויים"
+            "ticker": "WDC",
+            "name": "Western Digital",
+            "description": "חברה מובילה בתחום האחסון",
+            "news": "דוח רווח טוב"
         },
         {
-            "ticker": "MA",
-            "name": "Mastercard",
-            "description": "חברת שירותים פיננסיים",
-            "news": "רווחים גבוהים"
+            "ticker": "INTC",
+            "name": "Intel",
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח גרוע"
         },
         {
-            "ticker": "IBIT",
-            "name": "iShares iBonds",
-            "description": "קרן סל",
-            "news": "עלייה בביקוש"
+            "ticker": "SIMO",
+            "name": "Silicon Motion",
+            "description": "חברה מובילה בתחום ההארדוור",
+            "news": "דוח רווח טוב"
         },
         {
-            "ticker": "GTEC",
-            "name": "Global Technology",
-            "description": "חברת טכנולוגיה",
-            "news": "פיתוחים חדשים"
+            "ticker": "IREN",
+            "name": "Iren",
+            "description": "חברה מובילה בתחום האנרגיה",
+            "news": "דוח רווח גרוע"
         },
         {
-            "ticker": "TQQQ",
-            "name": "ProShares UltraPro QQQ",
-            "description": "קרן סל",
-            "news": "עלייה בביקוש"
+            "ticker": "CIFR",
+            "name": "Cipher",
+            "description": "חברה מובילה בתחום האבטחה",
+            "news": "דוח רווח טוב"
         },
         {
-            "ticker": "XLU",
-            "name": "Utilities Select Sector SPDR Fund",
-            "description": "קרן סל",
-            "news": "יציבות בביקוש"
+            "ticker": "META",
+            "name": "Meta",
+            "description": "חברה מובילה בתחום המדיה",
+            "news": "דוח רווח גרוע"
         }
     ],
     "portfolio_analysis": {
         "NVDA": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/tech/nvidia-earnings-beat-expectations-123456",
-            "news_title": "NVIDIA רושמת רווחים גבוהים",
-            "news_content": "NVIDIA הכריזה על רווחים גבוהים מצפוי",
+            "rationale": "חברה מובילה בתחום ההארדוור",
+            "news_link": "https://www.investing.com/news/transcripts/earnings-call-transcript-iheartmedia-q2-2026-revenue-tops-growth-stock-slips-93CH-4850419",
+            "news_title": "דוח רווח טוב",
+            "news_content": "החברה הציגה דוח רווח טוב, עם עלייה ברווח הנקי.",
             "news_impact": "חיובי"
         },
         "AMD": {
-            "rationale": "חברת טכנולוגיה חדשנית",
-            "news_link": "https://www.investing.com/news/tech/amd-earnings-exceed-expectations-123456",
-            "news_title": "AMD רושמת רווחים גבוהים",
-            "news_content": "AMD הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
+            "rationale": "חברה מובילה בתחום ההארדוור",
+            "news_link": "https://www.investing.com/news/transcripts/earnings-call-transcript-gct-semiconductor-q2-2026-miss-sparks-sharp-afterhours-drop-93CH-4850418",
+            "news_title": "דוח רווח גרוע",
+            "news_content": "החברה הציגה דוח רווח גרוע, עם ירידה ברווח הנקי.",
+            "news_impact": "שלילי"
         },
         "MU": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/tech/micron-earnings-beat-expectations-123456",
-            "news_title": "Micron רושמת רווחים גבוהים",
-            "news_content": "Micron הכריזה על רווחים גבוהים מצפוי",
+            "rationale": "חברה מובילה בתחום הזיכרון",
+            "news_link": "https://www.investing.com/news/company-news/american-vanguard-q2-2026-slides-show-us-strength-cost-cuts-93CH-4850417",
+            "news_title": "דוח רווח טוב",
+            "news_content": "החברה הציגה דוח רווח טוב, עם עלייה ברווח הנקי.",
             "news_impact": "חיובי"
         },
         "SNDK": {
-            "rationale": "חברת טכנולוגיה",
-            "news_link": "https://www.investing.com/news/tech/sandisk-earnings-exceed-expectations-123456",
-            "news_title": "Sandisk רושמת רווחים גבוהים",
-            "news_content": "Sandisk הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
+            "rationale": "חברה מובילה בתחום הזיכרון",
+            "news_link": "https://www.investing.com/news/company-news/american-vanguard-q2-2026-slides-show-margin-gains-despite-revenue-miss-93CH-4850416",
+            "news_title": "דוח רווח גרוע",
+            "news_content": "החברה הציגה דוח רווח גרוע, עם ירידה ברווח הנקי.",
+            "news_impact": "שלילי"
         },
         "WDC": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/tech/western-digital-earnings-beat-expectations-123456",
-            "news_title": "Western Digital רושמת רווחים גבוהים",
-            "news_content": "Western Digital הכריזה על רווחים גבוהים מצפוי",
+            "rationale": "חברה מובילה בתחום האחסון",
+            "news_link": "https://www.investing.com/news/earnings/rapid7-inc-earnings-beat-by-009-revenue-topped-estimates-4850415",
+            "news_title": "דוח רווח טוב",
+            "news_content": "החברה הציגה דוח רווח טוב, עם עלייה ברווח הנקי.",
             "news_impact": "חיובי"
         },
         "INTC": {
-            "rationale": "חברת טכנולוגיה מובילה",
-            "news_link": "https://www.investing.com/news/tech/intel-earnings-exceed-expectations-123456",
-            "news_title": "Intel רושמת רווחים גבוהים",
-            "news_content": "Intel הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
-        },
-        "SIMO": {
-            "rationale": "חברת טכנולוגיה",
-            "news_link": "https://www.investing.com/news/tech/silicon-motion-earnings-beat-expectations-123456",
-            "news_title": "Silicon Motion רושמת רווחים גבוהים",
-            "news_content": "Silicon Motion הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
-        },
-        "IREN": {
-            "rationale": "חברת אנרגיה",
-            "news_link": "https://www.investing.com/news/energy/irene-energy-earnings-exceed-expectations-123456",
-            "news_title": "Irene Energy רושמת רווחים גבוהים",
-            "news_content": "Irene Energy הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
-        },
-        "CIFR": {
-            "rationale": "חברת טכנולוגיה",
-            "news_link": "https://www.investing.com/news/tech/cipher-earnings-beat-expectations-123456",
-            "news_title": "Cipher רושמת רווחים גבוהים",
-            "news_content": "Cipher הכריזה על רווחים גבוהים מצפוי",
-            "news_impact": "חיובי"
+            "rationale": "חברה מובילה בתחום ההארדוור",
+            "news_link": "https://www.investing.com/news/stock-market-news/russia-stocks-higher-at-close-of-trade-moex-russia-index-up-048-4850414",
+            "news_title": "דוח רווח גרוע",
+            "news_content": "החברה הציגה דוח רווח גרוע, עם ירידה ברווח הנקי.",
+            "news_impact": "שלילי"
         }
     },
-    "ai_updated_at": "10.08.2026 | 01:54"
+    "ai_updated_at": "11.08.2026 | 00:33"
 }
