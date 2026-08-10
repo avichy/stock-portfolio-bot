@@ -226,8 +226,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks
-22. swing_stocks
+21. long_term_stocks (חובה להחזיר כמערך/רשימה של אובייקטים)
+22. swing_stocks (חובה להחזיר כמערך/רשימה של אובייקטים)
 23. portfolio_analysis
 24. market_news
 """
@@ -279,7 +279,11 @@ sector_tickers_map = {
 
 cached_ai_init = load_ai_cache()
 init_lt = cached_ai_init.get("long_term_stocks", LT_STOCKS_META)
+if not isinstance(init_lt, list):
+    init_lt = LT_STOCKS_META
 init_sw = cached_ai_init.get("swing_stocks", SW_STOCKS_META)
+if not isinstance(init_sw, list):
+    init_sw = SW_STOCKS_META
 
 base_market_tickers = list(set(
     ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX"] +
@@ -403,17 +407,13 @@ if __name__ == "__main__":
         current_hour = now_il.hour
         current_minute = now_il.minute
 
-        # זיהוי האם זו ריצה אוטומטית של ה-Cron או ריצה ידנית.
-        # אם מריצים ידנית (למשל מגיטהאב או מקומית), משתנה ה-IS_CRON לא מוגדר ולכן ה-AI ירוץ תמיד!
         is_cron_run = os.environ.get("IS_CRON", "false").lower() == "true"
-
         is_ai_time = (
             (current_hour == 10 and current_minute == 10) or
             (current_hour == 16 and current_minute == 40) or
             (current_hour == 23 and current_minute == 40)
         )
         
-        # אם זו לא ריצת קרון (כלומר ריצה ידנית), או שזו שעת קרון ייעודית של AI – נריץ AI!
         run_ai = (not is_cron_run) or is_ai_time
 
         investing_headlines = fetch_investing_news()
@@ -439,7 +439,13 @@ if __name__ == "__main__":
             ]
 
         new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        if not isinstance(new_lt, list):
+            new_lt = LT_STOCKS_META
+            
         new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
+        if not isinstance(new_sw, list):
+            new_sw = SW_STOCKS_META
+
         extra_tickers = []
         for s in new_lt + new_sw:
             if isinstance(s, dict) and "ticker" in s and s["ticker"] not in base_market_data:
@@ -512,7 +518,12 @@ if __name__ == "__main__":
             content = f.read()
 
         lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        if not isinstance(lt_stocks_data, list):
+            lt_stocks_data = LT_STOCKS_META
+            
         sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
+        if not isinstance(sw_stocks_data, list):
+            sw_stocks_data = SW_STOCKS_META
 
         lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
         sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
