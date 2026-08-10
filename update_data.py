@@ -111,12 +111,10 @@ def fetch_investing_news():
             for item in root.findall('.//item'):
                 title = item.find('title')
                 link = item.find('link')
-                if title is not None and title.text:
-                    item_title = title.text
-                    item_link = link.text if link is not None and link.text else "https://www.investing.com/news/latest-news"
-                    news_items.append({"title": item_title, "link": item_link})
+                if title is not None and title.text and link is not None and link.text:
+                    news_items.append({"title": title.text.strip(), "link": link.text.strip()})
             print(f"Successfully fetched {len(news_items)} headlines with links from Investing.com RSS.")
-            return news_items[:20]
+            return news_items[:15]
     except Exception as e:
         print(f"Warning: Error fetching Investing RSS: {e}")
         return []
@@ -167,17 +165,27 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 
                 market_summary = {t: f"Price: {d.get('price')}, Change: {d.get('change')}%" for t, d in market_data.items()}
                 portfolio_tickers = list(portfolio_stocks.keys())
-                headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור: {h['link']}" for h in investing_headlines]) if investing_headlines else "לא התקבלו כותרות כרגע."
+                
+                headlines_formatted = "\n".join([f"- כותרת: {h['title']} | קישור אמיתי: {h['link']}" for h in investing_headlines]) if investing_headlines else "אין כותרות זמינות."
 
                 prompt = f"""
 You must output valid JSON.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב לי על הגורמים המשפיעים ביותר בשווקים שהתרחשו בתקופה זו (כולל התנודות והאירועים של היום). 
-חשוב מאוד: בשדות הטקסט של המניות (כמו חדשות ורציונל יומי / שדה news) **אסור בשום אופן לכלול כתובות URL, קישורים או כתובות אתרים**. כתוב טקסט אנליטי, מקצועי ועשיר בלבד!
+כתוב ניתוח מעמיק, עשיר, מפורט מאוד ולא תמציתי. 
+
+**הנחיות קשיחות לניתוחים המאקרו (שלב 1):**
+עבור כל מדד או נכס, וכן עבור US_MARKET_NEWS ו-IL_MARKET_NEWS, עליך לכתוב בצורה מפורטת ומסודרת לפי סעיפים ברורים:
+1. **מה קורה בשוק ההון וגורמים משפיעים:** הסבר מורחב על האירועים המאקרו-כלכליים, הנתונים והחדשות.
+2. **תרחיש עלייה (אם השוק יעלה):** מה זה אומר על השוק, אילו סקטורים ירוויחו ולמה בדיוק.
+3. **תרחיש ירידה (אם השוק ירד):** מה זה אומר על השוק, מהן ההשלכות ואיפה הסיכון המרכזי.
+4. **השפעה ישירה על השוק הישראלי:** התייחסות פרטנית לשקל-דולר, ת"א 35 והכלכלה המקומית.
+
+**הנחיות קשיחות לשלב 8 (חדשות מניות ושווקים):**
+השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **10 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית (`news_title`), ולכתוב תוכן מפורט (`news_content`) והשפעה פיננסית (`news_impact`). אסור בשום אופן לרשום "קישור לא זמין" או להמציא קישורים!
 
 היום הוא {day_name}, בתאריך {date_str}.
 
-להלן כותרות חדשות וקישורים עדכניים מתוך אתר Investing.com (להשראה בלבד, אל תדביק קישורים בשדות הטקסט של המניות):
+רשימת הכתובות והקישורים האמיתיים מתוך Investing.com לשימוש בשלב 8:
 {headlines_formatted}
 
 נתוני השוק הנוכחיים:
@@ -186,18 +194,18 @@ You must output valid JSON.
 מניות התיק האישי של המשתמש: {portfolio_tickers}
 
 החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
-1. SP500_ANALYSIS
-2. NASDAQ_ANALYSIS
-3. DOW_ANALYSIS
-4. VIX_ANALYSIS
-5. DXY_ANALYSIS
-6. USD_ILS_EXPLANATION
-7. OIL_EXPLANATION
-8. GOLD_EXPLANATION
-9. BTC_EXPLANATION
-10. US_MARKET_NEWS: ניתוח טקסטואלי מפורט של הגורמים המשפיעים ביותר בשווקים ב-14 הימים האחרונים ועד היום כולל + סיכום מפורט בסוף.
-11. IL_MARKET_NEWS: ניתוח מפורט של השוק הישראלי והשפעות מקומיות לאורך התקופה.
-12. MARKET_MOVERS_TABLE: מערך (array) של בדיוק 10 מניות מובילות, כל אחת מכילה: "ticker", "name", "price_change_pct" (אחוז שינוי ב-14 הימים האחרונים ועד היום), "volume_context" (ניתוח מחזור המסחר וההשפעה).
+1. SP500_ANALYSIS (ניתוח מורחב, מפורט, כולל סעיפי עלייה וירידה)
+2. NASDAQ_ANALYSIS (ניתוח מורחב, מפורט, כולל סעיפי עלייה וירידה)
+3. DOW_ANALYSIS (ניתוח מורחב, מפורט)
+4. VIX_ANALYSIS (ניתוח מורחב, מפורט)
+5. DXY_ANALYSIS (ניתוח מורחב, מפורט)
+6. USD_ILS_EXPLANATION (ניתוח מורחב ומפורט על השקל-דולר)
+7. OIL_EXPLANATION (ניתוח מורחב ומפורט)
+8. GOLD_EXPLANATION (ניתוח מורחב ומפורט)
+9. BTC_EXPLANATION (ניתוח מורחב ומפורט)
+10. US_MARKET_NEWS: ניתוח טקסטואלי מפורט, ארוך ועשיר של הגורמים המשפיעים בשווקים ב-14 הימים האחרונים ועד היום כולל סעיפים ברורים.
+11. IL_MARKET_NEWS: ניתוח מפורט מאוד של השוק הישראלי והשפעות מקומיות לאורך התקופה.
+12. MARKET_MOVERS_TABLE: מערך (array) של בדיוק 10 מניות מובילות, כל אחת מכילה: "ticker", "name", "price_change_pct", "volume_context".
 13. CATALYST_EARNINGS
 14. CATALYST_MONETARY
 15. CATALYST_HARDWARE
@@ -206,10 +214,10 @@ You must output valid JSON.
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news - **ללא קישורים כלל ב-news!**). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
-22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news - **ללא קישורים כלל ב-news!**). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
+21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news - טקסט נקי בלבד). אסור לכלול מניות מהתיק ({portfolio_tickers}).
+22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news - טקסט נקי בלבד). אסור לכלול מניות מהתיק ({portfolio_tickers}).
 23. portfolio_analysis: אובייקט עבור מניות התיק האישי ({portfolio_tickers}) הכולל: rationale, news_link, news_title, news_content, news_impact (עם פירוט מלא ועשיר).
-24. market_news: מערך של 5 ידיעות חדשותיות שונות (news_link, news_title, news_content, news_impact) עבור שלב 8.
+24. market_news: מערך של לפחות 10 ידיעות חדשותיות שונות (news_link עם הקישור האמיתי מהרשימה, news_title, news_content, news_impact) עבור שלב 8.
 """
 
                 response = client.chat.completions.create(
@@ -364,7 +372,7 @@ def build_market_news_html(ai_insights):
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold">{p_title}</h3>
-            <p>🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+            <p>🔗 <strong>קישור אמיתי למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
             <p><strong>תוכן הכתבה המלא:</strong> {p_content}</p>
             <p>🚀 <strong>מה זה אומר בקשר למניה / לשוק:</strong> {p_impact}</p>
@@ -443,6 +451,15 @@ if __name__ == "__main__":
         btc_price = f"${format_num(btc_p)}"
         btc_change = format_pct_colored(btc_c)
 
+        # Build sector chart JSON for Stage 2 graph
+        sector_chart_list = []
+        for s_name, s_ticker in sector_tickers_map.items():
+            s_data = base_market_data.get(s_ticker, {})
+            sector_chart_list.append({
+                "name": s_name,
+                "change": s_data.get("change", 0.0)
+            })
+
         portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
         if not isinstance(portfolio_analysis_map, dict):
             portfolio_analysis_map = {}
@@ -487,7 +504,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div><strong>רציונל וניתוח:</strong> {p_rationale}</div>"
                     f"<div><strong>כותרת חדשותית:</strong> {p_news_title}</div>"
-                    f"<div><strong>תוכן חדשותי:</strong> {p_news_content}</div>"
+                    f"<div><strong>תוכן חדשותي:</strong> {p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong> {p_news_impact}</div>"
                 )
 
@@ -511,6 +528,7 @@ if __name__ == "__main__":
             "DAY_NAME": day_name,
             "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
             "PORTFOLIO_STOCKS_JSON": json.dumps(portfolio_js_list, ensure_ascii=False),
+            "SECTORS_CHART_JSON": json.dumps(sector_chart_list, ensure_ascii=False),
             "SP500_PRICE": sp500_price,
             "SP500_PCT": sp500_change,
             "NASDAQ_PRICE": nasdaq_price,
