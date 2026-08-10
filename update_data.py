@@ -94,7 +94,8 @@ def format_pct_colored(val):
 
 def get_stock_logo_url(ticker):
     clean_ticker = str(ticker).strip().upper()
-    return f"https://assets.parqet.com/logos/symbol/{clean_ticker}"
+    parqet_ticker = clean_ticker.replace("-", ".")
+    return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
 
 def fetch_investing_news():
     url = "https://www.investing.com/rss/news.rss"
@@ -171,10 +172,12 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 prompt = f"""
 You must output valid JSON.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב לי על הגורמים המשפיעים ביותר בשווקים שהתרחשו בתקופה זו (כולל התנודות והאירועים של היום). כתוב את תשובתך בצורת טקסט ולאחר מכן הצג סיכום של תשובתך. כמו כן, כלול השוואה בטבלה בין עשרת המניות שהשפעתן על השווקים בתקופה זו הייתה הגדולה ביותר. התייחס בתשובתך לאחוז השינוי במחיר המניה וגודל מחזורי המסחר שהיו באותן מניות משפיעות ב-14 הימים האחרונים ועד היום. על פי תשובתך סוחרים ומשקיעים בשוק האמריקאי והישראלי יבססו את החלטותיהם לגבי פעולות המסחר שיבצעו בשבוע הקרוב. 
-דייק בתשובתך ב-95% לפחות. היום הוא {day_name}, בתאריך {date_str}.
+כתוב לי על הגורמים המשפיעים ביותר בשווקים שהתרחשו בתקופה זו (כולל התנודות והאירועים של היום). 
+חשוב מאוד: בשדות הטקסט של המניות (כמו חדשות ורציונל יומי / שדה news) **אסור בשום אופן לכלול כתובות URL, קישורים או כתובות אתרים**. כתוב טקסט אנליטי, מקצועי ועשיר בלבד!
 
-להלן כותרות חדשות וקישורים עדכניים מתוך אתר Investing.com:
+היום הוא {day_name}, בתאריך {date_str}.
+
+להלן כותרות חדשות וקישורים עדכניים מתוך אתר Investing.com (להשראה בלבד, אל תדביק קישורים בשדות הטקסט של המניות):
 {headlines_formatted}
 
 נתוני השוק הנוכחיים:
@@ -203,9 +206,9 @@ You must output valid JSON.
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
-22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
-23. portfolio_analysis: אובייקט עבור מניות התיק האישי ({portfolio_tickers}) הכולל: rationale, news_link, news_title, news_content, news_impact (עם פירוט מלא ועשיר, ללא משפטים כלליים).
+21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news - **ללא קישורים כלל ב-news!**). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
+22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news - **ללא קישורים כלל ב-news!**). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
+23. portfolio_analysis: אובייקט עבור מניות התיק האישי ({portfolio_tickers}) הכולל: rationale, news_link, news_title, news_content, news_impact (עם פירוט מלא ועשיר).
 24. market_news: מערך של 5 ידיעות חדשותיות שונות (news_link, news_title, news_content, news_impact) עבור שלב 8.
 """
 
