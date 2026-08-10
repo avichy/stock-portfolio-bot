@@ -99,7 +99,7 @@ def format_ai_text(text):
     cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
     
     for i in range(1, 10):
-        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>סעיף {i}:</strong>")
+        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>{i}.</strong>")
     
     return cleaned
 
@@ -240,7 +240,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
                 response = client.chat.completions.create(
                     model='llama-3.3-70b-versatile',
                     messages=[{"role": "user", "content": prompt}],
-                    response_format={"type": "json_object"}
+                    response_format={"type": "json_object"},
+                    max_tokens=8192
                 )
 
                 raw_text = response.choices[0].message.content.strip()
