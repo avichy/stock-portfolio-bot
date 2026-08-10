@@ -179,14 +179,14 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
                 
                 headlines_formatted = "\n".join([f"- כותרת בעברית: {h['title']} | קישור אמיתי: {h['link']}" for h in investing_headlines]) if investing_headlines else "אין כותרות זמינות."
 
-                prompt = f"""
+                prompt = """
 You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
 כתוב ניתוח מעמיק, עשיר, מפורט מאוד, **ארוך וממצה** (אל תתמצת ואל תחסוך במילים כלל, כתוב פסקאות עמוקות). 
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
 לכל סעיפי הניתוח המאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
-אסור באיסור חמור שיהיו סוגריים מסולסלים {} או סוגריים מרובעים [] בתוך ערכי הטקסט!
+אסור באיסור חמור שיהיו סוגריים מסולסלים או סוגריים מרובעים [] בתוך ערכי הטקסט!
 
 **הנחיות קשיחות לשלב 3 (אירועים וזרזים מרכזיים - Catalysts):**
 עבור CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, כתוב לפחות 3 סעיפים מפורטים וארוכים מאוד (1., 2., 3.) שכל אחד מהם מתחיל בשורה חדשה עם הסבר מקצועי מלא.
@@ -200,7 +200,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 {headlines_formatted}
 
 נתוני השוק הנוכחיים:
-{json.dumps(market_summary, ensure_ascii=False)}
+{market_summary}
 
 מניות התיק האישי של המשתמש: {portfolio_tickers}
 
@@ -229,7 +229,13 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 22. swing_stocks (חובה להחזיר כמערך של אובייקטים)
 23. portfolio_analysis
 24. market_news
-"""
+""".format(
+                    date_str=date_str,
+                    day_name=day_name,
+                    headlines_formatted=headlines_formatted,
+                    market_summary=json.dumps(market_summary, ensure_ascii=False),
+                    portfolio_tickers=portfolio_tickers
+                )
 
                 response = client.chat.completions.create(
                     model='llama-3.3-70b-versatile',
@@ -555,7 +561,7 @@ if __name__ == "__main__":
                 full_note_html = (
                     f"<div class='mb-2'><strong>רציונל וניתוח:</strong><br>{p_rationale}</div>"
                     f"<div class='mb-2'><strong>כותרת חדשותית:</strong><br>{p_news_title}</div>"
-                    f"<div class='mb-2'><strong>תוכן חדשותي:</strong><br>{p_news_content}</div>"
+                    f"<div class='mb-2'><strong>תוכן חדשותי:</strong><br>{p_news_content}</div>"
                     f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
                 )
 
