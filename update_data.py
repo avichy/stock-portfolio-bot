@@ -170,19 +170,19 @@ def fetch_ai_insights_from_groq(market_data, portfolio_stocks, date_str, day_nam
 
                 prompt = f"""
 You must output valid JSON.
-אתה אנליסט שוק הון בכיר וגלובלי. היום הוא {day_name}, בתאריך {date_str}.
+אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
+כתוב לי על הגורמים המשפיעים ביותר בשווקים שהתרחשו בתקופה זו (כולל התנודות והאירועים של היום). כתוב את תשובתך בצורת טקסט ולאחר מכן הצג סיכום של תשובתך. כמו כן, כלול השוואה בטבלה בין עשרת המניות שהשפעתן על השווקים בתקופה זו הייתה הגדולה ביותר. התייחס בתשובתך לאחוז השינוי במחיר המניה וגודל מחזורי המסחר שהיו באותן מניות משפיעות ב-14 הימים האחרונים ועד היום. על פי תשובתך סוחרים ומשקיעים בשוק האמריקאי והישראלי יבססו את החלטותיהם לגבי פעולות המסחר שיבצעו בשבוע הקרוב. 
+דייק בתשובתך ב-95% לפחות. היום הוא {day_name}, בתאריך {date_str}.
 
 להלן כותרות חדשות וקישורים עדכניים מתוך אתר Investing.com:
 {headlines_formatted}
 
-על בסיס כותרות אלו ונתוני השוק הנוכחיים הבאים להיום:
+נתוני השוק הנוכחיים:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-ועבור מניות התיק האישי של המשתמש: {portfolio_tickers}
+מניות התיק האישי של המשתמש: {portfolio_tickers}
 
-הנחיות קריטיות:
-1. עדכניות יומית מוחלטת ליום {date_str}.
-2. החזר אובייקט JSON תקין הכולל בדיוק את המפתחות הבאים בעברית מקצועית לשוק ההון:
+החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -192,35 +192,30 @@ You must output valid JSON.
 7. OIL_EXPLANATION
 8. GOLD_EXPLANATION
 9. BTC_EXPLANATION
-10. US_MARKET_NEWS: פסקה מפורטת, רחבה ועשירה של לפחות 3-4 משפטים המנתחת בהרחבה את מצב השוק האמריקאי, נתוני המאקרו, והשפעות הריבית והאינפלציה.
-11. IL_MARKET_NEWS: פסקה מפורטת, רחבה ועשירה של לפחות 3-4 משפטים המנתחת בהרחבה את מצב השוק הישראלי, שער החליפין, וההשפעות הגיאופוליטיות והכלכליות המקומיות.
-12. CATALYST_EARNINGS
-13. CATALYST_MONETARY
-14. CATALYST_HARDWARE
-15. COMMUNITY_SENTIMENT
-16. ANALYST_POINT_1
-17. ANALYST_POINT_2
-18. RISK_MANAGEMENT_TEXT
-19. ACTION_RECOMMENDATIONS_TEXT
-20. long_term_stocks: מערך (array) של בדיוק 10 מניות מומלצות להשקעה ארוכת טווח. כל פריט חייב לכלול: "ticker", "name", "desc", "news" (כתוב תוכן חדשותי עשיר ומפורט הכולל את ההקשר המלא, שמות חברות או מוצרים, בלי תשובות קצרות או כלליות).
-21. swing_stocks: מערך (array) של בדיוק 10 מניות מומלצות למסחר סווינג. כל פריט חייב לכלול: "ticker", "name", "desc", "news" (תוכן מפורט, עשיר וספציפי).
-22. portfolio_analysis: אובייקט שבו המפתחות חייבים להיות בדיוק הטיקרים של מניות התיק האישי של המשתמש ({portfolio_tickers}). עבור כל טיקר, הספק אובייקט הכולל בדיוק את השדות הבאים: rationale, news_link, news_title, news_content, news_impact. (חובה לכתוב תוכן אמיתי, מפורט ועשיר שמתבסס על החדשות שסופקו: ציין במפורש עם מי נעשה שיתוף הפעולה, מה בדיוק נרכש, סכומים, מוצרים או פרטים טכניים מלאים. אסור בתכלית האיסור לכתוב משפטים סתמיים וכלליים כמו 'הודיעה על שיתוף פעולה' או 'הודיעה על רכישה' בלי לפרט את כל ההקשר).
-23. market_news: מערך של 5 ידיעות חדשותיות שונות לחלוטין זו מזו מתוך הכותרות שסופקו למעלה. כל פריט חייב לכלול: news_link, news_title, news_content, news_impact.
+10. US_MARKET_NEWS: ניתוח טקסטואלי מפורט של הגורמים המשפיעים ביותר בשווקים ב-14 הימים האחרונים ועד היום כולל + סיכום מפורט בסוף.
+11. IL_MARKET_NEWS: ניתוח מפורט של השוק הישראלי והשפעות מקומיות לאורך התקופה.
+12. MARKET_MOVERS_TABLE: מערך (array) של בדיוק 10 מניות מובילות, כל אחת מכילה: "ticker", "name", "price_change_pct" (אחוז שינוי ב-14 הימים האחרונים ועד היום), "volume_context" (ניתוח מחזור המסחר וההשפעה).
+13. CATALYST_EARNINGS
+14. CATALYST_MONETARY
+15. CATALYST_HARDWARE
+16. COMMUNITY_SENTIMENT
+17. ANALYST_POINT_1
+18. ANALYST_POINT_2
+19. RISK_MANAGEMENT_TEXT
+20. ACTION_RECOMMENDATIONS_TEXT
+21. long_term_stocks: מערך של 10 מניות ארוכות טווח (ticker, name, desc, news). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
+22. swing_stocks: מערך של 10 מניות סווינג (ticker, name, desc, news). אסור לכלול מניות מהתיק שלי ({portfolio_tickers}).
+23. portfolio_analysis: אובייקט עבור מניות התיק האישי ({portfolio_tickers}) הכולל: rationale, news_link, news_title, news_content, news_impact (עם פירוט מלא ועשיר, ללא משפטים כלליים).
+24. market_news: מערך של 5 ידיעות חדשותיות שונות (news_link, news_title, news_content, news_impact) עבור שלב 8.
 """
 
                 response = client.chat.completions.create(
                     model='llama-3.3-70b-versatile',
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ],
+                    messages=[{"role": "user", "content": prompt}],
                     response_format={"type": "json_object"}
                 )
 
                 raw_text = response.choices[0].message.content.strip()
-                print("--- RAW AI RESPONSE RECEIVED ---")
-                print(raw_text[:600] + "..." if len(raw_text) > 600 else raw_text)
-                print("--------------------------------")
-
                 parsed_ai_data = json.loads(raw_text)
                 parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
                 print("Successfully parsed AI response into JSON using key:", key_name)
@@ -229,13 +224,13 @@ You must output valid JSON.
             except Exception as e:
                 print(f"⚠️ Attempt failed with {key_name}: {e}")
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "rate_limit_exceeded" in str(e):
-                    print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds for minute limit to reset...")
+                    print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds...")
                     time.sleep(65)
                 else:
-                    print(f"🔄 Connection/Network error. Waiting 5 seconds before trying next key...")
+                    print(f"🔄 Connection error. Waiting 5 seconds...")
                     time.sleep(5)
 
-    print("⚠️ All AI retries and keys exhausted across all rounds. Falling back to cache.")
+    print("⚠️ All AI retries exhausted. Falling back to cache.")
     cached = load_ai_cache()
     return cached if cached else {}
 
