@@ -1,337 +1,272 @@
 {
-    "SP500_ANALYSIS": "The S&P 500 index has seen a slight increase of 2.01% in its value, reaching 7753.11. This trend indicates a generally positive market sentiment, with investors showing confidence in the market.",
-    "NASDAQ_ANALYSIS": "The NASDAQ composite has experienced a significant rise of 2.94%, reaching 29621.81. This increase can be attributed to the strong performance of tech stocks, with companies like MSFT and NVDA seeing considerable gains.",
-    "DOW_ANALYSIS": "The Dow Jones Industrial Average has shown a moderate increase of 1.5%, reaching 53975.98. This rise can be seen as a sign of stability in the market, with investors cautiously optimistic about the future.",
-    "VIX_ANALYSIS": "The VIX index, also known as the fear index, has decreased by 6.3%, reaching 15.46. This decrease suggests a reduction in market volatility and a lower level of investor anxiety.",
-    "DXY_ANALYSIS": "The US Dollar Index has seen a slight increase of 0.07%, reaching 99.76. This minor change indicates a relatively stable currency market, with no significant fluctuations in the value of the dollar.",
-    "USD_ILS_EXPLANATION": "The USD/ILS exchange rate has decreased by 0.76%, reaching 2.99. This decrease may have a positive impact on Israeli exports, as a weaker dollar can make Israeli products more competitive in the global market.",
-    "OIL_EXPLANATION": "The price of oil has increased by 9.28%, reaching 82.2. This rise can be attributed to various factors, including geopolitical tensions and changes in global demand. The increase in oil prices may have a negative impact on companies with high energy costs.",
-    "GOLD_EXPLANATION": "The price of gold has increased by 5.32%, reaching 4471.6. This rise can be seen as a sign of investor caution, as gold is often considered a safe-haven asset during times of market uncertainty.",
-    "BTC_EXPLANATION": "The price of Bitcoin has decreased by 1.46%, reaching 63933.23. This decrease may be attributed to various factors, including changes in investor sentiment and regulatory developments in the cryptocurrency market.",
-    "US_MARKET_NEWS": "US market news includes the recent earnings reports from various companies, with some exceeding expectations and others falling short. The market has also been influenced by the latest economic indicators, including GDP growth and inflation rates.",
-    "IL_MARKET_NEWS": " Israeli market news includes the recent developments in the tech industry, with several companies announcing new partnerships and product launches. The market has also been affected by the latest economic indicators, including unemployment rates and consumer spending.",
-    "MARKET_MOVERS_TABLE": {
-        "MSFT": "Price: 506.06, Change: 3.78%",
-        "NVDA": "Price: 217.55, Change: 5.28%",
-        "INTC": "Price: 97.52, Change: 7.16%",
-        "PLTR": "Price: 175.23, Change: 39.46%",
-        "NEM": "Price: 117.26, Change: 22.95%"
-    },
-    "CATALYST_EARNINGS": "Earnings reports from companies like MSFT and NVDA have been a significant catalyst for market movement, with some companies exceeding expectations and others falling short.",
-    "CATALYST_MONETARY": "Monetary policy decisions, including interest rate changes, have been a key catalyst for market movement, with investors closely watching the actions of central banks.",
-    "CATALYST_HARDWARE": "The latest developments in the tech industry, including new product launches and partnerships, have been a significant catalyst for market movement, with companies like AMD and INTC seeing significant gains.",
-    "COMMUNITY_SENTIMENT": "Community sentiment is generally positive, with investors showing confidence in the market. However, there are also concerns about market volatility and the potential for a downturn.",
-    "ANALYST_POINT_1": "One key point to consider is the impact of interest rate changes on the market, with higher rates potentially leading to a decrease in consumer spending and economic growth.",
-    "ANALYST_POINT_2": "Another important point is the influence of global events, such as geopolitical tensions and trade agreements, on the market, with these factors having the potential to significantly impact investor sentiment and market movement.",
-    "RISK_MANAGEMENT_TEXT": "Risk management is crucial in today's market, with investors needing to be aware of the potential risks and take steps to mitigate them. This can include diversifying portfolios, setting stop-loss orders, and closely monitoring market developments.",
-    "ACTION_RECOMMENDATIONS_TEXT": "Based on current market conditions, recommendations include investing in companies with strong earnings reports, diversifying portfolios to minimize risk, and closely monitoring market developments to take advantage of opportunities as they arise.",
-    "long_term_stocks": [
+    "SP500_ANALYSIS": "בימים האחרונים, מדד ה-SP500 רשם עלייה מתונה, עם עלייה של 2.01% ביום שלישי. המדד הראה כי המשקיעים החזירו את אמונם בשוק, לאחר תקופה של הסתברות.",
+    "NASDAQ_ANALYSIS": "מדד ה-NASDAQ רשם עלייה מרשימה, עם עלייה של 2.94% ביום שלישי. המדד הראה כי המשקיעים מוכנים לקחת סיכונים ולהשקיע בחברות טכנולוגיה.",
+    "DOW_ANALYSIS": "מדד ה-DOW רשם עלייה מתונה, עם עלייה של 1.5% ביום שלישי. המדד הראה כי המשקיעים היו זהירים, אך עדיין מוכנים להשקיע בשוק.",
+    "VIX_ANALYSIS": "מדד ה-VIX רשם ירידה, עם ירידה של 6.3% ביום שלישי. המדד הראה כי המשקיעים היו פחות חששנים ויותר בטוחים בשוק.",
+    "DXY_ANALYSIS": "לא היו נתונים זמינים על מדד ה-DXY.",
+    "USD_ILS_EXPLANATION": "שער החליפין של הדולר האמריקאי לשקל הישראלי היה 2.99, עם ירידה של 0.76%. הירידה בשער החליפין עלולה להשפיע על היצוא הישראלי.",
+    "OIL_EXPLANATION": "מחיר הנפט היה 82.25, עם עלייה של 9.35%. העלייה במחיר הנפט עלולה להשפיע על האינפלציה.",
+    "GOLD_EXPLANATION": "מחיר הזהב היה 4475.1, עם עלייה של 5.4%. העלייה במחיר הזהב עלולה להשפיע על הביטחון הכלכלי.",
+    "BTC_EXPLANATION": "מחיר הביטקוין היה 63968.61, עם ירידה של 1.41%. הירידה במחיר הביטקוין עלולה להשפיע על השוק הקריפטוגרפי.",
+    "US_MARKET_NEWS": "השוק האמריקאי הראה סימנים של התאוששות, עם עלייה במדדים העיקריים.",
+    "IL_MARKET_NEWS": "השוק הישראלי הראה סימנים של יציבות, עם עלייה במדדים העיקריים.",
+    "MARKET_MOVERS_TABLE": [
         {
             "ticker": "NVDA",
-            "name": "NVIDIA Corporation",
-            "desc": "Leader in the tech industry",
-            "news": "Recent earnings report exceeded expectations"
-        },
-        {
-            "ticker": "MSFT",
-            "name": "Microsoft Corporation",
-            "desc": "Diversified tech company",
-            "news": "Recent partnership announcement with AMD"
-        },
-        {
-            "ticker": "INTC",
-            "name": "Intel Corporation",
-            "desc": "Leader in the semiconductor industry",
-            "news": "Recent product launch announcement"
+            "name": "NVIDIA",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 5.28%"
         },
         {
             "ticker": "AMD",
-            "name": "Advanced Micro Devices, Inc.",
-            "desc": "Growing company in the tech industry",
-            "news": "Recent earnings report exceeded expectations"
+            "name": "AMD",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 3.11%"
         },
         {
             "ticker": "MU",
-            "name": "Micron Technology, Inc.",
-            "desc": "Leader in the memory and storage industry",
-            "news": "Recent product launch announcement"
+            "name": "Micron",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 3.8%"
         },
         {
             "ticker": "SNDK",
-            "name": "Sandisk Corporation",
-            "desc": "Leader in the memory and storage industry",
-            "news": "Recent earnings report exceeded expectations"
+            "name": "Sandisk",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 3.89%"
         },
         {
             "ticker": "WDC",
-            "name": "Western Digital Corporation",
-            "desc": "Leader in the data storage industry",
-            "news": "Recent product launch announcement"
+            "name": "Western Digital",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 16.86%"
+        }
+    ],
+    "CATALYST_EARNINGS": "הרווחים של החברות היו מעורבים, עם עלייה ברווחים של חלק מהחברות וירידה ברווחים של חברות אחרות.",
+    "CATALYST_MONETARY": "המדיניות המוניטרית הייתה יציבה, עם שמירה על הריבית.",
+    "CATALYST_HARDWARE": "המחירים של החומרים היו מעורבים, עם עלייה במחירים של חלק מהחומרים וירידה במחירים של חומרים אחרים.",
+    "COMMUNITY_SENTIMENT": "דעת הקהל הייתה מעורבבת, עם חלק מהמשקיעים שמחים על העלייה בשוק וחלק אחרים שחוששים מירידה עתידית.",
+    "ANALYST_POINT_1": "השוק הוא משתנה ויש להיות זהירים.",
+    "ANALYST_POINT_2": "הרווחים של החברות הם חשובים, אך גם המדיניות המוניטרית והמחירים של החומרים.",
+    "RISK_MANAGEMENT_TEXT": "יש לנהל סיכונים בקפידה, תוך שמירה על גיוון בתיק.",
+    "ACTION_RECOMMENDATIONS_TEXT": "להשקיע בחברות טכנולוגיה, אך גם לשמור על גיוון בתיק.",
+    "long_term_stocks": [
+        {
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 5.28%"
         },
         {
-            "ticker": "SIMO",
-            "name": "Silicon Motion Technology Corporation",
-            "desc": "Growing company in the tech industry",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "MSFT",
+            "name": "Microsoft",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 3.78%"
         },
         {
-            "ticker": "IREN",
-            "name": "Iren SpA",
-            "desc": "Diversified energy company",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "GOOG",
+            "name": "Google",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 4.46%"
+        },
+        {
+            "ticker": "AMZN",
+            "name": "Amazon",
+            "desc": "חברת קמרס",
+            "news": "רשמה ירידה של 2.09%"
+        },
+        {
+            "ticker": "INTC",
+            "name": "Intel",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 7.16%"
+        },
+        {
+            "ticker": "MU",
+            "name": "Micron",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 3.8%"
+        },
+        {
+            "ticker": "SNDK",
+            "name": "Sandisk",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 3.89%"
+        },
+        {
+            "ticker": "WDC",
+            "name": "Western Digital",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 16.86%"
         },
         {
             "ticker": "CIFR",
-            "name": "Cipher Mining Inc.",
-            "desc": "Growing company in the cryptocurrency industry",
-            "news": "Recent product launch announcement"
+            "name": "Cipher",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 32.41%"
+        },
+        {
+            "ticker": "META",
+            "name": "Meta",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 0.79%"
         }
     ],
     "swing_stocks": [
         {
-            "ticker": "PLTR",
-            "name": "Palantir Technologies Inc.",
-            "desc": "Growing company in the tech industry",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 5.28%"
         },
         {
-            "ticker": "NEM",
-            "name": "Newmont Corporation",
-            "desc": "Leader in the mining industry",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "MSFT",
+            "name": "Microsoft",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 3.78%"
         },
         {
-            "ticker": "TQQQ",
-            "name": "ProShares UltraPro QQQ",
-            "desc": "High-risk, high-reward ETF",
-            "news": "Recent market movement announcement"
+            "ticker": "GOOG",
+            "name": "Google",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 4.46%"
         },
         {
-            "ticker": "TTWO",
-            "name": "Take-Two Interactive Software, Inc.",
-            "desc": "Growing company in the gaming industry",
-            "news": "Recent product launch announcement"
+            "ticker": "AMZN",
+            "name": "Amazon",
+            "desc": "חברת קמרס",
+            "news": "רשמה ירידה של 2.09%"
         },
         {
-            "ticker": "WMT",
-            "name": "Walmart Inc.",
-            "desc": "Diversified retail company",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "INTC",
+            "name": "Intel",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 7.16%"
         },
         {
-            "ticker": "NFLX",
-            "name": "Netflix, Inc.",
-            "desc": "Leader in the streaming industry",
-            "news": "Recent product launch announcement"
+            "ticker": "MU",
+            "name": "Micron",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 3.8%"
         },
         {
-            "ticker": "MA",
-            "name": "Mastercard Incorporated",
-            "desc": "Leader in the payments industry",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "SNDK",
+            "name": "Sandisk",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 3.89%"
         },
         {
-            "ticker": "IBIT",
-            "name": "iShares iBonds Dec 2026 Term Corporate ETF",
-            "desc": "Low-risk ETF",
-            "news": "Recent market movement announcement"
+            "ticker": "WDC",
+            "name": "Western Digital",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 16.86%"
         },
         {
-            "ticker": "GTEC",
-            "name": "Global Tech Industries Group, Inc.",
-            "desc": "Growing company in the tech industry",
-            "news": "Recent product launch announcement"
+            "ticker": "CIFR",
+            "name": "Cipher",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה ירידה של 32.41%"
         },
         {
-            "ticker": "BE",
-            "name": "Bloom Energy Corporation",
-            "desc": "Growing company in the energy industry",
-            "news": "Recent earnings report exceeded expectations"
+            "ticker": "META",
+            "name": "Meta",
+            "desc": "חברת טכנולוגיה",
+            "news": "רשמה עלייה של 0.79%"
         }
     ],
     "portfolio_analysis": {
         "NVDA": {
-            "rationale": "Strong earnings report",
-            "news_title": "NVIDIA Corporation Announces Strong Earnings",
-            "news_content": "NVIDIA Corporation announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
+            "rationale": "חברת טכנולוגיה מובילה",
+            "news_title": "NVIDIA רשמה עלייה של 5.28%",
+            "news_content": "NVIDIA רשמה עלייה של 5.28% ביום שלישי",
+            "news_impact": "יש להמשיך להחזיק"
         },
         "AMD": {
-            "rationale": "Growing company in the tech industry",
-            "news_title": "Advanced Micro Devices, Inc. Announces New Product Launch",
-            "news_content": "Advanced Micro Devices, Inc. announced a new product launch, expanding its portfolio of tech products.",
-            "news_impact": "Positive"
+            "rationale": "חברת טכנולוגיה מובילה",
+            "news_title": "AMD רשמה ירידה של 3.11%",
+            "news_content": "AMD רשמה ירידה של 3.11% ביום שלישי",
+            "news_impact": "יש להמתין לשינוי"
         },
         "MU": {
-            "rationale": "Leader in the memory and storage industry",
-            "news_title": "Micron Technology, Inc. Announces New Product Launch",
-            "news_content": "Micron Technology, Inc. announced a new product launch, expanding its portfolio of memory and storage products.",
-            "news_impact": "Positive"
+            "rationale": "חברת טכנולוגיה מובילה",
+            "news_title": "Micron רשמה עלייה של 3.8%",
+            "news_content": "Micron רשמה עלייה של 3.8% ביום שלישי",
+            "news_impact": "יש להמשיך להחזיק"
         },
         "SNDK": {
-            "rationale": "Leader in the memory and storage industry",
-            "news_title": "Sandisk Corporation Announces Strong Earnings",
-            "news_content": "Sandisk Corporation announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
+            "rationale": "חברת טכנולוגיה מובילה",
+            "news_title": "Sandisk רשמה ירידה של 3.89%",
+            "news_content": "Sandisk רשמה ירידה של 3.89% ביום שלישי",
+            "news_impact": "יש להמתין לשינוי"
         },
         "WDC": {
-            "rationale": "Leader in the data storage industry",
-            "news_title": "Western Digital Corporation Announces New Product Launch",
-            "news_content": "Western Digital Corporation announced a new product launch, expanding its portfolio of data storage products.",
-            "news_impact": "Positive"
-        },
-        "INTC": {
-            "rationale": "Leader in the semiconductor industry",
-            "news_title": "Intel Corporation Announces New Product Launch",
-            "news_content": "Intel Corporation announced a new product launch, expanding its portfolio of semiconductor products.",
-            "news_impact": "Positive"
-        },
-        "SIMO": {
-            "rationale": "Growing company in the tech industry",
-            "news_title": "Silicon Motion Technology Corporation Announces Strong Earnings",
-            "news_content": "Silicon Motion Technology Corporation announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "IREN": {
-            "rationale": "Diversified energy company",
-            "news_title": "Iren SpA Announces Strong Earnings",
-            "news_content": "Iren SpA announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "CIFR": {
-            "rationale": "Growing company in the cryptocurrency industry",
-            "news_title": "Cipher Mining Inc. Announces New Product Launch",
-            "news_content": "Cipher Mining Inc. announced a new product launch, expanding its portfolio of cryptocurrency products.",
-            "news_impact": "Positive"
-        },
-        "META": {
-            "rationale": "Leader in the tech industry",
-            "news_title": "Meta Platforms, Inc. Announces Strong Earnings",
-            "news_content": "Meta Platforms, Inc. announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "AMZN": {
-            "rationale": "Diversified tech company",
-            "news_title": "Amazon.com, Inc. Announces New Product Launch",
-            "news_content": "Amazon.com, Inc. announced a new product launch, expanding its portfolio of tech products.",
-            "news_impact": "Positive"
-        },
-        "GOOG": {
-            "rationale": "Leader in the tech industry",
-            "news_title": "Alphabet Inc. Announces Strong Earnings",
-            "news_content": "Alphabet Inc. announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "TTWO": {
-            "rationale": "Growing company in the gaming industry",
-            "news_title": "Take-Two Interactive Software, Inc. Announces New Product Launch",
-            "news_content": "Take-Two Interactive Software, Inc. announced a new product launch, expanding its portfolio of gaming products.",
-            "news_impact": "Positive"
-        },
-        "WMT": {
-            "rationale": "Diversified retail company",
-            "news_title": "Walmart Inc. Announces Strong Earnings",
-            "news_content": "Walmart Inc. announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "NFLX": {
-            "rationale": "Leader in the streaming industry",
-            "news_title": "Netflix, Inc. Announces New Product Launch",
-            "news_content": "Netflix, Inc. announced a new product launch, expanding its portfolio of streaming products.",
-            "news_impact": "Positive"
-        },
-        "MA": {
-            "rationale": "Leader in the payments industry",
-            "news_title": "Mastercard Incorporated Announces Strong Earnings",
-            "news_content": "Mastercard Incorporated announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
-        },
-        "IBIT": {
-            "rationale": "Low-risk ETF",
-            "news_title": "iShares iBonds Dec 2026 Term Corporate ETF Announces Market Movement",
-            "news_content": "iShares iBonds Dec 2026 Term Corporate ETF announced market movement, with a slight increase in value.",
-            "news_impact": "Positive"
-        },
-        "GTEC": {
-            "rationale": "Growing company in the tech industry",
-            "news_title": "Global Tech Industries Group, Inc. Announces New Product Launch",
-            "news_content": "Global Tech Industries Group, Inc. announced a new product launch, expanding its portfolio of tech products.",
-            "news_impact": "Positive"
-        },
-        "TQQQ": {
-            "rationale": "High-risk, high-reward ETF",
-            "news_title": "ProShares UltraPro QQQ Announces Market Movement",
-            "news_content": "ProShares UltraPro QQQ announced market movement, with a significant increase in value.",
-            "news_impact": "Positive"
-        },
-        "BE": {
-            "rationale": "Growing company in the energy industry",
-            "news_title": "Bloom Energy Corporation Announces Strong Earnings",
-            "news_content": "Bloom Energy Corporation announced strong earnings, exceeding expectations.",
-            "news_impact": "Positive"
+            "rationale": "חברת טכנולוגיה מובילה",
+            "news_title": "Western Digital רשמה ירידה של 16.86%",
+            "news_content": "Western Digital רשמה ירידה של 16.86% ביום שלישי",
+            "news_impact": "יש להמתין לשינוי"
         }
     },
     "market_news": [
         {
             "news_link": "https://il.investing.com/news/transcripts/article-93CH-934485",
-            "news_title": "Amotiv Shares Plummet 14% After Cautious Financial Forecast for Second Half of 2026",
-            "news_content": "Amotiv shares have plunged 14% after the company issued a cautious financial forecast for the second half of 2026.",
-            "news_impact": "Negative"
+            "news_title": "מניות Amotiv צונחות 14% לאחר תחזית פיננסית זהירה לחציון השני של 2026",
+            "news_content": "מניות Amotiv צונחות 14% לאחר תחזית פיננסית זהירה לחציון השני של 2026",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/stock-market-news/article-93CH-934484",
-            "news_title": "Why Is Trump Media & Technology Stock Down Today?",
-            "news_content": "Trump Media & Technology stock is down today, with the company facing various challenges and uncertainties.",
-            "news_impact": "Negative"
+            "news_title": "מדוע מניית Trump Media & Technology צונחת היום?",
+            "news_content": "מדוע מניית Trump Media & Technology צונחת היום?",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/stock-market-news/article-93CH-934483",
-            "news_title": "Trump Media Reveals Over 10 Clients Have Registered for Truth Social API",
-            "news_content": "Trump Media has announced that over 10 clients have registered for its Truth Social API, a significant development for the company.",
-            "news_impact": "Positive"
+            "news_title": "טראמפ מדיה חושפת: יותר מ-10 לקוחות נרשמו לשירות ה-Truth Social API",
+            "news_content": "טראמפ מדיה חושפת: יותר מ-10 לקוחות נרשמו לשירות ה-Truth Social API",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/insider-trading-news/article-93CH-934482",
-            "news_title": "Aura Minerals CFO Sells Stocks Worth $700,300",
-            "news_content": "The CFO of Aura Minerals has sold stocks worth $700,300, a significant transaction that may have implications for the company.",
-            "news_impact": "Negative"
+            "news_title": "סמנכ\"ל הכספים של Aura Minerals מכר מניות בשווי $700,300",
+            "news_content": "סמנכ\"ל הכספים של Aura Minerals מכר מניות בשווי $700,300",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/insider-trading-news/article-93CH-934481",
-            "news_title": "Schwab Director Paula Sneider Sells Stocks Worth $563,954",
-            "news_content": "A director at Schwab has sold stocks worth $563,954, a significant transaction that may have implications for the company.",
-            "news_impact": "Negative"
+            "news_title": "דירקטורית שוואב פאולה סניד מכרה מניות בשווי $563,954",
+            "news_content": "דירקטורית שוואב פאולה סניד מכרה מניות בשווי $563,954",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/economic-indicators/article-934480",
-            "news_title": "Singapore Raises 2026 GDP Forecast After Strong Second-Quarter Data",
-            "news_content": "Singapore has raised its 2026 GDP forecast after strong second-quarter data, a positive development for the country's economy.",
-            "news_impact": "Positive"
+            "news_title": "סינגפור מעלה את תחזית התמ\"ג ל-2026 לאחר נתוני רבעון שני חזקים",
+            "news_content": "סינגפור מעלה את תחזית התמ\"ג ל-2026 לאחר נתוני רבעון שני חזקים",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/earnings/article-934478",
-            "news_title": "Crescent Capital BDC Misses Earnings and Revenue in Quarter",
-            "news_content": "Crescent Capital BDC has missed earnings and revenue in the quarter, a disappointing result for the company.",
-            "news_impact": "Negative"
+            "news_title": "Crescent Capital BDC החמיצו הרווחים וההכנסות ברבעון",
+            "news_content": "Crescent Capital BDC החמיצו הרווחים וההכנסות ברבעון",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/earnings/article-934476",
-            "news_title": "Green Dot Corporation Misses Earnings but Beats Revenue Estimates in Quarter",
-            "news_content": "Green Dot Corporation has missed earnings but beaten revenue estimates in the quarter, a mixed result for the company.",
-            "news_impact": "Neutral"
+            "news_title": "גרין דוט קורפ. החמיצו  הרווחים  והיכתה את תחזיות ההכנסות  ברבעון",
+            "news_content": "גרין דוט קורפ. החמיצו  הרווחים  והיכתה את תחזיות ההכנסות  ברבעון",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/earnings/article-934477",
-            "news_title": "Greystone Housing Misses Earnings and Revenue in Quarter",
-            "news_content": "Greystone Housing has missed earnings and revenue in the quarter, a disappointing result for the company.",
-            "news_impact": "Negative"
+            "news_title": "Greystone Housing החמיצו הרווחים וההכנסות ברבעון",
+            "news_content": "Greystone Housing החמיצו הרווחים וההכנסות ברבעון",
+            "news_impact": "יש להמתין לשינוי"
         },
         {
             "news_link": "https://il.investing.com/news/earnings/article-934475",
-            "news_title": "Bain Capital Specialty Finance Beats Earnings Estimates but Misses Revenue in Quarter",
-            "news_content": "Bain Capital Specialty Finance has beaten earnings estimates but missed revenue in the quarter, a mixed result for the company.",
-            "news_impact": "Neutral"
+            "news_title": "Bain Capital Specialty Finance היכו את תחזיות  הרווחים  והחמיצה ההכנסות  ברבעון",
+            "news_content": "Bain Capital Specialty Finance היכו את תחזיות  הרווחים  והחמיצה ההכנסות  ברבעון",
+            "news_impact": "יש להמתין לשינוי"
         }
     ],
-    "ai_updated_at": "11.08.2026 | 03:46"
+    "ai_updated_at": "11.08.2026 | 03:56"
 }
