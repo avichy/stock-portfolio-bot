@@ -591,8 +591,11 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 לכל סעיפי הניתוח ומאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.).
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
-**הנחיות קשיחות לשלב 8 (market_news - חדשות השוק):**
-חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות ומרכזיות** מתוך הרשימה. כל ידיעה חייבת לכלול אך ורק את המפתחות: news_link ו־news_title (ללא שדות טקסט נוספים מיותרים).
+**הנחיות קשיחות לשלב 8 (market_news - חדשות השוק עם תקציר מידע):**
+חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות ומרכזיות** מתוך הרשימה. כל ידיעה חייבת לכלול שלושה שדות בלבד: 
+1. news_link (קישור אמיתי)
+2. news_title (כותרת הידיעה)
+3. news_desc (תקציר מידע והסבר קצר בן 1-2 משפטים בעברית על תוכן הידיעה והשפעתה על השוק).
 
 היום הוא {day_name}, בתאריך {date_str}.
 
@@ -627,7 +630,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 20. ACTION_RECOMMENDATIONS_TEXT
 21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
 22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-23. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title)
+23. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title, news_desc)
 """.format(
             date_str=date_str,
             day_name=day_name,
@@ -819,11 +822,17 @@ def build_market_news_html(market_news_list):
       continue
     p_link = item.get("news_link", "https://il.investing.com")
     p_title = item.get("news_title", "עדכון שוק יומי")
+    p_desc = item.get("news_desc", "")
+
+    desc_block = (
+        f'<p class="text-gray-300 mt-1">{p_desc}</p>' if p_desc else ""
+    )
 
     card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
-            <p>🔗 <strong>קישור אמיתי למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+            {desc_block}
+            <p class="mt-2">🔗 <strong>קישור למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
         </div>
         """
     html_parts.append(card_html)
@@ -887,6 +896,10 @@ if __name__ == "__main__":
         market_news_data.append({
             "news_link": h["link"],
             "news_title": h["title"],
+            "news_desc": (
+                "ידיעה מרכזית ממערכת Investing.com - לחץ על הקישור לקריאת"
+                " הפרטים המלאים."
+            ),
         })
       ai_insights["market_news"] = market_news_data
 
