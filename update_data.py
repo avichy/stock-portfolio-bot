@@ -134,7 +134,6 @@ def format_ai_text(text):
       .replace("'", "")
   )
 
-  # הקטנת הגופן בסעיפים ל-text-xs כדי שהכותרות יבלטו מעליהם באופן מושלם
   parts = re.split(r"(?=\b[1-9]\.)", cleaned)
   formatted_blocks = []
   for part in parts:
@@ -145,21 +144,22 @@ def format_ai_text(text):
     if match:
       num, content = match.groups()
       formatted_blocks.append(
-          f'<div class="mb-2 flex items-start gap-1.5"><span'
+          f'<div class="mb-2 flex items-start gap-1.5 text-right" dir="rtl"><span'
           f' class="font-bold text-cyan-400 text-xs min-w-[16px]">{num}.</span><span'
           f' class="flex-1 text-xs text-gray-300 leading-relaxed">{content}</span></div>'
       )
     else:
       formatted_blocks.append(
-          f'<div class="mb-2 text-xs text-gray-300 leading-relaxed">{part}</div>'
+          f'<div class="mb-2 text-xs text-gray-300 leading-relaxed text-right"'
+          f' dir="rtl">{part}</div>'
       )
 
   return (
       "".join(formatted_blocks)
       if formatted_blocks
       else (
-          f'<div class="text-xs text-gray-300'
-          f' leading-relaxed">{cleaned}</div>'
+          f'<div class="text-xs text-gray-300 leading-relaxed text-right"'
+          f' dir="rtl">{cleaned}</div>'
       )
   )
 
@@ -552,7 +552,8 @@ def fetch_ai_insights_from_groq(
         )
 
         prompt = """
-You must output valid JSON without any markdown formatting or arrays inside values.
+You must output valid JSON only. Do not wrap the JSON in markdown blocks unless necessary, but ensure all strings are properly escaped.
+**חובה מוחלטת:** כתוב את כל התשובות, הניתוחים, ההסברים, החדשות והרציונל בעברית בלבד! חל איסור מוחלט לכתוב באנגלית.
 אתה אנליסט בוולסטריט. נתח את השוק ליום {day_name}, {date_str}.
 
 כתוב בכל סעיף ניתוח מפורט המחולק בדיוק ל-4 סעיפים נפרדים (1., 2., 3., 4.) המופרדים לשורות.
@@ -565,7 +566,7 @@ You must output valid JSON without any markdown formatting or arrays inside valu
 
 מניות התיק: {portfolio_tickers}
 
-החזר אובייקט JSON תקין עם המפתחות:
+החזר אובייקט JSON תקין עם המפתחות (כל התוכן בפנים חייב להיות בעברית בלבד):
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -586,10 +587,10 @@ You must output valid JSON without any markdown formatting or arrays inside valu
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-23. portfolio_analysis (אובייקט לפי טיקר עם rationale, news_title, news_content, news_impact)
-24. market_news (לפחות 10 ידיעות עם news_link, news_title, news_content, news_impact)
+21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news - השדות name, desc, news בעברית בלבד)
+22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news - השדות name, desc, news בעברית בלבד)
+23. portfolio_analysis (אובייקט לפי טיקר עם rationale, news_title, news_content, news_impact - הכל בעברית בלבד)
+24. market_news (לפחות 10 ידיעות עם news_link, news_title, news_content, news_impact - הכל בעברית בלבד)
 """.format(
             date_str=date_str,
             day_name=day_name,
@@ -601,11 +602,16 @@ You must output valid JSON without any markdown formatting or arrays inside valu
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
             max_tokens=6144,
         )
 
         raw_text = response.choices[0].message.content.strip()
+
+        if "```json" in raw_text:
+          raw_text = raw_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in raw_text:
+          raw_text = raw_text.split("```")[1].split("```")[0].strip()
+
         parsed_ai_data = json.loads(raw_text)
         parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
         print("Successfully parsed AI response into JSON using key:", key_name)
@@ -642,17 +648,17 @@ day_name = {
 }[now_il.weekday()]
 
 sector_tickers_map = {
-    "INFO_TECH": "XLK",
-    "FINANCIALS": "XLF",
-    "HEALTH": "XLV",
-    "CONS_DISC": "XLY",
-    "CONS_STAPLES": "XLP",
-    "ENERGY": "XLE",
-    "INDUSTRIALS": "XLI",
-    "MATERIALS": "XLB",
-    "COMM": "XLC",
-    "UTILITIES": "XLU",
-    "REAL_ESTATE": "XLRE",
+    "טכנולוגיה": "XLK",
+    "פיננסים": "XLF",
+    "בריאות": "XLV",
+    "צרכנות מחזורית": "XLY",
+    "צרכנות בסיסית": "XLP",
+    "אנרגיה": "XLE",
+    "תעשייה": "XLI",
+    "חומרים": "XLB",
+    "תקשורת": "XLC",
+    "תשתיות": "XLU",
+    "נדל\"ן": "XLRE",
 }
 
 cached_ai_init = load_ai_cache()
@@ -966,7 +972,7 @@ if __name__ == "__main__":
       chg = float(s_data.get("change", 0.0))
       s_price = float(s_data.get("price", 0.0))
       sector_chart_list.append(
-          {"name": s_name, "change": chg, "price": s_price, "value": s_price}
+          {"name": s_name, "change": chg, "price": s_price, "value": chg}
       )
 
     portfolio_analysis_raw = ai_insights.get("portfolio_analysis", {})
