@@ -15,12 +15,9 @@
                 דו"ח סקייל שוק ההון המלא ליום {{DAY_NAME}} - מותאם אישית 📊
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
-            <!-- המיקום הנוכחי שלך -->
             <div class="text-xs text-gray-400 mt-3">
              עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">{{LAST_UPDATED}}</span>
             </div>
-
-            <!-- הוסף את השורה החדשה מתחתיו -->
             <div class="text-xs text-gray-400 mt-1">
             עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">{{AI_LAST_UPDATED}}</span>
             </div>
@@ -123,12 +120,14 @@
                         חדשות ועדכונים (שוק אמריקאי ושוק ישראלי) 📰
                     </h3>
                     <div class="text-sm text-gray-300 space-y-3">
-                        <p class="flex items-start gap-2">
-                            <span>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</span>
-                        </p>
-                        <p class="flex items-start gap-2">
-                            <span>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</span>
-                        </p>
+                        <div class="flex items-start gap-2">
+                            <span class="text-lg leading-none">🇺🇸</span>
+                            <div><strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-lg leading-none">🇮🇱</span>
+                            <div><strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,13 +186,11 @@
         <div id="tab-5" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 5: תיק ההשקעות האישי המלא 💼</h2>
             
-            <!-- הגדרות סנכרון מוסתרות שנטענות אוטומטית מהקוד -->
             <div class="hidden">
                 <input type="password" id="gh-token-input" value="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">
                 <input type="text" id="gh-repo-input" value="avichy/stock-portfolio-bot">
             </div>
 
-            <!-- טופס הוספה/עדכון מניה -->
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
                 <h3 class="text-base font-bold text-cyan-400">הוספה או עדכון מניה</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -222,7 +219,6 @@
             </div>
 
             <div id="portfolio-container" class="space-y-3">
-                <!-- יתמלא דינמית על ידי JavaScript -->
             </div>
         </div>
 
@@ -260,7 +256,6 @@
     </main>
 
     <script>
-        // המערך מוזרק באופן דינמי מקובץ הפייתון
         let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -286,12 +281,9 @@
 
             renderPortfolio();
 
-            // גרף הסקטורים
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
-                // שימוש בנתונים הישירים והמסודרים מתוך JSON שהפייתון מעביר
                 const sectorData = {{SECTORS_CHART_JSON}};
-                
                 const labels = ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'];
                 const rawValues = sectorData.map(item => typeof item.change === 'number' ? item.change : 0);
                 const barColors = rawValues.map(val => val >= 0 ? '#22c55e' : '#dc2626');
@@ -348,8 +340,7 @@
                         מחיר נוכחי: <strong>${stock.current}</strong><br>
                         מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
                         מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
-                        <strong>${stock.status}</strong><br>
-                        <span class="text-gray-400">${stock.note}</span>
+                        <strong>${stock.status}</strong>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
                         <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
@@ -360,7 +351,6 @@
             });
         }
 
-        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend
         async function fetchLiveStockData(symbol) {
             try {
                 const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
@@ -426,7 +416,7 @@
                 pre: `$${preMarketPrice.toFixed(2)}`,
                 target: `$${targetPrice.toFixed(2)}`,
                 status: `רווח: <span style='color: ${color}; font-weight: bold;'>${sign}${ret.toFixed(2)}%</span>`,
-                note: `<strong>רציונל וניתוח:</strong> פוזיציה חדשה/מעודכנת בתיק המסחר.<br><strong>השפעה על הפוזיציה:</strong> מעקב פעיל אחרי ביצועי השוק.`
+                note: ""
             };
 
             const existingIndex = portfolioStocks.findIndex(s => s.symbol === symbol);
@@ -439,7 +429,6 @@
             clearForm();
             renderPortfolio();
 
-            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)
             const synced = await syncToGithubRepo();
             if (synced) {
                 statusMsg.style.color = "#4ade80";
@@ -459,7 +448,6 @@
             if (!token || !repo) return false;
 
             try {
-                // לבנות קובץ portfolio.json מעודכן
                 const portfolioDict = {};
                 portfolioStocks.forEach(s => {
                     portfolioDict[s.symbol] = {
@@ -472,7 +460,6 @@
                 const contentStr = JSON.stringify(portfolioDict, null, 4);
                 const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
 
-                // לקבל את ה-SHA הנוכחי של הקובץ
                 const getUrl = `https://api.github.com/repos/${repo}/contents/portfolio.json`;
                 const headers = { "Authorization": `token ${token}`, "Content-Type": "application/json" };
                 
@@ -483,7 +470,6 @@
                     sha = fileInfo.sha;
                 }
 
-                // עדכון הקובץ ב-GitHub
                 const putRes = await fetch(getUrl, {
                     method: "PUT",
                     headers,
