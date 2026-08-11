@@ -400,17 +400,20 @@ def fetch_ai_insights_from_groq(
         prompt = """
 You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
-כתוב ניתוח מעמיק, עשיר, מפורט מאוד, **ארוך וממצה** (אל תתמצת ואל תחסוך במילים כלל, כתוב פסקאות עמוקות). 
+
+**הנחיה ראשונה במעלה (אריכות, עומק ונימוקים):**
+אסור בתכלית האיסור לתת תשובות קצרות או תמציתיות! בכל סעיפי הניתוח, המאקרו והחדשות, עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח המאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+לכל סעיפי הניתוח (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
 אסור באיסור חמור שיהיו סוגריים מסולסלים או סוגריים מרובעים [] בתוך ערכי הטקסט!
 
-**הנחיות קשיחות לשלב 4 (מניות אסטרטגיה - long_term_stocks ו- swing_stocks):**
-עליך להחזיר תחת "long_term_stocks" מערך של בדיוק 10 מניות השקעה ארוכות טווח, ותחת "swing_stocks" מערך של בדיוק 10 מניות מסחר סווינג. לכל אובייקט במערכים אלו חובה לכלול את המפתחות: ticker, name, desc, news.
-
-**הנחיות קשיחות לשלב 8 (חדשות מניות ושווקים):**
-השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **12 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית בעברית (`news_title`), ולכתוב תוכן מפורט בעברית (`news_content`) והשפעה פיננסית (`news_impact`).
+**הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
+עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
+- "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
+- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה (לדוגמה: "הכרזה על מוצר חדש", "דו"חות רבעוניים חזקים", "מהלך רגולטורי בשוק") - אסור בשום אופן לרשום סתם את שם החברה!**
+- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
+- "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
 
 היום הוא {day_name}, בתאריך {date_str}.
 
@@ -443,9 +446,9 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (מערך של 10 אובייקטים)
-22. swing_stocks (מערך של 10 אובייקטים)
-23. portfolio_analysis (אובייקט המפתח לפי טיקר המניות של המשתמש ובו rationale, news_title, news_content, news_impact)
+21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
+22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
+23. portfolio_analysis (אובייקט המפתח לפי טיקר המניות עם rationale, news_title, news_content, news_impact)
 24. market_news (לפחות 12 ידיעות עם news_link, news_title, news_content, news_impact)
 """.format(
             date_str=date_str,
@@ -843,6 +846,7 @@ if __name__ == "__main__":
     btc_price = f"${format_num(btc_p)}"
     btc_change = format_pct_colored(btc_c)
 
+    # תיקון קריטי לגרף הסקטורים: העברת אחוז השינוי (chg) לכל משתני הערך כך שהגרף ישקף את האחוזים ולא את המחיר האבסולוטי
     sector_chart_list = []
     for s_name, s_ticker in sector_tickers_map.items():
       s_data = base_market_data.get(s_ticker, {})
@@ -928,10 +932,13 @@ if __name__ == "__main__":
                 ),
             )
         )
-        p_news_title = p_item.get(
-            "news_title",
-            p_item.get("title", f"עדכון שוק מרכזי עבור {ticker}"),
-        )
+        
+        # וידוא שוטף לכותרת חדשותית אמיתית ולא שם החברה
+        raw_news_title = p_item.get("news_title", p_item.get("title", ""))
+        if not raw_news_title or raw_news_title.strip().upper() == ticker.upper() or raw_news_title.strip().lower() == company_name.strip().lower():
+          raw_news_title = f"עדכון שוק מרכזי והתפתחויות טכנולוגיות עבור {company_name} ({ticker})"
+        p_news_title = format_ai_text(raw_news_title)
+
         p_news_content = format_ai_text(
             p_item.get(
                 "news_content",
