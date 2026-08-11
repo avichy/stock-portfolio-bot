@@ -52,57 +52,57 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
                 <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
-                    <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
-                    <div class="space-y-3 text-sm">
+                    <h3 class="text-lg font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
+                    <div class="space-y-4 text-sm">
                         <p class="text-gray-300">
-                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{SP500_ANALYSIS}}</span></span>
+                            <span class="text-base font-semibold text-white">S&P 500:</span> נסחר סביב רמה של <strong class="text-white">{{SP500_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{SP500_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400 leading-relaxed block mt-1"><strong class="text-gray-300">מה זה אומר:</strong> <span class="text-gray-300">{{SP500_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{NASDAQ_ANALYSIS}}</span></span>
+                            <span class="text-base font-semibold text-white">NASDAQ:</span> נסחר סביב רמה של <strong class="text-white">{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{NASDAQ_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400 leading-relaxed block mt-1"><strong class="text-gray-300">מה זה אומר:</strong> <span class="text-gray-300">{{NASDAQ_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DOW_ANALYSIS}}</span></span>
+                            <span class="text-base font-semibold text-white">Dow Jones (DJI):</span> נסחר סביב רמה של <strong class="text-white">{{DOW_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{DOW_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400 leading-relaxed block mt-1"><strong class="text-gray-300">מה זה אומר:</strong> <span class="text-gray-300">{{DOW_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{VIX_ANALYSIS}}</span></span>
+                            <span class="text-base font-semibold text-white">VIX (מדד הפחד):</span> נסחר סביב רמה של <strong class="text-white">{{VIX_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{VIX_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400 leading-relaxed block mt-1"><strong class="text-gray-300">מה זה אומר:</strong> <span class="text-gray-300">{{VIX_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DXY_ANALYSIS}}</span></span>
+                            <span class="text-base font-semibold text-white">DXY (מדד הדולר):</span> נסחר סביב רמה של <strong class="text-white">{{DXY_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{DXY_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400 leading-relaxed block mt-1"><strong class="text-gray-300">מה זה אומר:</strong> <span class="text-gray-300">{{DXY_ANALYSIS}}</span></span>
                         </p>
                     </div>
                 </div>
 
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS}}</strong> (<span class="text-cyan-300">{{USD_ILS_CHANGE}}</span>)</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{USD_ILS_EXPLANATION}}</span></p>
+                        <h3 class="text-lg font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
+                        <p class="text-sm text-gray-300"><strong class="text-white">שער חליפין:</strong> נסחר סביב רמה של <strong class="text-white">{{USD_ILS}}</strong> (<span class="text-cyan-300 font-semibold">{{USD_ILS_CHANGE}}</span>)</p>
+                        <p class="text-xs text-gray-300 leading-relaxed"><strong class="text-gray-300">מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-300">{{USD_ILS_EXPLANATION}}</span></p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> (<span class="text-cyan-300">{{OIL_CHANGE}}</span>)</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{OIL_EXPLANATION}}</span></p>
+                        <h3 class="text-lg font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
+                        <p class="text-sm text-gray-300"><strong class="text-white">מחיר החבית:</strong> נסחר סביב <strong class="text-white">{{OIL_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{OIL_CHANGE}}</span>)</p>
+                        <p class="text-xs text-gray-300 leading-relaxed"><strong class="text-gray-300">מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-300">{{OIL_EXPLANATION}}</span></p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> (<span class="text-cyan-300">{{GOLD_CHANGE}}</span>)</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{GOLD_EXPLANATION}}</span></p>
+                        <h3 class="text-lg font-bold text-cyan-400">זהב (Gold) 🪙</h3>
+                        <p class="text-sm text-gray-300"><strong class="text-white">מחיר האונקיה:</strong> נסחר סביב <strong class="text-white">{{GOLD_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{GOLD_CHANGE}}</span>)</p>
+                        <p class="text-xs text-gray-300 leading-relaxed"><strong class="text-gray-300">מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-300">{{GOLD_EXPLANATION}}</span></p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
-                        <h3 class="text-base font-bold text-cyan-400 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> (<span class="text-cyan-300">{{BTC_CHANGE}}</span>)</p>
-                        <p class="text-sm text-gray-300"><strong>מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-200">{{BTC_EXPLANATION}}</span></p>
+                        <p class="text-sm text-gray-300"><strong class="text-white">מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong class="text-white">{{BTC_PRICE}}</strong> (<span class="text-cyan-300 font-semibold">{{BTC_CHANGE}}</span>)</p>
+                        <p class="text-xs text-gray-300 leading-relaxed"><strong class="text-gray-300">מה זה אומר בשפה פשוטה:</strong> <span class="text-gray-300">{{BTC_EXPLANATION}}</span></p>
                     </div>
                 </div>
 
@@ -110,12 +110,12 @@
                     <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
                         חדשות ועדכונים (שוק אמריקאי ושוק ישראלי) 📰
                     </h3>
-                    <div class="text-sm text-gray-300 space-y-3">
-                        <p class="flex items-start gap-2">
-                            <span>🇺🇸 <strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</span>
+                    <div class="text-xs md:text-sm text-gray-300 space-y-3">
+                        <p class="flex items-start gap-2 leading-relaxed">
+                            <span>🇺🇸 <strong class="text-white">השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</span>
                         </p>
-                        <p class="flex items-start gap-2">
-                            <span>🇮🇱 <strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</span>
+                        <p class="flex items-start gap-2 leading-relaxed">
+                            <span>🇮🇱 <strong class="text-white">השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</span>
                         </p>
                     </div>
                 </div>
@@ -129,19 +129,19 @@
                 <canvas id="sectorChart" height="110"></canvas>
             </div>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
-                <p class="text-cyan-400 font-bold mb-3 text-sm">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
+                <p class="text-lg font-bold text-cyan-400 mb-3">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">💻 <strong>טכנולוגיית מידע</strong>: חומרה, שבבים, תוכנה ושירותי IT. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INFO_TECH_CLASS}}>{{SECTOR_INFO_TECH_PCT}}</span></div> 
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏦 <strong>פיננסים</strong>: בנקים, ביטוח ואשראי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_FINANCIALS_CLASS}}>{{SECTOR_FINANCIALS_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏥 <strong>שירותי בריאות</strong>: פארמה, ביוטכנולוגיה וציוד רפואי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_HEALTH_CLASS}}>{{SECTOR_HEALTH_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛍️ <strong>צרכנות מחזורית</strong>: קמעונאות, רכבים ומלונאות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_DISC_CLASS}}>{{SECTOR_CONS_DISC_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong>: מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_STAPLES_CLASS}}>{{SECTOR_CONS_STAPLES_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong>: נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" {{SECTOR_ENERGY_CLASS}}>{{SECTOR_ENERGY_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong>: תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INDUSTRIALS_CLASS}}>{{SECTOR_INDUSTRIALS_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>: כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong>: טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" {{SECTOR_COMM_CLASS}}>{{SECTOR_COMM_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong>: חשמל ומים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_UTILITIES_CLASS}}>{{SECTOR_UTILITIES_PCT}}</span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong>: קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_REAL_ESTATE_CLASS}}>{{SECTOR_REAL_ESTATE_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">💻 <strong class="text-white">טכנולוגיית מידע</strong>: חומרה, שבבים, תוכנה ושירותי IT. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INFO_TECH_CLASS}}>{{SECTOR_INFO_TECH_PCT}}</span></div> 
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🏦 <strong class="text-white">פיננסים</strong>: בנקים, ביטוח ואשראי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_FINANCIALS_CLASS}}>{{SECTOR_FINANCIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🏥 <strong class="text-white">שירותי בריאות</strong>: פארמה, ביוטכנולוגיה וציוד רפואי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_HEALTH_CLASS}}>{{SECTOR_HEALTH_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🛍️ <strong class="text-white">צרכנות מחזורית</strong>: קמעונאות, רכבים ומלונאות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_DISC_CLASS}}>{{SECTOR_CONS_DISC_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🛒 <strong class="text-white">צרכנות בסיסית</strong>: מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_STAPLES_CLASS}}>{{SECTOR_CONS_STAPLES_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🛢️ <strong class="text-white">אנרגיה</strong>: נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" {{SECTOR_ENERGY_CLASS}}>{{SECTOR_ENERGY_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🏭 <strong class="text-white">תעשייה</strong>: תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INDUSTRIALS_CLASS}}>{{SECTOR_INDUSTRIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">🧪 <strong class="text-white">חומרים</strong>: כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">📡 <strong class="text-white">שירותי תקשורת</strong>: טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" {{SECTOR_COMM_CLASS}}>{{SECTOR_COMM_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 leading-relaxed">⚡ <strong class="text-white">תשתיות ציבוריות</strong>: חשמל ומים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_UTILITIES_CLASS}}>{{SECTOR_UTILITIES_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2 leading-relaxed">🏢 <strong class="text-white">נדל"ן</strong>: קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_REAL_ESTATE_CLASS}}>{{SECTOR_REAL_ESTATE_PCT}}</span></div>
                 </div>
             </div>
         </div>
@@ -149,10 +149,10 @@
         <!-- שלב 3: זרימים -->
         <div id="tab-3" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> {{CATALYST_EARNINGS}}</p>
-                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> {{CATALYST_MONETARY}}</p>
-                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> {{CATALYST_HARDWARE}}</p>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-xs md:text-sm text-gray-300 leading-relaxed">
+                <p><strong class="text-white text-base">📑 דיווחי תוצאות לרבעון:</strong><br>{{CATALYST_EARNINGS}}</p>
+                <p><strong class="text-white text-base">🏦 הודעות מדיניות מוניטרית:</strong><br>{{CATALYST_MONETARY}}</p>
+                <p><strong class="text-white text-base">🎮 השקות חומרה ועדכוני תוכנה:</strong><br>{{CATALYST_HARDWARE}}</p>
             </div>
         </div>
 
@@ -160,12 +160,12 @@
         <div id="tab-4" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 4: אסטרטגיות מסחר והשקעה (ליבה וסווינג) 📈</h2>
             <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-cyan-400">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core) - 10 נבחרות 🏆</h3>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
+                <h3 class="text-lg font-bold text-cyan-400">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core) - 10 נבחרות 🏆</h3>
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-xs md:text-sm text-gray-300">
                     {{LONG_TERM_STOCKS_SECTION}}
                 </div>
-                <h3 class="text-lg font-semibold text-cyan-400">קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading) - 10 נבחרות 🔄</h3>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
+                <h3 class="text-lg font-bold text-cyan-400">קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading) - 10 נבחרות 🔄</h3>
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-xs md:text-sm text-gray-300">
                     {{SWING_STOCKS_SECTION}}
                 </div>
             </div>
@@ -183,7 +183,7 @@
 
             <!-- טופס הוספה/עדכון מניה -->
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
-                <h3 class="text-base font-bold text-cyan-400">הוספה או עדכון מניה</h3>
+                <h3 class="text-lg font-bold text-cyan-400">הוספה או עדכון מניה</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">שם חברה</label>
@@ -214,28 +214,28 @@
             </div>
         </div>
 
-<!-- שלב 6: סנטימנט -->
-<div id="tab-6" class="tab-content hidden space-y-4">
-    <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
-    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
-        <div class="text-gray-300 font-semibold">💬 סנטימנט קהילות המסחר:</div>
-        <div class="text-gray-300">{{COMMUNITY_SENTIMENT}}</div>
-        <div class="mt-4">
-            <p class="font-bold text-cyan-400 mb-2">מה האנליסטים אומרים בקשר להמשך כיוון השוק:</p>
-            <div class="space-y-2 text-gray-300">
-                <div>{{ANALYST_POINT_1}}</div>
-                <div>{{ANALYST_POINT_2}}</div>
+        <!-- שלב 6: סנטימנט -->
+        <div id="tab-6" class="tab-content hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
+                <div class="text-lg font-bold text-cyan-400">💬 סנטימנט קהילות המסחר:</div>
+                <div class="text-xs md:text-sm text-gray-300 leading-relaxed">{{COMMUNITY_SENTIMENT}}</div>
+                <div class="mt-4 space-y-2">
+                    <div class="text-lg font-bold text-cyan-400">מה האנליסטים אומרים בקשר להמשך כיוון השוק:</div>
+                    <div class="space-y-2 text-xs md:text-sm text-gray-300 leading-relaxed">
+                        <div>{{ANALYST_POINT_1}}</div>
+                        <div>{{ANALYST_POINT_2}}</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- שלב 7: סיכון -->
         <div id="tab-7" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🛡️ <strong>ניהול סיכונים:</strong> {{RISK_MANAGEMENT_TEXT}}</p>
-                <p>📋 <strong>המלצות פעולה:</strong> {{ACTION_RECOMMENDATIONS_TEXT}}</p>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-xs md:text-sm text-gray-300 leading-relaxed">
+                <p><strong class="text-white text-base">🛡️ ניהול סיכונים:</strong><br>{{RISK_MANAGEMENT_TEXT}}</p>
+                <p><strong class="text-white text-base">📋 המלצות פעולה:</strong><br>{{ACTION_RECOMMENDATIONS_TEXT}}</p>
             </div>
         </div>
 
@@ -248,7 +248,6 @@
     </main>
 
     <script>
-        // המערך מוזרק באופן דינמי מקובץ הפייתון
         let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -274,12 +273,9 @@
 
             renderPortfolio();
 
-            // גרף הסקטורים
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
-                // שימוש בנתונים הישירים והמסודרים מתוך JSON שהפייתון מעביר
                 const sectorData = {{SECTORS_CHART_JSON}};
-                
                 const labels = ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'];
                 const rawValues = sectorData.map(item => typeof item.change === 'number' ? item.change : 0);
                 const barColors = rawValues.map(val => val >= 0 ? '#22c55e' : '#dc2626');
@@ -314,7 +310,7 @@
 
             portfolioStocks.forEach((stock, index) => {
                 const card = document.createElement('div');
-                card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 flex flex-col justify-between";
+                card.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-xs md:text-sm text-gray-300 flex flex-col justify-between";
                 
                 const cleanSymbol = stock.symbol.trim().toUpperCase();
                 const primaryLogo = `https://assets.parqet.com/logos/symbol/${cleanSymbol}`;
@@ -329,15 +325,15 @@
                                  class="rounded-full bg-white p-0.5 object-contain" 
                                  onerror="this.onerror=null; this.src='${fallbackLogo}';" 
                                  alt="${stock.symbol}">
-                            <strong>${stock.name}</strong> (טיקר: <strong dir="ltr">${stock.symbol}</strong>)
+                            <strong class="text-base text-white">${stock.name}</strong> (טיקר: <strong dir="ltr" class="text-white">${stock.symbol}</strong>)
                         </div>
                         מספר מניות: ${stock.shares} מניות<br>
-                        קנייה: <strong>$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
-                        מחיר נוכחי: <strong>${stock.current}</strong><br>
-                        מחיר טרום פתיחה: <strong>${stock.pre}</strong><br>
-                        מחיר יעד אנליסטים ממוצע: <strong>${stock.target}</strong><br>
+                        קנייה: <strong class="text-white">$${typeof stock.buyPrice === 'number' ? stock.buyPrice.toFixed(2) : stock.buyPrice}</strong><br>
+                        מחיר נוכחי: <strong class="text-white">${stock.current}</strong><br>
+                        מחיר טרום פתיחה: <strong class="text-white">${stock.pre}</strong><br>
+                        מחיר יעד אנליסטים ממוצע: <strong class="text-white">${stock.target}</strong><br>
                         <strong>${stock.status}</strong><br>
-                        <span class="text-gray-400">${stock.note}</span>
+                        <div class="mt-2 pt-2 border-t border-gray-700 text-gray-300 leading-relaxed">${stock.note}</div>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-gray-700 mt-2">
                         <button onclick="loadStockForUpdate(${index})" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs transition">עדכון ✏️</button>
@@ -348,7 +344,6 @@
             });
         }
 
-        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend
         async function fetchLiveStockData(symbol) {
             try {
                 const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
@@ -427,7 +422,6 @@
             clearForm();
             renderPortfolio();
 
-            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)
             const synced = await syncToGithubRepo();
             if (synced) {
                 statusMsg.style.color = "#4ade80";
@@ -447,7 +441,6 @@
             if (!token || !repo) return false;
 
             try {
-                // לבנות קובץ portfolio.json מעודכן
                 const portfolioDict = {};
                 portfolioStocks.forEach(s => {
                     portfolioDict[s.symbol] = {
@@ -460,7 +453,6 @@
                 const contentStr = JSON.stringify(portfolioDict, null, 4);
                 const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
 
-                // לקבל את ה-SHA הנוכחי של הקובץ
                 const getUrl = `https://api.github.com/repos/${repo}/contents/portfolio.json`;
                 const headers = { "Authorization": `token ${token}`, "Content-Type": "application/json" };
                 
@@ -471,7 +463,6 @@
                     sha = fileInfo.sha;
                 }
 
-                // עדכון הקובץ ב-GitHub
                 const putRes = await fetch(getUrl, {
                     method: "PUT",
                     headers,
