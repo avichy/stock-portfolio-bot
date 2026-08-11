@@ -584,8 +584,9 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 עליך להעניק ניתוח מאקרו וגיאופוליטי רחב, מעמיק וחסר פשרות בכל סעיפי המאקרו (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS). חובה לנתח בהרחבה אירועים גיאופוליטיים קריטיים (כגון מתיחות מול איראן, השפעות ביטחוניות אזוריות, מלחמות, שרשראות אספקה עולמיות, החלטות ריבית ואינפלציה). 
 בסיום כל ניתוח חדשותי מאקרו (כגון US_MARKET_NEWS ו־IL_MARKET_NEWS), **חובה לתת שורה תחתונה ברורה וחד־משמעית** שבה אתה קובע האם להערכתך השוק צפוי לעלות או לרדת בעקבות חדשות אלו ולמה. אל תחסוך במילים ובנה פסקאות מלאות ועשירות בתוכן!
 
-**הנחיות קשיחות למניעת כפילויות מניות בתיק (קריטי מאוד):**
-אסור בתכלית האיסור לכלול ברשימות המניות של שלב 4 (גם ב-long_term_stocks וגם ב-swing_stocks) שום מניה שהמשתמש כבר מחזיק בתיק האישי שלו (בשלב 5). רשימת הטיקרים של המשתמש שחובה להוציא לחלוטין מההמלצות היא: {portfolio_tickers}.
+**הנחיות קשיחות ביותר למניעת כפילויות מניות והפרדה מוחלטת (קריטי ביותר):**
+1. אסור בתכלית האיסור לכלול ברשימות המניות של שלב 4 (לא ב-long_term_stocks ולא ב-swing_stocks) שום מניה שהמשתמש כבר מחזיק בתיק האישי שלו (בשלב 5). רשימת הטיקרים האסורה לחלוטין היא: {portfolio_tickers}.
+2. אסור בתכלית האיסור למחזר או לשים את אותן מניות בשתי הקבוצות! רשימת long_term_stocks חייבת להכיל אך ורק מניות ערך ודיבידנד יציבות וארוכות טווח, ורשימת swing_stocks חייבת להכיל אך ורק מניות תנודתיות ומומנטום קצר טווח שונות לחלוטין. אסור שתופיע אותה מניה בשתי הקבוצות גם יחד!
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
 לכל סעיפי הניתוח ומאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.).
@@ -605,7 +606,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 נתוני השוק הנוכחיים:
 {market_summary}
 
-מניות התיק האישי של המשתמש: {portfolio_tickers}
+מניות התיק האישי של המשתמש (שאסור להמליץ עליהן בשלב 4 בשום אופן): {portfolio_tickers}
 
 החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
 1. SP500_ANALYSIS
@@ -628,8 +629,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
+21. long_term_stocks (מערך של 10 אובייקטים שונים לגמרי עם ticker, name, desc, news)
+22. swing_stocks (מערך של 10 אובייקטים שונים לגמרי המובדלים לחלוטין מ-long_term_stocks עם ticker, name, desc, news)
 23. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title, news_desc)
 """.format(
             date_str=date_str,
@@ -1029,7 +1030,7 @@ if __name__ == "__main__":
             "pre": f"${format_num(pre_p)}",
             "target": f"${format_num(fetched_target)}",
             "status": (
-                "רווח: <span style='color: {color}; font-weight:"
+                f"רווח: <span style='color: {color}; font-weight:"
                 f" bold;'>{sign}{ret:.2f}%</span>"
             ),
             "note": "",
