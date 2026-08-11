@@ -566,14 +566,14 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 אסור בתכלית האיסור לתת תשובות קצרות, תמציתיות או משפט אחד בלבד! בכל סעיפי הניתוח, המאקרו, והחדשות (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS), עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ومחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
 **הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
 עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
 - "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
 - "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
-- "news_content": תוכן חדשותي מפורט ומלא המרחיב על החדשה.
+- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
 - "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
 
 היום הוא {day_name}, בתאריך {date_str}.
@@ -835,11 +835,14 @@ if __name__ == "__main__":
 
     trigger_event = os.environ.get("TRIGGER_EVENT", "")
 
-    # בדיקה חכמה האם זו שעת AI רשמית (10:10, 16:40, 23:40 בשעון ישראל)
     current_hour = now_il.hour
     current_minute = now_il.minute
 
-    is_ai_time = (
+    # עדכון ידני תמיד יפעיל את ה-AI
+    is_manual = trigger_event == "workflow_dispatch"
+
+    # האם זו שעת AI רשמית דרך ה-cron
+    is_scheduled_ai_time = (
         trigger_event == "repository_dispatch"
         and (
             (current_hour == 10 and 10 <= current_minute <= 15)
@@ -848,6 +851,7 @@ if __name__ == "__main__":
         )
     )
 
+    is_ai_time = is_manual or is_scheduled_ai_time
     is_yahoo_only = not is_ai_time
 
     investing_headlines = fetch_investing_news()
@@ -1042,7 +1046,7 @@ if __name__ == "__main__":
                 ),
             )
         )
-        
+
         raw_news_title = p_item.get("news_title", p_item.get("title", ""))
         if (
             not raw_news_title
@@ -1083,7 +1087,7 @@ if __name__ == "__main__":
             f"<div class='mb-2'><strong>כותרת"
             f" חדשותית:</strong><br>{p_news_title}</div>"
             f"<div class='mb-2'><strong>תוכן"
-            f" חדשותי:</strong><br>{p_news_content}</div>"
+            f" חדשותي:</strong><br>{p_news_content}</div>"
             f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
         )
 
