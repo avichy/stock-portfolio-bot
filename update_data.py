@@ -99,7 +99,8 @@ def format_ai_text(text):
     cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
     
     for i in range(1, 10):
-        cleaned = cleaned.replace(f"{i}.", f"<br><br><strong>{i}.</strong>")
+        # שימוש בשורה חדשה נקייה (br אחד) כדי למנוע רווח ענק בין הסעיפים
+        cleaned = cleaned.replace(f"{i}.", f"<br><strong>{i}.</strong>")
     
     return cleaned
 
@@ -191,6 +192,13 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 **הנחיות קשיחות לשלב 3 (אירועים וזרזים מרכזיים - Catalysts):**
 עבור CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, כתוב לפחות 3 סעיפים מפורטים וארוכים מאוד (1., 2., 3.) שכל אחד מהם מתחיל בשורה חדשה עם הסבר מקצועי מלא.
 
+**הנחיות קשיחות לשלב 4 (מניות אסטרטגיה - long_term_stocks ו- swing_stocks):**
+עליך להחזיר תחת "long_term_stocks" מערך של בדיוק 10 מניות השקעה ארוכות טווח, ותחת "swing_stocks" מערך של בדיוק 10 מניות מסחר סווינג. לכל אובייקט במערכים אלו חובה לכלול בדיוק את המפתחות הבאים:
+- "ticker" (סימבול המניה, לדוגמה AAPL)
+- "name" (שם החברה המלא)
+- "desc" (תיאור קצר ועיסוק החברה)
+- "news" (חדשות ורציונל עדכני למניה)
+
 **הנחיות קשיחות לשלב 8 (חדשות מניות ושווקים):**
 השתמש אך ורק ברשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית המצורפת למטה. עליך להחזיר מערך (`market_news`) הכולל לפחות **10 ידיעות שונות** מתוכם. עבור כל ידיעה חובה להשתמש אך ורק בקישור האמיתי שסופק (`news_link`), בכותרת המקורית בעברית (`news_title`), ולכתוב תוכן מפורט בעברית (`news_content`) והשפעה פיננסית (`news_impact`). אסור בשום אופן לרשום "קישור לא זמין" או להמציא קישורים!
 
@@ -225,8 +233,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (חובה להחזיר כמערך של אובייקטים)
-22. swing_stocks (חובה להחזיר כמערך של אובייקטים)
+21. long_term_stocks (חובה להחזיר כמערך של בדיוק 10 אובייקטים עם ticker, name, desc, news)
+22. swing_stocks (חובה להחזיר כמערך של בדיוק 10 אובייקטים עם ticker, name, desc, news)
 23. portfolio_analysis
 24. market_news
 """.format(
@@ -295,8 +303,8 @@ base_market_tickers = list(set(
     ["GC=F", "CL=F", "BTC-USD", "USDILS=X", "DX-Y.NYB", "^GSPC", "^NDX", "^DJI", "^VIX"] +
     list(sector_tickers_map.values()) +
     list(portfolio_buys.keys()) +
-    [s["ticker"] for s in init_lt if isinstance(s, dict) and "ticker" in s] +
-    [s["ticker"] for s in init_sw if isinstance(s, dict) and "ticker" in s]
+    [s.get("ticker") or s.get("symbol") for s in init_lt if isinstance(s, dict) and (s.get("ticker") or s.get("symbol"))] +
+    [s.get("ticker") or s.get("symbol") for s in init_sw if isinstance(s, dict) and (s.get("ticker") or s.get("symbol"))]
 ))
 
 def fetch_market_data(tickers):
@@ -334,16 +342,19 @@ def fetch_market_data(tickers):
 
 def build_structured_stocks_html(stocks_meta, market_data):
     html_parts = []
-    if not isinstance(stocks_meta, list):
+    if not isinstance(stocks_meta, list) or not stocks_meta:
         stocks_meta = LT_STOCKS_META
 
     for s in stocks_meta:
         if not isinstance(s, dict):
             continue
-        ticker = s.get("ticker", "")
-        name = s.get("name", ticker)
-        desc = s.get("desc", "")
-        news = s.get("news", "")
+        # מנגנון איתור חזק למפתחות השונים שה-AI עשוי להחזיר
+        ticker = str(s.get("ticker") or s.get("symbol") or "").strip().upper()
+        if not ticker:
+            continue
+        name = s.get("name") or s.get("company") or s.get("title") or ticker
+        desc = s.get("desc") or s.get("description") or s.get("reason") or ""
+        news = s.get("news") or s.get("rationale") or s.get("update") or ""
 
         data = market_data.get(ticker, {})
         price = format_num(data.get("price", 0))
@@ -445,17 +456,19 @@ if __name__ == "__main__":
             ]
 
         new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-        if not isinstance(new_lt, list):
+        if not isinstance(new_lt, list) or not new_lt:
             new_lt = LT_STOCKS_META
             
         new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
-        if not isinstance(new_sw, list):
+        if not isinstance(new_sw, list) or not new_sw:
             new_sw = SW_STOCKS_META
 
         extra_tickers = []
         for s in new_lt + new_sw:
-            if isinstance(s, dict) and "ticker" in s and s["ticker"] not in base_market_data:
-                extra_tickers.append(s["ticker"])
+            if isinstance(s, dict):
+                t = s.get("ticker") or s.get("symbol")
+                if t and t not in base_market_data:
+                    extra_tickers.append(t)
         if extra_tickers:
             print(f"Fetching market data for extra AI-selected tickers: {extra_tickers}")
             extra_data = fetch_market_data(extra_tickers)
@@ -505,12 +518,16 @@ if __name__ == "__main__":
         btc_price = f"${format_num(btc_p)}"
         btc_change = format_pct_colored(btc_c)
 
+        # תיקון נתוני גרף הסקטורים כך שיעבירו את אחוז השינוי (change) לכל מאפיין אפשרי בגרף
         sector_chart_list = []
         for s_name, s_ticker in sector_tickers_map.items():
             s_data = base_market_data.get(s_ticker, {})
+            chg = s_data.get("change", 0.0)
             sector_chart_list.append({
                 "name": s_name,
-                "change": s_data.get("change", 0.0)
+                "change": chg,
+                "price": chg,
+                "value": chg
             })
 
         portfolio_analysis_map = ai_insights.get("portfolio_analysis", {})
@@ -524,11 +541,11 @@ if __name__ == "__main__":
             content = f.read()
 
         lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-        if not isinstance(lt_stocks_data, list):
+        if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
             lt_stocks_data = LT_STOCKS_META
             
         sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
-        if not isinstance(sw_stocks_data, list):
+        if not isinstance(sw_stocks_data, list) or not sw_stocks_data:
             sw_stocks_data = SW_STOCKS_META
 
         lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
