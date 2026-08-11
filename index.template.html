@@ -214,20 +214,21 @@
             </div>
         </div>
 
-        <!-- שלב 6: סנטימנט -->
-        <div id="tab-6" class="tab-content hidden space-y-4">
-            <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>💬 <strong>סנטימנט קהילות המסחר:</strong> {{COMMUNITY_SENTIMENT}}</p>
-                <div>
-                    <p class="font-bold text-cyan-400 mb-1">📊 מה האנליסטים אומרים בקשר להמשך כיוון השוק:</p>
-                    <ul class="list-disc list-inside space-y-1 pr-2">
-                        <li><strong>{{ANALYST_POINT_1}}</strong></li>
-                        <li><strong>{{ANALYST_POINT_2}}</strong></li>
-                    </ul>
-                </div>
+<!-- שלב 6: סנטימנט -->
+<div id="tab-6" class="tab-content hidden space-y-4">
+    <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
+    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
+        <div class="text-gray-300 font-semibold">💬 סנטימנט קהילות המסחר:</div>
+        <div class="text-gray-300">{{COMMUNITY_SENTIMENT}}</div>
+        <div class="mt-4">
+            <p class="font-bold text-cyan-400 mb-2">מה האנליסטים אומרים בקשר להמשך כיוון השוק:</p>
+            <div class="space-y-2 text-gray-300">
+                <div>{{ANALYST_POINT_1}}</div>
+                <div>{{ANALYST_POINT_2}}</div>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- שלב 7: סיכון -->
         <div id="tab-7" class="tab-content hidden space-y-4">
