@@ -111,14 +111,12 @@ def format_pct_colored(val):
 
 
 def format_ai_text(text):
-  # טיפול במקרה שהמודל מחזיר רשימה (List) של סעיפים
   if isinstance(text, list):
     text = " ".join(str(item) for item in text)
   elif not isinstance(text, str):
     text = str(text)
 
   text = text.strip()
-  # טיפול במקרה שהמחרוזת מתחילה ומסתיימת בסוגריים מרובעים של JSON
   if text.startswith("[") and text.endswith("]"):
     try:
       parsed_list = json.loads(text)
@@ -136,7 +134,6 @@ def format_ai_text(text):
       .replace("'", "")
   )
 
-  # פיצול חכם ומדויק של הסעיפים כך שכל מספר יופיע בשורה נפרדת, נקייה ומעוצבת היטב
   parts = re.split(r"(?=\b[1-9]\.)", cleaned)
   formatted_blocks = []
   for part in parts:
@@ -555,10 +552,10 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
 
 **הנחיה ראשונה במעלה (אריכות, עומק ונימוקים):**
-אסור בתכלית האיסור לתת תשובות קצרות או תמציתיות! בכל סעיפי הניתוח, המאקרו והחדשות, עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
+אסור בתכלית האיסור לתת תשובות קצרות, תמציתיות או משפט אחד בלבד! בכל סעיפי הניתוח, המאקרו, והחדשות (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS), עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
 **הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
@@ -825,10 +822,7 @@ if __name__ == "__main__":
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    # זיהוי מקור ההפעלה מתוך משתני הסביבה של GitHub Actions
     trigger_event = os.environ.get("TRIGGER_EVENT", "")
-    
-    # אם ההפעלה הגיעה מ-cron-job.org (repository_dispatch), נבצע עדכון מהיר של Yahoo בלבד ללא AI
     is_yahoo_only = (trigger_event == "repository_dispatch")
 
     investing_headlines = fetch_investing_news()
@@ -1058,7 +1052,7 @@ if __name__ == "__main__":
             f"<div class='mb-2'><strong>כותרת"
             f" חדשותית:</strong><br>{p_news_title}</div>"
             f"<div class='mb-2'><strong>תוכן"
-            f" חדשותي:</strong><br>{p_news_content}</div>"
+            f" חדשותי:</strong><br>{p_news_content}</div>"
             f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
         )
 
