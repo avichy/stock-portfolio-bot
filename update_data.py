@@ -166,19 +166,19 @@ def format_ai_text(text):
     if match:
       num, content = match.groups()
       formatted_blocks.append(
-          f'<div class="mb-2 flex items-start gap-2"><span'
-          f' class="font-bold text-cyan-400 min-w-[20px]">{num}.</span><span'
+          f'<div class="mb-1.5 flex items-start gap-2 text-xs text-gray-300"><span'
+          f' class="font-bold text-cyan-400 min-w-[18px]">{num}.</span><span'
           f' class="flex-1 leading-relaxed">{content}</span></div>'
       )
     else:
       formatted_blocks.append(
-          f'<div class="mb-2 leading-relaxed">{part}</div>'
+          f'<div class="mb-1.5 leading-relaxed text-xs text-gray-300">{part}</div>'
       )
 
   return (
       "".join(formatted_blocks)
       if formatted_blocks
-      else f'<div class="leading-relaxed">{cleaned}</div>'
+      else f'<div class="leading-relaxed text-xs text-gray-300">{cleaned}</div>'
   )
 
 
