@@ -503,6 +503,17 @@ def fetch_market_data(tickers):
               "target": 65000.0,
               "pre_market": 60000.0,
           },
+          "XLK": {"price": 220.0, "change": 0.0, "target": 240.0, "pre_market": 220.0},
+          "XLF": {"price": 45.0, "change": 0.0, "target": 50.0, "pre_market": 45.0},
+          "XLV": {"price": 140.0, "change": 0.0, "target": 150.0, "pre_market": 140.0},
+          "XLY": {"price": 180.0, "change": 0.0, "target": 195.0, "pre_market": 180.0},
+          "XLP": {"price": 80.0, "change": 0.0, "target": 85.0, "pre_market": 80.0},
+          "XLE": {"price": 90.0, "change": 0.0, "target": 100.0, "pre_market": 90.0},
+          "XLI": {"price": 130.0, "change": 0.0, "target": 140.0, "pre_market": 130.0},
+          "XLB": {"price": 90.0, "change": 0.0, "target": 98.0, "pre_market": 90.0},
+          "XLC": {"price": 95.0, "change": 0.0, "target": 105.0, "pre_market": 95.0},
+          "XLU": {"price": 75.0, "change": 0.0, "target": 82.0, "pre_market": 75.0},
+          "XLRE": {"price": 40.0, "change": 0.0, "target": 45.0, "pre_market": 40.0},
       }
       market_data[ticker] = defaults.get(
           ticker, {"price": 100.0, "change": 0.0, "target": 110.0, "pre_market": 100.0}
@@ -562,7 +573,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
 - "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
 - "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
-- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
+- "news_content": תוכן חדשותي מפורט ומלא המרחיב על החדשה.
 - "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
 
 היום הוא {day_name}, בתאריך {date_str}.
@@ -823,16 +834,35 @@ if __name__ == "__main__":
     time_str = now_il.strftime("%H:%M")
 
     trigger_event = os.environ.get("TRIGGER_EVENT", "")
-    is_yahoo_only = (trigger_event == "repository_dispatch")
+
+    # בדיקה חכמה האם זו שעת AI רשמית (10:10, 16:40, 23:40 בשעון ישראל)
+    current_hour = now_il.hour
+    current_minute = now_il.minute
+
+    is_ai_time = (
+        trigger_event == "repository_dispatch"
+        and (
+            (current_hour == 10 and 10 <= current_minute <= 15)
+            or (current_hour == 16 and 40 <= current_minute <= 45)
+            or (current_hour == 23 and 40 <= current_minute <= 45)
+        )
+    )
+
+    is_yahoo_only = not is_ai_time
 
     investing_headlines = fetch_investing_news()
 
     ai_insights = {}
     if is_yahoo_only:
-      print(f"⚡ Fast update triggered by cron-job.org at {time_str} - Loading AI cache (Yahoo only)...")
+      print(
+          f"⚡ Fast update (Yahoo only) at {time_str} - Loading AI cache..."
+      )
       ai_insights = load_ai_cache()
     else:
-      print(f"🤖 Full AI Update triggered ({trigger_event}) for {time_str} (Israel Time)...")
+      print(
+          f"🤖 Full AI Update triggered at {time_str} (Israel Time) - Running"
+          " Groq AI & News..."
+      )
       ai_insights = fetch_ai_insights_from_groq(
           base_market_data,
           portfolio_buys,
@@ -930,8 +960,9 @@ if __name__ == "__main__":
     for s_name, s_ticker in sector_tickers_map.items():
       s_data = base_market_data.get(s_ticker, {})
       chg = float(s_data.get("change", 0.0))
+      price_val = float(s_data.get("price", 100.0))
       sector_chart_list.append(
-          {"name": s_name, "change": chg, "price": chg, "value": chg}
+          {"name": s_name, "change": chg, "price": price_val, "value": price_val}
       )
 
     portfolio_analysis_raw = ai_insights.get("portfolio_analysis", {})
