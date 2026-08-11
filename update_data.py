@@ -134,7 +134,6 @@ def format_ai_text(text):
       .replace("'", "")
   )
 
-  # פיצול חכם של הסעיפים כך שכל מספר יופיע בשורה נפרדת, קטנה וקריאה בהרבה מתחת לכותרת
   parts = re.split(r"(?=\b[1-9]\.)", cleaned)
   formatted_blocks = []
   for part in parts:
@@ -196,7 +195,7 @@ def fetch_investing_news():
           f"Successfully fetched {len(news_items)} headlines in Hebrew from"
           " il.investing.com RSS."
       )
-      return news_items[:25]
+      return news_items[:10]  # מוגבל ל-10 כדי לחסוך טוקנים ולמנוע שגיאת 413
   except Exception as e:
     print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
     return []
@@ -544,42 +543,29 @@ def fetch_ai_insights_from_groq(
 
         headlines_formatted = (
             "\n".join([
-                f"- כותרת בעברית: {h['title']} | קישור אמיתי: {h['link']}"
+                f"- כותרת: {h['title']} | קישור: {h['link']}"
                 for h in investing_headlines
             ])
             if investing_headlines
-            else "אין כותרות זמינות."
+            else "אין כותרות."
         )
 
+        # פרומפט ממוקד וקצר יותר למניעת חריגת טוקנים (שגיאה 413)
         prompt = """
-You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
-אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
+You must output valid JSON without any markdown formatting or arrays inside values.
+אתה אנליסט בוולסטריט. נתח את השוק ליום {day_name}, {date_str}.
 
-**הנחיה ראשונה במעלה (אריכות, עומק ונימוקים):**
-אסור בתכלית האיסור לתת תשובות קצרות או תמציתיות! בכל סעיפי הניתוח, המאקרו והחדשות, עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
+כתוב בכל סעיף ניתוח מפורט המחולק בדיוק ל-4 סעיפים נפרדים (1., 2., 3., 4.) המופרדים לשורות.
 
-**הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
-אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
-
-**הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
-עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
-- "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
-- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
-- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
-- "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
-
-היום הוא {day_name}, בתאריך {date_str}.
-
-רשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית לשימוש בשלב 8:
+כתובות Investing:
 {headlines_formatted}
 
-נתוני השוק הנוכחיים:
+נתוני שוק:
 {market_summary}
 
-מניות התיק האישי של המשתמש: {portfolio_tickers}
+מניות התיק: {portfolio_tickers}
 
-החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
+החזר אובייקט JSON תקין עם המפתחות:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -602,8 +588,8 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 20. ACTION_RECOMMENDATIONS_TEXT
 21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
 22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-23. portfolio_analysis (אובייקט המפתח לפי טיקר המניות עם rationale, news_title, news_content, news_impact)
-24. market_news (לפחות 12 ידיעות עם news_link, news_title, news_content, news_impact)
+23. portfolio_analysis (אובייקט לפי טיקר עם rationale, news_title, news_content, news_impact)
+24. market_news (לפחות 10 ידיעות עם news_link, news_title, news_content, news_impact)
 """.format(
             date_str=date_str,
             day_name=day_name,
@@ -616,7 +602,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-            max_tokens=8192,
+            max_tokens=6144,
         )
 
         raw_text = response.choices[0].message.content.strip()
@@ -635,7 +621,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
           print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds...")
           time.sleep(65)
         else:
-          print("🔄 Connection error. Waiting 5 seconds...")
+          print("🔄 Connection error. Waiting 5 secondscharts/retrying...")
           time.sleep(5)
 
   print("⚠️ All AI retries exhausted. Falling back to cache.")
@@ -859,7 +845,6 @@ if __name__ == "__main__":
       )
       ai_insights = load_ai_cache()
 
-    # וידוא שכל שדות הניתוח מקבלים תוכן תקין גם במקרה של חוסר נתונים מה-AI
     default_fallback_analysis = (
         "1. ניתוח טכני מעמיק מצביע על התייצבות סביב רמות תמיכה מרכזיות בשוק."
         " 2. מחזורי המסחר מציגים פעילות מוסדית ערה התומכת במגמה הנוכחית."
@@ -898,7 +883,7 @@ if __name__ == "__main__":
               "news_link": h["link"],
               "news_title": h["title"],
               "news_content": (
-                  "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת של"
+                  "עדכון שוטף ודיווח חדשותي ישירות מתוך המערכת של"
                   " Investing.com בעברית."
               ),
               "news_impact": (
@@ -906,7 +891,7 @@ if __name__ == "__main__":
                   " התיק."
               ),
           }
-          for h in investing_headlines[:15]
+          for h in investing_headlines[:10]
       ]
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
@@ -975,7 +960,6 @@ if __name__ == "__main__":
     btc_price = f"${format_num(btc_p)}"
     btc_change = format_pct_colored(btc_c)
 
-    # תיקון קריטי לגרף: מעבר מחירים אמיתיים במקום אחוז השינוי
     sector_chart_list = []
     for s_name, s_ticker in sector_tickers_map.items():
       s_data = base_market_data.get(s_ticker, {})
