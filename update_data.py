@@ -825,23 +825,20 @@ if __name__ == "__main__":
     date_str = now_il.strftime("%d.%m.%Y")
     time_str = now_il.strftime("%H:%M")
 
-    current_hour = now_il.hour
-    current_minute = now_il.minute
-
-    is_cron_run = os.environ.get("IS_CRON", "false").lower() == "true"
-    is_ai_time = (
-        (current_hour == 10 and current_minute == 10)
-        or (current_hour == 16 and current_minute == 40)
-        or (current_hour == 23 and current_minute == 40)
-    )
-
-    run_ai = (not is_cron_run) or is_ai_time
+    # זיהוי מקור ההפעלה מתוך משתני הסביבה של GitHub Actions
+    trigger_event = os.environ.get("TRIGGER_EVENT", "")
+    
+    # אם ההפעלה הגיעה מ-cron-job.org (repository_dispatch), נבצע עדכון מהיר של Yahoo בלבד ללא AI
+    is_yahoo_only = (trigger_event == "repository_dispatch")
 
     investing_headlines = fetch_investing_news()
 
     ai_insights = {}
-    if run_ai:
-      print(f"🤖 AI Update triggered for {time_str} (Israel Time)...")
+    if is_yahoo_only:
+      print(f"⚡ Fast update triggered by cron-job.org at {time_str} - Loading AI cache (Yahoo only)...")
+      ai_insights = load_ai_cache()
+    else:
+      print(f"🤖 Full AI Update triggered ({trigger_event}) for {time_str} (Israel Time)...")
       ai_insights = fetch_ai_insights_from_groq(
           base_market_data,
           portfolio_buys,
@@ -851,12 +848,6 @@ if __name__ == "__main__":
       )
       if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
         save_ai_cache(ai_insights)
-    else:
-      print(
-          f"⚡ Cache-only update triggered for {time_str} (Israel Time)."
-          " Loading AI cache..."
-      )
-      ai_insights = load_ai_cache()
 
     if not ai_insights.get("market_news") and investing_headlines:
       ai_insights["market_news"] = [
@@ -1067,7 +1058,7 @@ if __name__ == "__main__":
             f"<div class='mb-2'><strong>כותרת"
             f" חדשותית:</strong><br>{p_news_title}</div>"
             f"<div class='mb-2'><strong>תוכן"
-            f" חדשותי:</strong><br>{p_news_content}</div>"
+            f" חדשותي:</strong><br>{p_news_content}</div>"
             f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
         )
 
