@@ -210,7 +210,7 @@ def fetch_investing_news():
           news_items.append(
               {"title": title.text.strip(), "link": link.text.strip()}
           )
-      return news_items[:25]
+      return news_items[:15]  # מצומצם ל-15 ידיעות לחיסכון קריטי בטוקנים
   except Exception as e:
     print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
     return []
@@ -569,46 +569,43 @@ def fetch_ai_insights_from_groq(
 
         headlines_formatted = (
             "\n".join([
-                f"- כותרת בעברית: {h['title']} | קישור אמיתי: {h['link']}"
+                f"- Title: {h['title']} | Link: {h['link']}"
                 for h in investing_headlines
             ])
             if investing_headlines
-            else "אין כותרות זמינות."
+            else "No headlines available."
         )
 
-        prompt = """
-You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
-אתה אנליסט בכיר בוולסטריט ומומחה עולמי לגיאופוליטיקה, מאקרו-כלכלה ושוק המניות האמריקאי והישראלי. 
+        # פרומפט באנגלית מלאה – חוסך אלפי טוקנים, מונע שגיאת 413 ומבטיח ציות מוחלט לחוקים
+        prompt = f"""
+You must output valid JSON. Do not include curly brackets or array symbols inside text values, write plain structured text.
+You are a senior Wall Street analyst and global expert in macroeconomics and markets. 
+All textual values, descriptions, analyses, and news summaries must be written in professional Hebrew.
 
-**הנחיה ראשונה במעלה (עומק עצום וניתוח גיאופוליטי בשלב 1):**
-עליך להעניק ניתוח מאקרו וגיאופוליטי רחב, מעמיק וחסר פשרות בכל סעיפי המאקרו (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS). חובה לנתח בהרחבה אירועים גיאופוליטיים קריטיים (כגון מתיחות מול איראן, השפעות ביטחוניות אזוריות, מלחמות, שרשראות אספקה עולמיות, החלטות ריבית ואינפלציה). 
-בסיום כל ניתוח חדשותי מאקרו (כגון US_MARKET_NEWS ו־IL_MARKET_NEWS), **חובה לתת שורה תחתונה ברורה וחד־משמעית** שבה אתה קובע האם להערכתך השוק צפוי לעלות או לרדת בעקבות חדשות אלו ולמה. אל תחסוך במילים ובנה פסקאות מלאות ועשירות בתוכן!
+CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
+1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
+2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain only stable value/dividend stocks, swing must contain separate high-momentum short-term trading stocks.
 
-**הנחיות קשיחות ביותר למניעת כפילויות מניות והפרדה מוחלטת (קריטי ביותר):**
-1. אסור בתכלית האיסור לכלול ברשימות המניות של שלב 4 (לא ב-long_term_stocks ולא ב-swing_stocks) שום מניה שהמשתמש כבר מחזיק בתיק האישי שלו (בשלב 5). רשימת הטיקרים האסורה לחלוטין היא: {portfolio_tickers}.
-2. אסור בתכלית האיסור למחזר או לשים את אותן מניות בשתי הקבוצות! רשימת long_term_stocks חייבת להכיל אך ורק מניות ערך ודיבידנד יציבות וארוכות טווח, ורשימת swing_stocks חייבת להכיל אך ורק מניות תנודתיות ומומנטום קצר טווח שונות לחלוטין. אסור שתופיע אותה מניה בשתי הקבוצות גם יחד!
+FORMAT RULES:
+All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich text split into EXACTLY 4 distinct numbered sections (1., 2., 3., 4.), each starting on a new line. Never return arrays or brackets inside text fields.
 
-**הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח ומאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.).
-אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
+MARKET NEWS (market_news):
+Return an array of at least 10 key news items from the provided list. Each item must have:
+1. news_link (exact URL)
+2. news_title (title)
+3. news_desc (short 1-2 sentence summary in Hebrew explaining its impact on the market).
 
-**הנחיות קשיחות לשלב 8 (market_news - חדשות השוק עם תקציר מידע):**
-חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות ומרכזיות** מתוך הרשימה. כל ידיעה חייבת לכלול שלושה שדות בלבד: 
-1. news_link (קישור אמיתי)
-2. news_title (כותרת הידיעה)
-3. news_desc (תקציר מידע והסבר קצר בן 1-2 משפטים בעברית על תוכן הידיעה והשפעתה על השוק).
+Today is {day_name}, Date: {date_str}.
 
-היום הוא {day_name}, בתאריך {date_str}.
-
-רשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית לשימוש:
+Headlines from Investing.com:
 {headlines_formatted}
 
-נתוני השוק הנוכחיים:
-{market_summary}
+Current Market Data:
+{json.dumps(market_summary, ensure_ascii=False)}
 
-מניות התיק האישי של המשתמש (שאסור להמליץ עליהן בשלב 4 בשום אופן): {portfolio_tickers}
+User Portfolio Tickers (DO NOT RECOMMEND): {portfolio_tickers}
 
-החזר אובייקט JSON תקין הכולל את המפתחות הבאים בדיוק:
+Return a valid JSON object with exactly these keys:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -629,16 +626,10 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (מערך של 10 אובייקטים שונים לגמרי עם ticker, name, desc, news)
-22. swing_stocks (מערך של 10 אובייקטים שונים לגמרי המובדלים לחלוטין מ-long_term_stocks עם ticker, name, desc, news)
-23. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title, news_desc)
-""".format(
-            date_str=date_str,
-            day_name=day_name,
-            headlines_formatted=headlines_formatted,
-            market_summary=json.dumps(market_summary, ensure_ascii=False),
-            portfolio_tickers=portfolio_tickers,
-        )
+21. long_term_stocks (array of 10 distinct objects with ticker, name, desc, news)
+22. swing_stocks (array of 10 distinct objects completely separate from long_term_stocks with ticker, name, desc, news)
+23. market_news (array of at least 10 items with news_link, news_title, news_desc)
+"""
 
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -657,10 +648,11 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
         print(f"⚠️ Attempt failed with {key_name}: {e}")
         if (
             "429" in str(e)
+            or "413" in str(e)
             or "RESOURCE_EXHAUSTED" in str(e)
             or "rate_limit_exceeded" in str(e)
         ):
-          print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds...")
+          print(f"⏳ Rate limit or size limit hit on {key_name}. Waiting 65 seconds...")
           time.sleep(65)
         else:
           print("🔄 Connection error. Waiting 5 seconds...")
