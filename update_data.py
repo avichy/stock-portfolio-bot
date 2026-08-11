@@ -592,15 +592,18 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
 **הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
-עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
-- "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
-- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
-- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
-- "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
+עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט מדויק, אמיתי ומעמיק הכולל את המפתחות:
+- "rationale": ניתוח טכני ופונדמנטלי ארוך, מפורט ומקצועי מאוד על המניה, רמות תמיכה והתנגדות, ומצב החברה בשוק (אסור לכתוב משפטים גנריים כמו "היא חברת טכנולוגיה").
+- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית לחלוטין על החברה (אסור בשום אופן לרשום סתם את שם החברה או את הטיקר או משפטים גנריים כמו הודיעה על רווחים).**
+- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה האמיתית והאירועים האחרונים בחברה.
+- "news_impact": כיצד החדשה הספציפית משפיעה ישירות על ניהול הפוזיציה, ניהול הסיכונים ותזמון הפעולות בתיק.
+
+**הנחיות קשיחות לשלב 8 (market_news - חדשות התיק והמעקב):**
+חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות, מרכזיות וחשובות** מתוך הרשימה או ניתוח רוחבי. כל ידיעה חייבת לכלול את המפתחות: news_link, news_title, news_content, news_impact.
 
 היום הוא {day_name}, בתאריך {date_str}.
 
-רשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית לשימוש בשלב 8:
+רשימת הכתובות והקישורים האמיתיים מתוך Investing.com בעברית לשימוש:
 {headlines_formatted}
 
 נתוני השוק הנוכחיים:
@@ -632,7 +635,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
 22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
 23. portfolio_analysis (אובייקט המפתח לפי טיקר המניות עם rationale, news_title, news_content, news_impact)
-24. market_news (לפחות 12 ידיעות עם news_link, news_title, news_content, news_impact)
+24. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title, news_content, news_impact)
 """.format(
             date_str=date_str,
             day_name=day_name,
@@ -897,22 +900,18 @@ if __name__ == "__main__":
       if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
         save_ai_cache(ai_insights)
 
-    if not ai_insights.get("market_news") and investing_headlines:
-      ai_insights["market_news"] = [
-          {
-              "news_link": h["link"],
-              "news_title": h["title"],
-              "news_content": (
-                  "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת של"
-                  " Investing.com בעברית."
-              ),
-              "news_impact": (
-                  "מעקב יומי אחר התפתחויות הרוחב בשווקים הפיננסיים והשפעתן על"
-                  " התיק."
-              ),
-          }
-          for h in investing_headlines[:15]
-      ]
+    # ודא שתמיד יש לפחות 10-12 חדשות בשלב 8 מתוך הכותרות שנאספו אם ה-AI החזיר מעט מדי
+    market_news_data = ai_insights.get("market_news", [])
+    if not isinstance(market_news_data, list) or len(market_news_data) < 10:
+      market_news_data = []
+      for h in investing_headlines[:12]:
+        market_news_data.append({
+            "news_link": h["link"],
+            "news_title": h["title"],
+            "news_content": "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת של Investing.com בעברית, המרכז את ההתפתחויות הקריטיות בשווקים הפיננסיים ובסביבת המאקרו.",
+            "news_impact": "מעקב אחר השפעת החדשות על כיוון המסחר, תנודתיות הנכסים והתנהלות בתיק ההשקעות האישי."
+        })
+      ai_insights["market_news"] = market_news_data
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
     if not isinstance(new_lt, list) or not new_lt:
