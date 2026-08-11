@@ -134,6 +134,7 @@ def format_ai_text(text):
       .replace("'", "")
   )
 
+  # הקטנת הגופן בסעיפים ל-text-xs כדי שהכותרות יבלטו מעליהם באופן מושלם
   parts = re.split(r"(?=\b[1-9]\.)", cleaned)
   formatted_blocks = []
   for part in parts:
@@ -144,20 +145,20 @@ def format_ai_text(text):
     if match:
       num, content = match.groups()
       formatted_blocks.append(
-          f'<div class="mb-2 flex items-start gap-2"><span'
-          f' class="font-bold text-cyan-400 text-sm min-w-[20px]">{num}.</span><span'
-          f' class="flex-1 text-sm text-gray-300 leading-relaxed">{content}</span></div>'
+          f'<div class="mb-2 flex items-start gap-1.5"><span'
+          f' class="font-bold text-cyan-400 text-xs min-w-[16px]">{num}.</span><span'
+          f' class="flex-1 text-xs text-gray-300 leading-relaxed">{content}</span></div>'
       )
     else:
       formatted_blocks.append(
-          f'<div class="mb-2 text-sm text-gray-300 leading-relaxed">{part}</div>'
+          f'<div class="mb-2 text-xs text-gray-300 leading-relaxed">{part}</div>'
       )
 
   return (
       "".join(formatted_blocks)
       if formatted_blocks
       else (
-          f'<div class="text-sm text-gray-300'
+          f'<div class="text-xs text-gray-300'
           f' leading-relaxed">{cleaned}</div>'
       )
   )
@@ -195,7 +196,7 @@ def fetch_investing_news():
           f"Successfully fetched {len(news_items)} headlines in Hebrew from"
           " il.investing.com RSS."
       )
-      return news_items[:10]  # מוגבל ל-10 כדי לחסוך טוקנים ולמנוע שגיאת 413
+      return news_items[:10]
   except Exception as e:
     print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
     return []
@@ -550,7 +551,6 @@ def fetch_ai_insights_from_groq(
             else "אין כותרות."
         )
 
-        # פרומפט ממוקד וקצר יותר למניעת חריגת טוקנים (שגיאה 413)
         prompt = """
 You must output valid JSON without any markdown formatting or arrays inside values.
 אתה אנליסט בוולסטריט. נתח את השוק ליום {day_name}, {date_str}.
@@ -621,7 +621,7 @@ You must output valid JSON without any markdown formatting or arrays inside valu
           print(f"⏳ Rate limit hit on {key_name}. Waiting 65 seconds...")
           time.sleep(65)
         else:
-          print("🔄 Connection error. Waiting 5 secondscharts/retrying...")
+          print("🔄 Connection error. Waiting 5 seconds/retrying...")
           time.sleep(5)
 
   print("⚠️ All AI retries exhausted. Falling back to cache.")
@@ -747,7 +747,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
                 <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
-            <div class="text-sm text-gray-300 space-y-1">
+            <div class="text-xs text-gray-300 space-y-1">
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
                 <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
@@ -792,8 +792,8 @@ def build_market_news_html(market_news_list):
     )
 
     card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-xs text-gray-300 text-right" dir="rtl">
+            <h3 class="text-cyan-400 font-semibold text-sm">{p_title}</h3>
             <p>🔗 <strong>קישור אמיתי למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
             <div class="leading-relaxed"><strong>תוכן הכתבה המלא:</strong><br>{p_content}</div>
