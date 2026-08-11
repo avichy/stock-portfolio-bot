@@ -110,6 +110,26 @@ def format_pct_colored(val):
     return str(val)
 
 
+def format_numbers_in_text(text):
+  def replace_num(match):
+    num_str = match.group(0)
+    try:
+      if "." in num_str:
+        parts = num_str.split(".")
+        integer_part = int(parts[0])
+        return f"{integer_part:,}.{parts[1]}"
+      else:
+        return f"{int(num_str):,}"
+    except Exception:
+      return num_str
+
+  return re.sub(
+      r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|\b\d{4,}(?:\.\d+)?\b",
+      replace_num,
+      text,
+  )
+
+
 def format_ai_text(text):
   if isinstance(text, list):
     text = " ".join(str(item) for item in text)
@@ -134,13 +154,15 @@ def format_ai_text(text):
       .replace("'", "")
   )
 
-  parts = re.split(r"(?=\b[1-9]\.)", cleaned)
+  cleaned = format_numbers_in_text(cleaned)
+
+  parts = re.split(r"(?:\s+|\n)(?=[1-4]\.\s)", cleaned)
   formatted_blocks = []
   for part in parts:
     part = part.strip()
     if not part:
       continue
-    match = re.match(r"^([1-9])\.\s*(.*)", part)
+    match = re.match(r"^([1-4])\.\s*(.*)", part)
     if match:
       num, content = match.groups()
       formatted_blocks.append(
@@ -566,7 +588,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 אסור בתכלית האיסור לתת תשובות קצרות, תמציתיות או משפט אחד בלבד! בכל סעיפי הניתוח, המאקרו, והחדשות (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS), עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ومחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
 **הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
@@ -838,10 +860,8 @@ if __name__ == "__main__":
     current_hour = now_il.hour
     current_minute = now_il.minute
 
-    # עדכון ידני תמיד יפעיל את ה-AI
     is_manual = trigger_event == "workflow_dispatch"
 
-    # האם זו שעת AI רשמית דרך ה-cron
     is_scheduled_ai_time = (
         trigger_event == "repository_dispatch"
         and (
@@ -1087,7 +1107,7 @@ if __name__ == "__main__":
             f"<div class='mb-2'><strong>כותרת"
             f" חדשותית:</strong><br>{p_news_title}</div>"
             f"<div class='mb-2'><strong>תוכן"
-            f" חדשותي:</strong><br>{p_news_content}</div>"
+            f" חדשותי:</strong><br>{p_news_content}</div>"
             f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
         )
 
@@ -1095,7 +1115,7 @@ if __name__ == "__main__":
             "name": company_name,
             "symbol": ticker,
             "shares": shares_count,
-            "buyPrice": buy_p,
+            "buyPrice": format_num(buy_p),
             "current": f"${format_num(curr_p)}",
             "pre": f"${format_num(pre_p)}",
             "target": f"${format_num(fetched_target)}",
