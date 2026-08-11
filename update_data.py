@@ -210,10 +210,6 @@ def fetch_investing_news():
           news_items.append(
               {"title": title.text.strip(), "link": link.text.strip()}
           )
-      print(
-          f"Successfully fetched {len(news_items)} headlines in Hebrew from"
-          " il.investing.com RSS."
-      )
       return news_items[:25]
   except Exception as e:
     print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
@@ -582,27 +578,21 @@ def fetch_ai_insights_from_groq(
 
         prompt = """
 You must output valid JSON. Do not include curly brackets or array symbols inside the text values, write plain structured text.
-אתה אנליסט בכיר בוולסטריט וסוחר ותיק בשוק המניות האמריקאי והישראלי. אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק ב-14 הימים האחרונים **כולל היום הנוכחי ({date_str})**. 
+אתה אנליסט בכיר בוולסטריט ומומחה עולמי לגיאופוליטיקה, מאקרו-כלכלה ושוק המניות האמריקאי והישראלי. 
 
-**הנחיה ראשונה במעלה (אריכות, עומק ונימוקים):**
-אסור בתכלית האיסור לתת תשובות קצרות, תמציתיות או משפט אחד בלבד! בכל סעיפי הניתוח, המאקרו, והחדשות (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS), עליך לכתוב טקסט **ארוך מאוד, עמוק, מפורט, מקצועי ומנומק היטב** הכולל פסקאות מלאות וניתוחים רחבים. אל תחסוך במילים.
+**הנחיה ראשונה במעלה (עומק עצום וניתוח גיאופוליטי בשלב 1):**
+עליך להעניק ניתוח מאקרו וגיאופוליטי רחב, מעמיק וחסר פשרות בכל סעיפי המאקרו (כולל US_MARKET_NEWS ו־IL_MARKET_NEWS). חובה לנתח בהרחבה אירועים גיאופוליטיים קריטיים (כגון מתיחות מול איראן, השפעות ביטחוניות אזוריות, מלחמות, שרשראות אספקה עולמיות, החלטות ריבית ואינפלציה). 
+בסיום כל ניתוח חדשותי מאקרו (כגון US_MARKET_NEWS ו־IL_MARKET_NEWS), **חובה לתת שורה תחתונה ברורה וחד־משמעית** שבה אתה קובע האם להערכתך השוק צפוי לעלות או לרדת בעקבות חדשות אלו ולמה. אל תחסוך במילים ובנה פסקאות מלאות ועשירות בתוכן!
 
 **הנחיות קשיחות למניעת כפילויות מניות בתיק (קריטי מאוד):**
-אסור בתכלית האיסור לכלול ברשימות המניות של שלב 4 (גם ב-long_term_stocks וגם ב-swing_stocks) שום מניה שהמשתמש כבר מחזיק בתיק האישי שלו (בשלב 5). רשימת הטיקרים של המשתמש שחובה להוציא לחלוטין מההמלצות היא: {portfolio_tickers}. אל תמליץ על מניות אלו בשלב 4.
+אסור בתכלית האיסור לכלול ברשימות המניות של שלב 4 (גם ב-long_term_stocks וגם ב-swing_stocks) שום מניה שהמשתמש כבר מחזיק בתיק האישי שלו (בשלב 5). רשימת הטיקרים של המשתמש שחובה להוציא לחלוטין מההמלצות היא: {portfolio_tickers}.
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
-לכל סעיפי הניתוח וחדשות השוק (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
+לכל סעיפי הניתוח ומאקרו (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.).
 אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
-**הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
-עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט מדויק, אמיתי ומעמיק הכולל את המפתחות:
-- "rationale": ניתוח טכני ופונדמנטלי ארוך, מפורט ומקצועי מאוד על המניה, רמות תמיכה והתנגדות, ומצב החברה בשוק (אסור לכתוב משפטים גנריים כמו "היא חברת טכנולוגיה").
-- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית לחלוטין על החברה (אסור בשום אופן לרשום סתם את שם החברה או את הטיקר או משפטים גנריים כמו הודיעה על רווחים).**
-- "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה האמיתית והאירועים האחרונים בחברה.
-- "news_impact": כיצד החדשה הספציפית משפיעה ישירות על ניהול הפוזיציה, ניהול הסיכונים ותזמון הפעולות בתיק.
-
-**הנחיות קשיחות לשלב 8 (market_news - חדשות התיק והמעקב):**
-חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות, מרכזיות וחשובות** מתוך הרשימה או ניתוח רוחבי. כל ידיעה חייבת לכלול את המפתחות: news_link, news_title, news_content, news_impact.
+**הנחיות קשיחות לשלב 8 (market_news - חדשות השוק):**
+חובה להחזיר במפתח "market_news" מערך (Array) הכולל **לפחות 12 ידיעות חדשותיות קריטיות ומרכזיות** מתוך הרשימה. כל ידיעה חייבת לכלול אך ורק את המפתחות: news_link ו־news_title (ללא שדות טקסט נוספים מיותרים).
 
 היום הוא {day_name}, בתאריך {date_str}.
 
@@ -637,8 +627,7 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 20. ACTION_RECOMMENDATIONS_TEXT
 21. long_term_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
 22. swing_stocks (מערך של 10 אובייקטים עם ticker, name, desc, news)
-23. portfolio_analysis (אובייקט המפתח לפי טיקר המניות עם rationale, news_title, news_content, news_impact)
-24. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title, news_content, news_impact)
+23. market_news (מערך של **לפחות 12 ידיעות** עם news_link, news_title)
 """.format(
             date_str=date_str,
             day_name=day_name,
@@ -830,23 +819,11 @@ def build_market_news_html(market_news_list):
       continue
     p_link = item.get("news_link", "https://il.investing.com")
     p_title = item.get("news_title", "עדכון שוק יומי")
-    p_content = format_ai_text(
-        item.get(
-            "news_content",
-            "סקירת אירועים והשפעות מאקרו-כלכליות על השווקים להיום.",
-        )
-    )
-    p_impact = format_ai_text(
-        item.get("news_impact", "השפעה רוחבית על סנטימנט המסחר ומגמת השוק היומית.")
-    )
 
     card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300 text-right" dir="rtl">
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
             <p>🔗 <strong>קישור אמיתי למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
-            <p><strong>כותרת הכתבה המלאה:</strong> {p_title}</p>
-            <div class="leading-relaxed"><strong>תוכן הכתבה המלא:</strong><br>{p_content}</div>
-            <div class="leading-relaxed"><strong>מה זה אומר בקשר למניה / לשוק:</strong><br>{p_impact}</div>
         </div>
         """
     html_parts.append(card_html)
@@ -910,8 +887,6 @@ if __name__ == "__main__":
         market_news_data.append({
             "news_link": h["link"],
             "news_title": h["title"],
-            "news_content": "עדכון שוטף ודיווח חדשותי ישירות מתוך המערכת של Investing.com בעברית, המרכז את ההתפתחויות הקריטיות בשווקים הפיננסיים ובסביבת המאקרו.",
-            "news_impact": "מעקב אחר השפעת החדשות על כיוון המסחר, תנודתיות הנכסים והתנהלות בתיק ההשקעות האישי."
         })
       ai_insights["market_news"] = market_news_data
 
@@ -990,23 +965,6 @@ if __name__ == "__main__":
           {"name": s_name, "change": chg, "price": price_val, "value": price_val}
       )
 
-    portfolio_analysis_raw = ai_insights.get("portfolio_analysis", {})
-    portfolio_analysis_map = {}
-    if isinstance(portfolio_analysis_raw, dict):
-      for k, v in portfolio_analysis_raw.items():
-        portfolio_analysis_map[str(k).strip().upper()] = v
-    elif isinstance(portfolio_analysis_raw, list):
-      for item in portfolio_analysis_raw:
-        if isinstance(item, dict):
-          t = str(
-              item.get("ticker")
-              or item.get("symbol")
-              or item.get("name")
-              or ""
-          ).strip().upper()
-          if t:
-            portfolio_analysis_map[t] = item
-
     if not os.path.exists(TEMPLATE_FILE):
       raise FileNotFoundError(
           f"Template file '{TEMPLATE_FILE}' not found in directory!"
@@ -1049,69 +1007,6 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        p_item = portfolio_analysis_map.get(
-            ticker.upper(), portfolio_analysis_map.get(ticker, {})
-        )
-        if not isinstance(p_item, dict):
-          p_item = {}
-
-        p_rationale = format_ai_text(
-            p_item.get(
-                "rationale",
-                p_item.get(
-                    "desc",
-                    (
-                        "ניתוח יומי מעמיק לפוזיציית"
-                        f" {ticker} והתנהלות סביב רמות המחיר."
-                    ),
-                ),
-            )
-        )
-
-        raw_news_title = p_item.get("news_title", p_item.get("title", ""))
-        if (
-            not raw_news_title
-            or raw_news_title.strip().upper() == ticker.upper()
-            or raw_news_title.strip().lower()
-            == company_name.strip().lower()
-        ):
-          raw_news_title = (
-              f"התפתחויות טכנולוגיות ודוחות כספיים עבור {company_name} ({ticker})"
-          )
-        p_news_title = format_ai_text(raw_news_title)
-
-        p_news_content = format_ai_text(
-            p_item.get(
-                "news_content",
-                p_item.get(
-                    "content",
-                    (
-                        "סקירת חדשות ואירועים אחרונים המשפיעים ישירות על"
-                        f" {ticker}."
-                    ),
-                ),
-            )
-        )
-        p_news_impact = format_ai_text(
-            p_item.get(
-                "news_impact",
-                p_item.get(
-                    "impact",
-                    "השפעה ישירה על ניהול הפוזיציה ותזמון הפעולות בתיק.",
-                ),
-            )
-        )
-
-        full_note_html = (
-            f"<div class='mb-2'><strong>רציונל"
-            f" וניתוח:</strong><br>{p_rationale}</div>"
-            f"<div class='mb-2'><strong>כותרת"
-            f" חדשותית:</strong><br>{p_news_title}</div>"
-            f"<div class='mb-2'><strong>תוכן"
-            f" חדשותי:</strong><br>{p_news_content}</div>"
-            f"<div><strong>השפעה על הפוזיציה:</strong><br>{p_news_impact}</div>"
-        )
-
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
@@ -1124,7 +1019,7 @@ if __name__ == "__main__":
                 "רווח: <span style='color: {color}; font-weight:"
                 f" bold;'>{sign}{ret:.2f}%</span>"
             ),
-            "note": full_note_html,
+            "note": "",
         })
       except Exception as ex:
         print(f"Error processing portfolio stock {ticker}: {ex}")
