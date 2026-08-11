@@ -247,7 +247,7 @@
     </main>
 
     <script>
-        // המערך מוזרק באופן דינמי מקובץ הפייתון[cite: 2]
+        // המערך מוזרק באופן דינמי מקובץ הפייתון
         let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -273,35 +273,20 @@
 
             renderPortfolio();
 
-            // גרף הסקטורים[cite: 2]
+            // גרף הסקטורים
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
-                function parsePct(str) {
-                    if (!str || str.includes('{{')) return 0;
-                    let clean = str.toString().replace(/[^0-9.-]/g, '');
-                    return parseFloat(clean) || 0;
-                }
-
-                const rawValues = [
-                    parsePct("{{SECTOR_INFO_TECH_PCT}}"),
-                    parsePct("{{SECTOR_FINANCIALS_PCT}}"),
-                    parsePct("{{SECTOR_HEALTH_PCT}}"),
-                    parsePct("{{SECTOR_CONS_DISC_PCT}}"),
-                    parsePct("{{SECTOR_CONS_STAPLES_PCT}}"),
-                    parsePct("{{SECTOR_ENERGY_PCT}}"),
-                    parsePct("{{SECTOR_INDUSTRIALS_PCT}}"),
-                    parsePct("{{SECTOR_MATERIALS_PCT}}"),
-                    parsePct("{{SECTOR_COMM_PCT}}"),
-                    parsePct("{{SECTOR_UTILITIES_PCT}}"),
-                    parsePct("{{SECTOR_REAL_ESTATE_PCT}}")
-                ];
-
+                // שימוש בנתונים הישירים והמסודרים מתוך JSON שהפייתון מעביר
+                const sectorData = {{SECTORS_CHART_JSON}};
+                
+                const labels = ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'];
+                const rawValues = sectorData.map(item => typeof item.change === 'number' ? item.change : 0);
                 const barColors = rawValues.map(val => val >= 0 ? '#22c55e' : '#dc2626');
 
                 new Chart(sectorCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'],
+                        labels: labels,
                         datasets: [{
                             label: 'שינוי יומי (%)',
                             data: rawValues,
@@ -362,7 +347,7 @@
             });
         }
 
-        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend[cite: 2]
+        // שליפת מחיר עדכני בלייב עבור מניה חדשה ב-Frontend
         async function fetchLiveStockData(symbol) {
             try {
                 const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
@@ -441,7 +426,7 @@
             clearForm();
             renderPortfolio();
 
-            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)[cite: 2]
+            // ניסיון סנכרון אוטומטי ל-GitHub (עבור כל המכשירים)
             const synced = await syncToGithubRepo();
             if (synced) {
                 statusMsg.style.color = "#4ade80";
@@ -461,7 +446,7 @@
             if (!token || !repo) return false;
 
             try {
-                // לבנות קובץ portfolio.json מעודכן[cite: 2]
+                // לבנות קובץ portfolio.json מעודכן
                 const portfolioDict = {};
                 portfolioStocks.forEach(s => {
                     portfolioDict[s.symbol] = {
@@ -474,7 +459,7 @@
                 const contentStr = JSON.stringify(portfolioDict, null, 4);
                 const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
 
-                // לקבל את ה-SHA הנוכחי של הקובץ[cite: 2]
+                // לקבל את ה-SHA הנוכחי של הקובץ
                 const getUrl = `https://api.github.com/repos/${repo}/contents/portfolio.json`;
                 const headers = { "Authorization": `token ${token}`, "Content-Type": "application/json" };
                 
@@ -485,7 +470,7 @@
                     sha = fileInfo.sha;
                 }
 
-                // עדכון הקובץ ב-GitHub[cite: 2]
+                // עדכון הקובץ ב-GitHub
                 const putRes = await fetch(getUrl, {
                     method: "PUT",
                     headers,
