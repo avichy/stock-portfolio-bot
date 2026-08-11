@@ -111,8 +111,21 @@ def format_pct_colored(val):
 
 
 def format_ai_text(text):
-  if not isinstance(text, str):
-    return str(text)
+  # טיפול במקרה שהמודל מחזיר רשימה (List) של סעיפים
+  if isinstance(text, list):
+    text = " ".join(str(item) for item in text)
+  elif not isinstance(text, str):
+    text = str(text)
+
+  text = text.strip()
+  # טיפול במקרה שהמחרוזת מתחילה ומסתיימת בסוגריים מרובעים של JSON
+  if text.startswith("[") and text.endswith("]"):
+    try:
+      parsed_list = json.loads(text)
+      if isinstance(parsed_list, list):
+        text = " ".join(str(item) for item in parsed_list)
+    except Exception:
+      pass
 
   cleaned = (
       text.replace("{", "")
@@ -546,12 +559,12 @@ You must output valid JSON. Do not include curly brackets or array symbols insid
 
 **הנחיות קשיחות לפורמט ולקריאות הטקסט (קריטי מאוד):**
 לכל סעיפי הניתוח (כגון SP500_ANALYSIS, NASDAQ_ANALYSIS וכו'), חובה לכתוב טקסט עשיר ומחולק **בדיוק ל-4 סעיפים נפרדים**, כאשר כל סעיף מתחיל בשורה חדשה לגמרי עם מספר משלו (1., 2., 3., 4.) כך שהעיצוב יהיה קריא לעין, מרווח ושורה מתחת לשורה.
-אסור באיסור חמור שיהיו סוגריים מסולסלים או סוגריים מרובעים [] בתוך ערכי הטקסט!
+אסור באיסור חמור להחזיר מערכים (Arrays כמו []) או סוגריים מסולסלים בתוך ערכי הטקסט! החזר אך ורק מחרוזת טקסט רגילה.
 
 **הנחיות קשיחות לשלב 5 (ניתוח תיק אישי - portfolio_analysis):**
 עבור כל מניה בתיק של המשתמש ({portfolio_tickers}), עליך לספק אובייקט הכולל את המפתחות:
 - "rationale": ניתוח טכני ופונדמנטלי ארוך ומנומק לפוזיציה.
-- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה (לדוגמה: "הכרזה על מוצר חדש", "דו"חות רבעוניים חזקים", "מהלך רגולטורי בשוק") - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
+- "news_title": **כותרת חדשותית אמיתית, מרתקת וספציפית על החברה - אסור בשום אופן לרשום סתם את שם החברה או את הטיקר!**
 - "news_content": תוכן חדשותי מפורט ומלא המרחיב על החדשה.
 - "news_impact": כיצד החדשה משפיעה על ניהול הפוזיציה ותזמון הפעולות בתיק.
 
