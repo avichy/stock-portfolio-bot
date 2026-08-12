@@ -145,7 +145,6 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # החלפת טקסט US ו-IL בדגלים ישירות
   text = re.sub(r"\bUS\b", "🇺🇸", text)
   text = re.sub(r"\bIL\b", "🇮🇱", text)
 
@@ -169,7 +168,6 @@ def format_ai_text(text):
     match = re.match(r"^([1-4])\.\s*(.*)", part)
     if match:
       num, content = match.groups()
-      # יישור צמוד לתחילת השורה ללא רווח מוגזם
       formatted_blocks.append(
           f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
           f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
@@ -829,7 +827,7 @@ def build_market_news_html(market_news_list):
 
     card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
+            <h3 class="text-cyan-400 font-semibold text-base">כותרת: {p_title}</h3>
             {desc_block}
             <p class="mt-2">🔗 <strong>קישור למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
         </div>
