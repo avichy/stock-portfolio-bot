@@ -536,25 +536,28 @@ def fetch_ai_insights_from_groq(
             else "No headlines available."
         )
 
+        # פרומט מעודכן עם דגש חסר פשרות על אורך, פירוט, עומק ואמינות
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 You are a senior Wall Street analyst and global expert in macroeconomics and markets. 
 
-CRITICAL REQUIREMENT FOR OUTPUT LANGUAGE:
-All textual values, descriptions, analyses, descriptions, and news summaries must be written in professional, rich, detailed, and fluent Hebrew (עברית עשירה ומקצועית).
+CRITICAL REQUIREMENT FOR LENGTH, DEPTH, AND RELIABILITY:
+- Write EXTREMELY LONG, COMPREHENSIVE, DETAILED, AND DEEP professional text. 
+- NEVER summarize, truncate, shorten, or compress any explanations. Provide maximal depth, thorough fundamental background, and professional insights for every single field and stock.
+- All textual values, descriptions, analyses, and news summaries must be written in rich, highly detailed, fluent, and professional Hebrew (עברית עשירה, מפורטת, עמוקה ואמינה).
 
 CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
 1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
-2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain only stable value/dividend stocks, swing must contain separate high-momentum short-term trading stocks.
+2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain exactly 10 stable value/dividend stocks, swing must contain exactly 10 separate high-momentum short-term trading stocks.
 
 FORMAT RULES FOR ANALYSES:
-All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, comprehensive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line with deep professional insights. Never return arrays or brackets inside text fields.
+All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, exhaustive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line with deep professional insights. Never return arrays or brackets inside text fields.
 
 MARKET NEWS (market_news):
 Return an array of at least 10 key news items from the provided list. Each item must have:
 1. news_link (exact URL)
 2. news_title (title translated/written in Hebrew)
-3. news_desc (detailed 2-3 sentence summary in professional Hebrew explaining its impact on the market).
+3. news_desc (deep, detailed 3-4 sentence summary in professional Hebrew explaining its impact on the market).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -587,8 +590,8 @@ Return a valid JSON object with exactly these keys:
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (array of 10 distinct objects with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew explaining why it is worth investing in this stock)
-22. swing_stocks (array of 10 distinct objects completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew explaining why it is worth investing/trading in this stock)
+21. long_term_stocks (array of EXACTLY 10 distinct objects with ticker, name, desc in long professional Hebrew, news in long professional Hebrew, why_invest in a long, detailed, deep professional Hebrew paragraph explaining why it is worth investing in this stock)
+22. swing_stocks (array of EXACTLY 10 distinct objects completely separate from long_term_stocks with ticker, name, desc in long professional Hebrew, news in long professional Hebrew, why_invest in a long, detailed, deep professional Hebrew paragraph explaining why it is worth trading/investing in this stock)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc)
 """
 
