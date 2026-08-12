@@ -227,90 +227,71 @@ LT_STOCKS_META = [
         "ticker": "MSFT",
         "name": "Microsoft Corporation",
         "desc": "ענן Azure, תוכנה, פתרונות AI וטכנולוגיה עסקית גלובלית.",
-        "news": (
-            "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית"
-            " גבוהה."
-        ),
+        "news": "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית גבוהה.",
+        "why_invest": "מובילה גלובלית עם תזרים מזומנים אדיר וביקושים קשיחים לשירותי ענן ובינה מלאכותית.",
     },
     {
         "ticker": "JPM",
         "name": "JPMorgan Chase & Co.",
         "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).",
-        "news": (
-            "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק"
-            " בתיק."
-        ),
+        "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק.",
+        "why_invest": "ניהול פיננסי מעולה ומאזן חסון המייצרים תשואות עקביות למשקיעים בכל מצב שוק.",
     },
     {
         "ticker": "JNJ",
         "name": "Johnson & Johnson",
         "desc": "פיתוח תרופות, ציוד רפואי ומוצרי בריאות הצרכן (סקטור הבריאות).",
-        "news": (
-            "חסינות עסקית גבוהה מול מחזוריות השוק, חלוקת דיבידנדים יציבה ואמינה."
-        ),
+        "news": "חסינות עסקית גבוהה מול מחזוריות השוק, חלוקת דיבידנדים יציבה ואמינה.",
+        "why_invest": "חברה דפנסיבית מובהקת עם פורטפוליו רפואי רחב והיסטוריית דיבידנדים מרשימה.",
     },
     {
         "ticker": "XOM",
         "name": "Exxon Mobil Corporation",
         "desc": "חיפוש, הפקה ואנרגיה קונבנציונלית ומתקדמת (סקטור האנרגיה).",
-        "news": (
-            "תזרים מזומנים חזק ויעילות תפעולית גבוהה התומכת בתשואות אטרקטיביות"
-            " למשקיעים."
-        ),
+        "news": "תזרים מזומנים חזק ויעילות תפעולית גבוהה התומכת בתשואות אטרקטיביות למשקיעים.",
+        "why_invest": "יעילות תפעולית גבוהה ותגמול נדיב למשקיעים באמצעות דיבידנדים ורכישות עצמיות.",
     },
     {
         "ticker": "WMT",
         "name": "Walmart Inc.",
         "desc": "רשת הקמעונאות והמרכולים הגדולה בעולם (סקטור צרכנות בסיסית).",
-        "news": (
-            "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר"
-            " האלקטרוני."
-        ),
+        "news": "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר האלקטרוני.",
+        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרחב המבטיחים צמיחה יציבה.",
     },
     {
         "ticker": "AMZN",
         "name": "Amazon.com, Inc.",
         "desc": "מסחר אלקטרוני גלובלי ושירותי ענן מובילים (AWS).",
-        "news": (
-            "שיפור מתמיד בשולי הרווח התפעולי של AWS והתייעלות לוגיסטית רחבת"
-            " היקף."
-        ),
+        "news": "שיפור מתמיד בשולי הרווח התפעולי של AWS והתייעלות לוגיסטית רחבת היקף.",
+        "why_invest": "שליטה מוחלטת בענן ובמסחר המקוון עם צמיחה מואצת בשולי הרווח.",
     },
     {
         "ticker": "UNH",
         "name": "UnitedHealth Group",
         "desc": "שירותי ביטוח בריאות וניהול רפואי מתקדם.",
-        "news": (
-            "צמיחה עקבית במספר המבוטחים וביקוש קשיח לשירותי בריאות וניהול"
-            " סיכונים רפואיים."
-        ),
+        "news": "צמיחה עקבית במספר המבוטחים וביקוש קשיח לשירותי בריאות וניהול סיכונים רפואיים.",
+        "why_invest": "מודל עסקי עמיד המבוסס על ביקושים קשיחים במגזר הבריאות הצומח.",
     },
     {
         "ticker": "PG",
         "name": "Procter & Gamble",
         "desc": "ייצור ושיווק מוצרי צריכה ביתיים ואישיים מובילים.",
-        "news": (
-            "כוח תמחור חזק אל מול אינפלציה ומותגים גלובליים חזקים המבטיחים"
-            " יציבות."
-        ),
+        "news": "כוח תמחור חזק אל מול אינפלציה ומותגים גלובליים חזקים המבטיחים יציבות.",
+        "why_invest": "מותגים מובילים המאפשרים שמירה על רווחיות גבוהה גם בתקופות אינפלציוניות.",
     },
     {
         "ticker": "CVX",
         "name": "Chevron Corporation",
         "desc": "אנרגיה, נפט וגז טבעי בפעילות גלובלית רחבה.",
-        "news": (
-            "מאזן פיננסי איתן ופרויקטי הפקה חדשים המחזקים את יכולות החלוקה"
-            " למשקיעים."
-        ),
+        "news": "מאזן פיננסי איתן ופרויקטי הפקה חדשים המחזקים את יכולות החלוקה למשקיעים.",
+        "why_invest": "משמעת פיננסית קפדנית ותשואת דיבידנד גבוהה המגנים על תיק ההשקעות.",
     },
     {
         "ticker": "BRK-B",
         "name": "Berkshire Hathaway",
         "desc": "חברת אחזקות רב-תחומית המנוהלת בהשקעות ערך קלאסיות.",
-        "news": (
-            "נזילות עצומה ופורטפוליו מבוזר של עסקים ראשיים המעניקים ביטחון"
-            " למשקיע ארוך טווח."
-        ),
+        "news": "נזילות עצומה ופורטפוליו מבוזר של עסקים ראשיים המעניקים ביטחון למשקיע ארוך טווח.",
+        "why_invest": "ניהול מופתי וביזור עמוק בכלכלה האמריקאית המקנים הגנה מעולה לירידות.",
     },
 ]
 
@@ -318,99 +299,72 @@ SW_STOCKS_META = [
     {
         "ticker": "TSLA",
         "name": "Tesla, Inc.",
-        "desc": (
-            "רכבים חשמליים, אנרגיה מתחדשת ופתרונות אוטונומיה (סקטור צרכנות"
-            " מחזורית)."
-        ),
-        "news": (
-            "תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג עם מומנטום חזק."
-        ),
+        "desc": "רכבים חשמליים, אנרגיה מתחדשת ופתרונות אוטונומיה (סקטור צרכנות מחזורית).",
+        "news": "תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג עם מומנטום חזק.",
+        "why_invest": "תנועות מחיר חדות המייצרות פוטנציאל רווח מהיר לסוחרים יומיים וסווינג.",
     },
     {
         "ticker": "AMD",
         "name": "Advanced Micro Devices",
         "desc": "פיתוח מעבדים, שבבים וכרטיסים גרפיים לשוק הטכנולוגיה.",
-        "news": (
-            "תנועות מחיר חדות סביב השקות מוצרים ודו\"חות רבעוניים בסקטור השבבים."
-        ),
+        "news": "תנועות מחיר חדות סביב השקות מוצרים ודו\"חות רבעוניים בסקטור השבבים.",
+        "why_invest": "חשיפה ישירה לשוק השבבים וה-AI המייצרת מומנטום מסחר אטרקטיבי.",
     },
     {
         "ticker": "COIN",
         "name": "Coinbase Global, Inc.",
-        "desc": (
-            "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו"
-            " (פיננסים/אלטרנטיבי)."
-        ),
-        "news": (
-            "קורלציה ישירה לתנודתיות בשוק הקריפטו, מעולה למסחר סווינג תנודתי"
-            " קצר."
-        ),
+        "desc": "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו (פיננסים/אלטרנטיבי).",
+        "news": "קורלציה ישירה לתנודתיות בשוק הקריפטו, מעולה למסחר סווינג תנודתי קצר.",
+        "why_invest": "תנודתיות גבוהה המונעת מנכסים דיגיטליים ומייצרת הזדמנויות רווח מהירות.",
     },
     {
         "ticker": "OXY",
         "name": "Occidental Petroleum",
         "desc": "חברת אנרגיה וחיפושי נפט וגז עם עניין מוסדי רב.",
-        "news": (
-            "מעקב צמוד אחר מחירי הסחורות והאנרגיה המייצרים מהלכים מהירים"
-            " במסחר."
-        ),
+        "news": "מעקב צמוד אחר מחירי הסחורות והאנרגיה המייצרים מהלכים מהירים במסחר.",
+        "why_invest": "גיבוי מוסדי חזק ורגישות למחירי האנרגיה היוצרים מהלכי מסחר ברורים.",
     },
     {
         "ticker": "PLTR",
         "name": "Palantir Technologies",
         "desc": "תוכנות אנליטיקה ובינה מלאכותית למגזר העסקי והביטחוני.",
-        "news": (
-            "נפחי מסחר גבוהים מאוד ומומנטום חיובי המושך סוחרים לטווח הקצר"
-            " והבינוני."
-        ),
+        "news": "נפחי מסחר גבוהים מאוד ומומנטום חיובי המושך סוחרים לטווח הקצר והבינוני.",
+        "why_invest": "מומנטום טכנולוגי אדיר וביקושים מוסדיים חזקים למערכות ה-AI שלה.",
     },
     {
         "ticker": "NVO",
         "name": "Novo Nordisk A/S",
-        "desc": (
-            "תרופות חדשניות לטיפול בסוכרת וניהול משקל (סקטור הבריאות)."
-        ),
-        "news": (
-            "ביקושים אדירים למוצרי הדגל של החברה, יוצר תנודות מחיר מעניינות"
-            " למסחר."
-        ),
+        "desc": "תרופות חדשניות לטיפול בסוכרת וניהול משקל (סקטור הבריאות).",
+        "news": "ביקושים אדירים למוצרי הדגל של החברה, יוצר תנודות מחיר מעניינות למסחר.",
+        "why_invest": "מובילות בלעדית בתרופות הרזיה וביקושים גלובליים עצומים המרימים את המניה.",
     },
     {
         "ticker": "PYPL",
         "name": "PayPal Holdings, Inc.",
         "desc": "שירותי תשלומים דיגיטליים ופינטק גלובליים.",
-        "news": (
-            "התאוששות מבנית ושינויים באסטרטגיית הצמיחה המייצרים הזדמנויות"
-            " סווינג."
-        ),
+        "news": "התאוששות מבנית ושינויים באסטרטגיית הצמיחה המייצרים הזדמנויות סווינג.",
+        "why_invest": "תמחור אטרקטיבי ומהלכי טิร์ן-אראונד טכניים התומכים במומנטום עולה.",
     },
     {
         "ticker": "BA",
         "name": "The Boeing Company",
-        "desc": (
-            "תעופה, ביטחון וייצור מטוסים מסחריים וצבאיים (סקטור התעשייה)."
-        ),
-        "news": (
-            "רגישות גבוהה לחדשות תפעוליות ורגולטוריות המייצרות פערים ותנועות"
-            " חדות."
-        ),
+        "desc": "תעופה, ביטחון וייצור מטוסים מסחריים וצבאיים (סקטור התעשייה).",
+        "news": "רגישות גבוהה לחדשות תפעוליות ורגולטוריות המייצרות פערים ותנועות חדות.",
+        "why_invest": "פוטנציאל התאוששות חזק מאירועים תפעוליים המייצר הזדמנויות סווינג רווחיות.",
     },
     {
         "ticker": "NEM",
         "name": "Newmont Corporation",
         "desc": "חברת כריית הזהב הגדולה בעולם (סקטור חומרי גלם וגידור).",
-        "news": (
-            "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי"
-            " הזהב."
-        ),
+        "news": "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי הזהב.",
+        "why_invest": "כלי גידור מעולה לשוק המניות המציע תנועות מחיר מהירות סביב הזהב.",
     },
     {
         "ticker": "TQQQ",
         "name": "ProShares UltraPro QQQ",
         "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק.",
-        "news": (
-            "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר."
-        ),
+        "news": "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר.",
+        "why_invest": "מינוף גבוה המאפשר מיצוי מקסימלי של מגמות עולות בנאסד\"ק במסחר קצר.",
     },
 ]
 
@@ -575,43 +529,44 @@ def fetch_ai_insights_from_groq(
 
         headlines_formatted = (
             "\n".join([
-                f"- כותרת: {h['title']} | קישור: {h['link']}"
+                f"- Title: {h['title']} | Link: {h['link']}"
                 for h in investing_headlines
             ])
             if investing_headlines
-            else "אין כותרות זמינות."
+            else "No headlines available."
         )
 
-        # פרומט מקורי מלא ומפורט בעברית לבקשת המשתמש
         prompt = f"""
-עליך להחזיר אובייקט JSON תקני בלבד. אל תכלול סוגריים מסולסלים או סוגריים מרובעים בתוך ערכי הטקסט, כתוב טקסט מובנה ונקי בעברית מקצועית.
-אתה אנליסט בכיר בוול סטריט ומומחה עולמי במאקרו-כלכלה ובשוק ההון. 
-כל הערכים הטקסטואליים, התיאורים, הניתוחים וסיכומי החדשות חייבים להיכתב בעברית מקצועית, שוטפת ועשירה.
+You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
+You are a senior Wall Street analyst and global expert in macroeconomics and markets. 
 
-חוקים קריטיים לבחירת מניות והפרדה:
-1. חל איסור מוחלט להמליץ על כל מניה בקבוצות 'long_term_stocks' או 'swing_stocks' שהמשתמש כבר מחזיק בתיק שלו. טיקרים אסורים: {portfolio_tickers}.
-2. חל איסור מוחלט ליצור חפיפה או כפילות של מניות בין 'long_term_stocks' לבין 'swing_stocks'. מניות לטווח ארוך חייבות להכיל רק מניות ערך או דיבידנד יציבות, מניות סווינג חייבות להכיל מניות מסחר קצרות טווח עם מומנטום גבוה ונפרדות לחלוטין.
+CRITICAL REQUIREMENT FOR OUTPUT LANGUAGE:
+All textual values, descriptions, analyses, descriptions, and news summaries must be written in professional, rich, detailed, and fluent Hebrew (עברית עשירה ומקצועית).
 
-חוקי פורמט:
-כל שדות הניתוח (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו') חייבים להיות כתובים כטקסט עשיר המחולק בדיוק ל-4 סעיפים ממוספרים נפרדים (1., 2., 3., 4.), כאשר כל סעיף מתחיל בשורה חדשה. לעולם אל תחזיר מערכים או סוגריים בתוך שדות הטקסט.
+CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
+1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
+2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain only stable value/dividend stocks, swing must contain separate high-momentum short-term trading stocks.
 
-חדשות שוק (market_news):
-החזר מערך של לפחות 10 פריטי חדשות מרכזיים מתוך הרשימה המסופקת. כל פריט חייב לכלול:
-1. news_link (כתובת ה-URL המדויקת)
-2. news_title (הכותרת)
-3. news_desc (סיכום קצר בן 1-2 משפטים בעברית המסביר את המשמעות וההשפעה על השוק).
+FORMAT RULES FOR ANALYSES:
+All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, comprehensive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line with deep professional insights. Never return arrays or brackets inside text fields.
 
-היום הוא {day_name}, תאריך: {date_str}.
+MARKET NEWS (market_news):
+Return an array of at least 10 key news items from the provided list. Each item must have:
+1. news_link (exact URL)
+2. news_title (title translated/written in Hebrew)
+3. news_desc (detailed 2-3 sentence summary in professional Hebrew explaining its impact on the market).
 
-כותרות מעודכנות מ-Investing.com בעברית:
+Today is {day_name}, Date: {date_str}.
+
+Headlines from Investing.com:
 {headlines_formatted}
 
-נתוני השוק הנוכחיים:
+Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-טיקרים בתיק המשתמש (אסורים להמלצה): {portfolio_tickers}
+User Portfolio Tickers (DO NOT RECOMMEND): {portfolio_tickers}
 
-החזר אובייקט JSON תקני הכולל בדיוק את המפתחות הבאים:
+Return a valid JSON object with exactly these keys:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -632,9 +587,9 @@ def fetch_ai_insights_from_groq(
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (מערך של 10 אובייקטים נפרדים עם ticker, name, desc, news)
-22. swing_stocks (מערך של 10 אובייקטים נפרדים לחלוטין מ-long_term_stocks עם ticker, name, desc, news)
-23. market_news (מערך של לפחות 10 פריטים עם news_link, news_title, news_desc)
+21. long_term_stocks (array of 10 distinct objects with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew explaining why it is worth investing in this stock)
+22. swing_stocks (array of 10 distinct objects completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew explaining why it is worth investing/trading in this stock)
+23. market_news (array of at least 10 items with news_link, news_title, news_desc)
 """
 
         response = client.chat.completions.create(
@@ -743,6 +698,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
       name = ticker
       desc = "מניה מובילה שנבחרה על ידי מערכת ה-AI."
       news = "מעקב יומי וניתוח מומנטום בשוק."
+      why_invest = "פוטנציאל תשואה אטרקטיבי וניהול פיננסי יציב."
     elif isinstance(s, dict):
       ticker = str(
           s.get("ticker") or s.get("symbol") or s.get("name") or ""
@@ -761,6 +717,11 @@ def build_structured_stocks_html(stocks_meta, market_data):
           or s.get("rationale")
           or s.get("update")
           or "עדכון וניתוח יומי."
+      )
+      why_invest = (
+          s.get("why_invest")
+          or s.get("investment_reason")
+          or "מומנטום חיובי ונתונים פונדמנטליים חזקים המצדיקים כדאיות השקעה."
       )
     else:
       continue
@@ -794,6 +755,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
                 <div><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל יומי:</strong> {news}</div>
+                <div><strong>למה כדאי להשקיע במניה:</strong> {why_invest}</div>
             </div>
         </div>
         """
