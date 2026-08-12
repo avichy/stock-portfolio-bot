@@ -163,13 +163,13 @@ def format_ai_text(text):
 
   cleaned = format_numbers_in_text(cleaned)
 
-  parts = re.split(r"(?:\s+|\n)(?=[1-4]\.\s)", cleaned)
+  parts = re.split(r"(?:\s+|\n)(?=\d+\.\s)", cleaned)
   formatted_blocks = []
   for part in parts:
     part = part.strip()
     if not part:
       continue
-    match = re.match(r"^([1-4])\.\s*(.*)", part)
+    match = re.match(r"^(\d+)\.\s*(.*)", part)
     if match:
       num, content = match.groups()
       formatted_blocks.append(
@@ -796,7 +796,13 @@ def build_structured_stocks_html(stocks_meta, market_data):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     pre_market = format_num(data.get("pre_market", 0))
-    target = format_num(data.get("target", 0))
+
+    raw_target = data.get("target", 0)
+    if raw_target and float(raw_target) > 0:
+      target = f"${format_num(raw_target)}"
+    else:
+      target = "לא זמין"
+
     change_val = data.get("change", 0.0)
 
     sign = "+" if change_val > 0 else ""
@@ -818,7 +824,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
             <div class="text-sm text-gray-300 space-y-1">
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
-                <div><strong>יעד אנליסטים ממוצע:</strong> ${target}</div>
+                <div><strong>יעד אנליסטים ממוצע:</strong> {target}</div>
                 <div><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל יומי:</strong> {news}</div>
@@ -933,7 +939,6 @@ if __name__ == "__main__":
         })
       ai_insights["market_news"] = market_news_data
 
-    # גיבויים לשדות הזרזים (Catalysts) למניעת מצב ריק
     if not ai_insights.get("CATALYST_EARNINGS"):
       ai_insights["CATALYST_EARNINGS"] = (
           "1. דיווחים שוטפים על תוצאות כספיות של חברות מובילות בסקטור הטכנולוגיה"
