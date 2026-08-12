@@ -882,14 +882,14 @@ def build_market_news_html(market_news_list):
     p_desc = item.get("news_desc", "")
 
     desc_block = (
-        f'<p class="text-gray-300 mt-1">{p_desc}</p>' if p_desc else ""
+        f'<p class="text-gray-300 mt-2">{p_desc}</p>' if p_desc else ""
     )
 
     card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">כותרת: {p_title}</h3>
-            {desc_block}
             <p class="mt-2">🔗 <strong>קישור למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+            {desc_block}
         </div>
         """
     html_parts.append(card_html)
