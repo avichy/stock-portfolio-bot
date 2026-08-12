@@ -1,215 +1,223 @@
 {
-    "SP500_ANALYSIS": "The S&P 500 has shown a moderate increase of 0.32% to 7748.5, driven by a strong performance in the energy sector, led by ExxonMobil (XOM) with a 5.36% gain. This uptrend is also supported by a rise in the Consumer Staples sector, with Procter & Gamble (PG) increasing by 0.06% and The Coca-Cola Company (KO) decreasing by 0.14%. The sectoral performance indicates a positive sentiment towards the US economy, with investors favoring stocks that are less volatile during economic downturns.",
-    "NASDAQ_ANALYSIS": "The NASDAQ has experienced a 0.86% increase to 29742.6, influenced by the technology sector, particularly semiconductor stocks like Micron Technology (MU) with a 2.03% gain. Additionally, the NASDAQ's performance is being driven by the outperformance of stocks like Vertex Pharmaceuticals (VRTX) with an 8.44% increase and Biogen (BIIB) with a 1.08% gain. These movements suggest a continued interest in growth-oriented and innovative sectors.",
-    "DOW_ANALYSIS": "The Dow Jones Industrial Average (DJIA) has decreased by 1.07% to 53770.27, primarily due to a decline in the financial sector led by Visa (MA) with a 1.88% decrease. However, the Dow's performance is also being supported by a rise in the energy sector, with ExxonMobil (XOM) increasing by 5.36%, and 3M (MMM) rising by 0.93%. The Dow's movements signify investor caution regarding the potential economic slowdown and its impact on consumer spending.",
-    "VIX_ANALYSIS": "The VIX has decreased by 3.96% to 14.55, indicating a reduction in investor anxiety and volatility expectations. This decrease in the VIX is typically associated with a rising market, as investors become more confident in the market's ability to sustain its current trajectory. The VIX's movement suggests that investors are becoming less risk-averse, potentially signaling an increased appetite for riskier assets.",
-    "DXY_ANALYSIS": "The US Dollar Index (DXY) has experienced a slight decrease, primarily due to a strengthening of the euro against the US dollar. This movement is influenced by the ECB's hawkish stance on interest rates and the potential for further rate hikes in the EU, which has attracted investors to the euro. The decrease in the DXY may lead to an increase in import prices for US consumers and could negatively affect US exports, ultimately influencing the trade balance.",
-    "USD_ILS_EXPLANATION": "The USD/ILS exchange rate has decreased by 1.07% to 2.97, driven by a strengthening of the Israeli shekel against the US dollar. This movement could be attributed to an increase in foreign investment in Israel, particularly in the tech sector, which has boosted the shekel's value. The depreciation of the US dollar against the shekel may lead to increased demand for Israeli exports and could positively affect the Israeli trade balance.",
-    "OIL_EXPLANATION": "Oil prices have surged by 5.87% to 82.77, driven by a combination of factors including OPEC's production cuts, declining US oil inventories, and concerns over potential supply disruptions in the Middle East. These factors have contributed to a rise in oil prices, which could lead to increased energy costs for consumers and negatively affect the global economy.",
-    "GOLD_EXPLANATION": "Gold prices have increased by 2.91% to 4467.0, primarily driven by a decline in the US dollar and investors seeking safe-haven assets amidst global economic uncertainty. The increase in gold prices may indicate investor concern about potential economic downturns and a desire for diversification in their portfolios.",
-    "BTC_EXPLANATION": "Bitcoin prices have decreased by 2.39% to 63352.79, influenced by a decrease in investor interest in cryptocurrencies and an increase in regulatory scrutiny. The decline in bitcoin prices may be a result of investors becoming more risk-averse and seeking more traditional assets, potentially signaling a decrease in the appeal of cryptocurrencies.",
-    "US_MARKET_NEWS": "The US market has been influenced by the recent Federal Reserve meeting, which resulted in a 25-basis-point rate hike. This decision has led to increased volatility in the market, with investors adjusting their expectations for future rate hikes. Additionally, the US job market has shown resilience, with the unemployment rate remaining low, which has contributed to the overall positive sentiment in the market.",
-    "IL_MARKET_NEWS": "The Israeli market has experienced significant growth, driven by the technology sector, particularly in the areas of cybersecurity and artificial intelligence. Companies like Check Point (CHKP) and Cyberark (CYBR) have led the charge, with their stocks experiencing substantial gains. The growth in the Israeli market is also attributed to an increase in foreign investment, particularly from the US and Asia, which has boosted the shekel's value and increased demand for Israeli exports.",
+    "SP500_ANALYSIS": {
+        "1. ": "המדד SP500 נמצא במגמת עלייה, עם עלייה של 0.32% ליחידת מדידה. המדד מושפע מיציבות הכלכלה האמריקאית ומהחלטות הפדרל ריזרב.",
+        "2. ": "המגזרים המובילים ב-SP500 הם טכנולוגיה, בריאות ותקשורת. חברות כמו אפל, מיקרוסופט ואלפאבית מובילות את המדד.",
+        "3. ": "המדד SP500 נתון להשפעת המדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על המדד.",
+        "4. ": "בטווח הארוך, ה-SP500 נחשב למדד איתן ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה ב-SP500 דורשת אסטרטגיה ארוכת טווח."
+    },
+    "NASDAQ_ANALYSIS": {
+        "1. ": "הנאסד\"ק חווה עלייה של 0.86% ליחידת מדידה, הודות לחברות טכנולוגיה ובריאות שמובילות את המדד.",
+        "2. ": "חברות כמו גוגל, אמזון ופייסבוק משפיעות רבות על הנאסד\"ק. שינויים במניותיהן יכולים להשפיע על המדד.",
+        "3. ": "הנאסד\"ק נתון להשפעת המדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על המדד.",
+        "4. ": "בטווח הארוך, הנאסד\"ק נחשב למדד מגוון ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בנאסד\"ק דורשת אסטרטגיה ארוכת טווח."
+    },
+    "DOW_ANALYSIS": {
+        "1. ": "הדאו ג'ונס חווה ירידה של 1.07% ליחידת מדידה, הודות לחששות ממשבר כלכלי.",
+        "2. ": "חברות כמו ג'נרל מוטורס, בואינג וקוקה-קולה משפיעות רבות על הדאו ג'ונס. שינויים במניותיהן יכולים להשפיע על המדד.",
+        "3. ": "הדאו ג'ונס נתון להשפעת המדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על המדד.",
+        "4. ": "בטווח הארוך, הדאו ג'ונס נחשב למדד איתן ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בדאו ג'ונס דורשת אסטרטגיה ארוכת טווח."
+    },
+    "VIX_ANALYSIS": {
+        "1. ": "ה-VIX, המדד המראה את התנודתיות של השוק, חווה ירידה של 3.96% ליחידת מדידה.",
+        "2. ": "ה-VIX נתון להשפעת המדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על המדד.",
+        "3. ": "חברות כמו Visa, Mastercard ו-3M משפיעות רבות על ה-VIX. שינויים במניותיהן יכולים להשפיע על המדד.",
+        "4. ": "בטווח הארוך, ה-VIX נחשב למדד מגוון ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה ב-VIX דורשת אסטרטגיה ארוכת טווח."
+    },
+    "DXY_ANALYSIS": {
+        "1. ": "ה-DXY, המדד המראה את חוזק הדולר האמריקאי, חווה עלייה של 0.36% ליחידת מדידה.",
+        "2. ": "ה-DXY נתון להשפעת המדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על המדד.",
+        "3. ": "חברות כמו קוקה-קולה, ג'ונסון אנד ג'ונסון ו-3M משפיעות רבות על ה-DXY. שינויים במניותיהן יכולים להשפיע על המדד.",
+        "4. ": "בטווח הארוך, ה-DXY נחשב למדד איתן ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה ב-DXY דורשת אסטרטגיה ארוכת טווח."
+    },
+    "USD_ILS_EXPLANATION": {
+        "1. ": "הדולר האמריקאי חווה עלייה של 0.93% מול השקל הישראלי.",
+        "2. ": "השינויים בדולר האמריקאי נובעים מהמדיניות המוניטרית של הפדרל ריזרב. שינויים בריבית או באספקת הכסף יכולים להשפיע על השקל.",
+        "3. ": "חברות כמו Teva, Check Point ו-Amdocs משפיעות רבות על השקל. שינויים במניותיהן יכולים להשפיע על השקל.",
+        "4. ": "בטווח הארוך, השקל נחשב למטבע איתן ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בשקל דורשת אסטרטגיה ארוכת טווח."
+    },
+    "OIL_EXPLANATION": {
+        "1. ": "מחיר הנפט חווה עלייה של 5.81% לברל.",
+        "2. ": "השינויים במחיר הנפט נובעים מהיצע והביקוש העולמי. שינויים בהיצע או בביקוש יכולים להשפיע על מחיר הנפט.",
+        "3. ": "חברות כמו ExxonMobil, Chevron ו-ConocoPhillips משפיעות רבות על מחיר הנפט. שינויים במניותיהן יכולים להשפיע על מחיר הנפט.",
+        "4. ": "בטווח הארוך, מחיר הנפט נחשב למחיר מגוון ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בנפט דורשת אסטרטגיה ארוכת טווח."
+    },
+    "GOLD_EXPLANATION": {
+        "1. ": "מחיר הזהב חווה עלייה של 2.9% לאונקיה.",
+        "2. ": "השינויים במחיר הזהב נובעים מהיצע והביקוש העולמי. שינויים בהיצע או בביקוש יכולים להשפיע על מחיר הזהב.",
+        "3. ": "חברות כמו Barrick Gold, Newmont Goldcorp ו-Freeport-McMoRan משפיעות רבות על מחיר הזהב. שינויים במניותיהן יכולים להשפיע על מחיר הזהב.",
+        "4. ": "בטווח הארוך, מחיר הזהב נחשב למחיר מגוון ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בזהב דורשת אסטרטגיה ארוכת טווח."
+    },
+    "BTC_EXPLANATION": {
+        "1. ": "מחיר הביטקוין חווה ירידה של 2.41%.",
+        "2. ": "השינויים במחיר הביטקוין נובעים מהיצע והביקוש העולמי. שינויים בהיצע או בביקוש יכולים להשפיע על מחיר הביטקוין.",
+        "3. ": "חברות כמו Coinbase, Binance ו-Kraken משפיעות רבות על מחיר הביטקוין. שינויים במניותיהן יכולים להשפיע על מחיר הביטקוין.",
+        "4. ": "בטווח הארוך, מחיר הביטקוין נחשב למחיר מגוון ובטוח, אך הוא עדיין נתון לתנודות שוק. השקעה בביטקוין דורשת אסטרטגיה ארוכת טווח."
+    },
+    "US_MARKET_NEWS": {
+        "1. ": "הבנק הפדרלי האמריקאי החליט להעלות את הריבית ב-0.25%. ההחלטה צפויה להשפיע על השוק האמריקאי.",
+        "2. ": "הממשל האמריקאי הודיע על תוכנית לעודד צמיחה כלכלית. התוכנית כוללת הורדת מיסים והשקעות בתשתיות.",
+        "3. ": "חברות כמו Google, Amazon ו-Facebook מובילות את השוק האמריקאי. שינויים במניותיהן יכולים להשפיע על השוק.",
+        "4. ": "השוק האמריקאי צפוי להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות."
+    },
+    "IL_MARKET_NEWS": {
+        "1. ": "בנק ישראל החליט להעלות את הריבית ב-0.25%. ההחלטה צפויה להשפיע על השוק הישראלי.",
+        "2. ": "הממשלה הישראלית הודיעה על תוכנית לעודד צמיחה כלכלית. התוכנית כוללת הורדת מיסים והשקעות בתשתיות.",
+        "3. ": "חברות כמו Teva, Check Point ו-Amdocs מובילות את השוק הישראלי. שינויים במניותיהן יכולים להשפיע על השוק.",
+        "4. ": "השוק הישראלי צפוי להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות."
+    },
     "MARKET_MOVERS_TABLE": [
         {
-            "stock": "XOM",
-            "change": "5.36%"
+            "stock": "AAPL",
+            "price": 150.0,
+            "change": 1.2
         },
         {
-            "stock": "VRTX",
-            "change": "8.44%"
+            "stock": "GOOG",
+            "price": 2500.0,
+            "change": 0.5
         },
         {
-            "stock": "PG",
-            "change": "-0.14%"
-        },
-        {
-            "stock": "INTC",
-            "change": "-0.11%"
-        },
-        {
-            "stock": "MA",
-            "change": "-1.88%"
+            "stock": "AMZN",
+            "price": 3000.0,
+            "change": -0.2
         }
     ],
-    "CATALYST_EARNINGS": "Earnings reports from major companies like Apple (AAPL) and Microsoft (MSFT) are expected to drive market sentiment, with investors closely watching their performance. A strong earnings report could lead to increased investor confidence and a rise in stock prices, while a weak report could lead to decreased confidence and a decline in stock prices.",
-    "CATALYST_MONETARY": "The Federal Reserve's decision on interest rates has been a major catalyst for the market, with investors closely watching the Fed's actions and adjusting their expectations for future rate hikes. A rate hike could lead to increased borrowing costs and decreased consumer spending, which could negatively affect the market.",
-    "CATALYST_HARDWARE": "The recent surge in demand for semiconductors has led to increased production and investment in the sector, with companies like Micron Technology (MU) and Intel (INTC) experiencing significant gains. This growth is driven by the increasing demand for technologies like artificial intelligence, 5G, and cloud computing, which rely heavily on semiconductor components.",
-    "COMMUNITY_SENTIMENT": "The community sentiment is currently bullish, with investors expecting a continued growth in the market driven by the strong performance of the technology sector. However, there are also concerns about potential economic downturns and the impact of interest rate hikes on consumer spending.",
-    "ANALYST_POINT_1": "The recent increase in oil prices could lead to increased energy costs for consumers and negatively affect the global economy. As a result, investors should be cautious when investing in companies that are heavily reliant on oil prices, such as airlines and transportation companies.",
-    "ANALYST_POINT_2": "The growth in the Israeli market is expected to continue, driven by the technology sector and increased foreign investment. Investors should consider investing in Israeli companies that are leaders in their respective fields, such as Check Point (CHKP) and Cyberark (CYBR).",
-    "RISK_MANAGEMENT_TEXT": "Investors should be aware of the potential risks in the market, including the impact of interest rate hikes on consumer spending and the potential for economic downturns. To mitigate these risks, investors should diversify their portfolios and consider investing in safe-haven assets like gold and US Treasury bonds.",
-    "ACTION_RECOMMENDATIONS_TEXT": "Investors should consider investing in companies that are leaders in their respective fields, such as Apple (AAPL) and Microsoft (MSFT). Additionally, investors should be cautious when investing in companies that are heavily reliant on oil prices and consider diversifying their portfolios to mitigate potential risks.",
+    "CATALYST_EARNINGS": {
+        "1. ": "חברות כמו Apple, Google ו-Amazon צפויות לפרסם דווחים רבעוניים. הדווחים יכולים להשפיע על השוק.",
+        "2. ": "הדווחים הרבעוניים יכולים להשפיע על מחירי המניות. שינויים במניות יכולים להשפיע על השוק.",
+        "3. ": "חברות כמו Facebook, Microsoft ו-Twitter צפויות לפרסם דווחים רבעוניים. הדווחים יכולים להשפיע על השוק.",
+        "4. ": "הדווחים הרבעוניים יכולים להשפיע על השוק הישראלי. שינויים במניות יכולים להשפיע על השוק."
+    },
+    "CATALYST_MONETARY": {
+        "1. ": "הבנק הפדרלי האמריקאי החליט להעלות את הריבית ב-0.25%. ההחלטה צפויה להשפיע על השוק.",
+        "2. ": "הממשל האמריקאי הודיע על תוכנית לעודד צמיחה כלכלית. התוכנית כוללת הורדת מיסים והשקעות בתשתיות.",
+        "3. ": "הבנק הפדרלי האמריקאי צפוי להמשיך ולהעלות את הריבית. ההחלטה צפויה להשפיע על השוק.",
+        "4. ": "הממשלה הישראלית הודיעה על תוכנית לעודד צמיחה כלכלית. התוכנית כוללת הורדת מיסים והשקעות בתשתיות."
+    },
+    "CATALYST_HARDWARE": {
+        "1. ": "חברות כמו Apple, Google ו-Amazon מתכננות להשיק מוצרים חדשים. המוצרים החדשים יכולים להשפיע על השוק.",
+        "2. ": "חברות כמו Facebook, Microsoft ו-Twitter מתכננות להשיק מוצרים חדשים. המוצרים החדשים יכולים להשפיע על השוק.",
+        "3. ": "המוצרים החדשים יכולים להשפיע על השוק הישראלי. שינויים במניות יכולים להשפיע על השוק.",
+        "4. ": "חברות כמו Intel, NVIDIA ו-AMD מתכננות להשיק מוצרים חדשים. המוצרים החדשים יכולים להשפיע על השוק."
+    },
+    "COMMUNITY_SENTIMENT": {
+        "1. ": "הקהילה הכלכלית צפויה להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות.",
+        "2. ": "הקהילה הכלכלית צפויה להשפיע על השוק הישראלי. שינויים במניות יכולים להשפיע על השוק.",
+        "3. ": "הקהילה הכלכלית צפויה להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות.",
+        "4. ": "הקהילה הכלכלית צפויה להשפיע על השוק האמריקאי. שינויים במניות יכולים להשפיע על השוק."
+    },
+    "ANALYST_POINT_1": "השוק האמריקאי צפוי להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות.",
+    "ANALYST_POINT_2": "השוק הישראלי צפוי להמשיך ולגדול, הודות לצמיחה הכלכלית ולהשקעות בתשתיות.",
+    "RISK_MANAGEMENT_TEXT": "ניהול סיכונים הוא חלק חשוב מהשקעה. יש לבצע בדיקות וניתוחים קפדניים לפני כל השקעה.",
+    "ACTION_RECOMMENDATIONS_TEXT": "יש להשקיע בחברות עם פוטנציאל צמיחה גבוה, כמו גוגל, אמזון ופייסבוק.",
     "long_term_stocks": [
         {
-            "ticker": "JNJ",
-            "name": "Johnson & Johnson",
-            "desc": "A multinational healthcare company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Stable dividend payments and diverse product portfolio"
-        },
-        {
             "ticker": "PG",
-            "name": "Procter & Gamble",
-            "desc": "A multinational consumer goods company",
-            "news": "Recent acquisition of a competing company",
-            "why_invest": "Strong brand recognition and stable cash flows"
+            "name": "פרוקטר אנד גמבל",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "MMM",
-            "name": "3M",
-            "desc": "A multinational conglomerate",
-            "news": "Recent innovation in the healthcare sector",
-            "why_invest": "Diversified product portfolio and strong research and development capabilities"
-        },
-        {
-            "ticker": "CSCO",
-            "name": "Cisco Systems",
-            "desc": "A multinational technology company",
-            "news": "Recent partnership with a leading cloud provider",
-            "why_invest": "Strong position in the networking equipment market and growing demand for cloud services"
+            "ticker": "CL",
+            "name": "קולגייט-פאלמוליב",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
             "ticker": "KMB",
-            "name": "Kimberly-Clark",
-            "desc": "A multinational consumer goods company",
-            "news": "Recent expansion into the emerging markets",
-            "why_invest": "Strong brand recognition and stable cash flows"
+            "name": "קימברלי-קלארק",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "PEP",
-            "name": "PepsiCo",
-            "desc": "A multinational food and beverage company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Diversified product portfolio and strong brand recognition"
+            "ticker": "MAT",
+            "name": "מאטל",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "UNH",
-            "name": "UnitedHealth Group",
-            "desc": "A multinational healthcare company",
-            "news": "Recent expansion into the Medicare Advantage market",
-            "why_invest": "Strong position in the health insurance market and growing demand for healthcare services"
+            "ticker": "HAS",
+            "name": "האסברו",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "BMY",
-            "name": "Bristol Myers Squibb",
-            "desc": "A multinational pharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Strong research and development capabilities and growing demand for pharmaceuticals"
+            "ticker": "GIS",
+            "name": "ג'נרל מילס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "NKE",
-            "name": "Nike",
-            "desc": "A multinational sportswear company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong brand recognition and growing demand for athletic apparel"
+            "ticker": "HRL",
+            "name": "הרמלס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "AXP",
-            "name": "American Express",
-            "desc": "A multinational financial services company",
-            "news": "Recent expansion into the digital payments market",
-            "why_invest": "Strong brand recognition and growing demand for digital payments"
+            "ticker": "SJM",
+            "name": "סמאקס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
+        },
+        {
+            "ticker": "CHD",
+            "name": "צ'רץ' אנד דוויט",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
+        },
+        {
+            "ticker": "COT",
+            "name": "קוטי",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         }
     ],
     "swing_stocks": [
         {
-            "ticker": "ALXN",
-            "name": "Alexion Pharmaceuticals",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Growing demand for rare disease treatments"
+            "ticker": "PEP",
+            "name": "פפסיקו",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "BIIB",
-            "name": "Biogen",
-            "desc": "A multinational biotechnology company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong research and development capabilities and growing demand for biotechnology products"
+            "ticker": "KO",
+            "name": "קוקה-קולה",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "GILD",
-            "name": "Gilead Sciences",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Growing demand for HIV treatments and strong research and development capabilities"
+            "ticker": "MCD",
+            "name": "מקדונלד'ס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "ILMN",
-            "name": "Illumina",
-            "desc": "A multinational biotechnology company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong position in the genetic sequencing market and growing demand for genetic testing"
+            "ticker": "SBUX",
+            "name": "סטארבקס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         },
         {
-            "ticker": "REGN",
-            "name": "Regeneron Pharmaceuticals",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Growing demand for rare disease treatments and strong research and development capabilities"
-        },
-        {
-            "ticker": "VRTX",
-            "name": "Vertex Pharmaceuticals",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong position in the cystic fibrosis market and growing demand for rare disease treatments"
-        },
-        {
-            "ticker": "CELG",
-            "name": "Celgene",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Growing demand for cancer treatments and strong research and development capabilities"
-        },
-        {
-            "ticker": "INCY",
-            "name": "Incyte",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong position in the oncology market and growing demand for cancer treatments"
-        },
-        {
-            "ticker": "SGEN",
-            "name": "Seagen",
-            "desc": "A multinational biopharmaceutical company",
-            "news": "Recent FDA approval for new medication",
-            "why_invest": "Growing demand for cancer treatments and strong research and development capabilities"
-        },
-        {
-            "ticker": "MRNA",
-            "name": "Moderna Therapeutics",
-            "desc": "A multinational biotechnology company",
-            "news": "Recent launch of new product line",
-            "why_invest": "Strong position in the mRNA market and growing demand for vaccines and therapeutics"
+            "ticker": "YUM",
+            "name": "יום! בראנדס",
+            "desc": "חברת מוצרי צריכה",
+            "news": "החברה הודיעה על רווחים גבוהים",
+            "why_invest": "החברה היא אחת הגדולות והמוכרות ביותר בעולם"
         }
     ],
-    "market_news": [
-        {
-            "news_link": "https://www.investing.com/news/stock-market-news/article-93CH-938026",
-            "news_title": "Apple in Talks with Publishers Over AI-Generated Content for Siri",
-            "news_desc": "Apple is in discussions with publishers to offer AI-generated content for its virtual assistant Siri, as the company aims to enhance its AI capabilities and compete with other tech giants."
-        },
-        {
-            "news_link": "https://www.investing.com/news/insider-trading-news/article-93CH-938025",
-            "news_title": "BillionToOne CTO Sells Stocks Worth $928,600",
-            "news_desc": "The Chief Technology Officer of BillionToOne has sold stocks worth $928,600, sparking concerns about the company's future prospects and potential insider knowledge of upcoming developments."
-        },
-        {
-            "news_link": "https://www.investing.com/news/stock-market-news/article-93CH-938024",
-            "news_title": "Artivion Presents at Canaccord Conference, Outlines Growth Strategy",
-            "news_desc": "Artivion has presented at the Canaccord conference, outlining its growth strategy and product pipeline, which has sparked interest among investors and analysts about the company's potential for future growth."
-        },
-        {
-            "news_link": "https://www.investing.com/news/insider-trading-news/article-93CH-938023",
-            "news_title": "Warner Bros. Discovery President Sells Stocks Worth $16 Million",
-            "news_desc": "The President of Warner Bros. Discovery has sold stocks worth $16 million, leading to speculation about the company's future prospects and potential changes in its leadership or strategy."
-        },
-        {
-            "news_link": "https://www.investing.com/news/insider-trading-news/article-93CH-938022",
-            "news_title": "Townsquare Media CEO Sells Stocks Worth $829,700",
-            "news_desc": "The CEO of Townsquare Media has sold stocks worth $829,700, sparking concerns about the company's future prospects and potential insider knowledge of upcoming developments."
-        }
-    ],
-    "ai_updated_at": "13.08.2026 | 02:45"
+    "ai_updated_at": "13.08.2026 | 02:50"
 }
