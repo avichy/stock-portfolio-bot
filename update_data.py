@@ -556,7 +556,7 @@ MARKET NEWS (market_news):
 Return an array of at least 10 key news items from the provided list. Each item must have:
 1. news_link (exact URL)
 2. news_title (title translated/written in Hebrew)
-3. news_desc (deep, detailed 3-4 sentence summary in professional Hebrew explaining its impact on the market, unique to each article).
+3. news_desc (Start explicitly with "סיכום הכתבה בקצרה:" followed by a deep, detailed 3-4 sentence summary in professional Hebrew explaining its impact on the market, unique to each article).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -856,12 +856,12 @@ if __name__ == "__main__":
     if not isinstance(market_news_data, list) or len(market_news_data) < 10:
       market_news_data = []
       for h in investing_headlines[:12]:
-        # שיפור מנגנון הגיבוי כך שיתן תיאור ייחודי המשלב את כותרת הכתבה עצמה
+        # עדכון מנגנון הגיבוי כך שיתחיל בדיוק ב-"סיכום הכתבה בקצרה:"
         market_news_data.append({
             "news_link": h["link"],
             "news_title": h["title"],
             "news_desc": (
-                f"דיווח עדכני ממערכת Investing.com המתייחס ל-{h['title']}. הידיעה מנתחת את ההשלכות המרכזיות על הסקטור והשפעתה האפשרית על המסחר. לחץ על הקישור לקריאת הפרטים המלאים."
+                f"סיכום הכתבה בקצרה: דיווח עדכני ממערכת Investing.com המתייחס ל-{h['title']}. הידיעה מנתחת את ההשלכות המרכזיות על הסקטור והשפעתה האפשרית על המסחר. לחץ על הקישור לקריאת הפרטים המלאים."
             ),
         })
       ai_insights["market_news"] = market_news_data
