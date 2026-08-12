@@ -621,25 +621,20 @@ def fetch_ai_insights_from_groq(
 
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
-You are a senior Wall Street institutional macro analyst, chief global strategist, and geopolitical risk expert specializing in international relations, energy security, and cross-border market shocks. 
+You are a senior Wall Street institutional macro analyst and chief global strategist.
 
-CRITICAL ANTI-FLUFF & EXHAUSTIVE DEPTH REQUIREMENT (ZERO TOLERANCE FOR SHORT OR GENERIC BULLET POINTS):
-- ABSOLUTELY FORBIDDEN to write short sentences, headline fragments, or generic clichés (e.g., do NOT write "בעקבות דוחות כספיים", "התפתחויות טכנולוגיות", or lazy summaries).
-- EVERY SINGLE ONE of the 4 numbered points across ALL analysis fields (US_MARKET_NEWS, IL_MARKET_NEWS, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, OIL_EXPLANATION, USD_ILS_EXPLANATION, etc.) MUST be a **rich, exhaustive, comprehensive paragraph of at least 40-50 words**!
-- You MUST explicitly name specific companies, exact stock tickers (e.g., MSFT, AAPL, NVDA, JPM, XOM), precise market sectors (e.g., סקטור הטכנולוגיה - XLK, סקטור האנרגיה - XLE, סקטור הפיננסים - XLF), macroeconomic indicators, and deep geopolitical dynamics (such as the Strait of Hormuz / מצר הורמוז, regional military escalations with Iran, energy supply choke points, shipping disruptions, and sovereign risk). Explain *who*, *what*, *why*, and *how* it affects pricing, valuations, and risk premia.
+CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATION):
+- **US_MARKET_NEWS**: Must focus EXCLUSIVELY on Wall Street, the Federal Reserve, US macroeconomic indicators (CPI, PPI, employment), US stock indexes and sectors, AND global geopolitical impacts on US assets (e.g., trade wars affecting global supply chains, international conflicts impacting energy prices/semiconductors, changes in US defense spending, and USD hegemony dynamics). 
+- **IL_MARKET_NEWS**: Must focus EXCLUSIVELY on the Israeli economy (המשק הישראלי), the Bank of Israel interest rate policy (בנק ישראל והריבית), Tel Aviv Stock Exchange (TASE), dual-listed stocks, and local geopolitical/security risk premiums impacting the Israeli shekel and domestic business sentiment.
+- ABSOLUTELY FORBIDDEN to copy or mirror the text between US_MARKET_NEWS and IL_MARKET_NEWS. They must discuss completely different geographic regions, monetary policies, and market drivers.
+
+CRITICAL ANTI-FLUFF & EXHAUSTIVE DEPTH REQUIREMENT:
+- Every single one of the 4 numbered points across ALL analysis fields (including US_MARKET_NEWS and IL_MARKET_NEWS) MUST be a rich, exhaustive, comprehensive paragraph of at least 40-50 words!
+- Explicitly name specific companies, stock tickers, sectors, and concrete macroeconomic or geopolitical factors.
 
 CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
 1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
 2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain exactly 10 stable value/dividend stocks, swing must contain exactly 10 separate high-momentum short-term trading stocks.
-
-FORMAT RULES FOR ANALYSES:
-All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, exhaustive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line. Each section must contain full, detailed analytical paragraphs as mandated above. Never return arrays or brackets inside text fields.
-
-MARKET NEWS (market_news):
-Return an array of at least 10 key news items from the provided list. Each item must have:
-1. news_link (exact URL)
-2. news_title (title translated/written in Hebrew)
-3. news_desc (Start explicitly with "סיכום הכתבה בקצרה:" followed by a deep, detailed, multi-sentence institutional analysis in professional Hebrew explicitly naming the companies, tickers, sectors, and geopolitical/market impacts involved).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -672,8 +667,8 @@ Return a valid JSON object with exactly these keys:
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (array of EXACTLY 10 distinct objects with ticker, name, desc in long professional Hebrew, news in long professional Hebrew, why_invest in a long, detailed, deep professional Hebrew paragraph explaining why it is worth investing in this stock)
-22. swing_stocks (array of EXACTLY 10 distinct objects completely separate from long_term_stocks with ticker, name, desc in long professional Hebrew, news in long professional Hebrew, why_invest in a long, detailed, deep professional Hebrew paragraph explaining why it is worth trading/investing in this stock)
+21. long_term_stocks (array of EXACTLY 10 distinct objects with ticker, name, desc, news, why_invest)
+22. swing_stocks (array of EXACTLY 10 distinct objects completely separate from long_term_stocks with ticker, name, desc, news, why_invest)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc)
 """
 
