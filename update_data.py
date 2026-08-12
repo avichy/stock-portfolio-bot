@@ -173,12 +173,12 @@ def format_ai_text(text):
     if match:
       num, content = match.groups()
       formatted_blocks.append(
-          f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
+          f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
           f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
       )
     else:
       formatted_blocks.append(
-          f'<div class="mb-1.5 leading-relaxed text-xs text-gray-300">{part}</div>'
+          f'<div class="mb-2 leading-relaxed text-xs text-gray-300">{part}</div>'
       )
 
   return (
@@ -237,7 +237,7 @@ def format_analyst_points_sequential(text1, text2):
   counter = 1
   for content in items1:
     html1.append(
-        f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
+        f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
         f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
     )
     counter += 1
@@ -245,7 +245,7 @@ def format_analyst_points_sequential(text1, text2):
   html2 = []
   for content in items2:
     html2.append(
-        f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
+        f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
         f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
     )
     counter += 1
@@ -623,23 +623,23 @@ def fetch_ai_insights_from_groq(
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 You are a senior Wall Street institutional macro analyst, chief global strategist, and geopolitical risk expert specializing in international relations, energy security, and cross-border market shocks. 
 
-CRITICAL ANTI-FLUFF & HYPER-SPECIFIC GRANULARITY RULE (ZERO TOLERANCE FOR GENERIC PHRASES):
-- ABSOLUTELY FORBIDDEN to use lazy, anonymous, or generic phrases (e.g., do NOT write "דוחות כספיים טובים", "העלייה נובעת מנתונים חיוביים", "השוק הגיב להודעות", or general market platitudes). 
-- EVERY SINGLE NUMBERED POINT across all analysis fields (US_MARKET_NEWS, IL_MARKET_NEWS, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, OIL_EXPLANATION, USD_ILS_EXPLANATION, etc.) MUST explicitly name the **exact company names, specific stock tickers (e.g., MSFT, AAPL, NVDA, XOM), and precise market sectors (e.g., סקטור הטכנולוגיה - XLK, סקטור האנרגיה - XLE, סקטור הפיננסים - XLF)** involved in the event.
-- You must connect geopolitical triggers (such as tensions in the Strait of Hormuz / מצר הורמוז, Iranian conflict escalations, maritime trade blockades, energy supply shocks) directly to specific impacted sectors, commodity prices (Crude Oil CL=F, Gold GC=F), currency pairs (USD/ILS), and corporate bottom lines with institutional-grade precision.
+CRITICAL ANTI-FLUFF & EXHAUSTIVE DEPTH REQUIREMENT (ZERO TOLERANCE FOR SHORT OR GENERIC BULLET POINTS):
+- ABSOLUTELY FORBIDDEN to write short sentences, headline fragments, or generic clichés (e.g., do NOT write "בעקבות דוחות כספיים", "התפתחויות טכנולוגיות", or lazy summaries).
+- EVERY SINGLE ONE of the 4 numbered points across ALL analysis fields (US_MARKET_NEWS, IL_MARKET_NEWS, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, OIL_EXPLANATION, USD_ILS_EXPLANATION, etc.) MUST be a **rich, exhaustive, comprehensive paragraph of at least 40-50 words**!
+- You MUST explicitly name specific companies, exact stock tickers (e.g., MSFT, AAPL, NVDA, JPM, XOM), precise market sectors (e.g., סקטור הטכנולוגיה - XLK, סקטור האנרגיה - XLE, סקטור הפיננסים - XLF), macroeconomic indicators, and deep geopolitical dynamics (such as the Strait of Hormuz / מצר הורמוז, regional military escalations with Iran, energy supply choke points, shipping disruptions, and sovereign risk). Explain *who*, *what*, *why*, and *how* it affects pricing, valuations, and risk premia.
 
 CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
 1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
 2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain exactly 10 stable value/dividend stocks, swing must contain exactly 10 separate high-momentum short-term trading stocks.
 
 FORMAT RULES FOR ANALYSES:
-All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, exhaustive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line with deep professional geopolitical, sector-specific, and financial insights naming exact tickers and companies. Never return arrays or brackets inside text fields.
+All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich, exhaustive text split into EXACTLY 4 distinct numbered sections in Hebrew (1., 2., 3., 4.), each starting on a new line. Each section must contain full, detailed analytical paragraphs as mandated above. Never return arrays or brackets inside text fields.
 
 MARKET NEWS (market_news):
 Return an array of at least 10 key news items from the provided list. Each item must have:
 1. news_link (exact URL)
 2. news_title (title translated/written in Hebrew)
-3. news_desc (Start explicitly with "סיכום הכתבה בקצרה:" followed by a deep, detailed 3-4 sentence summary in professional Hebrew explicitly naming the companies, tickers, sectors, and geopolitical/market impacts involved).
+3. news_desc (Start explicitly with "סיכום הכתבה בקצרה:" followed by a deep, detailed, multi-sentence institutional analysis in professional Hebrew explicitly naming the companies, tickers, sectors, and geopolitical/market impacts involved).
 
 Today is {day_name}, Date: {date_str}.
 
