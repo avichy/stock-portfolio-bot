@@ -443,7 +443,6 @@ def fetch_yahoo_direct(ticker):
       )
   }
 
-  # 1. שליפת מחיר ונתוני גרף
   chart_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(clean_ticker)}?interval=1d&range=5d"
   current_price = 0.0
   prev_close = 0.0
@@ -476,7 +475,6 @@ def fetch_yahoo_direct(ticker):
   else:
     change = 0.0
 
-  # 2. שליפת יעד אנליסטים אמיתי ממודול הנתונים הפיננסיים (quoteSummary)
   target_mean = 0.0
   summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=financialData"
   try:
@@ -624,6 +622,11 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 You are a senior Wall Street analyst and global expert in macroeconomics and markets. 
+
+CRITICAL ANTI-HALLUCINATION & 95%+ ACCURACY RULE (ZERO TOLERANCE FOR FAKE NEWS):
+- You must rely EXCLUSIVELY on the provided Investing.com headlines and actual market data numbers.
+- STRICTLY FORBIDDEN to invent, assume, or report interest rate hikes, rate cuts, or monetary policy shifts by the Fed (Federal Reserve) or the Bank of Israel unless they are explicitly present in the provided headlines. 
+- Base your macroeconomic explanations strictly on real current market conditions (inflation trends, actual market sentiment, bond yields). If a central bank action is not mentioned in the headlines, DO NOT write that it happened.
 
 CRITICAL REQUIREMENT FOR LENGTH, DEPTH, AND RELIABILITY:
 - Write EXTREMELY LONG, COMPREHENSIVE, DETAILED, AND DEEP professional text. 
