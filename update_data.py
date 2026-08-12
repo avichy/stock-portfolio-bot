@@ -145,8 +145,13 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  text = re.sub(r"\bUS\b", "🇺🇸", text)
-  text = re.sub(r"\bIL\b", "🇮🇱", text)
+  # הסרת כפיפויות של US/IL או דגלים מתחילת הטקסט כדי למנוע כפילות מול הטמפלייט
+  text = re.sub(
+      r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
+      "",
+      text,
+      flags=re.IGNORECASE,
+  )
 
   cleaned = (
       text.replace("{", "")
@@ -587,9 +592,6 @@ CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
 1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
 2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain only stable value/dividend stocks, swing must contain separate high-momentum short-term trading stocks.
 
-FLAGS RULE:
-For US_MARKET_NEWS and IL_MARKET_NEWS, do NOT use the text 'US' or 'IL'. Instead, begin them with the emoji flags 🇺🇸 and 🇮🇱 respectively.
-
 FORMAT RULES:
 All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich text split into EXACTLY 4 distinct numbered sections (1., 2., 3., 4.), each starting on a new line. Never return arrays or brackets inside text fields.
 
@@ -619,8 +621,8 @@ Return a valid JSON object with exactly these keys:
 7. OIL_EXPLANATION
 8. GOLD_EXPLANATION
 9. BTC_EXPLANATION
-10. US_MARKET_NEWS (Must start with 🇺🇸)
-11. IL_MARKET_NEWS (Must start with 🇮🇱)
+10. US_MARKET_NEWS
+11. IL_MARKET_NEWS
 12. MARKET_MOVERS_TABLE
 13. CATALYST_EARNINGS
 14. CATALYST_MONETARY
