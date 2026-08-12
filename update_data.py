@@ -103,8 +103,8 @@ def format_pct_colored(val):
     sign = "+" if num > 0 else ""
     color = "#2ecc71" if num >= 0 else "#e74c3c"
     return (
-        f"<span style='color: {color}; font-weight:"
-        f" bold;'>{sign}{num:.2f}%</span>"
+        f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+        f' inline-block;">{sign}{num:.2f}%</span>'
     )
   except (ValueError, TypeError):
     return str(val)
@@ -145,7 +145,6 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # הסרת כפיפויות של US/IL או דגלים מתחילת הטקסט כדי למנוע כפילות מול הטמפלייט
   text = re.sub(
       r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
       "",
@@ -576,42 +575,43 @@ def fetch_ai_insights_from_groq(
 
         headlines_formatted = (
             "\n".join([
-                f"- Title: {h['title']} | Link: {h['link']}"
+                f"- כותרת: {h['title']} | קישור: {h['link']}"
                 for h in investing_headlines
             ])
             if investing_headlines
-            else "No headlines available."
+            else "אין כותרות זמינות."
         )
 
+        # פרומט מקורי מלא ומפורט בעברית לבקשת המשתמש
         prompt = f"""
-You must output valid JSON. Do not include curly brackets or array symbols inside text values, write plain structured text.
-You are a senior Wall Street analyst and global expert in macroeconomics and markets. 
-All textual values, descriptions, analyses, and news summaries must be written in professional Hebrew.
+עליך להחזיר אובייקט JSON תקני בלבד. אל תכלול סוגריים מסולסלים או סוגריים מרובעים בתוך ערכי הטקסט, כתוב טקסט מובנה ונקי בעברית מקצועית.
+אתה אנליסט בכיר בוול סטריט ומומחה עולמי במאקרו-כלכלה ובשוק ההון. 
+כל הערכים הטקסטואליים, התיאורים, הניתוחים וסיכומי החדשות חייבים להיכתב בעברית מקצועית, שוטפת ועשירה.
 
-CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
-1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
-2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain only stable value/dividend stocks, swing must contain separate high-momentum short-term trading stocks.
+חוקים קריטיים לבחירת מניות והפרדה:
+1. חל איסור מוחלט להמליץ על כל מניה בקבוצות 'long_term_stocks' או 'swing_stocks' שהמשתמש כבר מחזיק בתיק שלו. טיקרים אסורים: {portfolio_tickers}.
+2. חל איסור מוחלט ליצור חפיפה או כפילות של מניות בין 'long_term_stocks' לבין 'swing_stocks'. מניות לטווח ארוך חייבות להכיל רק מניות ערך או דיבידנד יציבות, מניות סווינג חייבות להכיל מניות מסחר קצרות טווח עם מומנטום גבוה ונפרדות לחלוטין.
 
-FORMAT RULES:
-All analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS, etc.) must be rich text split into EXACTLY 4 distinct numbered sections (1., 2., 3., 4.), each starting on a new line. Never return arrays or brackets inside text fields.
+חוקי פורמט:
+כל שדות הניתוח (SP500_ANALYSIS, NASDAQ_ANALYSIS, US_MARKET_NEWS, IL_MARKET_NEWS וכו') חייבים להיות כתובים כטקסט עשיר המחולק בדיוק ל-4 סעיפים ממוספרים נפרדים (1., 2., 3., 4.), כאשר כל סעיף מתחיל בשורה חדשה. לעולם אל תחזיר מערכים או סוגריים בתוך שדות הטקסט.
 
-MARKET NEWS (market_news):
-Return an array of at least 10 key news items from the provided list. Each item must have:
-1. news_link (exact URL)
-2. news_title (title)
-3. news_desc (short 1-2 sentence summary in Hebrew explaining its impact on the market).
+חדשות שוק (market_news):
+החזר מערך של לפחות 10 פריטי חדשות מרכזיים מתוך הרשימה המסופקת. כל פריט חייב לכלול:
+1. news_link (כתובת ה-URL המדויקת)
+2. news_title (הכותרת)
+3. news_desc (סיכום קצר בן 1-2 משפטים בעברית המסביר את המשמעות וההשפעה על השוק).
 
-Today is {day_name}, Date: {date_str}.
+היום הוא {day_name}, תאריך: {date_str}.
 
-Headlines from Investing.com:
+כותרות מעודכנות מ-Investing.com בעברית:
 {headlines_formatted}
 
-Current Market Data:
+נתוני השוק הנוכחיים:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-User Portfolio Tickers (DO NOT RECOMMEND): {portfolio_tickers}
+טיקרים בתיק המשתמש (אסורים להמלצה): {portfolio_tickers}
 
-Return a valid JSON object with exactly these keys:
+החזר אובייקט JSON תקני הכולל בדיוק את המפתחות הבאים:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -632,9 +632,9 @@ Return a valid JSON object with exactly these keys:
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (array of 10 distinct objects with ticker, name, desc, news)
-22. swing_stocks (array of 10 distinct objects completely separate from long_term_stocks with ticker, name, desc, news)
-23. market_news (array of at least 10 items with news_link, news_title, news_desc)
+21. long_term_stocks (מערך של 10 אובייקטים נפרדים עם ticker, name, desc, news)
+22. swing_stocks (מערך של 10 אובייקטים נפרדים לחלוטין מ-long_term_stocks עם ticker, name, desc, news)
+23. market_news (מערך של לפחות 10 פריטים עם news_link, news_title, news_desc)
 """
 
         response = client.chat.completions.create(
@@ -774,8 +774,8 @@ def build_structured_stocks_html(stocks_meta, market_data):
     sign = "+" if change_val > 0 else ""
     color = "#2ecc71" if change_val >= 0 else "#e74c3c"
     change_str = (
-        f"<span style='color: {color}; font-weight:"
-        f" bold;'>{sign}{change_val:.2f}%</span>"
+        f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+        f' inline-block;">{sign}{change_val:.2f}%</span>'
     )
 
     logo_url = get_stock_logo_url(ticker)
@@ -1028,8 +1028,8 @@ if __name__ == "__main__":
             "pre": f"${format_num(pre_p)}",
             "target": f"${format_num(fetched_target)}",
             "status": (
-                f"רווח: <span style='color: {color}; font-weight:"
-                f" bold;'>{sign}{ret:.2f}%</span>"
+                f"רווח: <span dir='ltr' style='color: {color}; font-weight:"
+                f" bold; display: inline-block;'>{sign}{ret:.2f}%</span>"
             ),
             "note": "",
         })
@@ -1125,8 +1125,8 @@ if __name__ == "__main__":
       s_price = format_num(s_data.get("price", 0))
       replacements[f"SECTOR_{s_key}_PRICE"] = f"${s_price}"
       replacements[f"SECTOR_{s_key}_PCT"] = (
-          f"<span style='color: {color}; font-weight:"
-          f" bold;'>{sign}{s_change:.2f}%</span>"
+          f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+          f' inline-block;">{sign}{s_change:.2f}%</span>'
       )
 
     for k, v in replacements.items():
