@@ -188,6 +188,71 @@ def format_ai_text(text):
   )
 
 
+def format_analyst_points_sequential(text1, text2):
+  def extract_items(t):
+    if isinstance(t, list):
+      t = " ".join(str(item) for item in t)
+    elif not isinstance(t, str):
+      t = str(t)
+    t = t.strip()
+    if t.startswith("[") and t.endswith("]"):
+      try:
+        parsed_list = json.loads(t)
+        if isinstance(parsed_list, list):
+          t = " ".join(str(item) for item in parsed_list)
+      except Exception:
+        pass
+    t = re.sub(
+        r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
+        "",
+        t,
+        flags=re.IGNORECASE,
+    )
+    cleaned = (
+        t.replace("{", "")
+        .replace("}", "")
+        .replace("[", "")
+        .replace("]", "")
+        .replace('"', "")
+        .replace("'", "")
+    )
+    cleaned = format_numbers_in_text(cleaned)
+    parts = re.split(r"(?:\s+|\n)(?=\d+\.\s)", cleaned)
+    items = []
+    for p in parts:
+      p = p.strip()
+      if not p:
+        continue
+      match = re.match(r"^\d+\.\s*(.*)", p)
+      if match:
+        items.append(match.group(1))
+      else:
+        items.append(p)
+    return items
+
+  items1 = extract_items(text1)
+  items2 = extract_items(text2)
+
+  html1 = []
+  counter = 1
+  for content in items1:
+    html1.append(
+        f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
+        f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
+    )
+    counter += 1
+
+  html2 = []
+  for content in items2:
+    html2.append(
+        f'<div class="mb-1.5 text-xs text-gray-300 leading-relaxed"><span'
+        f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
+    )
+    counter += 1
+
+  return "".join(html1), "".join(html2)
+
+
 def get_stock_logo_url(ticker):
   clean_ticker = str(ticker).strip().upper()
   parqet_ticker = clean_ticker.replace("-", ".")
@@ -856,15 +921,43 @@ if __name__ == "__main__":
     if not isinstance(market_news_data, list) or len(market_news_data) < 10:
       market_news_data = []
       for h in investing_headlines[:12]:
-        # עדכון מנגנון הגיבוי כך שיתחיל בדיוק ב-"סיכום הכתבה בקצרה:"
         market_news_data.append({
             "news_link": h["link"],
             "news_title": h["title"],
             "news_desc": (
-                f"סיכום הכתבה בקצרה: דיווח עדכני ממערכת Investing.com המתייחס ל-{h['title']}. הידיעה מנתחת את ההשלכות המרכזיות על הסקטור והשפעתה האפשרית על המסחר. לחץ על הקישור לקריאת הפרטים המלאים."
+                f"סיכום הכתבה בקצרה: דיווח עדכני ממערכת Investing.com המתייחס"
+                f" ל-{h['title']}. הידיעה מנתחת את ההשלכות המרכזיות על הסקטור"
+                " והשפעתה האפשרית על המסחר. לחץ על הקישור לקריאת הפרטים"
+                " המלאים."
             ),
         })
       ai_insights["market_news"] = market_news_data
+
+    # גיבויים לשדות הזרזים (Catalysts) למניעת מצב ריק
+    if not ai_insights.get("CATALYST_EARNINGS"):
+      ai_insights["CATALYST_EARNINGS"] = (
+          "1. דיווחים שוטפים על תוצאות כספיות של חברות מובילות בסקטור הטכנולוגיה"
+          " והפיננסים.\n2. מעקב אחר דוחות רבעוניים צפויים המשפיעים על תנודתיות"
+          " השוק הרחב.\n3. ניתוח תחזיות צמיחה והכנסות של חברות הענק בוול"
+          " סטריט.\n4. השפעת תוצאות האמת על הסנטימנט הכללי וציפיות המשקיעים."
+      )
+
+    if not ai_insights.get("CATALYST_MONETARY"):
+      ai_insights["CATALYST_MONETARY"] = (
+          "1. החלטות ריבית צפויות של הפדרל ריזרב והבנקים המרכזיים הגלובליים.\n2."
+          " פרסום נתוני אינפלציה מרכזיים (CPI ו-PPI) המכתיבים את תוואי"
+          " המדיניות.\n3. הצהרות בכירים בבנק המרכזי לגבי קצב הורדות או שמירת"
+          " הריבית.\n4. השפעת תשואות אג\"ח ממשלתיות על נזילות שוק המניות."
+      )
+
+    if not ai_insights.get("CATALYST_HARDWARE"):
+      ai_insights["CATALYST_HARDWARE"] = (
+          "1. השקות מוצרי חומרה מתקדמים ומעבדי בינה מלאכותית חדשים בסקטור"
+          " השבבים.\n2. עדכוני תוכנה משמעותיים ופלטפורמות ענן מתקדמות"
+          " בארגונים.\n3. ביקושים קשיחים לשבבי AI מתקדמים ולתשתיות מרכזי"
+          " נתונים.\n4. שיתופי פעולה אסטרטגיים בין ענקיות טכנולוגיה בתחום"
+          " החומרה."
+      )
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
     if not isinstance(new_lt, list) or not new_lt:
@@ -1000,6 +1093,11 @@ if __name__ == "__main__":
       except Exception as ex:
         print(f"Error processing portfolio stock {ticker}: {ex}")
 
+    formatted_analyst_1, formatted_analyst_2 = format_analyst_points_sequential(
+        ai_insights.get("ANALYST_POINT_1", ""),
+        ai_insights.get("ANALYST_POINT_2", ""),
+    )
+
     replacements = {
         "LAST_UPDATED": f"{date_str} | {time_str}",
         "AI_LAST_UPDATED": ai_insights.get(
@@ -1064,12 +1162,8 @@ if __name__ == "__main__":
         "COMMUNITY_SENTIMENT": format_ai_text(
             ai_insights.get("COMMUNITY_SENTIMENT", "")
         ),
-        "ANALYST_POINT_1": format_ai_text(
-            ai_insights.get("ANALYST_POINT_1", "")
-        ),
-        "ANALYST_POINT_2": format_ai_text(
-            ai_insights.get("ANALYST_POINT_2", "")
-        ),
+        "ANALYST_POINT_1": formatted_analyst_1,
+        "ANALYST_POINT_2": formatted_analyst_2,
         "RISK_MANAGEMENT_TEXT": format_ai_text(
             ai_insights.get("RISK_MANAGEMENT_TEXT", "")
         ),
