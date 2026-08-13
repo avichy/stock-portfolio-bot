@@ -172,9 +172,7 @@ def format_ai_text(text):
     match = re.match(r"^(\d+)\.\s*(.*)", part)
     if match:
       num, content = match.groups()
-      content = re.sub(
-          r"^[:\s]+", "", content
-      )  # הסרת נקודותיים או רווחים מיותרים אחרי המספר
+      content = re.sub(r"^[:\s]+", "", content)
       formatted_blocks.append(
           f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
           f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
@@ -426,7 +424,7 @@ SW_STOCKS_META = [
         "ticker": "NEM",
         "name": "Newmont Corporation",
         "desc": "חברת כריית הזהב הגדולה בעולם (סקטור חומרי גלם וגידור).",
-        "news": "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי הזהב.",
+        "news": "תנועה מנוגדת לרוב לשוק המניות, מששת ככלי מסחר מצוין סביב מחירי הזהב.",
         "why_invest": "כלי גידור מעולה לשוק המניות המציע תנועות מחיר מהירות סביב הזהב.",
     },
     {
@@ -636,7 +634,8 @@ CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATIO
 - **IL_MARKET_NEWS**: Must focus EXCLUSIVELY on the Israeli economy (המשק הישראלי), Bank of Israel interest rate policy, Tel Aviv Stock Exchange (TASE), dual-listed stocks, and local geopolitical/security risk premiums impacting the Israeli shekel and domestic business. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.).
 - ABSOLUTELY FORBIDDEN to copy or mirror text between US_MARKET_NEWS and IL_MARKET_NEWS.
 
-CRITICAL STRUCTURE & FORMATTING RULE:
+CRITICAL CONTENT & DEPTH REQUIREMENT (NO GENERIC FLUFF):
+- **RISK_MANAGEMENT_TEXT** and **ACTION_RECOMMENDATIONS_TEXT** must NEVER contain generic or trivial advice (such as "invest in good companies" or "diversify"). They must read like an elite institutional risk memo from a Chief Risk Officer (CRO). Detail precise stop-loss rules, cash allocation percentages, VIX hedging mechanisms, beta management, and tactical scaling levels based on current market volatility.
 - ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be written in professional Hebrew and split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
 - DO NOT add a colon after the number inside the text (e.g. write "1. Text" NOT "1. : Text").
 - Each numbered point must be a rich, exhaustive paragraph of at least 40-50 words, explicitly naming companies, tickers, sectors, and concrete macro/geopolitical factors.
@@ -776,8 +775,11 @@ base_market_tickers = list(
 )
 
 
-def build_structured_stocks_html(stocks_meta, market_data):
-  html_parts = []
+def build_structured_stocks_html(stocks_meta, market_data, section_title):
+  html_parts = [
+      f'<div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right"'
+      f' dir="rtl">{section_title}</div>'
+  ]
   if not isinstance(stocks_meta, list) or not stocks_meta:
     stocks_meta = LT_STOCKS_META
 
@@ -855,14 +857,7 @@ def build_structured_stocks_html(stocks_meta, market_data):
         </div>
         """
     html_parts.append(card_html)
-  return (
-      "".join(html_parts)
-      if html_parts
-      else (
-          '<div class="text-gray-400 text-right" dir="rtl">אין מניות זמינות'
-          " כרגע.</div>"
-      )
-  )
+  return "".join(html_parts)
 
 
 def build_market_news_html(market_news_list):
@@ -1069,6 +1064,10 @@ if __name__ == "__main__":
     with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
       content = f.read()
 
+    content = content.replace("10 מניות להשקעה ארוכת טווח", "")
+    content = content.replace("10 מניות למסחר סווינג", "")
+    content = content.replace("10 מניות", "")
+
     lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
     if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
       lt_stocks_data = LT_STOCKS_META
@@ -1077,8 +1076,16 @@ if __name__ == "__main__":
     if not isinstance(sw_stocks_data, list) or not sw_stocks_data:
       sw_stocks_data = SW_STOCKS_META
 
-    lt_html = build_structured_stocks_html(lt_stocks_data, base_market_data)
-    sw_html = build_structured_stocks_html(sw_stocks_data, base_market_data)
+    lt_html = build_structured_stocks_html(
+        lt_stocks_data,
+        base_market_data,
+        "קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core)",
+    )
+    sw_html = build_structured_stocks_html(
+        sw_stocks_data,
+        base_market_data,
+        "קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading)",
+    )
     news_html = build_market_news_html(ai_insights.get("market_news", []))
 
     portfolio_js_list = []
