@@ -172,6 +172,9 @@ def format_ai_text(text):
     match = re.match(r"^(\d+)\.\s*(.*)", part)
     if match:
       num, content = match.groups()
+      content = re.sub(
+          r"^[:\s]+", "", content
+      )  # הסרת נקודותיים או רווחים מיותרים אחרי המספר
       formatted_blocks.append(
           f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
           f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
@@ -225,7 +228,9 @@ def format_analyst_points_sequential(text1, text2):
         continue
       match = re.match(r"^\d+\.\s*(.*)", p)
       if match:
-        items.append(match.group(1))
+        content = match.group(1)
+        content = re.sub(r"^[:\s]+", "", content)
+        items.append(content)
       else:
         items.append(p)
     return items
@@ -633,6 +638,7 @@ CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATIO
 
 CRITICAL STRUCTURE & FORMATTING RULE:
 - ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be written in professional Hebrew and split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
+- DO NOT add a colon after the number inside the text (e.g. write "1. Text" NOT "1. : Text").
 - Each numbered point must be a rich, exhaustive paragraph of at least 40-50 words, explicitly naming companies, tickers, sectors, and concrete macro/geopolitical factors.
 
 CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
