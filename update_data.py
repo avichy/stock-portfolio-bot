@@ -174,12 +174,12 @@ def format_ai_text(text):
       num, content = match.groups()
       content = re.sub(r"^[:\s]+", "", content)
       formatted_blocks.append(
-          f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
+          f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
           f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
       )
     else:
       formatted_blocks.append(
-          f'<div class="mb-2 leading-relaxed text-xs text-gray-300">{part}</div>'
+          f'<div class="mb-3 leading-relaxed text-xs text-gray-300">{part}</div>'
       )
 
   return (
@@ -240,7 +240,7 @@ def format_analyst_points_sequential(text1, text2):
   counter = 1
   for content in items1:
     html1.append(
-        f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
+        f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
         f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
     )
     counter += 1
@@ -248,7 +248,7 @@ def format_analyst_points_sequential(text1, text2):
   html2 = []
   for content in items2:
     html2.append(
-        f'<div class="mb-2 text-xs text-gray-300 leading-relaxed"><span'
+        f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
         f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
     )
     counter += 1
@@ -424,7 +424,7 @@ SW_STOCKS_META = [
         "ticker": "NEM",
         "name": "Newmont Corporation",
         "desc": "חברת כריית הזהב הגדולה בעולם (סקטור חומרי גלם וגידור).",
-        "news": "תנועה מנוגדת לרוב לשוק המניות, מששת ככלי מסחר מצוין סביב מחירי הזהב.",
+        "news": "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי הזהב.",
         "why_invest": "כלי גידור מעולה לשוק המניות המציע תנועות מחיר מהירות סביב הזהב.",
     },
     {
@@ -624,25 +624,21 @@ def fetch_ai_insights_from_groq(
 
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
-You are a senior Wall Street institutional macro analyst and chief global strategist.
+You are a senior Wall Street institutional macro analyst, quantitative strategist, and Chief Risk Officer (CRO).
 
-CRITICAL LANGUAGE REQUIREMENT:
-- **WRITE EVERYTHING IN PROFESSIONAL HEBREW ONLY (עברית בלבד)**. Do not write analyses or descriptions in English.
+CRITICAL LANGUAGE & CLARITY REQUIREMENT:
+- **WRITE EVERYTHING IN PROFESSIONAL YET ACCESSIBLE HEBREW ONLY (עברית מקצועית אך נגישה ומובנת)**. 
+- Every single analysis must be detailed, comprehensive, deep, and long ("עמוק, ארוך, ומפורט"). It must be written in clear language so that even a person who is not a trader or financial expert can easily understand the economic meaning, context, and implications.
+- **FORBIDDEN:** Do not write short lines, generic sentences, or placeholders. Every section must contain rich multi-paragraph or multi-point explanations.
 
 CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATION):
-- **US_MARKET_NEWS**: Must focus EXCLUSIVELY on Wall Street, the Federal Reserve, US macroeconomic indicators, US stock indexes, and global geopolitical impacts on US assets (trade wars, energy prices, supply chains, defense spending). Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.).
-- **IL_MARKET_NEWS**: Must focus EXCLUSIVELY on the Israeli economy (המשק הישראלי), Bank of Israel interest rate policy, Tel Aviv Stock Exchange (TASE), dual-listed stocks, and local geopolitical/security risk premiums impacting the Israeli shekel and domestic business. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.).
-- ABSOLUTELY FORBIDDEN to copy or mirror text between US_MARKET_NEWS and IL_MARKET_NEWS.
+- **US_MARKET_NEWS**: Must focus EXCLUSIVELY on Wall Street, the Federal Reserve, US macroeconomic indicators, US stock indexes, and global geopolitical impacts on US assets. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.), each containing rich context.
+- **IL_MARKET_NEWS**: Must focus EXCLUSIVELY on the Israeli economy (המשק הישראלי), Bank of Israel interest rate policy, Tel Aviv Stock Exchange (TASE), dual-listed stocks, and local geopolitical/security risk premiums. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.), each containing rich context.
 
-CRITICAL CONTENT & DEPTH REQUIREMENT (NO GENERIC FLUFF):
-- **RISK_MANAGEMENT_TEXT** and **ACTION_RECOMMENDATIONS_TEXT** must NEVER contain generic or trivial advice (such as "invest in good companies" or "diversify"). They must read like an elite institutional risk memo from a Chief Risk Officer (CRO). Detail precise stop-loss rules, cash allocation percentages, VIX hedging mechanisms, beta management, and tactical scaling levels based on current market volatility.
-- ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be written in professional Hebrew and split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
+STRUCTURE & FORMATTING RULE:
+- ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
 - DO NOT add a colon after the number inside the text (e.g. write "1. Text" NOT "1. : Text").
-- Each numbered point must be a rich, exhaustive paragraph of at least 40-50 words, explicitly naming companies, tickers, sectors, and concrete macro/geopolitical factors.
-
-CRITICAL RULES FOR STOCK SELECTION & SEPARATION:
-1. STRICTLY FORBIDDEN to recommend any stock in 'long_term_stocks' or 'swing_stocks' that the user already holds in their portfolio. Forbidden tickers: {portfolio_tickers}.
-2. STRICTLY FORBIDDEN to overlap or duplicate stocks between 'long_term_stocks' and 'swing_stocks'. Long term must contain exactly 10 stable value/dividend stocks, swing must contain exactly 10 separate high-momentum short-term trading stocks (with desc, news, why_invest written in professional Hebrew).
+- Each numbered point must contain at least 50-70 words of dense, rich, highly detailed financial text explained simply for the reader.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -956,29 +952,45 @@ if __name__ == "__main__":
         })
       ai_insights["market_news"] = market_news_data
 
-    if not ai_insights.get("CATALYST_EARNINGS"):
+    # הבטחת גיבויים עמוקים, ארוכים וברורים לכל שלב במערכת במידה וה-AI מחזיר שדה ריק או קצר מדי
+    if not ai_insights.get("CATALYST_EARNINGS") or len(str(ai_insights.get("CATALYST_EARNINGS"))) < 50:
       ai_insights["CATALYST_EARNINGS"] = (
-          "1. דיווחים שוטפים על תוצאות כספיות של חברות מובילות בסקטור הטכנולוגיה"
-          " והפיננסים.\n2. מעקב אחר דוחות רבעוניים צפויים המשפיעים על תנודתיות"
-          " השוק הרחב.\n3. ניתוח תחזיות צמיחה והכנסות של חברות הענק בוול"
-          " סטריט.\n4. השפעת תוצאות האמת על הסנטימנט הכללי וציפיות המשקיעים."
+          "1. ניתוח רוחבי של דוחות הכספיים של חברות הענק הטכנולוגיות והתעשייתיות, תוך בחינת קצב גידול ההכנסות ושולי הרווח הנקי המעידים על חוסן עסקי אמיתי.\n"
+          "2. מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות לוול סטריט, המהותיות פי כמה מהתוצאות העכשוויות להערכת כיוון השוק.\n"
+          "3. בחינת השפעת התוצאות של חברות השבבים והתשתיות על כלל שרשרת האספקה הגלובלית והביקושים למערכות בינה מלאכותית מתקדמות.\n"
+          "4. הערכת תגובת השוק, רמות התנודתיות המשתמעת באופציות וההשלכות המעשיות על משקיעים לטווח ארוך וקצר."
       )
 
-    if not ai_insights.get("CATALYST_MONETARY"):
+    if not ai_insights.get("CATALYST_MONETARY") or len(str(ai_insights.get("CATALYST_MONETARY"))) < 50:
       ai_insights["CATALYST_MONETARY"] = (
-          "1. החלטות ריבית צפויות של הפדרל ריזרב והבנקים המרכזיים הגלובליים.\n2."
-          " פרסום נתוני אינפלציה מרכזיים (CPI ו-PPI) המכתיבים את תוואי"
-          " המדיניות.\n3. הצהרות בכירים בבנק המרכזי לגבי קצב הורדות או שמירת"
-          " הריבית.\n4. השפעת תשואות אג\"ח ממשלתיות על נזילות שוק המניות."
+          "1. מעקב רציף אחר החלטות הריבית של הבנק הפדרלי בארה\"ב (הפד) והבנק המרכזי ביسرائيل, ומשמעותן הישירה על עלויות ההלוואות והמשכנתאות של הציבור.\n"
+          "2. ניתוח נתוני האינפלציה המרכזיים (כגון מדד המחירים לצרכן) כדי להבין האם לחצי המחירים נבלמים או ממשיכים לשחוק את כוח הקנייה.\n"
+          "3. בחינת התשואות על אג\"ח ממשלתיות לטווח ארוך, המשמשות כמצפן מרכזי לכלל העלויות והתשואות במערכת הפיננסית.\n"
+          "4. הבנת ההשפעה של זרימת ההון המוסדי והנזילות הגלובלית על נכסי סיכון כמניות ונדל\"ן."
       )
 
-    if not ai_insights.get("CATALYST_HARDWARE"):
+    if not ai_insights.get("CATALYST_HARDWARE") or len(str(ai_insights.get("CATALYST_HARDWARE"))) < 50:
       ai_insights["CATALYST_HARDWARE"] = (
-          "1. השקות מוצרי חומרה מתקדמים ומעבדי בינה מלאכותית חדשים בסקטור"
-          " השבבים.\n2. עדכוני תוכנה משמעותיים ופלטפורמות ענן מתקדמות"
-          " בארגונים.\n3. ביקושים קשיחים לשבבי AI מתקדמים ולתשתיות מרכזי"
-          " נתונים.\n4. שיתופי פעולה אסטרטגיים בין ענקיות טכנולוגיה בתחום"
-          " החומרה."
+          "1. ניתוח קצב הקמתם והתרחבותם של מרכזי נתונים ענקיים ברחבי העולם התומכים במהפכת הבינה המלאכותית והענן.\n"
+          "2. בחינת ההתפתחויות הטכנולוגיות בייצור רכיבים אלקטרוניים זעירים והיכולת של התעשייה לעמוד בביקושים העצומים ללא צווארי בקבוק.\n"
+          "3. בדיקת הביקוש הקשיח מצד גופים עסקיים וביטחוניים לפתרונות חומרה מתקדמים, אבטחת מידע ואחסון מידע בענן.\n"
+          "4. הערכת שיתופי הפעולה האסטרטגיים בין יצרניות החומרה הגדולות לבין ענקיות התוכנה העולמיות."
+      )
+
+    if not ai_insights.get("RISK_MANAGEMENT_TEXT") or len(str(ai_insights.get("RISK_MANAGEMENT_TEXT"))) < 50:
+      ai_insights["RISK_MANAGEMENT_TEXT"] = (
+          "1. הקפדה על פיזור השקעות רוחבי בין סקטורים שאינם תלויים זה בזה, כדי להגן על תיק ההשקעות מפני זעזועים נקודתיים במניה או בענף ספציפי.\n"
+          "2. הגדרת רמות עצירת הפסד (סטופ-לס) ברורות מראש לכל פוזיציה קצרת טווח, למניעת מחיקת רווחים בעת תנודות פתאומיות בשוק.\n"
+          "3. שמירה על רזרבת מזומנים בשיעור מבוקר בתוך התיק, המאפשרת לנצל הזדמנויות קנייה אטרקטיביות בעת ירידות חדות.\n"
+          "4. מעקב יומי אחר מדד הפחד (VIX) כדי לזהות מראש תקופות של לחץ בשווקים ולהתאים את רמת החשיפה לסיכון בהתאם."
+      )
+
+    if not ai_insights.get("ACTION_RECOMMENDATIONS_TEXT") or len(str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT"))) < 50:
+      ai_insights["ACTION_RECOMMENDATIONS_TEXT"] = (
+          "1. התמקדות באיתור והשקעה בחברות מובילות בעלות תזרים מזומנים חזק, ניהול מנוסה ומאזן נקי מחובות מוגזמים.\n"
+          "2. ביצוע רכישות מדורגות ומחושבות לאורך זמן (שיטת הממוצע) במקום השקעה חד-פעמית של כל הסכום בבת אחת.\n"
+          "3. מימוש רווחים חלקיים במניות שרשמו זינוק חד חריג, לצורך קיבוע הצלחה והקטנת הסיכון הכולל בתיק.\n"
+          "4. שמירה על קור רוח והימנעות מקבלת החלטות אימפולסיביות המבוססות על פאניקה רגעית או כותרות חדשותיות זמניות."
       )
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
