@@ -1248,3 +1248,4 @@ if __name__ == "__main__":
     print(f"❌ Critical Error in main execution: {e}")
     traceback.print_exc()
     exit(1)
+```[cite: 2]
