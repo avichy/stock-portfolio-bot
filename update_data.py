@@ -689,6 +689,7 @@ Return a valid JSON object with exactly these keys:
 
         raw_text = response.choices[0].message.content.strip()
         parsed_ai_data = json.loads(raw_text)
+        time_str = datetime.now(israel_tz).strftime("%H:%M")
         parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
         print("Successfully parsed AI response into JSON using key:", key_name)
         return parsed_ai_data
