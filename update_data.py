@@ -624,12 +624,16 @@ def fetch_ai_insights_from_groq(
 
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
-You are a senior Wall Street institutional macro analyst, quantitative strategist, and Chief Risk Officer (CRO).
 
-CRITICAL LANGUAGE & CLARITY REQUIREMENT:
-- **WRITE EVERYTHING IN PROFESSIONAL YET ACCESSIBLE HEBREW ONLY (עברית מקצועית אך נגישה ומובנת)**. 
-- Every single analysis must be detailed, comprehensive, deep, and long ("עמוק, ארוך, ומפורט"). It must be written in clear language so that even a person who is not a trader or financial expert can easily understand the economic meaning, context, and implications.
-- **FORBIDDEN:** Do not write short lines, generic sentences, or placeholders. Every section must contain rich multi-paragraph or multi-point explanations.
+אתה אנליסט בכיר בוולסטריט סוחר ותיק בשוק המניות האמריקאי והישראלי, אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק בשבועיים האחרונים. כתוב לי על הגורמים המשפיעים ביותר בשווקים בשבועיים האחרונים, בצורה מעמיקה, ארוכה וברורה כך שגם מי שלא סוחר יבין מה שכתוב. לאחר מכן הצג סיכום של תשובתך וערוך השוואה מפורטת בטבלה/טקסט מובנה בין עשרת המניות שהשפעתן על השווקים בשבועיים האחרונים הייתה הגדולה ביותר, כולל התייחסות לאחוז השינוי במחיר המניה וגודל מחזורי המסחר. על פי תשובתך סוחרים ומשקיעים בשוק האמריקאי והישראלי יבססו את החלטותיהם לגבי פעולות המסחר בשבוע הקרוב. אנא דייק את תשובתך ב-95% לפחות.
+
+🚨 CRITICAL NEGATIVE CONSTRAINTS (STRICTLY FORBIDDEN):
+- NEVER write elementary definitions or encyclopedia facts (e.g., DO NOT write "השקל הוא המטבע הרשמי של מדינת ישראל" or "הביטקוין הוא מטבע דיגיטלי" or "הזהב הוא מתכת יקרה").
+- NEVER repeat current prices or numbers that already appear on the screen (e.g., DO NOT write "המחיר של הזהב הוא X" or "נסחר סביב X דולר"). Assume the reader already sees the price.
+- Every single point must focus exclusively on professional Wall Street/TASE macro analysis: underlying institutional flows, macroeconomic drivers, interest rate impacts, geopolitical risk premiums, supply/demand shifts, and trading psychology.
+
+CRITICAL GEOPOLITICAL & MACRO ANALYSIS REQUIREMENT (WHAT & WHY):
+- Whenever discussing geopolitical events, macroeconomic shifts, or market shocks, you MUST explicitly detail **what happened** and thoroughly explain **why it happened** (underlying causes, strategic/political motives, supply chain disruptions, or central bank policy drivers) so the trader understands the root cause, not just the headline.
 
 CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATION):
 - **US_MARKET_NEWS**: Must focus EXCLUSIVELY on Wall Street, the Federal Reserve, US macroeconomic indicators, US stock indexes, and global geopolitical impacts on US assets. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.), each containing rich context.
@@ -952,7 +956,6 @@ if __name__ == "__main__":
         })
       ai_insights["market_news"] = market_news_data
 
-    # הבטחת גיבויים עמוקים, ארוכים וברורים לכל שלב במערכת במידה וה-AI מחזיר שדה ריק או קצר מדי
     if not ai_insights.get("CATALYST_EARNINGS") or len(str(ai_insights.get("CATALYST_EARNINGS"))) < 50:
       ai_insights["CATALYST_EARNINGS"] = (
           "1. ניתוח רוחבי של דוחות הכספיים של חברות הענק הטכנולוגיות והתעשייתיות, תוך בחינת קצב גידול ההכנסות ושולי הרווח הנקי המעידים על חוסן עסקי אמיתי.\n"
@@ -963,7 +966,7 @@ if __name__ == "__main__":
 
     if not ai_insights.get("CATALYST_MONETARY") or len(str(ai_insights.get("CATALYST_MONETARY"))) < 50:
       ai_insights["CATALYST_MONETARY"] = (
-          "1. מעקב רציף אחר החלטות הריבית של הבנק הפדרלי בארה\"ב (הפד) והבנק המרכזי ביسرائيل, ומשמעותן הישירה על עלויות ההלוואות והמשכנתאות של הציבור.\n"
+          "1. מעקב רציף אחר החלטות הריבית של הבנק הפדרלי בארה\"ב (הפד) והבנק המרכזי בישראל, ומשמעותן הישירה על עלויות ההלוואות והמשכנתאות של הציבור.\n"
           "2. ניתוח נתוני האינפלציה המרכזיים (כגון מדד המחירים לצרכן) כדי להבין האם לחצי המחירים נבלמים או ממשיכים לשחוק את כוח הקנייה.\n"
           "3. בחינת התשואות על אג\"ח ממשלתיות לטווח ארוך, המשמשות כמצפן מרכזי לכלל העלויות והתשואות במערכת הפיננסית.\n"
           "4. הבנת ההשפעה של זרימת ההון המוסדי והנזילות הגלובלית על נכסי סיכון כמניות ונדל\"ן."
