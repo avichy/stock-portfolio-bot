@@ -631,6 +631,7 @@ You must output a valid JSON object only. Do not include curly brackets or array
 - NEVER write elementary definitions or encyclopedia facts (e.g., DO NOT write "השקל הוא המטבע הרשמי של מדינת ישראל" or "הביטקוין הוא מטבע דיגיטלי" or "הזהב הוא מתכת יקרה").
 - NEVER repeat current prices or numbers that already appear on the screen (e.g., DO NOT write "המחיר של הזהב הוא X" or "נסחר סביב X דולר"). Assume the reader already sees the price.
 - Every single point must focus exclusively on professional Wall Street/TASE macro analysis: underlying institutional flows, macroeconomic drivers, interest rate impacts, geopolitical risk premiums, supply/demand shifts, and trading psychology.
+- EXPLICIT TICKERS & SECTORS REQUIREMENT: NEVER write blanket, lazy explanations like "עלייה עקב דוחות כספיים טובים" or "סנטימנט חיובי בסקטור". Whenever you mention earnings performance, sector momentum, or capital inflows, you MUST explicitly name at least 2-3 specific stock tickers (e.g., NVDA, MSFT, AVGO) or the exact sub-sector (e.g., Enterprise Software, Hyperscale Data Centers) driving the move.
 
 CRITICAL GEOPOLITICAL & MACRO ANALYSIS REQUIREMENT (WHAT & WHY):
 - Whenever discussing geopolitical events, macroeconomic shifts, or market shocks, you MUST explicitly detail **what happened** and thoroughly explain **why it happened** (underlying causes, strategic/political motives, supply chain disruptions, or central bank policy drivers) so the trader understands the root cause, not just the headline.
@@ -689,7 +690,6 @@ Return a valid JSON object with exactly these keys:
 
         raw_text = response.choices[0].message.content.strip()
         parsed_ai_data = json.loads(raw_text)
-        time_str = datetime.now(israel_tz).strftime("%H:%M")
         parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
         print("Successfully parsed AI response into JSON using key:", key_name)
         return parsed_ai_data
@@ -1249,3 +1249,4 @@ if __name__ == "__main__":
     print(f"❌ Critical Error in main execution: {e}")
     traceback.print_exc()
     exit(1)
+```[cite: 4]
