@@ -742,7 +742,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
           or s.get("update")
           or "עדכון וניתוח יומי."
       )
-      # הסרת "סיכום הכתבה:" אם בטעות הופיע בטקסט
       news = re.sub(r"^סיכום הכתבה:\s*", "", news)
       why_invest = (
           s.get("why_invest")
