@@ -145,6 +145,13 @@ def format_ai_text(text):
     except Exception:
       pass
 
+  # הסרת תחיליות מיותרות שהמודל עלול לייצר בטעות בתוך הטקסט (כדי לא לחזור על כותרות)
+  text = re.sub(
+      r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
+      "",
+      text,
+      flags=re.IGNORECASE,
+  )
   text = re.sub(
       r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
       "",
@@ -162,48 +169,18 @@ def format_ai_text(text):
   )
 
   cleaned = format_numbers_in_text(cleaned)
-
-  # If text has explicit numbered items, format nicely; otherwise render as a professional analytical paragraph
-  parts = re.split(r"(?:\s+|\n)(?=\d+\.\s)", cleaned)
-  if len(parts) > 1:
-    formatted_blocks = []
-    for part in parts:
-      part = part.strip()
-      if not part:
-        continue
-      match = re.match(r"^(\d+)\.\s*(.*)", part)
-      if match:
-        num, content = match.groups()
-        content = re.sub(r"^[:\s]+", "", content)
-        formatted_blocks.append(
-            f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
-            f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
-        )
-      else:
-        formatted_blocks.append(
-            f'<div class="mb-3 leading-relaxed text-xs text-gray-300">{part}</div>'
-        )
-    return "".join(formatted_blocks)
-  else:
-    return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
+  return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
 
 
-def format_analyst_points_sequential(text1, text2):
-  def extract_items(t):
+def format_analyst_points_clean(text1, text2):
+  def clean_t(t):
     if isinstance(t, list):
       t = " ".join(str(item) for item in t)
     elif not isinstance(t, str):
       t = str(t)
     t = t.strip()
-    if t.startswith("[") and t.endswith("]"):
-      try:
-        parsed_list = json.loads(t)
-        if isinstance(parsed_list, list):
-          t = " ".join(str(item) for item in parsed_list)
-      except Exception:
-        pass
     t = re.sub(
-        r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
+        r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
         "",
         t,
         flags=re.IGNORECASE,
@@ -216,43 +193,14 @@ def format_analyst_points_sequential(text1, text2):
         .replace('"', "")
         .replace("'", "")
     )
-    cleaned = format_numbers_in_text(cleaned)
-    parts = re.split(r"(?:\s+|\n)(?=\d+\.\s)", cleaned)
-    items = []
-    for p in parts:
-      p = p.strip()
-      if not p:
-        continue
-      match = re.match(r"^\d+\.\s*(.*)", p)
-      if match:
-        content = match.group(1)
-        content = re.sub(r"^[:\s]+", "", content)
-        items.append(content)
-      else:
-        items.append(p)
-    return items
+    return format_numbers_in_text(cleaned)
 
-  items1 = extract_items(text1)
-  items2 = extract_items(text2)
+  c1 = clean_t(text1)
+  c2 = clean_t(text2)
 
-  html1 = []
-  counter = 1
-  for content in items1:
-    html1.append(
-        f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
-        f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
-    )
-    counter += 1
-
-  html2 = []
-  for content in items2:
-    html2.append(
-        f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
-        f' class="font-bold text-cyan-400 ml-1.5">{counter}.</span>{content}</div>'
-    )
-    counter += 1
-
-  return "".join(html1), "".join(html2)
+  html1 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c1}</div>'
+  html2 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c2}</div>'
+  return html1, html2
 
 
 def get_stock_logo_url(ticker):
@@ -515,71 +463,71 @@ def fetch_market_data(tickers):
           "USDILS=X": {
               "price": 3.65,
               "change": 0.0,
-              "target": 3.65,
+              "target": 0.0,
               "pre_market": 3.65,
           },
           "^GSPC": {
               "price": 5500.0,
               "change": 0.0,
-              "target": 5600.0,
+              "target": 0.0,
               "pre_market": 5500.0,
           },
           "^NDX": {
               "price": 19500.0,
               "change": 0.0,
-              "target": 20000.0,
+              "target": 0.0,
               "pre_market": 19500.0,
           },
           "^DJI": {
               "price": 41000.0,
               "change": 0.0,
-              "target": 42000.0,
+              "target": 0.0,
               "pre_market": 41000.0,
           },
           "^VIX": {
               "price": 15.0,
               "change": 0.0,
-              "target": 15.0,
+              "target": 0.0,
               "pre_market": 15.0,
           },
           "DX-Y.NYB": {
               "price": 103.0,
               "change": 0.0,
-              "target": 103.0,
+              "target": 0.0,
               "pre_market": 103.0,
           },
           "CL=F": {
               "price": 75.0,
               "change": 0.0,
-              "target": 75.0,
+              "target": 0.0,
               "pre_market": 75.0,
           },
           "GC=F": {
               "price": 2400.0,
               "change": 0.0,
-              "target": 2400.0,
+              "target": 0.0,
               "pre_market": 2400.0,
           },
           "BTC-USD": {
               "price": 60000.0,
               "change": 0.0,
-              "target": 65000.0,
+              "target": 0.0,
               "pre_market": 60000.0,
           },
-          "XLK": {"price": 220.0, "change": 0.0, "target": 240.0, "pre_market": 220.0},
-          "XLF": {"price": 45.0, "change": 0.0, "target": 50.0, "pre_market": 45.0},
-          "XLV": {"price": 140.0, "change": 0.0, "target": 150.0, "pre_market": 140.0},
-          "XLY": {"price": 180.0, "change": 0.0, "target": 195.0, "pre_market": 180.0},
-          "XLP": {"price": 80.0, "change": 0.0, "target": 85.0, "pre_market": 80.0},
-          "XLE": {"price": 90.0, "change": 0.0, "target": 100.0, "pre_market": 90.0},
-          "XLI": {"price": 130.0, "change": 0.0, "target": 140.0, "pre_market": 130.0},
-          "XLB": {"price": 90.0, "change": 0.0, "target": 98.0, "pre_market": 90.0},
-          "XLC": {"price": 95.0, "change": 0.0, "target": 105.0, "pre_market": 95.0},
-          "XLU": {"price": 75.0, "change": 0.0, "target": 82.0, "pre_market": 75.0},
-          "XLRE": {"price": 40.0, "change": 0.0, "target": 45.0, "pre_market": 40.0},
+          "XLK": {"price": 220.0, "change": 0.0, "target": 0.0, "pre_market": 220.0},
+          "XLF": {"price": 45.0, "change": 0.0, "target": 0.0, "pre_market": 45.0},
+          "XLV": {"price": 140.0, "change": 0.0, "target": 0.0, "pre_market": 140.0},
+          "XLY": {"price": 180.0, "change": 0.0, "target": 0.0, "pre_market": 180.0},
+          "XLP": {"price": 80.0, "change": 0.0, "target": 0.0, "pre_market": 80.0},
+          "XLE": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
+          "XLI": {"price": 130.0, "change": 0.0, "target": 0.0, "pre_market": 130.0},
+          "XLB": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
+          "XLC": {"price": 95.0, "change": 0.0, "target": 0.0, "pre_market": 95.0},
+          "XLU": {"price": 75.0, "change": 0.0, "target": 0.0, "pre_market": 75.0},
+          "XLRE": {"price": 40.0, "change": 0.0, "target": 0.0, "pre_market": 40.0},
       }
       market_data[ticker] = defaults.get(
-          ticker, {"price": 100.0, "change": 0.0, "target": 110.0, "pre_market": 100.0}
+          ticker, {"price": 100.0, "change": 0.0, "target": 0.0, "pre_market": 100.0}
       )
   return market_data
 
@@ -622,17 +570,16 @@ def fetch_ai_insights_from_groq(
         )
 
         prompt = f"""
-You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
+You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values.
 
-You are an elite, top-tier Wall Street quantitative and fundamental equity research analyst (Goldman Sachs / Morgan Stanley tier). Your analyses must feature maximum depth, rigorous institutional mechanics, advanced macroeconomic modeling, and absolute zero clichés or repetitive filler phrases. The user is an advanced professional trader—do not explain basic concepts; deliver elite quantitative depth.
+You are an elite, top-tier Wall Street quantitative and fundamental equity research analyst. Deliver maximum institutional depth, rigorous financial mechanics, advanced macroeconomic modeling, and absolute zero clichés or repetitive filler phrases. The user is an advanced professional trader—do not explain basic concepts; deliver elite quantitative depth.
 
-🚨 STRICT ANTI-ERROR, ANTI-CLICHÉ & DEPTH RULES:
-- You must strictly use accurate Wall Street tickers only (e.g. META, AAPL, MSFT).
-- **🚨 הנחיית ברזל קריטית לגבי ריביות (Interest Rates): אסור לחלוטין להמציא, לשערך או לדווח על שינויי ריבית (העלאה או הפחתה) שלא התרחשו בפועל ובאופן רשמי. כל עוד לא התקבלה הודעה רשמית ומאומתת חד-משמעית מהפד (Fed) או מבנק ישראל על שינוי ריבית ביום המסחר הנוכחי, חובה להתייחס לריבית כאל קבועה וללא שינוי מוחלט.**
-- Avoid repetitive phrasing or generic advice. Each section must be entirely unique, highly specific to current asset mechanics, options gamma walls, liquidity flows, FCF yields, and macroeconomic interest rate sensitivities.
-- 🚨 STRICT NO-ETF / NO-SECTOR / NO-INDEX RULE FOR STOCKS: In `long_term_stocks` and `swing_stocks`, return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA). No ETFs or sectors.
-- 🚨 STRICT RULE FOR MARKET NEWS (`market_news`): Each item's `news_desc` must start with the exact phrase "סיכום הכתבה:" followed immediately by a deeply professional institutional summary. Never mention Investing.com.
-- IMPORTANT: Write all textual values, descriptions, analyses, news summaries, and investment rationales in fluent Hebrew.
+🚨 STRICT FORMATTING & STYLE RULES:
+1. **NO INTRODUCTORY LABELS:** Never start any analysis or text with labels like "ניתוח ה-...", "השפעות על...", "קָטָלִיסט...", or similar boilerplate titles. Write directly and purely the analytical content itself.
+2. **HIGH DEPTH & LENGTH:** Each analysis paragraph must be rich, deep, analytical, and substantial (150-250 words), focusing on order flow, gamma walls, liquidity pools, FCF yields, and central bank transmission mechanisms.
+3. **INTEREST RATE RULE:** Strict rule regarding interest rates: Do not invent or report any rate cut or hike unless officially announced. Treat rates as steady unless confirmed.
+4. **NO ETFS OR SECTORS FOR STOCKS:** In `long_term_stocks` and `swing_stocks`, return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA).
+5. **NEWS SUMMARY FORMAT:** In `market_news`, each item's `news_desc` must start with the exact phrase "סיכום הכתבה:" followed immediately by an institutional-grade summary in fluent Hebrew. Never mention Investing.com.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -642,29 +589,29 @@ Headlines from Investing.com:
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-User Portfolio Tickers (DO NOT RECOMMEND): {portfolio_tickers}
+User Portfolio Tickers: {portfolio_tickers}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
-2. NASDAQ_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
-3. DOW_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
-4. VIX_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
-5. DXY_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
-6. USD_ILS_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
-7. OIL_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
-8. GOLD_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
-9. BTC_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
-10. US_MARKET_NEWS (rich professional financial paragraphs)
-11. IL_MARKET_NEWS (rich professional financial paragraphs)
+1. SP500_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
+2. NASDAQ_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
+3. DOW_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
+4. VIX_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
+5. DXY_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
+6. USD_ILS_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
+7. OIL_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
+8. GOLD_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
+9. BTC_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
+10. US_MARKET_NEWS (rich professional financial paragraph)
+11. IL_MARKET_NEWS (rich professional financial paragraph)
 12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS (rich professional financial paragraphs)
-14. CATALYST_MONETARY (rich professional financial paragraphs)
-15. CATALYST_HARDWARE (rich professional financial paragraphs)
-16. COMMUNITY_SENTIMENT (rich professional financial paragraphs)
-17. ANALYST_POINT_1
-18. ANALYST_POINT_2
-19. RISK_MANAGEMENT_TEXT (rich professional financial paragraphs)
-20. ACTION_RECOMMENDATIONS_TEXT (rich professional financial paragraphs)
+13. CATALYST_EARNINGS (rich professional financial paragraph, NO titles)
+14. CATALYST_MONETARY (rich professional financial paragraph, NO titles)
+15. CATALYST_HARDWARE (rich professional financial paragraph, NO titles)
+16. COMMUNITY_SENTIMENT (rich professional financial paragraph, NO titles)
+17. ANALYST_POINT_1 (rich professional financial paragraph, NO titles)
+18. ANALYST_POINT_2 (rich professional financial paragraph, NO titles)
+19. RISK_MANAGEMENT_TEXT (rich professional financial paragraph, NO titles)
+20. ACTION_RECOMMENDATIONS_TEXT (rich professional financial paragraph, NO titles)
 21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
@@ -811,11 +758,12 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     price = format_num(data.get("price", 0))
     pre_market = format_num(data.get("pre_market", 0))
 
+    # טיפול ביעד אנליסטים - אם אין יעד תקף, מסירים את השורה לחלוטין לפי דרישת המשתמש
     raw_target = data.get("target", 0)
+    target_html = ""
     if raw_target and float(raw_target) > 0:
-      target = f"${format_num(raw_target)}"
-    else:
-      target = "לא זמין"
+      target_val = f"${format_num(raw_target)}"
+      target_html = f"<div><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>"
 
     change_val = data.get("change", 0.0)
 
@@ -838,7 +786,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             <div class="text-sm text-gray-300 space-y-1">
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
-                <div><strong>יעד אנליסטים ממוצע:</strong> {target}</div>
+                {target_html}
                 <div><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div><strong>עיסוק החברה:</strong> {desc}</div>
                 <div><strong>חדשות ורציונל יומי:</strong> {news}</div>
@@ -1085,9 +1033,7 @@ if __name__ == "__main__":
         buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
-        fetched_target = fetched_price_data.get("target") or (
-            buy_p * 1.20 if buy_p > 0 else 100.0
-        )
+        fetched_target = fetched_price_data.get("target") or 0.0
         pre_p = fetched_price_data.get("pre_market") or curr_p
 
         ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
@@ -1099,6 +1045,8 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
+        target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else "לא זמין"
+
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
@@ -1106,7 +1054,7 @@ if __name__ == "__main__":
             "buyPrice": format_num(buy_p),
             "current": f"${format_num(curr_p)}",
             "pre": f"${format_num(pre_p)}",
-            "target": f"${format_num(fetched_target)}",
+            "target": target_str,
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight:"
                 f" bold; display: inline-block;'>{sign}{ret:.2f}%</span>"
@@ -1116,7 +1064,7 @@ if __name__ == "__main__":
       except Exception as ex:
         print(f"Error processing portfolio stock {ticker}: {ex}")
 
-    formatted_analyst_1, formatted_analyst_2 = format_analyst_points_sequential(
+    formatted_analyst_1, formatted_analyst_2 = format_analyst_points_clean(
         ai_insights.get("ANALYST_POINT_1", ""),
         ai_insights.get("ANALYST_POINT_2", ""),
     )
