@@ -163,30 +163,29 @@ def format_ai_text(text):
 
   cleaned = format_numbers_in_text(cleaned)
 
+  # If text has explicit numbered items, format nicely; otherwise render as a professional analytical paragraph
   parts = re.split(r"(?:\s+|\n)(?=\d+\.\s)", cleaned)
-  formatted_blocks = []
-  for part in parts:
-    part = part.strip()
-    if not part:
-      continue
-    match = re.match(r"^(\d+)\.\s*(.*)", part)
-    if match:
-      num, content = match.groups()
-      content = re.sub(r"^[:\s]+", "", content)
-      formatted_blocks.append(
-          f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
-          f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
-      )
-    else:
-      formatted_blocks.append(
-          f'<div class="mb-3 leading-relaxed text-xs text-gray-300">{part}</div>'
-      )
-
-  return (
-      "".join(formatted_blocks)
-      if formatted_blocks
-      else f'<div class="leading-relaxed text-xs text-gray-300">{cleaned}</div>'
-  )
+  if len(parts) > 1:
+    formatted_blocks = []
+    for part in parts:
+      part = part.strip()
+      if not part:
+        continue
+      match = re.match(r"^(\d+)\.\s*(.*)", part)
+      if match:
+        num, content = match.groups()
+        content = re.sub(r"^[:\s]+", "", content)
+        formatted_blocks.append(
+            f'<div class="mb-3 text-xs text-gray-300 leading-relaxed"><span'
+            f' class="font-bold text-cyan-400 ml-1.5">{num}.</span>{content}</div>'
+        )
+      else:
+        formatted_blocks.append(
+            f'<div class="mb-3 leading-relaxed text-xs text-gray-300">{part}</div>'
+        )
+    return "".join(formatted_blocks)
+  else:
+    return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
 
 
 def format_analyst_points_sequential(text1, text2):
@@ -625,21 +624,15 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 
-You are a top-tier institutional Wall Street quantitative and fundamental equity research analyst (Goldman Sachs / Morgan Stanley tier). Your analysis must be exceptionally sharp, deeply professional, complex, mathematically and macroeconomically rigorous, and completely free of clichés, surface-level explanations, or empty sentences. The user is an advanced trader who already understands basic market concepts—do not explain basic terms; instead, deliver elite institutional insights with maximum depth and exhaustive explanations.
+You are an elite, top-tier Wall Street quantitative and fundamental equity research analyst (Goldman Sachs / Morgan Stanley tier). Your analyses must feature maximum depth, rigorous institutional mechanics, advanced macroeconomic modeling, and absolute zero clichés or repetitive filler phrases. The user is an advanced professional trader—do not explain basic concepts; deliver elite quantitative depth.
 
 🚨 STRICT ANTI-ERROR, ANTI-CLICHÉ & DEPTH RULES:
-- You must strictly use accurate and up-to-date Wall Street tickers only. For example: Facebook / Meta trades under the ticker **META** exclusively.
-- **🚨 הנחיית ברזל קריטית לגבי ריביות (Interest Rates): אסור לחלוטין להמציא, לשערך או לדווח על שינויי ריבית (כגון העלאת ריבית או ירידת ריבית) שלא התרחשו בפועל ובאופן רשמי. אלא אם כן התקבלה הודעה רשמית ומאומתת חד-משמעית מהפד (Fed) או מבנק ישראל על שינוי ריבית ביום המסחר הנוכחי, חובה להתייחס לריבית כאל קבועה וללא שינוי, ולנתח את ההשלכות של שמירת הריבית ברמתה הנוכחית בלבד.**
-- Absolutely do not write empty, superficial, or tautological sentences. Every single sentence must analyze specific institutional mechanics, such as: Free Cash Flow (FCF) yield inflection, forward multiple expansion/compression relative to 5-year historical bands, institutional block order flows, dark pool accumulation patterns, market maker gamma hedging profiles around key options strike walls, and sensitivity to real interest rate changes.
-- Provide comprehensive, highly detailed paragraphs with extensive professional depth. Avoid short or brief answers.
-- 🚨 STRICT NO-ETF / NO-SECTOR / NO-INDEX RULE FOR STOCKS: In `long_term_stocks` and `swing_stocks`, you are **strictly forbidden** from returning ETFs, sector SPDR funds (such as XLK, XLP, XLV, XLE, XLI, etc.), indices, or macro products. You must return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA).
-- 🚨 STRICT RULE FOR MARKET NEWS (`market_news`): Each item's `news_desc` must start with the exact phrase "סיכום הכתבה:" followed immediately by an exhaustive, deeply professional institutional summary of the article's broader market and sector implications. Never mention Investing.com or reporting sources.
+- You must strictly use accurate Wall Street tickers only (e.g. META, AAPL, MSFT).
+- **🚨 הנחיית ברזל קריטית לגבי ריביות (Interest Rates): אסור לחלוטין להמציא, לשערך או לדווח על שינויי ריבית (העלאה או הפחתה) שלא התרחשו בפועל ובאופן רשמי. כל עוד לא התקבלה הודעה רשמית ומאומתת חד-משמעית מהפד (Fed) או מבנק ישראל על שינוי ריבית ביום המסחר הנוכחי, חובה להתייחס לריבית כאל קבועה וללא שינוי מוחלט.**
+- Avoid repetitive phrasing or generic advice. Each section must be entirely unique, highly specific to current asset mechanics, options gamma walls, liquidity flows, FCF yields, and macroeconomic interest rate sensitivities.
+- 🚨 STRICT NO-ETF / NO-SECTOR / NO-INDEX RULE FOR STOCKS: In `long_term_stocks` and `swing_stocks`, return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA). No ETFs or sectors.
+- 🚨 STRICT RULE FOR MARKET NEWS (`market_news`): Each item's `news_desc` must start with the exact phrase "סיכום הכתבה:" followed immediately by a deeply professional institutional summary. Never mention Investing.com.
 - IMPORTANT: Write all textual values, descriptions, analyses, news summaries, and investment rationales in fluent Hebrew.
-
-STRUCTURE & FORMATTING RULE:
-- ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
-- DO NOT add a colon after the number inside the text (e.g. write "1. Text" NOT "1. : Text").
-- Each numbered point must contain at least 70-100 words of dense, rich, highly detailed professional financial text.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -652,26 +645,26 @@ Current Market Data:
 User Portfolio Tickers (DO NOT RECOMMEND): {portfolio_tickers}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS
-2. NASDAQ_ANALYSIS
-3. DOW_ANALYSIS
-4. VIX_ANALYSIS
-5. DXY_ANALYSIS
-6. USD_ILS_EXPLANATION
-7. OIL_EXPLANATION
-8. GOLD_EXPLANATION
-9. BTC_EXPLANATION
-10. US_MARKET_NEWS
-11. IL_MARKET_NEWS
+1. SP500_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
+2. NASDAQ_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
+3. DOW_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
+4. VIX_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
+5. DXY_ANALYSIS (rich professional financial paragraphs, 120-180 words, highly detailed)
+6. USD_ILS_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
+7. OIL_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
+8. GOLD_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
+9. BTC_EXPLANATION (rich professional financial paragraphs, 120-180 words, highly detailed)
+10. US_MARKET_NEWS (rich professional financial paragraphs)
+11. IL_MARKET_NEWS (rich professional financial paragraphs)
 12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS
-14. CATALYST_MONETARY
-15. CATALYST_HARDWARE
-16. COMMUNITY_SENTIMENT
+13. CATALYST_EARNINGS (rich professional financial paragraphs)
+14. CATALYST_MONETARY (rich professional financial paragraphs)
+15. CATALYST_HARDWARE (rich professional financial paragraphs)
+16. COMMUNITY_SENTIMENT (rich professional financial paragraphs)
 17. ANALYST_POINT_1
 18. ANALYST_POINT_2
-19. RISK_MANAGEMENT_TEXT
-20. ACTION_RECOMMENDATIONS_TEXT
+19. RISK_MANAGEMENT_TEXT (rich professional financial paragraphs)
+20. ACTION_RECOMMENDATIONS_TEXT (rich professional financial paragraphs)
 21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
@@ -954,42 +947,27 @@ if __name__ == "__main__":
 
     if not ai_insights.get("CATALYST_EARNINGS") or len(str(ai_insights.get("CATALYST_EARNINGS"))) < 50:
       ai_insights["CATALYST_EARNINGS"] = (
-          "1. ניתוח רוחבי מעמיק של הדוחות הכספיים של ענקיות הטכנולוגיה כגון MSFT, NVDA ו-AAPL, תוך התמקדות בקצב גידול ההכנסות משירותי ענן, שולי הרווח הנקי ותשואת תזרים המזומנים החופשי (FCF).\n"
-          "2. מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות, המהוות את המנוע המרכזי לתמחור מחדש של מכפילי הרווח על ידי אנליסטים מוסדיים ובחינת סטיות תקן בתחזיות הקונצנזוס.\n"
-          "3. בחינת השפעת התוצאות של חברות התשתיות והשבבים כגון AVGO על כלל שרשרת האספקה הגלובלית והביקושים למרכזי נתונים היפר-סקייל תחת מגבלות אנרגיה וייצור מתקדמות.\n"
-          "4. הערכת תגובת השוק, רמות התנודתיות המשתמעת באופציות (Implied Volatility) וההשלכות המעשיות על ניהול פוזיציות מסחר מורכבות לטווח קצר וארוך כאחד."
+          "ניתוח רוחבי מעמיק של הדוחות הכספיים של ענקיות הטכנולוגיה כגון MSFT, NVDA ו-AAPL, תוך התמקדות בקצב גידול ההכנסות משירותי ענן, שולי הרווח הנקי ותשואת תזרים המזומנים החופשי (FCF). מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות, המהוות את המנוע המרכזי לתמחור מחדש של מכפילי הרווח על ידי אנליסטים מוסדיים ובחינת סטיות תקן בתחזיות הקונצנזוס."
       )
 
     if not ai_insights.get("CATALYST_MONETARY") or len(str(ai_insights.get("CATALYST_MONETARY"))) < 50:
       ai_insights["CATALYST_MONETARY"] = (
-          "1. מעקב רציף אחר תוואי הריבית של הבנק הפדרלי (הפד) ובנק ישראל, בחינת פרוטוקולי ישיבות ה-FOMC והשפעתם הישירה על עלויות ההון ועל עקום תשואות האג\"ח הממשלתיות לפדיון.\n"
-          "2. ניתוח רכיבי האינפלציה המרכזיים במדד המחירים לצרכן בארה\"ב לבחינת לחצי מחירים מבניים בשירותים ובדיור הדוחים את ציפיות השוק להקלות מוטריות מהירות.\n"
-          "3. בחינת מרווחי האשראי הקונצרני (Credit Spreads) ומדדי הנזילות הבין-בנקאית המעידים על רמת התיאבון לסיכון והאיתנות הפיננסית במערכת הגלובלית.\n"
-          "4. השפעת תנועות ההון הזר ונסיבות המאקרו על שער המט\"ח והערכת שווי נכסי הסיכון מובילי השוק תחת סביבת ריבית גבוהה לאורך זמן."
+          "מעקב רציף אחר תוואי הריבית של הבנק הפדרלי (הפד) ובנק ישראל, בחינת פרוטוקולי ישיבות ה-FOMC והשפעתם הישירה על עלויות ההון ועל עקום תשואות האג\"ח הממשלתיות לפדיון. ניתוח רכיבי האינפלציה המרכזיים בארה\"ב לבחינת לחצי מחירים מבניים בשירותים ובדיור הדוחים את ציפיות השוק להקלות מוטריות מהירות."
       )
 
     if not ai_insights.get("CATALYST_HARDWARE") or len(str(ai_insights.get("CATALYST_HARDWARE"))) < 50:
       ai_insights["CATALYST_HARDWARE"] = (
-          "1. ניתוח קצב פריסת התשתיות והקמת מרכזי נתונים היפר-סקייל (Hyperscale Datacenters) התומכים בעומסי עבודה כבדים של בינה מלאכותית ג'נרטיבית וארגונית.\n"
-          "2. מעקב אחר התקדמות תהליכי ייצור מתקדמים (Advanced Packaging, ליטוגרפיה מתקדמת וארכיטקטורת שבבים) אצל יצרניות מרכזיות להבטחת עמידה בביקושים הקשיחים.\n"
-          "3. בדיקת הביקוש הקשיח מצד סקטור הענן הממשלתי והביטחוני לפתרונות חומרה מאובטחים, מעבדים ייעודיים ושבבי אקסלרציה מתקדמים.\n"
-          "4. הערכת שיתופי הפעולה האסטרטגיים בין יצרניות החומרה לחברות התוכנה המובילות ליצירת יתרון תחרותי ברמת האקוסיסטם והאינטגרציה האנכית."
+          "ניתוח קצב פריסת התשתיות והקמת מרכזי נתונים היפר-סקייל (Hyperscale Datacenters) התומכים בעומסי עבודה כבדים של בינה מלאכותית ג'נרטיבית וארגונית. מעקב אחר התקדמות תהליכי ייצור מתקדמים (Advanced Packaging וארכיטקטורת שבבים) אצל יצרניות מרכזיות להבטחת עמידה בביקושים הקשיחים."
       )
 
     if not ai_insights.get("RISK_MANAGEMENT_TEXT") or len(str(ai_insights.get("RISK_MANAGEMENT_TEXT"))) < 50:
       ai_insights["RISK_MANAGEMENT_TEXT"] = (
-          "1. אכיפה קפדנית של פיזור רוחבי בין סקטורים בלתי-מתואמים (כגון שילוב מניות הגנה, בריאות ואנרגיה) למניעת ריכוזיות יתר בתיק המסחר וצמצום חשיפה לסיכונים מערכתיים.\n"
-          "2. הצבת פקודות עצירת הפסד (Stop-Loss) דינמיות על בסיס רמות תמיכה טכניות קריטיות, נפחי מסחר קודמים ופרופיל הגמא של עובי השוק.\n"
-          "3. שמירה על רזרבת נזילות פנויה המאפשרת ניצול הזדמנויות קנייה באזורי אפיקציה חדים ובדיקת עומק בזמן אירועי פאניקה זמניים בשוק.\n"
-          "4. ניטור שוטף של מדד התנודתיות VIX ועקומת האופציות כדי לזהות מראש מעבר של השוק למשטר תנודתיות גבוהה ולהקטין מינוף פיננסי בהתאם."
+          "אכיפה קפדנית של פיזור רוחבי בין סקטורים בלתי-מתואמים (כגון שילוב מניות הגנה, בריאות ואנרגיה) למניעת ריכוזיות יתר בתיק המסחר וצמצום חשיפה לסיכונים מערכתיים. הצבת פקודות עצירת הפסד (Stop-Loss) דינמיות על בסיס רמות תמיכה טכניות קריטיות ונפחי מסחר קודמים."
       )
 
     if not ai_insights.get("ACTION_RECOMMENDATIONS_TEXT") or len(str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT"))) < 50:
       ai_insights["ACTION_RECOMMENDATIONS_TEXT"] = (
-          "1. מיקוד פוזיציות הלונג בחברות בעלות תזרים מזומנים חופשי חזק (FCF), מאזן נקי מחובות מכבידים ומכפילי רווח הצומחים בקורלציה ישירה לרווחיהן הריאליים.\n"
-          "2. ביצוע כניסות מדורגות בשיטת מיצוע חכם על פני מספר ימי מסחר במקום חשיפת הון מלאה בנקודת כניסה טכנית בודדת.\n"
-          "3. מימוש רווחים חלקיים וקיבוע רווחים במניות שרשמו מהלכי מומנטום חדים מעל היעדים הטכניים המקוריים להקטנת חשיפה סיכונית.\n"
-          "4. הימנעות מוחלטת מקבלת החלטות מסחר אימפולסיביות המונעות מרעשי רקע חדשותיים זמניים, תנועות מחיר תוך-יומיות או רעש תקשורתי."
+          "מיקוד פוזיציות הלונג בחברות בעלות תזרים מזומנים חופשי חזק (FCF), מאזן נקי מחובות מכבידים ומכפילי רווח הצומחים בקורלציה ישירה לרווחיהן הריאליים. ביצוע כניסות מדורגות בשיטת מיצוע חכם על פני מספר ימי מסחר במקום חשיפת הון מלאה בנקודת כניסה טכנית בודדת."
       )
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
