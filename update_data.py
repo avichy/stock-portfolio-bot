@@ -512,11 +512,14 @@ if __name__ == "__main__":
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
       template_content = f.read()
 
-    # 1. החלפת מפתחות ה-AI
+    # 1. החלפת מפתחות ה-AI (תמיכה במחרוזות וגם במערכים/אובייקטים)
     for key, value in ai_data.items():
       if isinstance(value, str):
         formatted_val = format_ai_text(value)
         template_content = template_content.replace(f"{{{{{key}}}}}", formatted_val)
+      elif isinstance(value, (list, dict)):
+        json_val = json.dumps(value, ensure_ascii=False)
+        template_content = template_content.replace(f"{{{{{key}}}}}", json_val)
 
     # 2. החלפת מפתחות תאריך וזמן
     template_content = template_content.replace("{{DAY_NAME}}", day_name)
