@@ -168,43 +168,6 @@ def format_ai_text(text):
   return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
 
 
-def format_analyst_points_clean(text1, text2):
-  def clean_t(t):
-    if isinstance(t, list):
-      t = " ".join(str(item) for item in t)
-    elif not isinstance(t, str):
-      t = str(t)
-    t = t.strip()
-    t = re.sub(
-        r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח|המלצות?|ניהול\s*סיכונים?)[^\n:]*[:\-]?\s*",
-        "",
-        t,
-        flags=re.IGNORECASE,
-    )
-    cleaned = (
-        t.replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-    return format_numbers_in_text(cleaned)
-
-  c1 = clean_t(text1)
-  c2 = clean_t(text2)
-
-  html1 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c1}</div>'
-  html2 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c2}</div>'
-  return html1, html2
-
-
-def get_stock_logo_url(ticker):
-  clean_ticker = str(ticker).strip().upper()
-  parqet_ticker = clean_ticker.replace("-", ".")
-  return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
-
-
 def fetch_investing_news():
   url = "https://il.investing.com/rss/news.rss"
   req = urllib.request.Request(
@@ -549,11 +512,37 @@ if __name__ == "__main__":
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
       template_content = f.read()
 
-    # החלפת מפתחות פשוטים בטמפלייט
+    # 1. החלפת מפתחות ה-AI
     for key, value in ai_data.items():
       if isinstance(value, str):
         formatted_val = format_ai_text(value)
         template_content = template_content.replace(f"{{{{{key}}}}}", formatted_val)
+
+    # 2. החלפת מפתחות תאריך וזמן
+    template_content = template_content.replace("{{DAY_NAME}}", day_name)
+    template_content = template_content.replace("{{LAST_UPDATED}}", f"{date_str} | {time_str}")
+    template_content = template_content.replace("{{AI_LAST_UPDATED}}", ai_data.get("ai_updated_at", f"{date_str} | {time_str}"))
+
+    # 3. החלפת מפתחות מחירי שוק ושינויים
+    market_mapping = {
+        "OIL": "CL=F",
+        "USD_ILS": "USDILS=X",
+        "SP500": "^GSPC",
+        "NASDAQ": "^NDX",
+        "DOW": "^DJI",
+        "BTC": "BTC-USD",
+        "GOLD": "GC=F",
+        "VIX": "^VIX",
+        "DXY": "DX-Y.NYB",
+    }
+
+    for prefix, ticker in market_mapping.items():
+      if ticker in market_data:
+        p_val = format_num(market_data[ticker].get("price", 0))
+        c_val = format_pct_colored(market_data[ticker].get("change", 0))
+        template_content = template_content.replace(f"{{{{{prefix}_PRICE}}}}", p_val)
+        template_content = template_content.replace(f"{{{{{prefix}_CHANGE}}}}", c_val)
+        template_content = template_content.replace(f"{{{{{prefix}_PCT}}}}", c_val)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
       f.write(template_content)
