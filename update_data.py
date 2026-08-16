@@ -167,6 +167,14 @@ def format_ai_text(text):
         .replace("'", "")
     )
 
+    # פורמט אחיד, נקי ומרווח לכל מופע של "מה זה אומר:" בכל חלקי המערכת
+    cleaned = re.sub(
+        r"\s*(?:מה\s*זה\s*אומר\s*:?)\s*",
+        r"<br><br><strong>מה זה אומר:</strong><br>",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+
     cleaned = format_numbers_in_text(cleaned)
     return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
 
@@ -559,9 +567,9 @@ def fetch_ai_insights_split(
         combined_result = {}
 
     # ==========================================
-    # PART 1: Macro, Indices, Geopolitics & News
+    # PART 1: Macro, Indices, Geopolitics & Deep News
     # ==========================================
-    print("🔄 Starting Groq AI Part 1 (Macro & Analysis)...")
+    print("🔄 Starting Groq AI Part 1 (Macro, Indices & News)...")
     for key_name, api_key in api_keys:
         try:
             client = Groq(
@@ -570,15 +578,13 @@ def fetch_ai_insights_split(
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
             prompt1 = f"""
-You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and simply. Output a valid JSON object ONLY.
+You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES & ANTI-HALLUCINATION RULES:
-1. ACCURACY: You must be at least 95% accurate. If you are unsure about any specific data, explicitly state that it is unavailable or unclear based on the provided data, rather than guessing or hallucinating.
-2. EXCLUSIVE SOURCE RELIANCE: Base your analysis strictly on the provided Investing.com headlines and Yahoo Finance market data below.
-3. GEOPOLITICAL & MACRO INTEGRATION: Thoroughly analyze global geopolitical events (such as Iran, Strait of Hormuz, Russia-Ukraine, Israel, Middle East tensions, energy supplies) and their impact on markets, oil, gold, and risk sentiment.
-4. ACCESSIBLE & DEEP EXPLANATIONS: Write in **clear, basic, and accessible Hebrew** that any everyday reader without capital markets background can easily understand.
-5. "WHAT IT MEANS" CONCLUSION ("מה זה אומר?"): Every key analysis section must clearly conclude with a simple explanation of what it means in practice for the economy and the average investor.
-6. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
+🚨 STRICT GUIDELINES & FORMATTING:
+1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
+2. UNIFORM "מה זה אומר:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+3. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
+4. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -589,22 +595,20 @@ Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (deep paragraph in accessible Hebrew)
-2. NASDAQ_ANALYSIS (deep paragraph explaining tech momentum)
-3. DOW_ANALYSIS (deep paragraph explaining Dow Jones)
-4. VIX_ANALYSIS (deep paragraph explaining VIX)
-5. DXY_ANALYSIS (deep paragraph explaining DXY)
-6. USD_ILS_EXPLANATION (deep paragraph explaining exchange rate and geopolitical risk)
-7. OIL_EXPLANATION (deep paragraph explaining crude oil and supply risks)
-8. GOLD_EXPLANATION (deep paragraph explaining Gold safe-haven)
-9. BTC_EXPLANATION (deep paragraph explaining Bitcoin liquidity)
-10. US_MARKET_NEWS
-11. IL_MARKET_NEWS
+1. SP500_ANALYSIS (Must include \n\nמה זה אומר:\n)
+2. NASDAQ_ANALYSIS (Must include \n\nמה זה אומר:\n)
+3. DOW_ANALYSIS (Must include \n\nמה זה אומר:\n)
+4. VIX_ANALYSIS (Must include \n\nמה זה אומר:\n)
+5. DXY_ANALYSIS (Must include \n\nמה זה אומר:\n)
+6. USD_ILS_EXPLANATION (Must include \n\nמה זה אומר:\n)
+7. OIL_EXPLANATION (Must include \n\nמה זה אומר:\n)
+8. GOLD_EXPLANATION (Must include \n\nמה זה אומר:\n)
+9. BTC_EXPLANATION (Must include \n\nמה זה אומר:\n)
+10. US_MARKET_NEWS (Comprehensive, deep analysis of US market news)
+11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel)
 12. COMMUNITY_SENTIMENT
 13. ANALYST_POINT_1
 14. ANALYST_POINT_2
-15. RISK_MANAGEMENT_TEXT
-16. ACTION_RECOMMENDATIONS_TEXT
 """
 
             response1 = client.chat.completions.create(
@@ -628,9 +632,9 @@ Return a valid JSON object with exactly these keys:
                 time.sleep(5)
 
     # ==========================================
-    # PART 2: Stocks & Detailed Market News (Few-Shot)
+    # PART 2: Stocks, Catalysts, Risk Management & Action
     # ==========================================
-    print("🔄 Starting Groq AI Part 2 (Stocks & Detailed News)...")
+    print("🔄 Starting Groq AI Part 2 (Stocks, Catalysts & Strategy)...")
     for key_name, api_key in api_keys:
         try:
             client = Groq(
@@ -641,31 +645,31 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES & FEW-SHOT FORMATTING:
-1. ACCURACY: You must be at least 95% accurate. Do not make up numbers or trends. If the data is missing, report that you cannot analyze it.
-2. Provide deep, thorough analyses in basic, clear Hebrew.
-3. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a "מה זה אומר" explanation.
-   EXAMPLE FORMAT:
-   {{
-       "news_link": "https://il.investing.com/news/...",
-       "news_title": "כותרת הכתבה",
-       "news_desc": "סיכום הכתבה: ... [Summary] ... מה זה אומר בפועל: ... [Explanation] ..."
-   }}
-4. `long_term_stocks`: Array of EXACTLY 10 corporate stocks (NO ETFS/sectors). Each object: ticker, name, desc, news, why_invest.
-5. `swing_stocks`: Array of EXACTLY 10 corporate stocks, separate from long_term_stocks. Each object: ticker, name, desc, news, why_invest.
+🚨 STRICT GUIDELINES & FORMATTING:
+1. ACCURACY: At least 95% accurate.
+2. UNIFORM "מה זה אומר:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
+4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "מה זה אומר:".
+5. `long_term_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
+6. `swing_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com (USE ONLY THESE):
+Headlines from Investing.com:
 {headlines_formatted}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-Return a valid JSON object with exactly these 3 keys:
+Return a valid JSON object with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
+4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nמה זה אומר:\n)
+5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nמה זה אומר:\n)
+6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nמה זה אומר:\n)
+7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nמה זה אומר:\n)
+8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nמה זה אומר:\n)
 """
 
             response2 = client.chat.completions.create(
@@ -922,7 +926,7 @@ if __name__ == "__main__":
                     "news_link": h["link"],
                     "news_title": h["title"],
                     "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית. מה זה אומר בפועל: עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
                     ),
                 })
             ai_insights["market_news"] = market_news_data
