@@ -569,19 +569,20 @@ def fetch_ai_insights_from_groq(
         )
 
         prompt = f"""
-You are an elite Wall Street Chief Quantitative Strategist. Output a valid JSON object ONLY. 
+You are an expert Chief Market Strategist who explains complex financial and geopolitical markets clearly, deeply, and simply for everyone (including non-experts). Output a valid JSON object ONLY. 
 
-🚨 STRICT FACTUAL GROUNDING & ANTI-HALLUCINATION RULES:
-1. EXCLUSIVE SOURCE RELIANCE: You MUST base your analysis, news summaries, and market insights 100% strictly and exclusively on the provided Investing.com headlines and Yahoo Finance market data below.
-2. ZERO INVENTION: Do NOT invent, assume, or fabricate any macroeconomic events, earnings reports, company news, or price targets that do not explicitly originate from the provided text or data.
-3. IF DATA IS MISSING: If a specific asset or news item lacks details, analyze its technical momentum based strictly on the provided price and change percentage, without making up external narratives.
-4. LANGUAGE: Fluent professional Hebrew for all analytical fields, maintaining strict institutional financial terminology.
+🚨 STRICT GUIDELINES & ANTI-HALLUCINATION RULES:
+1. EXCLUSIVE SOURCE RELIANCE: Base your analysis and news summaries strictly on the provided Investing.com headlines and Yahoo Finance market data below.
+2. ZERO INVENTION: Do not fabricate macroeconomic data or events not present in the headlines/data.
+3. GEOPOLITICAL & MACRO INTEGRATION: If the provided headlines mention global geopolitical events (such as conflicts involving Iran, Strait of Hormuz, Russia-Ukraine, Israel, Middle East tensions, energy supplies, or central bank policies), you must thoroughly analyze their impact on markets, oil, gold, and risk sentiment.
+4. ACCESSIBLE & DEEP EXPLANATIONS: Provide rich, detailed, and deep analyses, but write them in **clear, basic, and accessible Hebrew** that any everyday reader (even without a background in capital markets) can easily understand. Avoid dense financial jargon without immediate plain-language translation.
+5. "WHAT IT MEANS" CONCLUSION ("מה זה אומר?"): Every key news summary and market analysis section must clearly conclude with a simple explanation of what it means in practice for the economy and the average investor.
+6. REAL SUMMARIES (NO SHALLOW COPIES): For news summaries (like market news and articles), do NOT just copy or restate the headline or the first sentence. Write a genuine, deep, well-rounded summary explaining the core issue and its wider ramifications.
+7. VARIETY & UNIQUENESS: Ensure high variety and distinct phrasing across all fields. Avoid repetitive boilerplate text.
 
-CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
-- Every single analytical field MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics.
-- ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields.
-- Length: Each market analysis paragraph must be substantial, deep, quantitative, and written in fluent professional Hebrew.
-- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the technical analysis immediately.
+CRITICAL FORMATTING MANDATE:
+- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the analysis immediately.
+- News descriptions in `market_news` must start with "סיכום הכתבה: " followed by a genuine, deep summary and explanation.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -594,29 +595,29 @@ Current Market Data (USE ONLY THESE):
 User Portfolio Tickers: {portfolio_tickers}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (unique quantitative paragraph for S&P 500 breadth, market cap concentration, and liquidity)
-2. NASDAQ_ANALYSIS (unique quantitative paragraph for Nasdaq 100, tech multiples, and growth momentum)
-3. DOW_ANALYSIS (unique quantitative paragraph for Dow Jones industrial cyclicality and value weightings)
-4. VIX_ANALYSIS (unique quantitative paragraph for VIX volatility index, put/call ratios, and hedging demand)
-5. DXY_ANALYSIS (unique quantitative paragraph for DXY US Dollar Index, foreign exchange flows, and Fed rate expectations)
-6. USD_ILS_EXPLANATION (unique quantitative paragraph for USD/ILS exchange rate, geopolitical risk premium, and Bank of Israel policy)
-7. OIL_EXPLANATION (unique quantitative paragraph for Brent/WTI crude oil, OPEC+ supply quotas, and global demand forecasts)
-8. GOLD_EXPLANATION (unique quantitative paragraph for Gold spot prices, Treasury real yields, and safe-haven capital rotation)
-9. BTC_EXPLANATION (unique quantitative paragraph for Bitcoin derivatives, ETF net inflows, and on-chain liquidity metrics)
-10. US_MARKET_NEWS (unique institutional summary derived strictly from US macroeconomic indicators and provided headlines)
-11. IL_MARKET_NEWS (unique institutional summary derived strictly from Israeli economic conditions and provided headlines)
+1. SP500_ANALYSIS (unique deep quantitative and qualitative paragraph in accessible Hebrew explaining S&P 500 breadth and market sentiment)
+2. NASDAQ_ANALYSIS (unique deep paragraph explaining Nasdaq 100, tech momentum, and risk appetite)
+3. DOW_ANALYSIS (unique deep paragraph explaining Dow Jones industrial value weightings)
+4. VIX_ANALYSIS (unique deep paragraph explaining VIX volatility index and market fear levels)
+5. DXY_ANALYSIS (unique deep paragraph explaining DXY US Dollar Index and global currency flows)
+6. USD_ILS_EXPLANATION (unique deep paragraph explaining USD/ILS exchange rate, local economic factors, and geopolitical risk premium)
+7. OIL_EXPLANATION (unique deep paragraph explaining crude oil prices, OPEC+, and geopolitical supply risks like Hormuz/Middle East)
+8. GOLD_EXPLANATION (unique deep paragraph explaining Gold spot prices, safe-haven rotation, and inflation hedge)
+9. BTC_EXPLANATION (unique deep paragraph explaining Bitcoin, crypto liquidity, and market trends)
+10. US_MARKET_NEWS (unique institutional summary of US economic indicators and news in simple, accessible terms)
+11. IL_MARKET_NEWS (unique institutional summary of Israeli economic and geopolitical conditions in simple terms)
 12. MARKET_MOVERS_TABLE
 13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends based on news)
 14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories based on news)
 15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds based on news)
 16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment based on news)
-17. ANALYST_POINT_1 (actionable trading insight #1)
-18. ANALYST_POINT_2 (actionable trading insight #2)
-19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy)
-20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework)
+17. ANALYST_POINT_1 (actionable trading insight #1 in simple language)
+18. ANALYST_POINT_2 (actionable trading insight #2 in simple language)
+19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy explained simply)
+20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework explained simply)
 21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
 22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
-23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
+23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:" containing deep, real summaries and a "מה זה אומר" explanation)
 """
 
         response = client.chat.completions.create(
@@ -881,7 +882,7 @@ if __name__ == "__main__":
             "news_link": h["link"],
             "news_title": h["title"],
             "news_desc": (
-                f"סיכום הכתבה: הידיעה מתייחסת ל-{h['title']} ובוחנת את השלכות הרוחב על סקטור המסחר, תמחור הנכסים ותגובת השחקנים המוסדיים בשוק."
+                f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית, פעילות השווקים ותגובת המשקיעים. מה זה אומר בפועל: עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים והיערכות לתרחישים משתנים."
             ),
         })
       ai_insights["market_news"] = market_news_data
@@ -1116,7 +1117,6 @@ if __name__ == "__main__":
     for k, v in replacements.items():
       content = content.replace("{{" + k + "}}", str(v))
 
-    # מנגנון הגנה: ניקוי תבניות שלא הוחלפו
     content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
