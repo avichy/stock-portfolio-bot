@@ -145,7 +145,7 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # הסרת תחיליות מיותרות שהמודל עלול לייצר בטעות בתוך הטקסט (כדי לא לחזור על כותרות)
+  # הסרת תחיליות מיותרות
   text = re.sub(
       r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
       "",
@@ -570,16 +570,13 @@ def fetch_ai_insights_from_groq(
         )
 
         prompt = f"""
-You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values.
+You are an elite Wall Street Chief Quantitative Strategist. Output a valid JSON object ONLY. 
 
-You are an elite, top-tier Wall Street quantitative and fundamental equity research analyst. Deliver maximum institutional depth, rigorous financial mechanics, advanced macroeconomic modeling, and absolute zero clichés or repetitive filler phrases. The user is an advanced professional trader—do not explain basic concepts; deliver elite quantitative depth.
-
-🚨 STRICT FORMATTING & STYLE RULES:
-1. **NO INTRODUCTORY LABELS:** Never start any analysis or text with labels like "ניתוח ה-...", "השפעות על...", "קָטָלִיסט...", or similar boilerplate titles. Write directly and purely the analytical content itself.
-2. **HIGH DEPTH & LENGTH:** Each analysis paragraph must be rich, deep, analytical, and substantial (150-250 words), focusing on order flow, gamma walls, liquidity pools, FCF yields, and central bank transmission mechanisms.
-3. **INTEREST RATE RULE:** Strict rule regarding interest rates: Do not invent or report any rate cut or hike unless officially announced. Treat rates as steady unless confirmed.
-4. **NO ETFS OR SECTORS FOR STOCKS:** In `long_term_stocks` and `swing_stocks`, return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA).
-5. **NEWS SUMMARY FORMAT:** In `market_news`, each item's `news_desc` must start with the exact phrase "סיכום הכתבה:" followed immediately by an institutional-grade summary in fluent Hebrew. Never mention Investing.com.
+CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
+- Every single analytical field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, etc.) MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics (e.g., NASDAQ must discuss mega-cap tech, FCF, and semiconductor demand; BTC must discuss exchange order books, hash rates, and liquidations; GOLD must discuss real yields and central bank reserves).
+- ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields. If any sentence repeats between keys, the output is invalid.
+- Length: Each market analysis paragraph must be substantial, deep, quantitative, and written in fluent professional Hebrew.
+- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the technical analysis immediately.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -592,26 +589,26 @@ Current Market Data:
 User Portfolio Tickers: {portfolio_tickers}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
-2. NASDAQ_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
-3. DOW_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
-4. VIX_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
-5. DXY_ANALYSIS (rich professional financial paragraph, highly detailed, NO titles)
-6. USD_ILS_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
-7. OIL_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
-8. GOLD_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
-9. BTC_EXPLANATION (rich professional financial paragraph, highly detailed, NO titles)
-10. US_MARKET_NEWS (rich professional financial paragraph)
-11. IL_MARKET_NEWS (rich professional financial paragraph)
+1. SP500_ANALYSIS (unique quantitative paragraph for S&P 500 breadth, market cap concentration, and liquidity)
+2. NASDAQ_ANALYSIS (unique quantitative paragraph for Nasdaq 100, tech multiples, and growth momentum)
+3. DOW_ANALYSIS (unique quantitative paragraph for Dow Jones industrial cyclicality and value weightings)
+4. VIX_ANALYSIS (unique quantitative paragraph for VIX volatility index, put/call ratios, and hedging demand)
+5. DXY_ANALYSIS (unique quantitative paragraph for DXY US Dollar Index, foreign exchange flows, and Fed rate expectations)
+6. USD_ILS_EXPLANATION (unique quantitative paragraph for USD/ILS exchange rate, geopolitical risk premium, and Bank of Israel policy)
+7. OIL_EXPLANATION (unique quantitative paragraph for Brent/WTI crude oil, OPEC+ supply quotas, and global demand forecasts)
+8. GOLD_EXPLANATION (unique quantitative paragraph for Gold spot prices, Treasury real yields, and safe-haven capital rotation)
+9. BTC_EXPLANATION (unique quantitative paragraph for Bitcoin derivatives, ETF net inflows, and on-chain liquidity metrics)
+10. US_MARKET_NEWS (unique institutional summary of US macroeconomic indicators)
+11. IL_MARKET_NEWS (unique institutional summary of Israeli economic conditions)
 12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS (rich professional financial paragraph, NO titles)
-14. CATALYST_MONETARY (rich professional financial paragraph, NO titles)
-15. CATALYST_HARDWARE (rich professional financial paragraph, NO titles)
-16. COMMUNITY_SENTIMENT (rich professional financial paragraph, NO titles)
-17. ANALYST_POINT_1 (rich professional financial paragraph, NO titles)
-18. ANALYST_POINT_2 (rich professional financial paragraph, NO titles)
-19. RISK_MANAGEMENT_TEXT (rich professional financial paragraph, NO titles)
-20. ACTION_RECOMMENDATIONS_TEXT (rich professional financial paragraph, NO titles)
+13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends)
+14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories)
+15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds)
+16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment)
+17. ANALYST_POINT_1 (actionable trading insight #1)
+18. ANALYST_POINT_2 (actionable trading insight #2)
+19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy)
+20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework)
 21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
@@ -758,7 +755,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     price = format_num(data.get("price", 0))
     pre_market = format_num(data.get("pre_market", 0))
 
-    # טיפול ביעד אנליסטים - אם אין יעד תקף, מסירים את השורה לחלוטין לפי דרישת המשתמש
     raw_target = data.get("target", 0)
     target_html = ""
     if raw_target and float(raw_target) > 0:
@@ -1045,7 +1041,7 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else "לא זמין"
+        target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else ""
 
         portfolio_js_list.append({
             "name": company_name,
