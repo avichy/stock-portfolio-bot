@@ -23,217 +23,217 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
 
 def get_all_groq_keys():
-  keys_env = [
-      "GROQ_API_KEY",
-      "GROQ_API_KEY_1",
-      "GROQ_API_KEY_2",
-      "GROQ_API_KEY_3",
-      "GROQ_API_KEY_4",
-      "GROQ_API_KEY_5",
-  ]
-  valid_keys = []
-  for key_name in keys_env:
-    api_key = os.environ.get(key_name)
-    if api_key:
-      valid_keys.append((key_name, api_key))
-  return valid_keys
+    keys_env = [
+        "GROQ_API_KEY",
+        "GROQ_API_KEY_1",
+        "GROQ_API_KEY_2",
+        "GROQ_API_KEY_3",
+        "GROQ_API_KEY_4",
+        "GROQ_API_KEY_5",
+    ]
+    valid_keys = []
+    for key_name in keys_env:
+        api_key = os.environ.get(key_name)
+        if api_key:
+            valid_keys.append((key_name, api_key))
+    return valid_keys
 
 
 def load_ai_cache():
-  if os.path.exists(AI_CACHE_FILE):
-    try:
-      with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-    except Exception as e:
-      print(f"Warning: Error loading AI cache: {e}")
-  return {}
+    if os.path.exists(AI_CACHE_FILE):
+        try:
+            with open(AI_CACHE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Warning: Error loading AI cache: {e}")
+    return {}
 
 
 def save_ai_cache(data):
-  try:
-    with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
-      json.dump(data, f, ensure_ascii=False, indent=4)
-    print("Successfully saved AI cache.")
-  except Exception as e:
-    print(f"Warning: Error saving AI cache: {e}")
+    try:
+        with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        print("Successfully saved AI cache.")
+    except Exception as e:
+        print(f"Warning: Error saving AI cache: {e}")
 
 
 def load_portfolio_buys():
-  if GITHUB_TOKEN and GITHUB_REPO:
-    try:
-      url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
-      headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-      response = requests.get(url, headers=headers)
-      if response.status_code == 200:
-        file_data = response.json()
-        content = base64.b64decode(file_data["content"]).decode("utf-8")
-        parsed = json.loads(content)
-        if isinstance(parsed, dict):
-          return parsed
-    except Exception as e:
-      print(f"Warning: Error loading from GitHub API: {e}")
+    if GITHUB_TOKEN and GITHUB_REPO:
+        try:
+            url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
+            headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                file_data = response.json()
+                content = base64.b64decode(file_data["content"]).decode("utf-8")
+                parsed = json.loads(content)
+                if isinstance(parsed, dict):
+                    return parsed
+        except Exception as e:
+            print(f"Warning: Error loading from GitHub API: {e}")
 
-  if os.path.exists(PORTFOLIO_FILE):
-    try:
-      with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
-        parsed = json.load(f)
-        if isinstance(parsed, dict):
-          return parsed
-    except Exception as e:
-      print(f"Warning: Error loading local portfolio.json: {e}")
-  return {}
+    if os.path.exists(PORTFOLIO_FILE):
+        try:
+            with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
+                parsed = json.load(f)
+                if isinstance(parsed, dict):
+                    return parsed
+        except Exception as e:
+            print(f"Warning: Error loading local portfolio.json: {e}")
+    return {}
 
 
 portfolio_buys = load_portfolio_buys()
 
 
 def format_num(val, decimals=2):
-  try:
-    num = float(val)
-    if decimals == 0:
-      return f"{num:,.0f}"
-    return f"{num:,.{decimals}f}"
-  except (ValueError, TypeError):
-    return str(val)
+    try:
+        num = float(val)
+        if decimals == 0:
+            return f"{num:,.0f}"
+        return f"{num:,.{decimals}f}"
+    except (ValueError, TypeError):
+        return str(val)
 
 
 def format_pct_colored(val):
-  try:
-    num = float(val)
-    sign = "+" if num > 0 else ""
-    color = "#2ecc71" if num >= 0 else "#e74c3c"
-    return (
-        f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
-        f' inline-block;">{sign}{num:.2f}%</span>'
-    )
-  except (ValueError, TypeError):
-    return str(val)
+    try:
+        num = float(val)
+        sign = "+" if num > 0 else ""
+        color = "#2ecc71" if num >= 0 else "#e74c3c"
+        return (
+            f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+            f' inline-block;">{sign}{num:.2f}%</span>'
+        )
+    except (ValueError, TypeError):
+        return str(val)
 
 
 def format_numbers_in_text(text):
-  def replace_num(match):
-    num_str = match.group(0)
-    try:
-      if "." in num_str:
-        parts = num_str.split(".")
-        integer_part = int(parts[0])
-        return f"{integer_part:,}.{parts[1]}"
-      else:
-        return f"{int(num_str):,}"
-    except Exception:
-      return num_str
+    def replace_num(match):
+        num_str = match.group(0)
+        try:
+            if "." in num_str:
+                parts = num_str.split(".")
+                integer_part = int(parts[0])
+                return f"{integer_part:,}.{parts[1]}"
+            else:
+                return f"{int(num_str):,}"
+        except Exception:
+            return num_str
 
-  return re.sub(
-      r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|\b\d{4,}(?:\.\d+)?\b",
-      replace_num,
-      text,
-  )
+    return re.sub(
+        r"\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|\b\d{4,}(?:\.\d+)?\b",
+        replace_num,
+        text,
+    )
 
 
 def format_ai_text(text):
-  if isinstance(text, list):
-    text = " ".join(str(item) for item in text)
-  elif not isinstance(text, str):
-    text = str(text)
+    if isinstance(text, list):
+        text = " ".join(str(item) for item in text)
+    elif not isinstance(text, str):
+        text = str(text)
 
-  text = text.strip()
-  if text.startswith("[") and text.endswith("]"):
-    try:
-      parsed_list = json.loads(text)
-      if isinstance(parsed_list, list):
-        text = " ".join(str(item) for item in parsed_list)
-    except Exception:
-      pass
+    text = text.strip()
+    if text.startswith("[") and text.endswith("]"):
+        try:
+            parsed_list = json.loads(text)
+            if isinstance(parsed_list, list):
+                text = " ".join(str(item) for item in parsed_list)
+        except Exception:
+            pass
 
-  text = re.sub(
-      r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-      "",
-      text,
-      flags=re.IGNORECASE,
-  )
-  text = re.sub(
-      r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
-      "",
-      text,
-      flags=re.IGNORECASE,
-  )
-
-  cleaned = (
-      text.replace("{", "")
-      .replace("}", "")
-      .replace("[", "")
-      .replace("]", "")
-      .replace('"', "")
-      .replace("'", "")
-  )
-
-  cleaned = format_numbers_in_text(cleaned)
-  return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
-
-
-def format_analyst_points_clean(text1, text2):
-  def clean_t(t):
-    if isinstance(t, list):
-      t = " ".join(str(item) for item in t)
-    elif not isinstance(t, str):
-      t = str(t)
-    t = t.strip()
-    t = re.sub(
-        r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
+    text = re.sub(
+        r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
-        t,
+        text,
         flags=re.IGNORECASE,
     )
+    text = re.sub(
+        r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
+        "",
+        text,
+        flags=re.IGNORECASE,
+    )
+
     cleaned = (
-        t.replace("{", "")
+        text.replace("{", "")
         .replace("}", "")
         .replace("[", "")
         .replace("]", "")
         .replace('"', "")
         .replace("'", "")
     )
-    return format_numbers_in_text(cleaned)
 
-  c1 = clean_t(text1)
-  c2 = clean_t(text2)
+    cleaned = format_numbers_in_text(cleaned)
+    return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
 
-  html1 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c1}</div>'
-  html2 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c2}</div>'
-  return html1, html2
+
+def format_analyst_points_clean(text1, text2):
+    def clean_t(t):
+        if isinstance(t, list):
+            t = " ".join(str(item) for item in t)
+        elif not isinstance(t, str):
+            t = str(t)
+        t = t.strip()
+        t = re.sub(
+            r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
+            "",
+            t,
+            flags=re.IGNORECASE,
+        )
+        cleaned = (
+            t.replace("{", "")
+            .replace("}", "")
+            .replace("[", "")
+            .replace("]", "")
+            .replace('"', "")
+            .replace("'", "")
+        )
+        return format_numbers_in_text(cleaned)
+
+    c1 = clean_t(text1)
+    c2 = clean_t(text2)
+
+    html1 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c1}</div>'
+    html2 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c2}</div>'
+    return html1, html2
 
 
 def get_stock_logo_url(ticker):
-  clean_ticker = str(ticker).strip().upper()
-  parqet_ticker = clean_ticker.replace("-", ".")
-  return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
+    clean_ticker = str(ticker).strip().upper()
+    parqet_ticker = clean_ticker.replace("-", ".")
+    return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
 
 
 def fetch_investing_news():
-  url = "https://il.investing.com/rss/news.rss"
-  req = urllib.request.Request(
-      url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-  )
-  try:
-    with urllib.request.urlopen(req, timeout=10) as response:
-      xml_data = response.read()
-      root = ET.fromstring(xml_data)
-      news_items = []
-      for item in root.findall(".//item"):
-        title = item.find("title")
-        link = item.find("link")
-        if (
-            title is not None
-            and title.text
-            and link is not None
-            and link.text
-        ):
-          news_items.append(
-              {"title": title.text.strip(), "link": link.text.strip()}
-          )
-      return news_items[:15]
-  except Exception as e:
-    print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
-    return []
+    url = "https://il.investing.com/rss/news.rss"
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            xml_data = response.read()
+            root = ET.fromstring(xml_data)
+            news_items = []
+            for item in root.findall(".//item"):
+                title = item.find("title")
+                link = item.find("link")
+                if (
+                    title is not None
+                    and title.text
+                    and link is not None
+                    and link.text
+                ):
+                    news_items.append(
+                        {"title": title.text.strip(), "link": link.text.strip()}
+                    )
+            return news_items[:15]
+    except Exception as e:
+        print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
+        return []
 
 
 LT_STOCKS_META = [
@@ -384,272 +384,312 @@ SW_STOCKS_META = [
 
 
 def fetch_yahoo_direct(ticker):
-  clean_ticker = str(ticker).strip().upper()
-  headers = {
-      "User-Agent": (
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
-          " like Gecko) Chrome/120.0.0.0 Safari/537.36"
-      )
-  }
-
-  chart_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(clean_ticker)}?interval=1d&range=5d"
-  current_price = 0.0
-  prev_close = 0.0
-  try:
-    resp = requests.get(chart_url, headers=headers, timeout=10)
-    if resp.status_code == 200:
-      res_json = resp.json()
-      result = res_json["chart"]["result"][0]
-      meta = result["meta"]
-      current_price = meta.get("regularMarketPrice") or meta.get(
-          "chartPreviousClose"
-      )
-      prev_close = meta.get("previousClose") or meta.get(
-          "chartPreviousClose"
-      )
-
-      q = result["indicators"]["quote"][0]
-      closes = [c for c in q.get("closes", []) if c is not None]
-      if not current_price and closes:
-        current_price = closes[-1]
-      if not prev_close and len(closes) > 1:
-        prev_close = closes[-2]
-      elif not prev_close:
-        prev_close = current_price
-  except Exception as e:
-    print(f"Direct Yahoo chart fetch error for {clean_ticker}: {e}")
-
-  if current_price and prev_close and prev_close > 0:
-    change = ((current_price - prev_close) / prev_close) * 100
-  else:
-    change = 0.0
-
-  target_mean = 0.0
-  summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=financialData"
-  try:
-    resp_sum = requests.get(summary_url, headers=headers, timeout=10)
-    if resp_sum.status_code == 200:
-      sum_json = resp_sum.json()
-      fin_result = (
-          sum_json.get("quoteSummary", {}).get("result", [{}])[0]
-      )
-      financial_data = fin_result.get("financialData", {})
-      target_obj = financial_data.get("targetMeanPrice", {})
-      if isinstance(target_obj, dict):
-        target_mean = target_obj.get("raw", 0.0)
-  except Exception as e:
-    print(f"Yahoo quoteSummary target fetch error for {clean_ticker}: {e}")
-
-  if current_price and current_price > 0:
-    return {
-        "price": round(float(current_price), 2),
-        "change": round(float(change), 2),
-        "target": float(target_mean) if target_mean else 0.0,
-        "pre_market": round(float(current_price), 2),
+    clean_ticker = str(ticker).strip().upper()
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+            " like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
     }
 
-  return None
+    chart_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(clean_ticker)}?interval=1d&range=5d"
+    current_price = 0.0
+    prev_close = 0.0
+    try:
+        resp = requests.get(chart_url, headers=headers, timeout=10)
+        if resp.status_code == 200:
+            res_json = resp.json()
+            result = res_json["chart"]["result"][0]
+            meta = result["meta"]
+            current_price = meta.get("regularMarketPrice") or meta.get(
+                "chartPreviousClose"
+            )
+            prev_close = meta.get("previousClose") or meta.get(
+                "chartPreviousClose"
+            )
+
+            q = result["indicators"]["quote"][0]
+            closes = [c for c in q.get("closes", []) if c is not None]
+            if not current_price and closes:
+                current_price = closes[-1]
+            if not prev_close and len(closes) > 1:
+                prev_close = closes[-2]
+            elif not prev_close:
+                prev_close = current_price
+    except Exception as e:
+        print(f"Direct Yahoo chart fetch error for {clean_ticker}: {e}")
+
+    if current_price and prev_close and prev_close > 0:
+        change = ((current_price - prev_close) / prev_close) * 100
+    else:
+        change = 0.0
+
+    target_mean = 0.0
+    summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=financialData"
+    try:
+        resp_sum = requests.get(summary_url, headers=headers, timeout=10)
+        if resp_sum.status_code == 200:
+            sum_json = resp_sum.json()
+            fin_result = (
+                sum_json.get("quoteSummary", {}).get("result", [{}])[0]
+            )
+            financial_data = fin_result.get("financialData", {})
+            target_obj = financial_data.get("targetMeanPrice", {})
+            if isinstance(target_obj, dict):
+                target_mean = target_obj.get("raw", 0.0)
+    except Exception as e:
+        print(f"Yahoo quoteSummary target fetch error for {clean_ticker}: {e}")
+
+    if current_price and current_price > 0:
+        return {
+            "price": round(float(current_price), 2),
+            "change": round(float(change), 2),
+            "target": float(target_mean) if target_mean else 0.0,
+            "pre_market": round(float(current_price), 2),
+        }
+
+    return None
 
 
 def fetch_market_data(tickers):
-  market_data = {}
-  for ticker in tickers:
-    data = fetch_yahoo_direct(ticker)
-    if data and data["price"] > 0:
-      market_data[ticker] = data
-    else:
-      defaults = {
-          "USDILS=X": {
-              "price": 3.65,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 3.65,
-          },
-          "^GSPC": {
-              "price": 5500.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 5500.0,
-          },
-          "^NDX": {
-              "price": 19500.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 19500.0,
-          },
-          "^DJI": {
-              "price": 41000.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 41000.0,
-          },
-          "^VIX": {
-              "price": 15.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 15.0,
-          },
-          "DX-Y.NYB": {
-              "price": 103.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 103.0,
-          },
-          "CL=F": {
-              "price": 75.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 75.0,
-          },
-          "GC=F": {
-              "price": 2400.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 2400.0,
-          },
-          "BTC-USD": {
-              "price": 60000.0,
-              "change": 0.0,
-              "target": 0.0,
-              "pre_market": 60000.0,
-          },
-          "XLK": {"price": 220.0, "change": 0.0, "target": 0.0, "pre_market": 220.0},
-          "XLF": {"price": 45.0, "change": 0.0, "target": 0.0, "pre_market": 45.0},
-          "XLV": {"price": 140.0, "change": 0.0, "target": 0.0, "pre_market": 140.0},
-          "XLY": {"price": 180.0, "change": 0.0, "target": 0.0, "pre_market": 180.0},
-          "XLP": {"price": 80.0, "change": 0.0, "target": 0.0, "pre_market": 80.0},
-          "XLE": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
-          "XLI": {"price": 130.0, "change": 0.0, "target": 0.0, "pre_market": 130.0},
-          "XLB": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
-          "XLC": {"price": 95.0, "change": 0.0, "target": 0.0, "pre_market": 95.0},
-          "XLU": {"price": 75.0, "change": 0.0, "target": 0.0, "pre_market": 75.0},
-          "XLRE": {"price": 40.0, "change": 0.0, "target": 0.0, "pre_market": 40.0},
-      }
-      market_data[ticker] = defaults.get(
-          ticker, {"price": 100.0, "change": 0.0, "target": 0.0, "pre_market": 100.0}
-      )
-  return market_data
+    market_data = {}
+    for ticker in tickers:
+        data = fetch_yahoo_direct(ticker)
+        if data and data["price"] > 0:
+            market_data[ticker] = data
+        else:
+            defaults = {
+                "USDILS=X": {
+                    "price": 3.65,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 3.65,
+                },
+                "^GSPC": {
+                    "price": 5500.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 5500.0,
+                },
+                "^NDX": {
+                    "price": 19500.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 19500.0,
+                },
+                "^DJI": {
+                    "price": 41000.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 41000.0,
+                },
+                "^VIX": {
+                    "price": 15.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 15.0,
+                },
+                "DX-Y.NYB": {
+                    "price": 103.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 103.0,
+                },
+                "CL=F": {
+                    "price": 75.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 75.0,
+                },
+                "GC=F": {
+                    "price": 2400.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 2400.0,
+                },
+                "BTC-USD": {
+                    "price": 60000.0,
+                    "change": 0.0,
+                    "target": 0.0,
+                    "pre_market": 60000.0,
+                },
+                "XLK": {"price": 220.0, "change": 0.0, "target": 0.0, "pre_market": 220.0},
+                "XLF": {"price": 45.0, "change": 0.0, "target": 0.0, "pre_market": 45.0},
+                "XLV": {"price": 140.0, "change": 0.0, "target": 0.0, "pre_market": 140.0},
+                "XLY": {"price": 180.0, "change": 0.0, "target": 0.0, "pre_market": 180.0},
+                "XLP": {"price": 80.0, "change": 0.0, "target": 0.0, "pre_market": 80.0},
+                "XLE": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
+                "XLI": {"price": 130.0, "change": 0.0, "target": 0.0, "pre_market": 130.0},
+                "XLB": {"price": 90.0, "change": 0.0, "target": 0.0, "pre_market": 90.0},
+                "XLC": {"price": 95.0, "change": 0.0, "target": 0.0, "pre_market": 95.0},
+                "XLU": {"price": 75.0, "change": 0.0, "target": 0.0, "pre_market": 75.0},
+                "XLRE": {"price": 40.0, "change": 0.0, "target": 0.0, "pre_market": 40.0},
+            }
+            market_data[ticker] = defaults.get(
+                ticker, {"price": 100.0, "change": 0.0, "target": 0.0, "pre_market": 100.0}
+            )
+    return market_data
 
 
-def fetch_ai_insights_from_groq(
+def fetch_ai_insights_split(
     market_data, portfolio_stocks, date_str, day_name, investing_headlines
 ):
-  api_keys = get_all_groq_keys()
-  if not api_keys:
-    print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
-    cached = load_ai_cache()
-    return cached if cached else {}
+    api_keys = get_all_groq_keys()
+    if not api_keys:
+        print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
+        cached = load_ai_cache()
+        return cached if cached else {}
 
-  max_rounds = 2
-  for attempt_round in range(1, max_rounds + 1):
-    print(f"🔄 Starting Groq AI request round {attempt_round}/{max_rounds}...")
+    market_summary = {
+        t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
+        for t, d in market_data.items()
+    }
+
+    headlines_formatted = (
+        "\n".join([
+            f"- Title: {h['title']} | Link: {h['link']}"
+            for h in investing_headlines
+        ])
+        if investing_headlines
+        else "No headlines available."
+    )
+
+    combined_result = load_ai_cache()
+    if not isinstance(combined_result, dict):
+        combined_result = {}
+
+    # ==========================================
+    # PART 1: Macro, Indices, Geopolitics & News
+    # ==========================================
+    print("🔄 Starting Groq AI Part 1 (Macro & Analysis)...")
     for key_name, api_key in api_keys:
-      try:
-        client = Groq(
-            api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-        )
-        print(
-            f"🤖 Connecting to Groq AI using {key_name} for {day_name},"
-            f" {date_str}..."
-        )
+        try:
+            client = Groq(
+                api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+            )
+            print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
-        market_summary = {
-            t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
-            for t, d in market_data.items()
-        }
-        portfolio_tickers = list(portfolio_stocks.keys())
-
-        headlines_formatted = (
-            "\n".join([
-                f"- Title: {h['title']} | Link: {h['link']}"
-                for h in investing_headlines
-            ])
-            if investing_headlines
-            else "No headlines available."
-        )
-
-        prompt = f"""
-You are an expert Chief Market Strategist who explains complex financial and geopolitical markets clearly, deeply, and simply for everyone (including non-experts). Output a valid JSON object ONLY. 
+            prompt1 = f"""
+You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and simply. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & ANTI-HALLUCINATION RULES:
-1. EXCLUSIVE SOURCE RELIANCE: Base your analysis and news summaries strictly on the provided Investing.com headlines and Yahoo Finance market data below.
-2. ZERO INVENTION: Do not fabricate macroeconomic data or events not present in the headlines/data.
-3. GEOPOLITICAL & MACRO INTEGRATION: If the provided headlines mention global geopolitical events (such as conflicts involving Iran, Strait of Hormuz, Russia-Ukraine, Israel, Middle East tensions, energy supplies, or central bank policies), you must thoroughly analyze their impact on markets, oil, gold, and risk sentiment.
-4. ACCESSIBLE & DEEP EXPLANATIONS: Provide rich, detailed, and deep analyses, but write them in **clear, basic, and accessible Hebrew** that any everyday reader (even without a background in capital markets) can easily understand. Avoid dense financial jargon without immediate plain-language translation.
-5. "WHAT IT MEANS" CONCLUSION ("מה זה אומר?"): Every key news summary and market analysis section must clearly conclude with a simple explanation of what it means in practice for the economy and the average investor.
-6. REAL SUMMARIES (NO SHALLOW COPIES): For news summaries (like market news and articles), do NOT just copy or restate the headline or the first sentence. Write a genuine, deep, well-rounded summary explaining the core issue and its wider ramifications.
-7. VARIETY & UNIQUENESS: Ensure high variety and distinct phrasing across all fields. Avoid repetitive boilerplate text.
+1. ACCURACY: You must be at least 95% accurate. If you are unsure about any specific data, explicitly state that it is unavailable or unclear based on the provided data, rather than guessing or hallucinating.
+2. EXCLUSIVE SOURCE RELIANCE: Base your analysis strictly on the provided Investing.com headlines and Yahoo Finance market data below.
+3. GEOPOLITICAL & MACRO INTEGRATION: Thoroughly analyze global geopolitical events (such as Iran, Strait of Hormuz, Russia-Ukraine, Israel, Middle East tensions, energy supplies) and their impact on markets, oil, gold, and risk sentiment.
+4. ACCESSIBLE & DEEP EXPLANATIONS: Write in **clear, basic, and accessible Hebrew** that any everyday reader without capital markets background can easily understand.
+5. "WHAT IT MEANS" CONCLUSION ("מה זה אומר?"): Every key analysis section must clearly conclude with a simple explanation of what it means in practice for the economy and the average investor.
+6. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
 
-CRITICAL FORMATTING MANDATE:
-- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the analysis immediately.
-- News descriptions in `market_news` must start with "סיכום הכתבה: " followed by a genuine, deep summary and explanation.
+Today is {day_name}, Date: {date_str}.
+
+Headlines from Investing.com:
+{headlines_formatted}
+
+Current Market Data:
+{json.dumps(market_summary, ensure_ascii=False)}
+
+Return a valid JSON object with exactly these keys:
+1. SP500_ANALYSIS (deep paragraph in accessible Hebrew)
+2. NASDAQ_ANALYSIS (deep paragraph explaining tech momentum)
+3. DOW_ANALYSIS (deep paragraph explaining Dow Jones)
+4. VIX_ANALYSIS (deep paragraph explaining VIX)
+5. DXY_ANALYSIS (deep paragraph explaining DXY)
+6. USD_ILS_EXPLANATION (deep paragraph explaining exchange rate and geopolitical risk)
+7. OIL_EXPLANATION (deep paragraph explaining crude oil and supply risks)
+8. GOLD_EXPLANATION (deep paragraph explaining Gold safe-haven)
+9. BTC_EXPLANATION (deep paragraph explaining Bitcoin liquidity)
+10. US_MARKET_NEWS
+11. IL_MARKET_NEWS
+12. COMMUNITY_SENTIMENT
+13. ANALYST_POINT_1
+14. ANALYST_POINT_2
+15. RISK_MANAGEMENT_TEXT
+16. ACTION_RECOMMENDATIONS_TEXT
+"""
+
+            response1 = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt1}],
+                response_format={"type": "json_object"},
+                max_tokens=6000,
+            )
+
+            raw_text1 = response1.choices[0].message.content.strip()
+            parsed1 = json.loads(raw_text1)
+            combined_result.update(parsed1)
+            print("Successfully parsed Part 1 JSON using key:", key_name)
+            break
+        except Exception as e:
+            print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+            else:
+                time.sleep(5)
+
+    # ==========================================
+    # PART 2: Stocks & Detailed Market News (Few-Shot)
+    # ==========================================
+    print("🔄 Starting Groq AI Part 2 (Stocks & Detailed News)...")
+    for key_name, api_key in api_keys:
+        try:
+            client = Groq(
+                api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+            )
+            print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
+
+            prompt2 = f"""
+You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
+
+🚨 STRICT GUIDELINES & FEW-SHOT FORMATTING:
+1. ACCURACY: You must be at least 95% accurate. Do not make up numbers or trends. If the data is missing, report that you cannot analyze it.
+2. Provide deep, thorough analyses in basic, clear Hebrew.
+3. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a "מה זה אומר" explanation.
+   EXAMPLE FORMAT:
+   {{
+       "news_link": "https://il.investing.com/news/...",
+       "news_title": "כותרת הכתבה",
+       "news_desc": "סיכום הכתבה: ... [Summary] ... מה זה אומר בפועל: ... [Explanation] ..."
+   }}
+4. `long_term_stocks`: Array of EXACTLY 10 corporate stocks (NO ETFS/sectors). Each object: ticker, name, desc, news, why_invest.
+5. `swing_stocks`: Array of EXACTLY 10 corporate stocks, separate from long_term_stocks. Each object: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
 Headlines from Investing.com (USE ONLY THESE):
 {headlines_formatted}
 
-Current Market Data (USE ONLY THESE):
+Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-User Portfolio Tickers: {portfolio_tickers}
-
-Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (unique deep quantitative and qualitative paragraph in accessible Hebrew explaining S&P 500 breadth and market sentiment)
-2. NASDAQ_ANALYSIS (unique deep paragraph explaining Nasdaq 100, tech momentum, and risk appetite)
-3. DOW_ANALYSIS (unique deep paragraph explaining Dow Jones industrial value weightings)
-4. VIX_ANALYSIS (unique deep paragraph explaining VIX volatility index and market fear levels)
-5. DXY_ANALYSIS (unique deep paragraph explaining DXY US Dollar Index and global currency flows)
-6. USD_ILS_EXPLANATION (unique deep paragraph explaining USD/ILS exchange rate, local economic factors, and geopolitical risk premium)
-7. OIL_EXPLANATION (unique deep paragraph explaining crude oil prices, OPEC+, and geopolitical supply risks like Hormuz/Middle East)
-8. GOLD_EXPLANATION (unique deep paragraph explaining Gold spot prices, safe-haven rotation, and inflation hedge)
-9. BTC_EXPLANATION (unique deep paragraph explaining Bitcoin, crypto liquidity, and market trends)
-10. US_MARKET_NEWS (unique institutional summary of US economic indicators and news in simple, accessible terms)
-11. IL_MARKET_NEWS (unique institutional summary of Israeli economic and geopolitical conditions in simple terms)
-12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends based on news)
-14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories based on news)
-15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds based on news)
-16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment based on news)
-17. ANALYST_POINT_1 (actionable trading insight #1 in simple language)
-18. ANALYST_POINT_2 (actionable trading insight #2 in simple language)
-19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy explained simply)
-20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework explained simply)
-21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
-22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
-23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:" containing deep, real summaries and a "מה זה אומר" explanation)
+Return a valid JSON object with exactly these 3 keys:
+1. long_term_stocks
+2. swing_stocks
+3. market_news
 """
 
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-            max_tokens=8192,
-        )
+            response2 = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt2}],
+                response_format={"type": "json_object"},
+                max_tokens=6000,
+            )
 
-        raw_text = response.choices[0].message.content.strip()
-        parsed_ai_data = json.loads(raw_text)
-        parsed_ai_data["ai_updated_at"] = f"{date_str} | {time_str}"
-        print("Successfully parsed AI response into JSON using key:", key_name)
-        return parsed_ai_data
+            raw_text2 = response2.choices[0].message.content.strip()
+            parsed2 = json.loads(raw_text2)
+            combined_result.update(parsed2)
+            print("Successfully parsed Part 2 JSON using key:", key_name)
+            break
+        except Exception as e:
+            print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+            else:
+                time.sleep(5)
 
-      except Exception as e:
-        print(f"⚠️ Attempt failed with {key_name}: {e}")
-        if (
-            "429" in str(e)
-            or "413" in str(e)
-            or "RESOURCE_EXHAUSTED" in str(e)
-            or "rate_limit_exceeded" in str(e)
-        ):
-          print(f"⏳ Rate limit or size limit hit on {key_name}. Waiting 65 seconds...")
-          time.sleep(65)
-        else:
-          print("🔄 Connection error. Waiting 5 seconds...")
-          time.sleep(5)
-
-  print("⚠️ All AI retries exhausted. Falling back to cache.")
-  cached = load_ai_cache()
-  return cached if cached else {}
+    combined_result["ai_updated_at"] = f"{date_str} | {time.strftime('%H:%M')}"
+    return combined_result
 
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
@@ -681,10 +721,10 @@ sector_tickers_map = {
 cached_ai_init = load_ai_cache()
 init_lt = cached_ai_init.get("long_term_stocks", LT_STOCKS_META)
 if not isinstance(init_lt, list) or not init_lt:
-  init_lt = LT_STOCKS_META
+    init_lt = LT_STOCKS_META
 init_sw = cached_ai_init.get("swing_stocks", SW_STOCKS_META)
 if not isinstance(init_sw, list) or not init_sw:
-  init_sw = SW_STOCKS_META
+    init_sw = SW_STOCKS_META
 
 base_market_tickers = list(
     set(
@@ -716,71 +756,71 @@ base_market_tickers = list(
 
 
 def build_structured_stocks_html(stocks_meta, market_data, section_title):
-  html_parts = [
-      f'<div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right"'
-      f' dir="rtl">{section_title}</div>'
-  ]
-  if not isinstance(stocks_meta, list) or not stocks_meta:
-    stocks_meta = LT_STOCKS_META
+    html_parts = [
+        f'<div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right"'
+        f' dir="rtl">{section_title}</div>'
+    ]
+    if not isinstance(stocks_meta, list) or not stocks_meta:
+        stocks_meta = LT_STOCKS_META
 
-  for s in stocks_meta:
-    if isinstance(s, str):
-      ticker = s.strip().upper()
-      name = ticker
-      desc = "מניה מובילה שנבחרה על ידי מערכת ה-AI."
-      news = "מעקב יומי וניתוח מומנטום בשוק."
-      why_invest = "פוטנציאל תשואה אטרקטיבי וניהול פיננסי יציב."
-    elif isinstance(s, dict):
-      ticker = str(
-          s.get("ticker") or s.get("symbol") or s.get("name") or ""
-      ).strip().upper()
-      if not ticker:
-        continue
-      name = s.get("name") or s.get("company") or s.get("title") or ticker
-      desc = (
-          s.get("desc")
-          or s.get("description")
-          or s.get("reason")
-          or "עיסוק ופעילות גלובלית בשווקים."
-      )
-      news = (
-          s.get("news")
-          or s.get("rationale")
-          or s.get("update")
-          or "עדכון וניתוח יומי."
-      )
-      news = re.sub(r"^סיכום הכתבה:\s*", "", news)
-      why_invest = (
-          s.get("why_invest")
-          or s.get("investment_reason")
-          or "מומנטום חיובי ונתונים פונדמנטליים חזקים המצדיקים כדאיות השקעה."
-      )
-    else:
-      continue
+    for s in stocks_meta:
+        if isinstance(s, str):
+            ticker = s.strip().upper()
+            name = ticker
+            desc = "מניה מובילה שנבחרה על ידי מערכת ה-AI."
+            news = "מעקב יומי וניתוח מומנטום בשוק."
+            why_invest = "פוטנציאל תשואה אטרקטיבי וניהול פיננסי יציב."
+        elif isinstance(s, dict):
+            ticker = str(
+                s.get("ticker") or s.get("symbol") or s.get("name") or ""
+            ).strip().upper()
+            if not ticker:
+                continue
+            name = s.get("name") or s.get("company") or s.get("title") or ticker
+            desc = (
+                s.get("desc")
+                or s.get("description")
+                or s.get("reason")
+                or "עיסוק ופעילות גלובלית בשווקים."
+            )
+            news = (
+                s.get("news")
+                or s.get("rationale")
+                or s.get("update")
+                or "עדכון וניתוח יומי."
+            )
+            news = re.sub(r"^סיכום הכתבה:\s*", "", news)
+            why_invest = (
+                s.get("why_invest")
+                or s.get("investment_reason")
+                or "מומנטום חיובי ונתונים פונדמנטליים חזקים המצדיקים כדאיות השקעה."
+            )
+        else:
+            continue
 
-    data = market_data.get(ticker, {})
-    price = format_num(data.get("price", 0))
-    pre_market = format_num(data.get("pre_market", 0))
+        data = market_data.get(ticker, {})
+        price = format_num(data.get("price", 0))
+        pre_market = format_num(data.get("pre_market", 0))
 
-    raw_target = data.get("target", 0)
-    target_html = ""
-    if raw_target and float(raw_target) > 0:
-      target_val = f"${format_num(raw_target)}"
-      target_html = f"<div><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>"
+        raw_target = data.get("target", 0)
+        target_html = ""
+        if raw_target and float(raw_target) > 0:
+            target_val = f"${format_num(raw_target)}"
+            target_html = f"<div><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>"
 
-    change_val = data.get("change", 0.0)
+        change_val = data.get("change", 0.0)
 
-    sign = "+" if change_val > 0 else ""
-    color = "#2ecc71" if change_val >= 0 else "#e74c3c"
-    change_str = (
-        f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
-        f' inline-block;">{sign}{change_val:.2f}%</span>'
-    )
+        sign = "+" if change_val > 0 else ""
+        color = "#2ecc71" if change_val >= 0 else "#e74c3c"
+        change_str = (
+            f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+            f' inline-block;">{sign}{change_val:.2f}%</span>'
+        )
 
-    logo_url = get_stock_logo_url(ticker)
-    clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
+        logo_url = get_stock_logo_url(ticker)
+        clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
-    card_html = f"""
+        card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
                 <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
@@ -797,334 +837,334 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             </div>
         </div>
         """
-    html_parts.append(card_html)
-  return "".join(html_parts)
+        html_parts.append(card_html)
+    return "".join(html_parts)
 
 
 def build_market_news_html(market_news_list):
-  if not isinstance(market_news_list, list) or not market_news_list:
-    return (
-        '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות'
-        " כרגע.</div>"
-    )
+    if not isinstance(market_news_list, list) or not market_news_list:
+        return (
+            '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות'
+            " כרגע.</div>"
+        )
 
-  html_parts = []
-  for item in market_news_list:
-    if not isinstance(item, dict):
-      continue
-    p_link = item.get("news_link", "https://il.investing.com")
-    p_title = item.get("news_title", "עדכון שוק יומי")
-    p_desc = item.get("news_desc", "")
-    if p_desc and not p_desc.startswith("סיכום הכתבה:"):
-      p_desc = f"סיכום הכתבה: {p_desc}"
+    html_parts = []
+    for item in market_news_list:
+        if not isinstance(item, dict):
+            continue
+        p_link = item.get("news_link", "https://il.investing.com")
+        p_title = item.get("news_title", "עדכון שוק יומי")
+        p_desc = item.get("news_desc", "")
+        if p_desc and not p_desc.startswith("סיכום הכתבה:"):
+            p_desc = f"סיכום הכתבה: {p_desc}"
 
-    desc_block = (
-        f'<p class="text-gray-300 mt-2">{p_desc}</p>' if p_desc else ""
-    )
+        desc_block = (
+            f'<p class="text-gray-300 mt-2">{p_desc}</p>' if p_desc else ""
+        )
 
-    card_html = f"""
+        card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">כותרת: {p_title}</h3>
             <p class="mt-2">🔗 <strong>קישור למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             {desc_block}
         </div>
         """
-    html_parts.append(card_html)
+        html_parts.append(card_html)
 
-  return "".join(html_parts)
+    return "".join(html_parts)
 
 
 if __name__ == "__main__":
-  try:
-    print("Fetching initial market data via direct API...")
-    base_market_data = fetch_market_data(base_market_tickers)
-    date_str = now_il.strftime("%d.%m.%Y")
-    time_str = now_il.strftime("%H:%M")
+    try:
+        print("Fetching initial market data via direct API...")
+        base_market_data = fetch_market_data(base_market_tickers)
+        date_str = now_il.strftime("%d.%m.%Y")
+        time_str = now_il.strftime("%H:%M")
 
-    trigger_event = os.environ.get("TRIGGER_EVENT", "")
-    current_hour = now_il.hour
-    current_minute = now_il.minute
-    is_manual = trigger_event == "workflow_dispatch"
+        trigger_event = os.environ.get("TRIGGER_EVENT", "")
+        current_hour = now_il.hour
+        current_minute = now_il.minute
+        is_manual = trigger_event == "workflow_dispatch"
 
-    is_scheduled_ai_time = (
-        trigger_event == "repository_dispatch"
-        and (
-            (current_hour == 10 and 10 <= current_minute <= 15)
-            or (current_hour == 16 and 40 <= current_minute <= 45)
-            or (current_hour == 23 and 40 <= current_minute <= 45)
-        )
-    )
-
-    is_ai_time = is_manual or is_scheduled_ai_time
-    is_yahoo_only = not is_ai_time
-
-    investing_headlines = fetch_investing_news()
-
-    ai_insights = {}
-    if is_yahoo_only:
-      ai_insights = load_ai_cache()
-    else:
-      ai_insights = fetch_ai_insights_from_groq(
-          base_market_data,
-          portfolio_buys,
-          date_str,
-          day_name,
-          investing_headlines,
-      )
-      if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
-        save_ai_cache(ai_insights)
-
-    market_news_data = ai_insights.get("market_news", [])
-    if not isinstance(market_news_data, list) or len(market_news_data) < 10:
-      market_news_data = []
-      for h in investing_headlines[:12]:
-        market_news_data.append({
-            "news_link": h["link"],
-            "news_title": h["title"],
-            "news_desc": (
-                f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית, פעילות השווקים ותגובת המשקיעים. מה זה אומר בפועל: עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים והיערכות לתרחישים משתנים."
-            ),
-        })
-      ai_insights["market_news"] = market_news_data
-
-    new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-    if not isinstance(new_lt, list) or not new_lt:
-      new_lt = LT_STOCKS_META
-
-    new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
-    if not isinstance(new_sw, list) or not new_sw:
-      new_sw = SW_STOCKS_META
-
-    extra_tickers = []
-    for s in new_lt + new_sw:
-      if isinstance(s, dict):
-        t = s.get("ticker") or s.get("symbol")
-        if t and t not in base_market_data:
-          extra_tickers.append(t)
-    if extra_tickers:
-      extra_data = fetch_market_data(extra_tickers)
-      base_market_data.update(extra_data)
-
-    sp500 = base_market_data.get("^GSPC", {})
-    nasdaq = base_market_data.get("^NDX", {})
-    dji = base_market_data.get("^DJI", {})
-    vix = base_market_data.get("^VIX", {})
-    usd_ils_data = base_market_data.get("USDILS=X", {})
-    dxy_data = base_market_data.get("DX-Y.NYB", {})
-
-    sp500_price = format_num(sp500.get("price", 0))
-    sp500_change = format_pct_colored(sp500.get("change", 0))
-    nasdaq_price = format_num(nasdaq.get("price", 0))
-    nasdaq_change = format_pct_colored(nasdaq.get("change", 0))
-    dji_price = format_num(dji.get("price", 0))
-    dji_change = format_pct_colored(dji.get("change", 0))
-    vix_price = format_num(vix.get("price", 0))
-    vix_change = format_pct_colored(vix.get("change", 0))
-
-    dxy_price = format_num(dxy_data.get("price", 0))
-    dxy_change = format_pct_colored(dxy_data.get("change", 0))
-
-    usd_ils_p = usd_ils_data.get("price", 3.65)
-    if not usd_ils_p or usd_ils_p <= 1.0:
-      usd_ils_p = 3.65
-    usd_ils_c = usd_ils_data.get("change", 0)
-    usd_ils_price = f"{format_num(usd_ils_p)}₪"
-    usd_ils_change = format_pct_colored(usd_ils_c)
-
-    oil_data = base_market_data.get("CL=F", {})
-    oil_p = oil_data.get("price", 75.0)
-    oil_c = oil_data.get("change", 0)
-    oil_price = f"${format_num(oil_p)}"
-    oil_change = format_pct_colored(oil_c)
-
-    gold_data = base_market_data.get("GC=F", {})
-    gold_p = gold_data.get("price", 2400.0)
-    gold_c = gold_data.get("change", 0)
-    gold_price = f"${format_num(gold_p)}"
-    gold_change = format_pct_colored(gold_c)
-
-    btc_data = base_market_data.get("BTC-USD", {})
-    btc_p = btc_data.get("price", 60000.0)
-    btc_c = btc_data.get("change", 0)
-    btc_price = f"${format_num(btc_p)}"
-    btc_change = format_pct_colored(btc_c)
-
-    sector_chart_list = []
-    for s_name, s_ticker in sector_tickers_map.items():
-      s_data = base_market_data.get(s_ticker, {})
-      chg = float(s_data.get("change", 0.0))
-      price_val = float(s_data.get("price", 100.0))
-      sector_chart_list.append(
-          {"name": s_name, "change": chg, "price": price_val, "value": price_val}
-      )
-
-    with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
-      content = f.read()
-
-    lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-    if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
-      lt_stocks_data = LT_STOCKS_META
-
-    sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
-    if not isinstance(sw_stocks_data, list) or not sw_stocks_data:
-      sw_stocks_data = SW_STOCKS_META
-
-    lt_html = build_structured_stocks_html(
-        lt_stocks_data,
-        base_market_data,
-        "קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core)",
-    )
-    sw_html = build_structured_stocks_html(
-        sw_stocks_data,
-        base_market_data,
-        "קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading)",
-    )
-    news_html = build_market_news_html(ai_insights.get("market_news", []))
-
-    portfolio_js_list = []
-    for ticker, info in portfolio_buys.items():
-      if not isinstance(info, dict):
-        continue
-      try:
-        buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
-        fetched_price_data = base_market_data.get(ticker, {})
-        curr_p = fetched_price_data.get("price") or buy_p
-        fetched_target = fetched_price_data.get("target") or 0.0
-        pre_p = fetched_price_data.get("pre_market") or curr_p
-
-        ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
-        sign = "+" if ret > 0 else ""
-        color = "#2ecc71" if ret >= 0 else "#e74c3c"
-
-        shares_count = info.get("shares", 0)
-        company_name = (
-            info.get("name") or fetched_price_data.get("name") or ticker
+        is_scheduled_ai_time = (
+            trigger_event == "repository_dispatch"
+            and (
+                (current_hour == 10 and 10 <= current_minute <= 15)
+                or (current_hour == 16 and 40 <= current_minute <= 45)
+                or (current_hour == 23 and 40 <= current_minute <= 45)
+            )
         )
 
-        target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else ""
+        is_ai_time = is_manual or is_scheduled_ai_time
+        is_yahoo_only = not is_ai_time
 
-        portfolio_js_list.append({
-            "name": company_name,
-            "symbol": ticker,
-            "shares": shares_count,
-            "buyPrice": format_num(buy_p),
-            "current": f"${format_num(curr_p)}",
-            "pre": f"${format_num(pre_p)}",
-            "target": target_str,
-            "status": (
-                f"רווח: <span dir='ltr' style='color: {color}; font-weight:"
-                f" bold; display: inline-block;'>{sign}{ret:.2f}%</span>"
+        investing_headlines = fetch_investing_news()
+
+        ai_insights = {}
+        if is_yahoo_only:
+            ai_insights = load_ai_cache()
+        else:
+            ai_insights = fetch_ai_insights_split(
+                base_market_data,
+                portfolio_buys,
+                date_str,
+                day_name,
+                investing_headlines,
+            )
+            if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
+                save_ai_cache(ai_insights)
+
+        market_news_data = ai_insights.get("market_news", [])
+        if not isinstance(market_news_data, list) or len(market_news_data) < 10:
+            market_news_data = []
+            for h in investing_headlines[:12]:
+                market_news_data.append({
+                    "news_link": h["link"],
+                    "news_title": h["title"],
+                    "news_desc": (
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית. מה זה אומר בפועל: עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                    ),
+                })
+            ai_insights["market_news"] = market_news_data
+
+        new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        if not isinstance(new_lt, list) or not new_lt:
+            new_lt = LT_STOCKS_META
+
+        new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
+        if not isinstance(new_sw, list) or not new_sw:
+            new_sw = SW_STOCKS_META
+
+        extra_tickers = []
+        for s in new_lt + new_sw:
+            if isinstance(s, dict):
+                t = s.get("ticker") or s.get("symbol")
+                if t and t not in base_market_data:
+                    extra_tickers.append(t)
+        if extra_tickers:
+            extra_data = fetch_market_data(extra_tickers)
+            base_market_data.update(extra_data)
+
+        sp500 = base_market_data.get("^GSPC", {})
+        nasdaq = base_market_data.get("^NDX", {})
+        dji = base_market_data.get("^DJI", {})
+        vix = base_market_data.get("^VIX", {})
+        usd_ils_data = base_market_data.get("USDILS=X", {})
+        dxy_data = base_market_data.get("DX-Y.NYB", {})
+
+        sp500_price = format_num(sp500.get("price", 0))
+        sp500_change = format_pct_colored(sp500.get("change", 0))
+        nasdaq_price = format_num(nasdaq.get("price", 0))
+        nasdaq_change = format_pct_colored(nasdaq.get("change", 0))
+        dji_price = format_num(dji.get("price", 0))
+        dji_change = format_pct_colored(dji.get("change", 0))
+        vix_price = format_num(vix.get("price", 0))
+        vix_change = format_pct_colored(vix.get("change", 0))
+
+        dxy_price = format_num(dxy_data.get("price", 0))
+        dxy_change = format_pct_colored(dxy_data.get("change", 0))
+
+        usd_ils_p = usd_ils_data.get("price", 3.65)
+        if not usd_ils_p or usd_ils_p <= 1.0:
+            usd_ils_p = 3.65
+        usd_ils_c = usd_ils_data.get("change", 0)
+        usd_ils_price = f"{format_num(usd_ils_p)}₪"
+        usd_ils_change = format_pct_colored(usd_ils_c)
+
+        oil_data = base_market_data.get("CL=F", {})
+        oil_p = oil_data.get("price", 75.0)
+        oil_c = oil_data.get("change", 0)
+        oil_price = f"${format_num(oil_p)}"
+        oil_change = format_pct_colored(oil_c)
+
+        gold_data = base_market_data.get("GC=F", {})
+        gold_p = gold_data.get("price", 2400.0)
+        gold_c = gold_data.get("change", 0)
+        gold_price = f"${format_num(gold_p)}"
+        gold_change = format_pct_colored(gold_c)
+
+        btc_data = base_market_data.get("BTC-USD", {})
+        btc_p = btc_data.get("price", 60000.0)
+        btc_c = btc_data.get("change", 0)
+        btc_price = f"${format_num(btc_p)}"
+        btc_change = format_pct_colored(btc_c)
+
+        sector_chart_list = []
+        for s_name, s_ticker in sector_tickers_map.items():
+            s_data = base_market_data.get(s_ticker, {})
+            chg = float(s_data.get("change", 0.0))
+            price_val = float(s_data.get("price", 100.0))
+            sector_chart_list.append(
+                {"name": s_name, "change": chg, "price": price_val, "value": price_val}
+            )
+
+        with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
+            content = f.read()
+
+        lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
+        if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
+            lt_stocks_data = LT_STOCKS_META
+
+        sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
+        if not isinstance(sw_stocks_data, list) or not sw_stocks_data:
+            sw_stocks_data = SW_STOCKS_META
+
+        lt_html = build_structured_stocks_html(
+            lt_stocks_data,
+            base_market_data,
+            "קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core)",
+        )
+        sw_html = build_structured_stocks_html(
+            sw_stocks_data,
+            base_market_data,
+            "קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading)",
+        )
+        news_html = build_market_news_html(ai_insights.get("market_news", []))
+
+        portfolio_js_list = []
+        for ticker, info in portfolio_buys.items():
+            if not isinstance(info, dict):
+                continue
+            try:
+                buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
+                fetched_price_data = base_market_data.get(ticker, {})
+                curr_p = fetched_price_data.get("price") or buy_p
+                fetched_target = fetched_price_data.get("target") or 0.0
+                pre_p = fetched_price_data.get("pre_market") or curr_p
+
+                ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
+                sign = "+" if ret > 0 else ""
+                color = "#2ecc71" if ret >= 0 else "#e74c3c"
+
+                shares_count = info.get("shares", 0)
+                company_name = (
+                    info.get("name") or fetched_price_data.get("name") or ticker
+                )
+
+                target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else ""
+
+                portfolio_js_list.append({
+                    "name": company_name,
+                    "symbol": ticker,
+                    "shares": shares_count,
+                    "buyPrice": format_num(buy_p),
+                    "current": f"${format_num(curr_p)}",
+                    "pre": f"${format_num(pre_p)}",
+                    "target": target_str,
+                    "status": (
+                        f"רווח: <span dir='ltr' style='color: {color}; font-weight:"
+                        f" bold; display: inline-block;'>{sign}{ret:.2f}%</span>"
+                    ),
+                    "note": "",
+                })
+            except Exception as ex:
+                print(f"Error processing portfolio stock {ticker}: {ex}")
+
+        formatted_analyst_1, formatted_analyst_2 = format_analyst_points_clean(
+            ai_insights.get("ANALYST_POINT_1", ""),
+            ai_insights.get("ANALYST_POINT_2", ""),
+        )
+
+        replacements = {
+            "LAST_UPDATED": f"{date_str} | {time_str}",
+            "AI_LAST_UPDATED": ai_insights.get(
+                "ai_updated_at", f"{date_str} | {time_str}"
             ),
-            "note": "",
-        })
-      except Exception as ex:
-        print(f"Error processing portfolio stock {ticker}: {ex}")
+            "DAY_NAME": day_name,
+            "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
+            "PORTFOLIO_STOCKS_JSON": json.dumps(
+                portfolio_js_list, ensure_ascii=False
+            ),
+            "SECTORS_CHART_JSON": json.dumps(sector_chart_list, ensure_ascii=False),
+            "SP500_PRICE": sp500_price,
+            "SP500_PCT": sp500_change,
+            "NASDAQ_PRICE": nasdaq_price,
+            "NASDAQ_PCT": nasdaq_change,
+            "DOW_PRICE": dji_price,
+            "DOW_PCT": dji_change,
+            "VIX_PRICE": vix_price,
+            "VIX_PCT": vix_change,
+            "DXY_PRICE": dxy_price,
+            "DXY_PCT": dxy_change,
+            "SP500_ANALYSIS": format_ai_text(
+                ai_insights.get("SP500_ANALYSIS", "")
+            ),
+            "NASDAQ_ANALYSIS": format_ai_text(
+                ai_insights.get("NASDAQ_ANALYSIS", "")
+            ),
+            "DOW_ANALYSIS": format_ai_text(ai_insights.get("DOW_ANALYSIS", "")),
+            "VIX_ANALYSIS": format_ai_text(ai_insights.get("VIX_ANALYSIS", "")),
+            "DXY_ANALYSIS": format_ai_text(ai_insights.get("DXY_ANALYSIS", "")),
+            "USD_ILS": usd_ils_price,
+            "USD_ILS_CHANGE": usd_ils_change,
+            "OIL_PRICE": oil_price,
+            "OIL_CHANGE": oil_change,
+            "GOLD_PRICE": gold_price,
+            "GOLD_CHANGE": gold_change,
+            "BTC_PRICE": btc_price,
+            "BTC_CHANGE": btc_change,
+            "USD_ILS_EXPLANATION": format_ai_text(
+                ai_insights.get("USD_ILS_EXPLANATION", "")
+            ),
+            "OIL_EXPLANATION": format_ai_text(
+                ai_insights.get("OIL_EXPLANATION", "")
+            ),
+            "GOLD_EXPLANATION": format_ai_text(
+                ai_insights.get("GOLD_EXPLANATION", "")
+            ),
+            "BTC_EXPLANATION": format_ai_text(
+                ai_insights.get("BTC_EXPLANATION", "")
+            ),
+            "US_MARKET_NEWS": format_ai_text(ai_insights.get("US_MARKET_NEWS", "")),
+            "IL_MARKET_NEWS": format_ai_text(ai_insights.get("IL_MARKET_NEWS", "")),
+            "CATALYST_EARNINGS": format_ai_text(
+                ai_insights.get("CATALYST_EARNINGS", "")
+            ),
+            "CATALYST_MONETARY": format_ai_text(
+                ai_insights.get("CATALYST_MONETARY", "")
+            ),
+            "CATALYST_HARDWARE": format_ai_text(
+                ai_insights.get("CATALYST_HARDWARE", "")
+            ),
+            "COMMUNITY_SENTIMENT": format_ai_text(
+                ai_insights.get("COMMUNITY_SENTIMENT", "")
+            ),
+            "ANALYST_POINT_1": formatted_analyst_1,
+            "ANALYST_POINT_2": formatted_analyst_2,
+            "RISK_MANAGEMENT_TEXT": format_ai_text(
+                ai_insights.get("RISK_MANAGEMENT_TEXT", "")
+            ),
+            "ACTION_RECOMMENDATIONS_TEXT": format_ai_text(
+                ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
+            ),
+            "LONG_TERM_STOCKS_SECTION": lt_html,
+            "SWING_STOCKS_SECTION": sw_html,
+            "PORTFOLIO_NEWS_SECTION": news_html,
+        }
 
-    formatted_analyst_1, formatted_analyst_2 = format_analyst_points_clean(
-        ai_insights.get("ANALYST_POINT_1", ""),
-        ai_insights.get("ANALYST_POINT_2", ""),
-    )
+        for s_key, s_ticker in sector_tickers_map.items():
+            s_data = base_market_data.get(s_ticker, {})
+            s_change = s_data.get("change", 0.0)
+            sign = "+" if s_change > 0 else ""
+            color = "#2ecc71" if s_change >= 0 else "#e74c3c"
+            s_price = format_num(s_data.get("price", 0))
+            replacements[f"SECTOR_{s_key}_PRICE"] = f"${s_price}"
+            replacements[f"SECTOR_{s_key}_PCT"] = (
+                f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
+                f' inline-block;">{sign}{s_change:.2f}%</span>'
+            )
 
-    replacements = {
-        "LAST_UPDATED": f"{date_str} | {time_str}",
-        "AI_LAST_UPDATED": ai_insights.get(
-            "ai_updated_at", f"{date_str} | {time_str}"
-        ),
-        "DAY_NAME": day_name,
-        "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
-        "PORTFOLIO_STOCKS_JSON": json.dumps(
-            portfolio_js_list, ensure_ascii=False
-        ),
-        "SECTORS_CHART_JSON": json.dumps(sector_chart_list, ensure_ascii=False),
-        "SP500_PRICE": sp500_price,
-        "SP500_PCT": sp500_change,
-        "NASDAQ_PRICE": nasdaq_price,
-        "NASDAQ_PCT": nasdaq_change,
-        "DOW_PRICE": dji_price,
-        "DOW_PCT": dji_change,
-        "VIX_PRICE": vix_price,
-        "VIX_PCT": vix_change,
-        "DXY_PRICE": dxy_price,
-        "DXY_PCT": dxy_change,
-        "SP500_ANALYSIS": format_ai_text(
-            ai_insights.get("SP500_ANALYSIS", "")
-        ),
-        "NASDAQ_ANALYSIS": format_ai_text(
-            ai_insights.get("NASDAQ_ANALYSIS", "")
-        ),
-        "DOW_ANALYSIS": format_ai_text(ai_insights.get("DOW_ANALYSIS", "")),
-        "VIX_ANALYSIS": format_ai_text(ai_insights.get("VIX_ANALYSIS", "")),
-        "DXY_ANALYSIS": format_ai_text(ai_insights.get("DXY_ANALYSIS", "")),
-        "USD_ILS": usd_ils_price,
-        "USD_ILS_CHANGE": usd_ils_change,
-        "OIL_PRICE": oil_price,
-        "OIL_CHANGE": oil_change,
-        "GOLD_PRICE": gold_price,
-        "GOLD_CHANGE": gold_change,
-        "BTC_PRICE": btc_price,
-        "BTC_CHANGE": btc_change,
-        "USD_ILS_EXPLANATION": format_ai_text(
-            ai_insights.get("USD_ILS_EXPLANATION", "")
-        ),
-        "OIL_EXPLANATION": format_ai_text(
-            ai_insights.get("OIL_EXPLANATION", "")
-        ),
-        "GOLD_EXPLANATION": format_ai_text(
-            ai_insights.get("GOLD_EXPLANATION", "")
-        ),
-        "BTC_EXPLANATION": format_ai_text(
-            ai_insights.get("BTC_EXPLANATION", "")
-        ),
-        "US_MARKET_NEWS": format_ai_text(ai_insights.get("US_MARKET_NEWS", "")),
-        "IL_MARKET_NEWS": format_ai_text(ai_insights.get("IL_MARKET_NEWS", "")),
-        "CATALYST_EARNINGS": format_ai_text(
-            ai_insights.get("CATALYST_EARNINGS", "")
-        ),
-        "CATALYST_MONETARY": format_ai_text(
-            ai_insights.get("CATALYST_MONETARY", "")
-        ),
-        "CATALYST_HARDWARE": format_ai_text(
-            ai_insights.get("CATALYST_HARDWARE", "")
-        ),
-        "COMMUNITY_SENTIMENT": format_ai_text(
-            ai_insights.get("COMMUNITY_SENTIMENT", "")
-        ),
-        "ANALYST_POINT_1": formatted_analyst_1,
-        "ANALYST_POINT_2": formatted_analyst_2,
-        "RISK_MANAGEMENT_TEXT": format_ai_text(
-            ai_insights.get("RISK_MANAGEMENT_TEXT", "")
-        ),
-        "ACTION_RECOMMENDATIONS_TEXT": format_ai_text(
-            ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
-        ),
-        "LONG_TERM_STOCKS_SECTION": lt_html,
-        "SWING_STOCKS_SECTION": sw_html,
-        "PORTFOLIO_NEWS_SECTION": news_html,
-    }
+        for k, v in replacements.items():
+            content = content.replace("{{" + k + "}}", str(v))
 
-    for s_key, s_ticker in sector_tickers_map.items():
-      s_data = base_market_data.get(s_ticker, {})
-      s_change = s_data.get("change", 0.0)
-      sign = "+" if s_change > 0 else ""
-      color = "#2ecc71" if s_change >= 0 else "#e74c3c"
-      s_price = format_num(s_data.get("price", 0))
-      replacements[f"SECTOR_{s_key}_PRICE"] = f"${s_price}"
-      replacements[f"SECTOR_{s_key}_PCT"] = (
-          f'<span dir="ltr" style="color: {color}; font-weight: bold; display:'
-          f' inline-block;">{sign}{s_change:.2f}%</span>'
-      )
+        content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
 
-    for k, v in replacements.items():
-      content = content.replace("{{" + k + "}}", str(v))
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(content)
 
-    content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
+        print(f"Successfully generated {OUTPUT_FILE}!")
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-      f.write(content)
-
-    print(f"Successfully generated {OUTPUT_FILE}!")
-
-  except Exception as e:
-    print(f"❌ Critical Error in main execution: {e}")
-    traceback.print_exc()
-    exit(1)
+    except Exception as e:
+        print(f"❌ Critical Error in main execution: {e}")
+        traceback.print_exc()
+        exit(1)
