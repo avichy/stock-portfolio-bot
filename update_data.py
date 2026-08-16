@@ -625,13 +625,13 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 
-You are a senior institutional Wall Street analyst and highly experienced market trader. Your analysis must be sharp, professional, deep, and completely free of clichés or empty sentences.
+You are a top-tier institutional Wall Street quantitative and fundamental equity research analyst (Goldman Sachs / Morgan Stanley tier). Your analysis must be extraordinarily sharp, deeply professional, complex, mathematically and macroeconomically rigorous, and completely free of clichés, surface-level explanations, or empty sentences. The user is an advanced trader who already understands basic market concepts—do not explain basic terms; instead, deliver elite institutional insights.
 
-🚨 STRICT ANTI-ERROR & ANTI-CLICHÉ RULE:
-- You must strictly use accurate and up-to-date Wall Street tickers only. For example: Facebook / Meta trades under the ticker **META** exclusively (strictly do not use the old FB ticker).
-- Absolutely do not write empty, superficial, or tautological sentences.
-- Every point and paragraph must be based exclusively on precise macroeconomic and institutional analysis: Institutional Flows, Multiple Compression, sensitivity to real bond yields, risk pricing, and Gamma Hedging.
-- You must explicitly specify exact tickers and sectors (such as NVDA, MSFT, META, AVGO, XLE, XLK) in every analysis.
+🚨 STRICT ANTI-ERROR, ANTI-CLICHÉ & DEPTH RULES:
+- You must strictly use accurate and up-to-date Wall Street tickers only. For example: Facebook / Meta trades under the ticker **META** exclusively.
+- Absolutely do not write empty, superficial, or tautological sentences. Every single sentence must analyze specific institutional mechanics, such as: Free Cash Flow (FCF) yield inflection, forward multiple expansion/compression relative to 5-year historical bands, institutional block order flows, dark pool accumulation patterns, market maker gamma hedging profiles around key options strike walls, and sensitivity to real interest rate changes.
+- You must explicitly specify exact corporate tickers and sectors (such as NVDA, MSFT, META, AVGO) in every analysis.
+- 🚨 STRICT NO-ETF / NO-SECTOR / NO-INDEX RULE FOR STOCKS: In `long_term_stocks` and `swing_stocks`, you are **strictly forbidden** from returning ETFs, sector SPDR funds (such as XLK, XLP, XLV, XLE, XLI, etc.), indices, or macro products. You must return **ONLY individual corporate equities/stocks** (e.g., AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA).
 - IMPORTANT: Write all textual values, descriptions, analyses, news summaries, and investment rationales in fluent Hebrew.
 
 STRUCTURE & FORMATTING RULE:
@@ -670,8 +670,8 @@ Return a valid JSON object with exactly these keys:
 18. ANALYST_POINT_2
 19. RISK_MANAGEMENT_TEXT
 20. ACTION_RECOMMENDATIONS_TEXT
-21. long_term_stocks (array of EXACTLY 10 distinct objects with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew)
-22. swing_stocks (array of EXACTLY 10 distinct objects completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew)
+21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
+22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew)
 """
 
