@@ -144,7 +144,7 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # הסרת תחיליות מיותרות כולל המלצות וניהול סיכונים
+  # הסרת תחיליות וכותרות כפולות מיותרות
   text = re.sub(
       r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום"
       r" הכתבה:?|המלצות:?|ניהול\s+סיכונים:?|המלצה:?)\s*[:\-]?\s*",
@@ -235,153 +235,6 @@ def fetch_investing_news():
   except Exception as e:
     print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
     return []
-
-
-LT_STOCKS_META = [
-    {
-        "ticker": "MSFT",
-        "name": "Microsoft Corporation",
-        "desc": "ענן Azure, תוכנה, פתרונות AI וטכנולוגיה עסקית גלובלית.",
-        "news": "התרחבות עקבית בשירותי ענן ובינה מלאכותית ארגונית, יציבות פיננסית גבוהה.",
-        "why_invest": "מובילה גלובלית עם תזרים מזומנים אדיר וביקושים קשיחים לשירותי ענן ובינה מלאכותית.",
-    },
-    {
-        "ticker": "JPM",
-        "name": "JPMorgan Chase & Co.",
-        "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).",
-        "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק.",
-        "why_invest": "ניהול פיננסי מעולה ומאזן חסון המייצרים תשואות עקביות בכל מצב שוק.",
-    },
-    {
-        "ticker": "JNJ",
-        "name": "Johnson & Johnson",
-        "desc": "פיתוח תרופות, ציוד רפואי ומוצרי בריאות הצרכן (סקטור הבריאות).",
-        "news": "חסינות עסקית גבוהה מול מחזוריות השוק, חלוקת דיבידנדים יציבה ואמינה.",
-        "why_invest": "חברה דפנסיבית מובהקת עם פורטפוליו רפואי רחב והיסטוריית דיבידנדים מרשימה.",
-    },
-    {
-        "ticker": "XOM",
-        "name": "Exxon Mobil Corporation",
-        "desc": "חיפוש, הפקה ואנרגיה קונבנציונלית ומתקדמת (סקטור האנרגיה).",
-        "news": "תזרים מזומנים חזק ויעילות תפעולית גבוהה התומכת בתשואות אטרקטיביות למשקיעים.",
-        "why_invest": "יעילות תפעולית גבוהה ותגמול נדיב למשקיעים באמצעות דיבידנדים ורכישות עצמיות.",
-    },
-    {
-        "ticker": "WMT",
-        "name": "Walmart Inc.",
-        "desc": "רשת הקמעונאות והמרכולים הגדולה בעולם (סקטור צרכנות בסיסית).",
-        "news": "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר האלקטרוני.",
-        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרחב המבטיחים צמיחה יציבה.",
-    },
-    {
-        "ticker": "AMZN",
-        "name": "Amazon.com, Inc.",
-        "desc": "מסחר אלקטרוני גלובלי ושירותי ענן מובילים (AWS).",
-        "news": "שיפור מתמיד בשולי הרווח התפעולי של AWS והתייעלות לוגיסטית רחבת היקף.",
-        "why_invest": "שליטה מוחלטת בענן ובמסחר המקוון עם צמיחה מואצת בשולי הרווח.",
-    },
-    {
-        "ticker": "UNH",
-        "name": "UnitedHealth Group",
-        "desc": "שירותי ביטוח בריאות וניהול רפואי מתקדם.",
-        "news": "צמיחה עקבית במספר המבוטחים וביקוש קשיח לשירותי בריאות וניהול סיכונים רפואיים.",
-        "why_invest": "מודל עסקי עמיד המבוסס על ביקושים קשיחים במגזר הבריאות הצומח.",
-    },
-    {
-        "ticker": "PG",
-        "name": "Procter & Gamble",
-        "desc": "ייצור ושיווק מוצרי צריכה ביתיים ואישיים מובילים.",
-        "news": "כוח תמחור חזק אל מול אינפלציה ומותגים גלובליים חזקים המבטיחים יציבות.",
-        "why_invest": "מותגים מובילים המאפשרים שמירה על רווחיות גבוהה גם בתקופות אינפלציוניות.",
-    },
-    {
-        "ticker": "CVX",
-        "name": "Chevron Corporation",
-        "desc": "אנרגיה, נפט וגז טבעי בפעילות גלובלית רחבה.",
-        "news": "מאזן פיננסי איתן ופרויקטי הפקה חדשים המחזקים את יכולות החלוקה למשקיעים.",
-        "why_invest": "משמעת פיננסית קפדנית ותשואת דיבידנד גבוהה המגנים על תיק ההשקעות.",
-    },
-    {
-        "ticker": "BRK-B",
-        "name": "Berkshire Hathaway",
-        "desc": "חברת אחזקות רב-תחומית המנוהלת בהשקעות ערך קלאסיות.",
-        "news": "נזילות עצומה ופורטפוליו מבוזר של עסקים ראשיים המעניקים ביטחון למשקיע ארוך טווח.",
-        "why_invest": "ניהול מופתי וביזור עמוק בכלכלה האמריקאית המקנים הגנה מעולה לירידות.",
-    },
-]
-
-SW_STOCKS_META = [
-    {
-        "ticker": "TSLA",
-        "name": "Tesla, Inc.",
-        "desc": "רכבים חשמליים, אנרגיה מתחדשת ופתרונות אוטונומיה (סקטור צרכנות מחזורית).",
-        "news": "תנודתיות גבוהה המייצרת הזדמנויות מסחר יומי וסווינג עם מומנטום חזק.",
-        "why_invest": "תנועות מחיר חדות המייצרות פוטנציאל רווח מהיר לסוחרים יומיים וסווינג.",
-    },
-    {
-        "ticker": "AMD",
-        "name": "Advanced Micro Devices",
-        "desc": "פיתוח מעבדים, שבבים וכרטיסים גרפיים לשוק הטכנולוגיה.",
-        "news": "תנועות מחיר חדות סביב השקות מוצרים ודו\"חות רבעוניים בסקטור השבבים.",
-        "why_invest": "חשיפה ישירה לשוק השבבים וה-AI המייצרת מומנטום מסחר אטרקטיבי.",
-    },
-    {
-        "ticker": "COIN",
-        "name": "Coinbase Global, Inc.",
-        "desc": "פלטפורמת מסחר מובילה בנכסים דיגיטליים וקריפטו (פיננסים/אלטרנטיבי).",
-        "news": "קורלציה ישירה לתנודתיות בשוק הקריפטו, מעולה למסחר סווינג תנודתי קצר.",
-        "why_invest": "תנודתיות גבוהה המונעת מנכסים דיגיטליים ומייצרת הזדמנויות רווח מהירות.",
-    },
-    {
-        "ticker": "OXY",
-        "name": "Occidental Petroleum",
-        "desc": "חברת אנרגיה וחיפושי נפט וגז עם עניין מוסדי רב.",
-        "news": "מעקב צמוד אחר מחירי הסחורות והאנרגיה המייצרים מהלכים מהירים במסחר.",
-        "why_invest": "גיבוי מוסדי חזק ורגישות למחירי האנרגיה היוצרים מהלכי מסחר ברורים.",
-    },
-    {
-        "ticker": "PLTR",
-        "name": "Palantir Technologies",
-        "desc": "תוכנות אנליטיקה ובינה מלאכותית למגזר העסקי והביטחוני.",
-        "news": "נפחי מסחר גבוהים מאוד ומומנטום חיובי המושך סוחרים לטווח הקצר והבינוני.",
-        "why_invest": "מומנטום טכנולוגי אדיר וביקושים מוסדיים חזקים למערכות ה-AI שלה.",
-    },
-    {
-        "ticker": "NVO",
-        "name": "Novo Nordisk A/S",
-        "desc": "תרופות חדשניות לטיפול בסוכרת וניהול משקל (סקטור הבריאות).",
-        "news": "ביקושים אדירים למוצרי הדגל של החברה, יוצר תנודות מחיר מעניינות למסחר.",
-        "why_invest": "מובילות בלעדית בתרופות הרזיה וביקושים גלובליים עצומים המרימים את המניה.",
-    },
-    {
-        "ticker": "PYPL",
-        "name": "PayPal Holdings, Inc.",
-        "desc": "שירותי תשלומים דיגיטליים ופינטק גלובליים.",
-        "news": "התאוששות מבנית ושינויים באסטרטגיית הצמיחה המייצרים הזדמנויות סווינג.",
-        "why_invest": "תמחור אטרקטיבי ומהלכי טิร์ן-אראונד טכניים התומכים במומנטום עולה.",
-    },
-    {
-        "ticker": "BA",
-        "name": "The Boeing Company",
-        "desc": "תעופה, ביטחון וייצור מטוסים מסחריים וצבאיים (סקטור התעשייה).",
-        "news": "רגישות גבוהה לחדשות תפעוליות ורגולטוריות המייצרות פערים ותנועות חדות.",
-        "why_invest": "פוטנציאל התאוששות חזק מאירועים תפעוליים המייצר הזדמנויות סווינג רווחיות.",
-    },
-    {
-        "ticker": "NEM",
-        "name": "Newmont Corporation",
-        "desc": "חברת כריית הזהב הגדולה בעולם (סקטור חומרי גלם וגידור).",
-        "news": "תנועה מנוגדת לרוב לשוק המניות, משמשת ככלי מסחר מצוין סביב מחירי הזהב.",
-        "why_invest": "כלי גידור מעולה לשוק המניות המציע תנועות מחיר מהירות סביב הזהב.",
-    },
-    {
-        "ticker": "TQQQ",
-        "name": "ProShares UltraPro QQQ",
-        "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק.",
-        "news": "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר.",
-        "why_invest": "מינוף גבוה המאפשר מיצוי מקסימלי של מגמות עולות בנאסד\"ק במסחר קצר.",
-    },
-]
 
 
 def fetch_yahoo_direct(ticker):
@@ -533,7 +386,7 @@ def fetch_market_data(tickers):
 
 
 def fetch_ai_insights_from_groq(
-    market_data, portfolio_stocks, date_str, day_name, investing_headlines
+    market_data, portfolio_stocks, date_str, day_name, time_str, investing_headlines
 ):
   api_keys = get_all_groq_keys()
   if not api_keys:
@@ -572,11 +425,13 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You are an elite Wall Street Chief Quantitative Strategist. Output a valid JSON object ONLY. 
 
-CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
-- Every single analytical field MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics.
-- ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields.
+CRITICAL SEPARATION MANDATE FOR US AND ISRAELI NEWS:
+- US_MARKET_NEWS MUST focus strictly on US macroeconomic factors: Federal Reserve policy, US Treasury yields, Wall Street tech earnings, and US inflation data.
+- IL_MARKET_NEWS MUST focus strictly on Israeli macroeconomic and geopolitical factors: Bank of Israel interest rate decisions, local security developments and geopolitical risk premiums affecting the market, USD/ILS exchange rate dynamics, and the Tel Aviv Stock Exchange.
+- ABSOLUTELY NO sharing of sentences or phrases between US_MARKET_NEWS and IL_MARKET_NEWS. They must discuss completely different economic realities.
+
 - Length: Each market analysis paragraph must be substantial, deep, quantitative, and written in fluent professional Hebrew.
-- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", "המלצות:", "ניהול סיכונים:", or similar. Start writing the technical analysis immediately.
+- NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", "המלצות:", "ניהול סיכונים:", או דומיהם. התחל מיד בכתיבת הניתוח המקצועי.
 - IMPACT TAG MANDATE: In every news summary or macroeconomic analysis field, include a brief, concise indication of whether the impact is for the better or worse and why (e.g., "לרעה - בגלל חשש מעליית אינפלציה").
 
 Today is {day_name}, Date: {date_str}.
@@ -599,8 +454,8 @@ Return a valid JSON object with exactly these keys:
 7. OIL_EXPLANATION (unique quantitative paragraph for Brent/WTI crude oil, OPEC+ supply quotas, and global demand forecasts)
 8. GOLD_EXPLANATION (unique quantitative paragraph for Gold spot prices, Treasury real yields, and safe-haven capital rotation)
 9. BTC_EXPLANATION (unique quantitative paragraph for Bitcoin derivatives, ETF net inflows, and on-chain liquidity metrics)
-10. US_MARKET_NEWS (unique institutional summary of US macroeconomic indicators)
-11. IL_MARKET_NEWS (unique institutional summary of Israeli economic conditions with distinct local macroeconomic factors)
+10. US_MARKET_NEWS (unique institutional summary focusing strictly on US monetary policy, Fed, and Wall Street)
+11. IL_MARKET_NEWS (unique institutional summary focusing strictly on the Israeli economy, Bank of Israel, local geopolitical/security impacts, and market conditions)
 12. MARKET_MOVERS_TABLE
 13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends)
 14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories)
