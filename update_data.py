@@ -625,25 +625,19 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You must output a valid JSON object only. Do not include curly brackets or array symbols inside text values, write clean structured text.
 
-אתה אנליסט בכיר בוולסטריט סוחר ותיק בשוק המניות האמריקאי והישראלי, אני סוחר מניות בשוק האמריקאי ומנסה להבין את תנועת השוק בשבועיים האחרונים. כתוב לי על הגורמים המשפיעים ביותר בשווקים בשבועיים האחרונים, בצורה מעמיקה, ארוכה וברורה כך שגם מי שלא סוחר יבין מה שכתוב. לאחר מכן הצג סיכום של תשובתך וערוך השוואה מפורטת בטבלה/טקסט מובנה בין עשרת המניות שהשפעתן על השווקים בשבועיים האחרונים הייתה הגדולה ביותר, כולל התייחסות לאחוז השינוי במחיר המניה וגודל מחזורי המסחר. על פי תשובתך סוחרים ומשקיעים בשוק האמריקאי והישראלי יבססו את החלטותיהם לגבי פעולות המסחר בשבוע הקרוב. אנא דייק את תשובתך ב-95% לפחות.
+You are a senior institutional Wall Street analyst and highly experienced market trader. Your analysis must be sharp, professional, deep, and completely free of clichés or empty sentences.
 
-🚨 CRITICAL NEGATIVE CONSTRAINTS (STRICTLY FORBIDDEN):
-- NEVER write elementary definitions or encyclopedia facts (e.g., DO NOT write "השקל הוא המטבע הרשמי של מדינת ישראל" or "הביטקוין הוא מטבע דיגיטלי" or "הזהב הוא מתכת יקרה").
-- NEVER repeat current prices or numbers that already appear on the screen (e.g., DO NOT write "המחיר של הזהב הוא X" or "נסחר סביב X דולר"). Assume the reader already sees the price.
-- Every single point must focus exclusively on professional Wall Street/TASE macro analysis: underlying institutional flows, macroeconomic drivers, interest rate impacts, geopolitical risk premiums, supply/demand shifts, and trading psychology.
-- EXPLICIT TICKERS & SECTORS REQUIREMENT: NEVER write blanket, lazy explanations like "עלייה עקב דוחות כספיים טובים" or "סנטימנט חיובי בסקטור". Whenever you mention earnings performance, sector momentum, or capital inflows, you MUST explicitly name at least 2-3 specific stock tickers (e.g., NVDA, MSFT, AVGO) or the exact sub-sector (e.g., Enterprise Software, Hyperscale Data Centers) driving the move.
-
-CRITICAL GEOPOLITICAL & MACRO ANALYSIS REQUIREMENT (WHAT & WHY):
-- Whenever discussing geopolitical events, macroeconomic shifts, or market shocks, you MUST explicitly detail **what happened** and thoroughly explain **why it happened** (underlying causes, strategic/political motives, supply chain disruptions, or central bank policy drivers) so the trader understands the root cause, not just the headline.
-
-CRITICAL SEPARATION RULE BETWEEN US AND ISRAELI MARKETS (ZERO CROSS-CONTAMINATION):
-- **US_MARKET_NEWS**: Must focus EXCLUSIVELY on Wall Street, the Federal Reserve, US macroeconomic indicators, US stock indexes, and global geopolitical impacts on US assets. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.), each containing rich context.
-- **IL_MARKET_NEWS**: Must focus EXCLUSIVELY on the Israeli economy (המשק הישראלי), Bank of Israel interest rate policy, Tel Aviv Stock Exchange (TASE), dual-listed stocks, and local geopolitical/security risk premiums. Must be written completely in Hebrew, split into exactly 4 numbered points (1., 2., 3., 4.), each containing rich context.
+🚨 STRICT ANTI-ERROR & ANTI-CLICHÉ RULE:
+- You must strictly use accurate and up-to-date Wall Street tickers only. For example: Facebook / Meta trades under the ticker **META** exclusively (strictly do not use the old FB ticker).
+- Absolutely do not write empty, superficial, or tautological sentences.
+- Every point and paragraph must be based exclusively on precise macroeconomic and institutional analysis: Institutional Flows, Multiple Compression, sensitivity to real bond yields, risk pricing, and Gamma Hedging.
+- You must explicitly specify exact tickers and sectors (such as NVDA, MSFT, META, AVGO, XLE, XLK) in every analysis.
+- IMPORTANT: Write all textual values, descriptions, analyses, news summaries, and investment rationales in fluent Hebrew.
 
 STRUCTURE & FORMATTING RULE:
 - ALL analysis fields (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, COMMUNITY_SENTIMENT, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT) MUST be split into EXACTLY 4 distinct numbered paragraphs starting with "1. ", "2. ", "3. ", "4. ".
 - DO NOT add a colon after the number inside the text (e.g. write "1. Text" NOT "1. : Text").
-- Each numbered point must contain at least 50-70 words of dense, rich, highly detailed financial text explained simply for the reader.
+- Each numbered point must contain at least 50-70 words of dense, rich, highly detailed professional financial text.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -949,52 +943,51 @@ if __name__ == "__main__":
             "news_link": h["link"],
             "news_title": h["title"],
             "news_desc": (
-                f"סיכום הכתבה בקצרה: דיווח עדכני ממערכת Investing.com המתייחס"
-                f" ל-{h['title']}. הידיעה מנתחת את ההשלכות המרכזיות על הסקטור"
-                " והשפעתה האפשרית על המסחר. לחץ על הקישור לקריאת הפרטים"
-                " המלאים."
+                f"ניתוח השפעה מוסדית: דיווח עדכני מבית Investing.com המתייחס"
+                f" ל-{h['title']}. הידיעה בוחנת את השלכות הרוחב על סקטור המסחר"
+                " ואת תגובת השחקנים המוסדיים בשוק."
             ),
         })
       ai_insights["market_news"] = market_news_data
 
     if not ai_insights.get("CATALYST_EARNINGS") or len(str(ai_insights.get("CATALYST_EARNINGS"))) < 50:
       ai_insights["CATALYST_EARNINGS"] = (
-          "1. ניתוח רוחבי של דוחות הכספיים של חברות הענק הטכנולוגיות והתעשייתיות, תוך בחינת קצב גידול ההכנסות ושולי הרווח הנקי המעידים על חוסן עסקי אמיתי.\n"
-          "2. מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות לוול סטריט, המהותיות פי כמה מהתוצאות העכשוויות להערכת כיוון השוק.\n"
-          "3. בחינת השפעת התוצאות של חברות השבבים והתשתיות על כלל שרשרת האספקה הגלובלית והביקושים למערכות בינה מלאכותית מתקדמות.\n"
-          "4. הערכת תגובת השוק, רמות התנודתיות המשתמעת באופציות וההשלכות המעשיות על משקיעים לטווח ארוך וקצר."
+          "1. ניתוח רוחבי של דוחות הכספיים של ענקיות הטכנולוגיה כגון MSFT, NVDA ו-AAPL, תוך התמקדות בקצב גידול ההכנסות משירותי ענן ושולי הרווח הנקי.\n"
+          "2. מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות, המהוות את המנוע המרכזי לתמחור מחדש של מכפילי הרווח על ידי אנליסטים מוסדיים.\n"
+          "3. בחינת השפעת התוצאות של חברות התשתיות והשבבים כגון AVGO על כלל שרשרת האספקה הגלובלית והביקושים למרכזי נתונים.\n"
+          "4. הערכת תגובת השוק, רמות התנודתיות המשתמעת באופציות (Implied Volatility) וההשלכות המעשיות על פוזיציות מסחר קצרות וארוכות טווח."
       )
 
     if not ai_insights.get("CATALYST_MONETARY") or len(str(ai_insights.get("CATALYST_MONETARY"))) < 50:
       ai_insights["CATALYST_MONETARY"] = (
-          "1. מעקב רציף אחר החלטות הריבית של הבנק הפדרלי בארה\"ב (הפד) והבנק המרכזי בישראל, ומשמעותן הישירה על עלויות ההלוואות והמשכנתאות של הציבור.\n"
-          "2. ניתוח נתוני האינפלציה המרכזיים (כגון מדד המחירים לצרכן) כדי להבין האם לחצי המחירים נבלמים או ממשיכים לשחוק את כוח הקנייה.\n"
-          "3. בחינת התשואות על אג\"ח ממשלתיות לטווח ארוך, המשמשות כמצפן מרכזי לכלל העלויות והתשואות במערכת הפיננסית.\n"
-          "4. הבנת ההשפעה של זרימת ההון המוסדי והנזילות הגלובלית על נכסי סיכון כמניות ונדל\"ן."
+          "1. מעקב רציף אחר תוואי הריבית של הבנק הפדרלי (הפד) ובנק ישראל, והשפעתם הישירה על עלויות ההון ועל תשואות האג\"ח הממשלתיות לפדיון.\n"
+          "2. ניתוח רכיבי האינפלציה המרכזיים במדד המחירים לצרכן בארה\"ב לבחינת לחצי מחירים מבניים הדוחים את ציפיות השוק להקלות מוטריות.\n"
+          "3. בחינת מרווחי האשראי הקונצרני (Credit Spreads) המעידים על רמת התיאבון לסיכון והנזילות במערכת הפיננסית הגלובלית.\n"
+          "4. השפעת תנועות ההון הזר והנזילות הבינלאומית על שער המט\"ח והערכת שווי נכסי הסיכון מובילי השוק."
       )
 
     if not ai_insights.get("CATALYST_HARDWARE") or len(str(ai_insights.get("CATALYST_HARDWARE"))) < 50:
       ai_insights["CATALYST_HARDWARE"] = (
-          "1. ניתוח קצב הקמתם והתרחבותם של מרכזי נתונים ענקיים ברחבי העולם התומכים במהפכת הבינה המלאכותית והענן.\n"
-          "2. בחינת ההתפתחויות הטכנולוגיות בייצור רכיבים אלקטרוניים זעירים והיכולת של התעשייה לעמוד בביקושים העצומים ללא צווארי בקבוק.\n"
-          "3. בדיקת הביקוש הקשיח מצד גופים עסקיים וביטחוניים לפתרונות חומרה מתקדמים, אבטחת מידע ואחסון מידע בענן.\n"
-          "4. הערכת שיתופי הפעולה האסטרטגיים בין יצרניות החומרה הגדולות לבין ענקיות התוכנה העולמיות."
+          "1. ניתוח קצב פריסת התשתיות והקמת מרכזי נתונים היפר-סקייל (Hyperscale Datacenters) התומכים בעומסי עבודה של בינה מלאכותית ארגונית.\n"
+          "2. מעקב אחר התקדמות תהליכי ייצור מתקדמים (Advanced Packaging וליטוגרפיה) אצל יצרניות שבבים מרכזיות להבטחת עמידה בביקושים.\n"
+          "3. בדיקת הביקוש הקשיח מצד סקטור הענן הממשלתי והביטחוני לפתרונות חומרה מאובטחים ושבבי אקסלרציה ייעודיים.\n"
+          "4. הערכת שיתופי הפעולה האסטרטגיים בין יצרניות החומרה לחברות התוכנה המובילות ליצירת יתרון תחרותי ברמת האקוסיסטם."
       )
 
     if not ai_insights.get("RISK_MANAGEMENT_TEXT") or len(str(ai_insights.get("RISK_MANAGEMENT_TEXT"))) < 50:
       ai_insights["RISK_MANAGEMENT_TEXT"] = (
-          "1. הקפדה על פיזור השקעות רוחבי בין סקטורים שאינם תלויים זה בזה, כדי להגן על תיק ההשקעות מפני זעזועים נקודתיים במניה או בענף ספציפי.\n"
-          "2. הגדרת רמות עצירת הפסד (סטופ-לס) ברורות מראש לכל פוזיציה קצרת טווח, למניעת מחיקת רווחים בעת תנודות פתאומיות בשוק.\n"
-          "3. שמירה על רזרבת מזומנים בשיעור מבוקר בתוך התיק, המאפשרת לנצל הזדמנויות קנייה אטרקטיביות בעת ירידות חדות.\n"
-          "4. מעקב יומי אחר מדד הפחד (VIX) כדי לזהות מראש תקופות של לחץ בשווקים ולהתאים את רמת החשיפה לסיכון בהתאם."
+          "1. אכיפה קפדנית של פיזור רוחבי בין סקטורים בלתי-מתואמים (כגון שילוב XLV, XLE ו-XLK) למניעת ריכוזיות יתר בתיק המסחר.\n"
+          "2. הצבת פקודות עצירת הפסד (Stop-Loss) דינמיות על בסיס רמות תמיכה טכניות ונפחי מסחר קודמים להגנה מפני שבירת מומנטום.\n"
+          "3. שמירה על רזרבת נזילות פנויה המאפשרת ניצול הזדמנויות קנייה באזורי אפיקציה חדים בזמן אירועי פאניקה בשוק.\n"
+          "4. ניטור שוטף של מדד התנודתיות VIX כדי לזהות מראש מעבר של השוק למשטר תנודתיות גבוהה ולהקטין מינוף בהתאם."
       )
 
     if not ai_insights.get("ACTION_RECOMMENDATIONS_TEXT") or len(str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT"))) < 50:
       ai_insights["ACTION_RECOMMENDATIONS_TEXT"] = (
-          "1. התמקדות באיתור והשקעה בחברות מובילות בעלות תזרים מזומנים חזק, ניהול מנוסה ומאזן נקי מחובות מוגזמים.\n"
-          "2. ביצוע רכישות מדורגות ומחושבות לאורך זמן (שיטת הממוצע) במקום השקעה חד-פעמית של כל הסכום בבת אחת.\n"
-          "3. מימוש רווחים חלקיים במניות שרשמו זינוק חד חריג, לצורך קיבוע הצלחה והקטנת הסיכון הכולל בתיק.\n"
-          "4. שמירה על קור רוח והימנעות מקבלת החלטות אימפולסיביות המבוססות על פאניקה רגעית או כותרות חדשותיות זמניות."
+          "1. מיקוד פוזיציות הלונג בחברות בעלות תזרים מזומנים חופשי חזק (FCF), מאזן נקי מחובות ומכפילי רווח הצומחים בקורלציה לרווחיהן.\n"
+          "2. ביצוע כניסות מדורגות בשיטת מיצוע על פני מספר ימי מסחר במקום חשיפת הון מלאה בנקודת כניסה בודדת.\n"
+          "3. מימוש רווחים חלקיים וקיבוע רווחים במניות שרשמו מהלכי מומנטום חדים מעל היעדים הטכניים המקוריים.\n"
+          "4. הימנעות מוחלטת מקבלת החלטות מסחר אימפולסיביות המונעות מרעשי רקע חדשותיים זמניים או תנועות מחיר תוך-יומיות."
       )
 
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
