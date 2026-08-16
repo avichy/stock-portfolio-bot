@@ -83,9 +83,6 @@ def load_portfolio_buys():
   return {}
 
 
-portfolio_buys = load_portfolio_buys()
-
-
 def format_num(val, decimals=2):
   try:
     num = float(val)
@@ -144,7 +141,6 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # הסרת תחיליות וכותרות כפולות מיותרות
   text = re.sub(
       r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום"
       r" הכתבה:?|המלצות:?|ניהול\s+סיכונים:?|המלצה:?)\s*[:\-]?\s*",
@@ -445,26 +441,26 @@ Current Market Data:
 User Portfolio Tickers: {portfolio_tickers}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (unique quantitative paragraph for S&P 500 breadth, market cap concentration, and liquidity)
-2. NASDAQ_ANALYSIS (unique quantitative paragraph for Nasdaq 100, tech multiples, and growth momentum)
-3. DOW_ANALYSIS (unique quantitative paragraph for Dow Jones industrial cyclicality and value weightings)
-4. VIX_ANALYSIS (unique quantitative paragraph for VIX volatility index, put/call ratios, and hedging demand)
-5. DXY_ANALYSIS (unique quantitative paragraph for DXY US Dollar Index, foreign exchange flows, and Fed rate expectations)
-6. USD_ILS_EXPLANATION (unique quantitative paragraph for USD/ILS exchange rate, geopolitical risk premium, and Bank of Israel policy)
-7. OIL_EXPLANATION (unique quantitative paragraph for Brent/WTI crude oil, OPEC+ supply quotas, and global demand forecasts)
-8. GOLD_EXPLANATION (unique quantitative paragraph for Gold spot prices, Treasury real yields, and safe-haven capital rotation)
-9. BTC_EXPLANATION (unique quantitative paragraph for Bitcoin derivatives, ETF net inflows, and on-chain liquidity metrics)
-10. US_MARKET_NEWS (unique institutional summary focusing strictly on US monetary policy, Fed, and Wall Street)
-11. IL_MARKET_NEWS (unique institutional summary focusing strictly on the Israeli economy, Bank of Israel, local geopolitical/security impacts, and market conditions)
+1. SP500_ANALYSIS
+2. NASDAQ_ANALYSIS
+3. DOW_ANALYSIS
+4. VIX_ANALYSIS
+5. DXY_ANALYSIS
+6. USD_ILS_EXPLANATION
+7. OIL_EXPLANATION
+8. GOLD_EXPLANATION
+9. BTC_EXPLANATION
+10. US_MARKET_NEWS
+11. IL_MARKET_NEWS
 12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends)
-14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories)
-15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds)
-16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment)
-17. ANALYST_POINT_1 (actionable trading insight #1)
-18. ANALYST_POINT_2 (actionable trading insight #2)
-19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy)
-20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework)
+13. CATALYST_EARNINGS
+14. CATALYST_MONETARY
+15. CATALYST_HARDWARE
+16. COMMUNITY_SENTIMENT
+17. ANALYST_POINT_1
+18. ANALYST_POINT_2
+19. RISK_MANAGEMENT_TEXT
+20. ACTION_RECOMMENDATIONS_TEXT
 21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
 22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
@@ -500,3 +496,67 @@ Return a valid JSON object with exactly these keys:
   print("⚠️ All AI retries exhausted. Falling back to cache.")
   cached = load_ai_cache()
   return cached if cached else {}
+
+
+if __name__ == "__main__":
+  print("🚀 Starting portfolio update script...")
+  
+  israel_tz = pytz.timezone("Asia/Jerusalem")
+  now_il = datetime.now(israel_tz)
+  date_str = now_il.strftime("%d/%m/%Y")
+  time_str = now_il.strftime("%H:%M")
+  
+  days_hebrew = {
+      "Sunday": "ראשון",
+      "Monday": "שני",
+      "Tuesday": "שלישי",
+      "Wednesday": "רביעי",
+      "Thursday": "חמישי",
+      "Friday": "שישי",
+      "Saturday": "שבת",
+  }
+  day_name = days_hebrew.get(now_il.strftime("%A"), now_il.strftime("%A"))
+
+  portfolio_stocks = load_portfolio_buys()
+  if not portfolio_stocks:
+    portfolio_stocks = {"AAPL": {"shares": 10, "avg_price": 150.0}}
+
+  market_tickers = [
+      "^GSPC", "^NDX", "^DJI", "^VIX", "DX-Y.NYB", "CL=F", "GC=F", "BTC-USD", "USDILS=X",
+      "XLK", "XLF", "XLV", "XLY", "XLP", "XLE", "XLI", "XLB", "XLC", "XLU", "XLRE"
+  ]
+  all_tickers = list(set(list(portfolio_stocks.keys()) + market_tickers))
+
+  print("📊 Fetching market data...")
+  market_data = fetch_market_data(all_tickers)
+
+  print("📰 Fetching Investing.com news...")
+  investing_headlines = fetch_investing_news()
+
+  print("🤖 Generating AI insights...")
+  ai_data = fetch_ai_insights_from_groq(
+      market_data, portfolio_stocks, date_str, day_name, time_str, investing_headlines
+  )
+
+  if not ai_data:
+    print("❌ AI data is empty! Using cache.")
+    ai_data = load_ai_cache()
+
+  save_ai_cache(ai_data)
+
+  print("📝 Building HTML file from template...")
+  if os.path.exists(TEMPLATE_FILE):
+    with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
+      template_content = f.read()
+
+    # החלפת מפתחות פשוטים בטמפלייט
+    for key, value in ai_data.items():
+      if isinstance(value, str):
+        formatted_val = format_ai_text(value)
+        template_content = template_content.replace(f"{{{{{key}}}}}", formatted_val)
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+      f.write(template_content)
+    print("✅ Successfully generated index.html!")
+  else:
+    print(f"❌ Template file {TEMPLATE_FILE} not found!")
