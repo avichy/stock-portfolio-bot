@@ -145,7 +145,6 @@ def format_ai_text(text):
     except Exception:
       pass
 
-  # הסרת תחיליות מיותרות
   text = re.sub(
       r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
       "",
@@ -250,7 +249,7 @@ LT_STOCKS_META = [
         "name": "JPMorgan Chase & Co.",
         "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).",
         "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק.",
-        "why_invest": "ניהול פיננסי מעולה ומאזן חסון המייצרים תשואות עקביות למשקיעים בכל מצב שוק.",
+        "why_invest": "ניהול פיננסי מעולה ומאזן חסון המייצרים תשואות עקביות בכל מצב שוק.",
     },
     {
         "ticker": "JNJ",
@@ -573,8 +572,8 @@ def fetch_ai_insights_from_groq(
 You are an elite Wall Street Chief Quantitative Strategist. Output a valid JSON object ONLY. 
 
 CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
-- Every single analytical field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, etc.) MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics (e.g., NASDAQ must discuss mega-cap tech, FCF, and semiconductor demand; BTC must discuss exchange order books, hash rates, and liquidations; GOLD must discuss real yields and central bank reserves).
-- ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields. If any sentence repeats between keys, the output is invalid.
+- Every single analytical field MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics.
+- ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields.
 - Length: Each market analysis paragraph must be substantial, deep, quantitative, and written in fluent professional Hebrew.
 - NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the technical analysis immediately.
 
@@ -609,8 +608,8 @@ Return a valid JSON object with exactly these keys:
 18. ANALYST_POINT_2 (actionable trading insight #2)
 19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy)
 20. ACTION_RECOMMENDATIONS_TEXT (tactical execution and capital allocation framework)
-21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
-22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew, why_invest in Hebrew - NO ETFS OR SECTORS)
+21. long_term_stocks (array of EXACTLY 10 distinct individual corporate stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
+22. swing_stocks (array of EXACTLY 10 distinct individual corporate stocks completely separate from long_term_stocks with ticker, name, desc in Hebrew, news in Hebrew - STARTING DIRECTLY WITH THE TEXT WITHOUT "סיכום הכתבה:", why_invest in Hebrew - NO ETFS OR SECTORS)
 23. market_news (array of at least 10 items with news_link, news_title, news_desc in Hebrew starting with "סיכום הכתבה:")
 """
 
@@ -743,6 +742,8 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
           or s.get("update")
           or "עדכון וניתוח יומי."
       )
+      # הסרת "סיכום הכתבה:" אם בטעות הופיע בטקסט
+      news = re.sub(r"^סיכום הכתבה:\s*", "", news)
       why_invest = (
           s.get("why_invest")
           or s.get("investment_reason")
@@ -835,10 +836,8 @@ if __name__ == "__main__":
     time_str = now_il.strftime("%H:%M")
 
     trigger_event = os.environ.get("TRIGGER_EVENT", "")
-
     current_hour = now_il.hour
     current_minute = now_il.minute
-
     is_manual = trigger_event == "workflow_dispatch"
 
     is_scheduled_ai_time = (
@@ -857,15 +856,8 @@ if __name__ == "__main__":
 
     ai_insights = {}
     if is_yahoo_only:
-      print(
-          f"⚡ Fast update (Yahoo only) at {time_str} - Loading AI cache..."
-      )
       ai_insights = load_ai_cache()
     else:
-      print(
-          f"🤖 Full AI Update triggered at {time_str} (Israel Time) - Running"
-          " Groq AI & News..."
-      )
       ai_insights = fetch_ai_insights_from_groq(
           base_market_data,
           portfolio_buys,
@@ -889,31 +881,6 @@ if __name__ == "__main__":
         })
       ai_insights["market_news"] = market_news_data
 
-    if not ai_insights.get("CATALYST_EARNINGS") or len(str(ai_insights.get("CATALYST_EARNINGS"))) < 50:
-      ai_insights["CATALYST_EARNINGS"] = (
-          "ניתוח רוחבי מעמיק של הדוחות הכספיים של ענקיות הטכנולוגיה כגון MSFT, NVDA ו-AAPL, תוך התמקדות בקצב גידול ההכנסות משירותי ענן, שולי הרווח הנקי ותשואת תזרים המזומנים החופשי (FCF). מעקב הדוק אחר תחזיות קדימה (Guidance) שמספקות הנהלות החברות, המהוות את המנוע המרכזי לתמחור מחדש של מכפילי הרווח על ידי אנליסטים מוסדיים ובחינת סטיות תקן בתחזיות הקונצנזוס."
-      )
-
-    if not ai_insights.get("CATALYST_MONETARY") or len(str(ai_insights.get("CATALYST_MONETARY"))) < 50:
-      ai_insights["CATALYST_MONETARY"] = (
-          "מעקב רציף אחר תוואי הריבית של הבנק הפדרלי (הפד) ובנק ישראל, בחינת פרוטוקולי ישיבות ה-FOMC והשפעתם הישירה על עלויות ההון ועל עקום תשואות האג\"ח הממשלתיות לפדיון. ניתוח רכיבי האינפלציה המרכזיים בארה\"ב לבחינת לחצי מחירים מבניים בשירותים ובדיור הדוחים את ציפיות השוק להקלות מוטריות מהירות."
-      )
-
-    if not ai_insights.get("CATALYST_HARDWARE") or len(str(ai_insights.get("CATALYST_HARDWARE"))) < 50:
-      ai_insights["CATALYST_HARDWARE"] = (
-          "ניתוח קצב פריסת התשתיות והקמת מרכזי נתונים היפר-סקייל (Hyperscale Datacenters) התומכים בעומסי עבודה כבדים של בינה מלאכותית ג'נרטיבית וארגונית. מעקב אחר התקדמות תהליכי ייצור מתקדמים (Advanced Packaging וארכיטקטורת שבבים) אצל יצרניות מרכזיות להבטחת עמידה בביקושים הקשיחים."
-      )
-
-    if not ai_insights.get("RISK_MANAGEMENT_TEXT") or len(str(ai_insights.get("RISK_MANAGEMENT_TEXT"))) < 50:
-      ai_insights["RISK_MANAGEMENT_TEXT"] = (
-          "אכיפה קפדנית של פיזור רוחבי בין סקטורים בלתי-מתואמים (כגון שילוב מניות הגנה, בריאות ואנרגיה) למניעת ריכוזיות יתר בתיק המסחר וצמצום חשיפה לסיכונים מערכתיים. הצבת פקודות עצירת הפסד (Stop-Loss) דינמיות על בסיס רמות תמיכה טכניות קריטיות ונפחי מסחר קודמים."
-      )
-
-    if not ai_insights.get("ACTION_RECOMMENDATIONS_TEXT") or len(str(ai_insights.get("ACTION_RECOMMENDATIONS_TEXT"))) < 50:
-      ai_insights["ACTION_RECOMMENDATIONS_TEXT"] = (
-          "מיקוד פוזיציות הלונג בחברות בעלות תזרים מזומנים חופשי חזק (FCF), מאזן נקי מחובות מכבידים ומכפילי רווח הצומחים בקורלציה ישירה לרווחיהן הריאליים. ביצוע כניסות מדורגות בשיטת מיצוע חכם על פני מספר ימי מסחר במקום חשיפת הון מלאה בנקודת כניסה טכנית בודדת."
-      )
-
     new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
     if not isinstance(new_lt, list) or not new_lt:
       new_lt = LT_STOCKS_META
@@ -929,10 +896,6 @@ if __name__ == "__main__":
         if t and t not in base_market_data:
           extra_tickers.append(t)
     if extra_tickers:
-      print(
-          "Fetching market data for extra AI-selected tickers:"
-          f" {extra_tickers}"
-      )
       extra_data = fetch_market_data(extra_tickers)
       base_market_data.update(extra_data)
 
@@ -989,17 +952,8 @@ if __name__ == "__main__":
           {"name": s_name, "change": chg, "price": price_val, "value": price_val}
       )
 
-    if not os.path.exists(TEMPLATE_FILE):
-      raise FileNotFoundError(
-          f"Template file '{TEMPLATE_FILE}' not found in directory!"
-      )
-
     with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
       content = f.read()
-
-    content = content.replace("10 מניות להשקעה ארוכת טווח", "")
-    content = content.replace("10 מניות למסחר סווינג", "")
-    content = content.replace("10 מניות", "")
 
     lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
     if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
