@@ -505,6 +505,22 @@ if __name__ == "__main__":
     print("❌ AI data is empty! Using cache.")
     ai_data = load_ai_cache()
 
+  # וידוא שכל המפתחות הנדרשים קיימים כדי למנוע שגיאות JS בדפדפן
+  expected_keys = [
+      "SP500_ANALYSIS", "NASDAQ_ANALYSIS", "DOW_ANALYSIS", "VIX_ANALYSIS", "DXY_ANALYSIS",
+      "USD_ILS_EXPLANATION", "OIL_EXPLANATION", "GOLD_EXPLANATION", "BTC_EXPLANATION",
+      "US_MARKET_NEWS", "IL_MARKET_NEWS", "MARKET_MOVERS_TABLE", "CATALYST_EARNINGS",
+      "CATALYST_MONETARY", "CATALYST_HARDWARE", "COMMUNITY_SENTIMENT", "ANALYST_POINT_1",
+      "ANALYST_POINT_2", "RISK_MANAGEMENT_TEXT", "ACTION_RECOMMENDATIONS_TEXT",
+      "long_term_stocks", "swing_stocks", "market_news"
+  ]
+  for k in expected_keys:
+    if k not in ai_data:
+      if k in ["long_term_stocks", "swing_stocks", "market_news"]:
+        ai_data[k] = []
+      else:
+        ai_data[k] = "הנתונים מתעדכנים כעת..."
+
   save_ai_cache(ai_data)
 
   print("📝 Building HTML file from template...")
@@ -512,14 +528,15 @@ if __name__ == "__main__":
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
       template_content = f.read()
 
-    # 1. החלפת מפתחות ה-AI (תמיכה במחרוזות וגם במערכים/אובייקטים)
+    # 1. החלפת מפתחות ה-AI בצורה בטוחה
     for key, value in ai_data.items():
+      placeholder = f"{{{{{key}}}}}"
       if isinstance(value, str):
         formatted_val = format_ai_text(value)
-        template_content = template_content.replace(f"{{{{{key}}}}}", formatted_val)
+        template_content = template_content.replace(placeholder, formatted_val)
       elif isinstance(value, (list, dict)):
         json_val = json.dumps(value, ensure_ascii=False)
-        template_content = template_content.replace(f"{{{{{key}}}}}", json_val)
+        template_content = template_content.replace(placeholder, json_val)
 
     # 2. החלפת מפתחות תאריך וזמן
     template_content = template_content.replace("{{DAY_NAME}}", day_name)
