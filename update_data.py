@@ -167,10 +167,10 @@ def format_ai_text(text):
         .replace("'", "")
     )
 
-    # פורמט אחיד ונקי שמסיר גם תווים מיותרים כמו ? או מקפים שה־AI מוסיף בטעות אחרי הכותרת
+    # המרה אחידה ל"לסיכום:" והסרת כפילויות של "זה אומר ש..." או תווים מיותרים בצורה נקייה ללא שורות ריקות מיותרות
     cleaned = re.sub(
-        r"\s*(?:מה\s*זה\s*אומר\s*:?)\s*[\?\-\*\s]*",
-        r"<br><br><strong>מה זה אומר:</strong><br>",
+        r"\s*(?:מה\s*זה\s*אומר|לסיכום)\s*:?\s*[\?\-\*\s]*(?:זה\s*אומר\s*(?:ש)?\s*)?",
+        r"<br><strong>לסיכום:</strong><br>",
         cleaned,
         flags=re.IGNORECASE,
     )
@@ -582,7 +582,7 @@ You are an expert Chief Market Strategist who explains financial and geopolitica
 
 🚨 STRICT GUIDELINES & FORMATTING:
 1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
-2. UNIFORM "מה זה אומר:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+2. UNIFORM "לסיכום:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication (start directly with the conclusion without repeating phrases like "זה אומר ש...").
 3. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
 4. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
 
@@ -595,15 +595,15 @@ Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (Must include \n\nמה זה אומר:\n)
-2. NASDAQ_ANALYSIS (Must include \n\nמה זה אומר:\n)
-3. DOW_ANALYSIS (Must include \n\nמה זה אומר:\n)
-4. VIX_ANALYSIS (Must include \n\nמה זה אומר:\n)
-5. DXY_ANALYSIS (Must include \n\nמה זה אומר:\n)
-6. USD_ILS_EXPLANATION (Must include \n\nמה זה אומר:\n)
-7. OIL_EXPLANATION (Must include \n\nמה זה אומר:\n)
-8. GOLD_EXPLANATION (Must include \n\nמה זה אומר:\n)
-9. BTC_EXPLANATION (Must include \n\nמה זה אומר:\n)
+1. SP500_ANALYSIS (Must include \n\nלסיכום:\n)
+2. NASDAQ_ANALYSIS (Must include \n\nלסיכום:\n)
+3. DOW_ANALYSIS (Must include \n\nלסיכום:\n)
+4. VIX_ANALYSIS (Must include \n\nלסיכום:\n)
+5. DXY_ANALYSIS (Must include \n\nלסיכום:\n)
+6. USD_ILS_EXPLANATION (Must include \n\nלסיכום:\n)
+7. OIL_EXPLANATION (Must include \n\nלסיכום:\n)
+8. GOLD_EXPLANATION (Must include \n\nלסיכום:\n)
+9. BTC_EXPLANATION (Must include \n\nלסיכום:\n)
 10. US_MARKET_NEWS (Comprehensive, deep analysis of US market news)
 11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel)
 12. COMMUNITY_SENTIMENT
@@ -647,9 +647,9 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
 1. ACCURACY: At least 95% accurate.
-2. UNIFORM "מה זה אומר:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+2. UNIFORM "לסיכום:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication.
 3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
-4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "מה זה אומר:".
+4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "לסיכום:".
 5. `long_term_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
 6. `swing_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
 
@@ -665,11 +665,11 @@ Return a valid JSON object with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
-4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nמה זה אומר:\n)
-5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nמה זה אומר:\n)
-6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nמה זה אומר:\n)
-7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nמה זה אומר:\n)
-8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nמה זה אומר:\n)
+4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nלסיכום:\n)
+5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nלסיכום:\n)
+6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nלסיכום:\n)
+7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nלסיכום:\n)
+8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nלסיכום:\n)
 """
 
             response2 = client.chat.completions.create(
@@ -926,7 +926,7 @@ if __name__ == "__main__":
                     "news_link": h["link"],
                     "news_title": h["title"],
                     "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><strong>לסיכום:</strong><br>עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
                     ),
                 })
             ai_insights["market_news"] = market_news_data
