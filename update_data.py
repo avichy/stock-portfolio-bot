@@ -571,6 +571,12 @@ def fetch_ai_insights_from_groq(
         prompt = f"""
 You are an elite Wall Street Chief Quantitative Strategist. Output a valid JSON object ONLY. 
 
+🚨 STRICT FACTUAL GROUNDING & ANTI-HALLUCINATION RULES:
+1. EXCLUSIVE SOURCE RELIANCE: You MUST base your analysis, news summaries, and market insights 100% strictly and exclusively on the provided Investing.com headlines and Yahoo Finance market data below.
+2. ZERO INVENTION: Do NOT invent, assume, or fabricate any macroeconomic events, earnings reports, company news, or price targets that do not explicitly originate from the provided text or data.
+3. IF DATA IS MISSING: If a specific asset or news item lacks details, analyze its technical momentum based strictly on the provided price and change percentage, without making up external narratives.
+4. LANGUAGE: Fluent professional Hebrew for all analytical fields, maintaining strict institutional financial terminology.
+
 CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
 - Every single analytical field MUST be 100% unique in phrasing and specific to that exact asset's underlying mechanics.
 - ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields.
@@ -579,10 +585,10 @@ CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com:
+Headlines from Investing.com (USE ONLY THESE):
 {headlines_formatted}
 
-Current Market Data:
+Current Market Data (USE ONLY THESE):
 {json.dumps(market_summary, ensure_ascii=False)}
 
 User Portfolio Tickers: {portfolio_tickers}
@@ -597,13 +603,13 @@ Return a valid JSON object with exactly these keys:
 7. OIL_EXPLANATION (unique quantitative paragraph for Brent/WTI crude oil, OPEC+ supply quotas, and global demand forecasts)
 8. GOLD_EXPLANATION (unique quantitative paragraph for Gold spot prices, Treasury real yields, and safe-haven capital rotation)
 9. BTC_EXPLANATION (unique quantitative paragraph for Bitcoin derivatives, ETF net inflows, and on-chain liquidity metrics)
-10. US_MARKET_NEWS (unique institutional summary of US macroeconomic indicators)
-11. IL_MARKET_NEWS (unique institutional summary of Israeli economic conditions)
+10. US_MARKET_NEWS (unique institutional summary derived strictly from US macroeconomic indicators and provided headlines)
+11. IL_MARKET_NEWS (unique institutional summary derived strictly from Israeli economic conditions and provided headlines)
 12. MARKET_MOVERS_TABLE
-13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends)
-14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories)
-15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds)
-16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment)
+13. CATALYST_EARNINGS (deep professional analysis of corporate earnings trends based on news)
+14. CATALYST_MONETARY (deep professional analysis of central bank interest rate trajectories based on news)
+15. CATALYST_HARDWARE (deep professional analysis of AI hardware infrastructure and datacenter builds based on news)
+16. COMMUNITY_SENTIMENT (deep professional analysis of retail vs institutional sentiment based on news)
 17. ANALYST_POINT_1 (actionable trading insight #1)
 18. ANALYST_POINT_2 (actionable trading insight #2)
 19. RISK_MANAGEMENT_TEXT (advanced risk management and portfolio defense strategy)
@@ -1109,6 +1115,9 @@ if __name__ == "__main__":
 
     for k, v in replacements.items():
       content = content.replace("{{" + k + "}}", str(v))
+
+    # מנגנון הגנה: ניקוי תבניות שלא הוחלפו
+    content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
       f.write(content)
