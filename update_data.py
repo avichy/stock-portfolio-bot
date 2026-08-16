@@ -576,6 +576,7 @@ CRITICAL ANTI-REPETITION & UNIQUENESS MANDATE:
 - ABSOLUTELY NO boilerplate sentences, generic filler, or repeating phrases across different fields.
 - Length: Each market analysis paragraph must be substantial, deep, quantitative, and written in fluent professional Hebrew.
 - NO INTRODUCTORY LABELS: Never start any text with labels like "ניתוח ה-...", "השפעות על...", or similar. Start writing the technical analysis immediately.
+- IMPACT TAG MANDATE: In every news summary or macroeconomic analysis field, include a brief, concise indication of whether the impact is for the better or worse and why (e.g., "לרעה - בגלל חשש מעליית אינפלציה").
 
 Today is {day_name}, Date: {date_str}.
 
@@ -875,7 +876,7 @@ if __name__ == "__main__":
             "news_link": h["link"],
             "news_title": h["title"],
             "news_desc": (
-                f"סיכום הכתבה: הידיעה מתייחסת ל-{h['title']} ובוחנת את השלכות הרוחב על סקטור המסחר, תמחור הנכסים ותגובת השחקנים המוסדיים בשוק."
+                f"סיכום הכתבה: הידיעה מתייחסת ל-{h['title']} (לרעה - בגלל אי ודאות בשוק) ובוחנת את השלכות הרוחב על סקטור המסחר, תמחור הנכסים ותגובת השחקנים המוסדיים בשוק."
             ),
         })
       ai_insights["market_news"] = market_news_data
