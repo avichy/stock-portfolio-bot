@@ -130,7 +130,7 @@ def format_numbers_in_text(text):
     )
 
 
-def format_phase1_text(text):
+def format_text_with_conclusion(text):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -185,7 +185,35 @@ def format_phase1_text(text):
             conclusion = sentences[-1]
             explanation = " ".join(sentences[:-1])
         else:
-            conclusion = "שילוב נתונים אלו מחייב מעקב דרוך וניהול סיכונים מושכל."
+            sentence = sentences[0] if sentences else cleaned
+            if (
+                "טכנולוגיה" in sentence
+                or "NASDAQ" in sentence
+                or "AI" in sentence
+                or "שבבים" in sentence
+            ):
+                conclusion = (
+                    "מומלץ לשמור על ברזל תשואות וניהול חשיפה מדוד לסקטור הטכנולוגי."
+                )
+            elif "דולר" in sentence or "שקל" in sentence or "מט" in sentence:
+                conclusion = (
+                    "נדרש מעקב רציף אחר שערי החליפין והשפעתם על תיק ההשקעות."
+                )
+            elif (
+                "סיכון" in sentence
+                or "תנודתיות" in sentence
+                or "VIX" in sentence
+            ):
+                conclusion = (
+                    "הקפדה על כללי ניהול סיכונים ופיזור מושכל היא קריטית לשמירה"
+                    " על התיק."
+                )
+            else:
+                conclusion = (
+                    "יישום אסטרטגיה זהירה ומעקב שוטף אחר התפתחויות השוק מבטיחים"
+                    " יציבות."
+                )
+            explanation = sentence
 
     if conclusion == explanation or not explanation:
         if len(sentences) > 1:
@@ -194,7 +222,7 @@ def format_phase1_text(text):
             if conclusion == explanation:
                 conclusion = "נדרשת תשומת לב מיוחדת והתאמת אסטרטגיה בשוק."
         else:
-            conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את השפעות המאקרו."
+            conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את התנאים בשוק."
 
     if explanation == conclusion:
         conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני היא מפתח ההצלחה."
@@ -202,74 +230,27 @@ def format_phase1_text(text):
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
-
-    # ניקוי מילות חיבור מיותרות מתחילת שורת הסיכום
     conclusion = re.sub(
-        r"^(בנוסף|כמו כן|לפיכך|על כן)\s*[,:\-]*\s*", "", conclusion
+        r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
 
-    # שימוש במעבר שורה בודד (<br>) למראה צמוד ומסודר
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+    # מבנה מדויק: טקסט AI, שורה חדשה, "לסיכום:", שורה חדשה, סיכום AI
+    formatted_content = (
+        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+    )
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
         f' mt-1">{formatted_content}</span>'
     )
+
+
+def format_phase1_text(text):
+    return format_text_with_conclusion(text)
 
 
 def format_analyst_text(text):
-    if isinstance(text, list):
-        text = " ".join(str(item) for item in text)
-    elif not isinstance(text, str):
-        text = str(text)
-
-    text = text.strip()
-    cleaned = (
-        text.replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-
-    cleaned = re.sub(
-        r"מה\s*זה\s*אומר\s*[:\-]*", "", cleaned, flags=re.IGNORECASE
-    ).strip()
-    cleaned = re.sub(
-        r"לסיכום\s*[:\-]*", "", cleaned, flags=re.IGNORECASE
-    ).strip()
-
-    sentences = [
-        s.strip() for s in re.split(r"(?<=[.!?])\s+", cleaned) if s.strip()
-    ]
-    if len(sentences) > 1:
-        conclusion = sentences[-1]
-        explanation = " ".join(sentences[:-1])
-    elif len(sentences) == 1:
-        explanation = sentences[0]
-        conclusion = "מומלץ להמשיך לעקוב אחר התפתחות המדדים והסנטימנט בשוק."
-    else:
-        explanation = (
-            "האנליסטים ממליצים על מעקב דרוך אחר כיוון השוק והמגמות."
-        )
-        conclusion = "יש להתאים את התיק בהתאם להתפתחויות."
-
-    if conclusion == explanation:
-        conclusion = (
-            "ההמלצה המרכזית היא שמירה על גמישות ניהולית והתאמת חשיפה לפי סיכון."
-        )
-
-    conclusion = re.sub(
-        r"^(בנוסף|כמו כן|לפיכך|על כן)\s*[,:\-]*\s*", "", conclusion
-    ).strip()
-
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
-    formatted_content = format_numbers_in_text(formatted_content)
-    return (
-        f'<span class="leading-relaxed text-sm text-gray-200 block'
-        f' mt-1">{formatted_content}</span>'
-    )
+    return format_text_with_conclusion(text)
 
 
 def get_stock_logo_url(ticker):
@@ -1012,8 +993,7 @@ def build_market_news_html(market_news_list):
         p_desc = re.sub(r"^(?:סיכום הכתבה:\s*)*", "", p_desc).strip()
 
         desc_block = (
-            f'<p class="text-gray-300 mt-2"><strong>סיכום הכתבה:</strong>'
-            f" {p_desc}</p>"
+            f'<p class="text-gray-300 mt-2"><strong>סיכום הכתבה:</strong><br>{p_desc}</p>'
             if p_desc
             else ""
         )
