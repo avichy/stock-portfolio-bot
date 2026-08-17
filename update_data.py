@@ -172,8 +172,11 @@ def format_phase1_text(text):
         explanation = parts[0].strip()
         if len(parts) > 1:
             conclusion = parts[1].strip()
+            # ניקוי מניעת כפילויות של "לסיכום" אם המשתנה מכיל אותן בפנים
+            conclusion = re.sub(
+                r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
+            ).strip()
 
-    # מבטיחים שתמיד יהיה סיכום: אם המודל לא סיפק, ניקח את המשפט האחרון או טקסט ברירת מחדל
     if not conclusion:
         sentences = [
             s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
@@ -187,7 +190,13 @@ def format_phase1_text(text):
                 else "נתון זה ממשיך להשפיע על כיוון השוק הכללי."
             )
 
-    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
+    # הסרת כפולות נוספות מתוך ההסבר
+    explanation = re.sub(
+        r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
+    ).strip()
+
+    # מעבר שורה יחיד ונקי במקום רווח כפול
+    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
