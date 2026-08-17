@@ -21,49 +21,13 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-
-def get_best_available_model(client):
-    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים בעייתיים (כמו canopylabs, guard או compound),
-    ובוחר אוטומטית את מודל הטקסט החכם והמתקדם ביותר הזמין.
-    """
-    try:
-        models_response = client.models.list()
-        available_ids = [
-            m.id
-            for m in models_response.data
-            if "canopylabs" not in m.id.lower()
-            and "whisper" not in m.id.lower()
-            and "embedding" not in m.id.lower()
-            and "prompt-guard" not in m.id.lower()
-            and "guard" not in m.id.lower()
-            and "compound" not in m.id.lower()
-        ]
-
-        preferred_hierarchy = [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-70b-versatile",
-            "llama3-70b-8192",
-            "llama-3.1-8b-instant",
-        ]
-
-        for preferred in preferred_hierarchy:
-            if preferred in available_ids:
-                print(f"🎯 Selected highest-tier model: {preferred}")
-                return preferred
-
-        for model_id in available_ids:
-            if "llama" in model_id.lower() and "guard" not in model_id.lower():
-                print(f"🎯 Selected available Llama model: {model_id}")
-                return model_id
-
-        if available_ids:
-            print(f"⚠️ Falling back to first safe model: {available_ids[0]}")
-            return available_ids[0]
-
-    except Exception as e:
-        print(f"⚠️ Could not fetch model list dynamically: {e}")
-
-    return "llama-3.1-70b-versatile"
+# רשימת הגיבוי הקבועה והבטוחה של מודלי ה-Llama המובילים והיציבים ל-JSON
+SAFE_MODEL_HIERARCHY = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-70b-versatile",
+    "llama3-70b-8192",
+    "llama-3.1-8b-instant",
+]
 
 
 def get_all_groq_keys():
@@ -623,9 +587,10 @@ def fetch_ai_insights_split(
             )
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
-            best_model = get_best_available_model(client)
-
-            prompt1 = f"""
+            for model_name in SAFE_MODEL_HIERARCHY:
+                try:
+                    print(f"🎯 Trying model: {model_name} (Part 1)...")
+                    prompt1 = f"""
 You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
@@ -659,28 +624,30 @@ Return a valid JSON object with exactly these keys:
 14. ANALYST_POINT_2
 """
 
-            response1 = client.chat.completions.create(
-                model=best_model,
-                messages=[{"role": "user", "content": prompt1}],
-                response_format={"type": "json_object"},
-                max_tokens=4096,
-            )
-            raw_text1 = response1.choices[0].message.content.strip()
-            parsed1 = json.loads(raw_text1)
-            combined_result.update(parsed1)
-            print(
-                f"Successfully parsed Part 1 JSON using model: {best_model}"
-                f" and key: {key_name}"
-            )
-            part1_success = True
-            break
+                    response1 = client.chat.completions.create(
+                        model=model_name,
+                        messages=[{"role": "user", "content": prompt1}],
+                        response_format={"type": "json_object"},
+                        max_tokens=4096,
+                    )
+                    raw_text1 = response1.choices[0].message.content.strip()
+                    parsed1 = json.loads(raw_text1)
+                    combined_result.update(parsed1)
+                    print(
+                        f"✅ Successfully parsed Part 1 JSON using model: {model_name}"
+                        f" and key: {key_name}"
+                    )
+                    part1_success = True
+                    break
+                except Exception as model_err:
+                    print(f"⚠️ Model {model_name} failed: {model_err}")
+                    if "429" in str(model_err) or "rate_limit_exceeded" in str(model_err):
+                        print("⏳ Rate limit hit. Waiting 30 seconds...")
+                        time.sleep(30)
+                    else:
+                        time.sleep(2)
         except Exception as e:
-            print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print("⏳ Rate limit hit. Waiting 60 seconds...")
-                time.sleep(60)
-            else:
-                time.sleep(5)
+            print(f"⚠️ Part 1 key attempt failed with {key_name}: {e}")
 
     # ==========================================
     # PART 2: Stocks, Catalysts, Risk Management & Action
@@ -696,9 +663,10 @@ Return a valid JSON object with exactly these keys:
             )
             print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
 
-            best_model = get_best_available_model(client)
-
-            prompt2 = f"""
+            for model_name in SAFE_MODEL_HIERARCHY:
+                try:
+                    print(f"🎯 Trying model: {model_name} (Part 2)...")
+                    prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
@@ -728,28 +696,30 @@ Return a valid JSON object with exactly these 8 keys:
 8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nלסיכום:\n)
 """
 
-            response2 = client.chat.completions.create(
-                model=best_model,
-                messages=[{"role": "user", "content": prompt2}],
-                response_format={"type": "json_object"},
-                max_tokens=4096,
-            )
-            raw_text2 = response2.choices[0].message.content.strip()
-            parsed2 = json.loads(raw_text2)
-            combined_result.update(parsed2)
-            print(
-                f"Successfully parsed Part 2 JSON using model: {best_model}"
-                f" and key: {key_name}"
-            )
-            part2_success = True
-            break
+                    response2 = client.chat.completions.create(
+                        model=model_name,
+                        messages=[{"role": "user", "content": prompt2}],
+                        response_format={"type": "json_object"},
+                        max_tokens=4096,
+                    )
+                    raw_text2 = response2.choices[0].message.content.strip()
+                    parsed2 = json.loads(raw_text2)
+                    combined_result.update(parsed2)
+                    print(
+                        f"✅ Successfully parsed Part 2 JSON using model: {model_name}"
+                        f" and key: {key_name}"
+                    )
+                    part2_success = True
+                    break
+                except Exception as model_err:
+                    print(f"⚠️ Model {model_name} failed: {model_err}")
+                    if "429" in str(model_err) or "rate_limit_exceeded" in str(model_err):
+                        print("⏳ Rate limit hit. Waiting 30 seconds...")
+                        time.sleep(30)
+                    else:
+                        time.sleep(2)
         except Exception as e:
-            print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print("⏳ Rate limit hit. Waiting 60 seconds...")
-                time.sleep(60)
-            else:
-                time.sleep(5)
+            print(f"⚠️ Part 2 key attempt failed with {key_name}: {e}")
 
     combined_result["ai_updated_at"] = f"{date_str} | {time.strftime('%H:%M')}"
     return combined_result
