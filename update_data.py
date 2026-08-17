@@ -203,7 +203,13 @@ def format_phase1_text(text):
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
 
-    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
+    # ניקוי מילות חיבור מיותרות מתחילת שורת הסיכום
+    conclusion = re.sub(
+        r"^(בנוסף|כמו כן|לפיכך|על כן)\s*[,:\-]*\s*", "", conclusion
+    ).strip()
+
+    # שימוש במעבר שורה בודד (<br>) למראה צמוד ומסודר
+    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -254,7 +260,11 @@ def format_analyst_text(text):
             "ההמלצה המרכזית היא שמירה על גמישות ניהולית והתאמת חשיפה לפי סיכון."
         )
 
-    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
+    conclusion = re.sub(
+        r"^(בנוסף|כמו כן|לפיכך|על כן)\s*[,:\-]*\s*", "", conclusion
+    ).strip()
+
+    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
