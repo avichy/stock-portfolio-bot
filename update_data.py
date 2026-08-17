@@ -130,7 +130,7 @@ def format_numbers_in_text(text):
     )
 
 
-def format_ai_text(text):
+def format_phase1_text(text):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -145,12 +145,51 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    text = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        "",
-        text,
-        flags=re.IGNORECASE,
+    cleaned = (
+        text.replace("{", "")
+        .replace("}", "")
+        .replace("[", "")
+        .replace("]", "")
+        .replace('"', "")
+        .replace("'", "")
     )
+
+    cleaned = re.sub(r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
+    
+    cleaned = re.sub(r'(?:מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
+
+    if "לסיכום" in cleaned:
+        parts = re.split(r'לסיכום\s*[:\-]*', cleaned, flags=re.IGNORECASE)
+        explanation = parts[0].strip()
+        conclusion = parts[1].strip() if len(parts) > 1 else ""
+        formatted_content = f"<strong>מה זה אומר:</strong><br>{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+    else:
+        sentences = [s.strip() for s in cleaned.split('.') if s.strip()]
+        if len(sentences) > 1:
+            explanation = ". ".join(sentences[:-1]) + "."
+            conclusion = sentences[-1] + "."
+            formatted_content = f"<strong>מה זה אומר:</strong><br>{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        else:
+            formatted_content = f"<strong>מה זה אומר:</strong><br>{cleaned}"
+
+    formatted_content = format_numbers_in_text(formatted_content)
+    return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
+
+
+def format_conclusion_only_text(text):
+    if isinstance(text, list):
+        text = " ".join(str(item) for item in text)
+    elif not isinstance(text, str):
+        text = str(text)
+
+    text = text.strip()
+    if text.startswith("[") and text.endswith("]"):
+        try:
+            parsed_list = json.loads(text)
+            if isinstance(parsed_list, list):
+                text = " ".join(str(item) for item in parsed_list)
+        except Exception:
+            pass
 
     cleaned = (
         text.replace("{", "")
@@ -161,24 +200,18 @@ def format_ai_text(text):
         .replace("'", "")
     )
 
-    cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
     
-    # הסרת מילות מפתח קיימות כדי למנוע כפילויות
-    cleaned = re.sub(r'(?:לסיכום|מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'(?:לסיכום|מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
     
     parts = [p.strip() for p in cleaned.split('.') if p.strip()]
-    
-    if len(parts) >= 2:
+    if len(parts) >= 1:
         conclusion = parts[-1] + '.'
-        main_body = '. '.join(parts[:-1]) + '.'
-        formatted_content = f"<strong>מה זה אומר:</strong><br>{main_body}<br><br><strong>לסיכום:</strong><br>{conclusion}"
-    elif len(parts) == 1:
-        formatted_content = f"<strong>מה זה אומר:</strong><br>{parts[0]}.<br><br><strong>לסיכום:</strong><br>{parts[0]}."
+        formatted_content = f"<strong>לסיכום:</strong><br>{conclusion}"
     else:
-        formatted_content = f"<strong>מה זה אומר:</strong><br>{cleaned}<br><br><strong>לסיכום:</strong><br>{cleaned}"
+        formatted_content = f"<strong>לסיכום:</strong><br>{cleaned}"
 
     formatted_content = format_numbers_in_text(formatted_content)
-    # הוספת מרווח בטוח (mb-6) בתחתית כדי להבטיח שורה ריקה ומרווח נקי לפני התת-סעיף הבא
     return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
 
 
@@ -541,7 +574,7 @@ def fetch_market_data(tickers):
 
 
 def fetch_ai_insights_split(
-    market_data, portfolio_stocks, date_str, day_name, investing_headlines, bizportal_headlines
+    market_data, portfolio_stocks, date_str, day_name, investing_headlines, bizportal_headlines, now_il_str
 ):
     api_keys = get_all_groq_keys()
     if not api_keys:
@@ -582,7 +615,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
-3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include both "מה זה אומר:" and "לסיכום:" explicitly at the end of the text without empty lines.
+3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end of the text without empty lines.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -645,7 +678,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "מה זה אומר:" and "לסיכום:". Never leave them empty.
+2. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:". Never leave them empty.
 3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a clear and concise summary).
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
@@ -689,12 +722,16 @@ Return a valid JSON object with exactly these 8 keys:
             else:
                 time.sleep(5)
 
-    combined_result["ai_updated_at"] = f"{date_str} | {time.strftime('%H:%M')}"
+    combined_result["ai_updated_at"] = now_il_str
     return combined_result
 
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
+date_str = now_il.strftime("%d.%m.%Y")
+time_str = now_il.strftime("%H:%M")
+now_il_str = f"{date_str} | {time_str}"
+
 day_name = {
     0: "שני",
     1: "שלישי",
@@ -898,8 +935,6 @@ if __name__ == "__main__":
     try:
         print("Fetching initial market data via direct API...")
         base_market_data = fetch_market_data(base_market_tickers)
-        date_str = now_il.strftime("%d.%m.%Y")
-        time_str = now_il.strftime("%H:%M")
 
         trigger_event = os.environ.get("TRIGGER_EVENT", "")
         current_hour = now_il.hour
@@ -924,6 +959,8 @@ if __name__ == "__main__":
         ai_insights = {}
         if is_yahoo_only:
             ai_insights = load_ai_cache()
+            if isinstance(ai_insights, dict) and ai_insights:
+                ai_insights["ai_updated_at"] = now_il_str
         else:
             ai_insights = fetch_ai_insights_split(
                 base_market_data,
@@ -932,6 +969,7 @@ if __name__ == "__main__":
                 day_name,
                 investing_headlines,
                 bizportal_headlines,
+                now_il_str,
             )
             if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
                 save_ai_cache(ai_insights)
@@ -1093,10 +1131,8 @@ if __name__ == "__main__":
         )
 
         replacements = {
-            "LAST_UPDATED": f"{date_str} | {time_str}",
-            "AI_LAST_UPDATED": ai_insights.get(
-                "ai_updated_at", f"{date_str} | {time_str}"
-            ),
+            "LAST_UPDATED": now_il_str,
+            "AI_LAST_UPDATED": ai_insights.get("ai_updated_at", now_il_str),
             "DAY_NAME": day_name,
             "PORTFOLIO_COUNT": format_num(len(portfolio_buys), 0),
             "PORTFOLIO_STOCKS_JSON": json.dumps(
@@ -1113,15 +1149,17 @@ if __name__ == "__main__":
             "VIX_PCT": vix_change,
             "DXY_PRICE": dxy_price,
             "DXY_PCT": dxy_change,
-            "SP500_ANALYSIS": format_ai_text(
+            
+            # שלב 1: שומר על "מה זה אומר" בהתחלה וגם "לסיכום"
+            "SP500_ANALYSIS": format_phase1_text(
                 ai_insights.get("SP500_ANALYSIS", "")
             ),
-            "NASDAQ_ANALYSIS": format_ai_text(
+            "NASDAQ_ANALYSIS": format_phase1_text(
                 ai_insights.get("NASDAQ_ANALYSIS", "")
             ),
-            "DOW_ANALYSIS": format_ai_text(ai_insights.get("DOW_ANALYSIS", "")),
-            "VIX_ANALYSIS": format_ai_text(ai_insights.get("VIX_ANALYSIS", "")),
-            "DXY_ANALYSIS": format_ai_text(ai_insights.get("DXY_ANALYSIS", "")),
+            "DOW_ANALYSIS": format_phase1_text(ai_insights.get("DOW_ANALYSIS", "")),
+            "VIX_ANALYSIS": format_phase1_text(ai_insights.get("VIX_ANALYSIS", "")),
+            "DXY_ANALYSIS": format_phase1_text(ai_insights.get("DXY_ANALYSIS", "")),
             "USD_ILS": usd_ils_price,
             "USD_ILS_CHANGE": usd_ils_change,
             "OIL_PRICE": oil_price,
@@ -1130,38 +1168,42 @@ if __name__ == "__main__":
             "GOLD_CHANGE": gold_change,
             "BTC_PRICE": btc_price,
             "BTC_CHANGE": btc_change,
-            "USD_ILS_EXPLANATION": format_ai_text(
+            "USD_ILS_EXPLANATION": format_phase1_text(
                 ai_insights.get("USD_ILS_EXPLANATION", "")
             ),
-            "OIL_EXPLANATION": format_ai_text(
+            "OIL_EXPLANATION": format_phase1_text(
                 ai_insights.get("OIL_EXPLANATION", "")
             ),
-            "GOLD_EXPLANATION": format_ai_text(
+            "GOLD_EXPLANATION": format_phase1_text(
                 ai_insights.get("GOLD_EXPLANATION", "")
             ),
-            "BTC_EXPLANATION": format_ai_text(
+            "BTC_EXPLANATION": format_phase1_text(
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
-            "US_MARKET_NEWS": format_ai_text(ai_insights.get("US_MARKET_NEWS", "")),
-            "IL_MARKET_NEWS": format_ai_text(ai_insights.get("IL_MARKET_NEWS", "")),
-            "CATALYST_EARNINGS": format_ai_text(
+            
+            # חדשות השוק בארה"ב ובישראל (סיכום כתבה - רק לסיכום)
+            "US_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("US_MARKET_NEWS", "")),
+            "IL_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("IL_MARKET_NEWS", "")),
+            
+            # שלבים 3, 6, 7 ואחרים: רק "לסיכום"
+            "CATALYST_EARNINGS": format_conclusion_only_text(
                 ai_insights.get("CATALYST_EARNINGS", "")
             ),
-            "CATALYST_MONETARY": format_ai_text(
+            "CATALYST_MONETARY": format_conclusion_only_text(
                 ai_insights.get("CATALYST_MONETARY", "")
             ),
-            "CATALYST_HARDWARE": format_ai_text(
+            "CATALYST_HARDWARE": format_conclusion_only_text(
                 ai_insights.get("CATALYST_HARDWARE", "")
             ),
-            "COMMUNITY_SENTIMENT": format_ai_text(
+            "COMMUNITY_SENTIMENT": format_conclusion_only_text(
                 ai_insights.get("COMMUNITY_SENTIMENT", "")
             ),
             "ANALYST_POINT_1": formatted_analyst_1,
             "ANALYST_POINT_2": formatted_analyst_2,
-            "RISK_MANAGEMENT_TEXT": format_ai_text(
+            "RISK_MANAGEMENT_TEXT": format_conclusion_only_text(
                 ai_insights.get("RISK_MANAGEMENT_TEXT", "")
             ),
-            "ACTION_RECOMMENDATIONS_TEXT": format_ai_text(
+            "ACTION_RECOMMENDATIONS_TEXT": format_conclusion_only_text(
                 ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
             ),
             "LONG_TERM_STOCKS_SECTION": lt_html,
