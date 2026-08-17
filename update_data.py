@@ -155,63 +155,30 @@ def format_phase1_text(text):
     )
 
     cleaned = re.sub(r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
-
-    # הסרת "מה זה אומר" כך שיופיע רק טקסט ה-AI ולאחריו "לסיכום"
     cleaned = re.sub(r'מה\s*זה\s*אומר\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
 
     if "לסיכום" in cleaned:
         parts = re.split(r'לסיכום\s*[:\-]*', cleaned, flags=re.IGNORECASE)
         explanation = parts[0].strip()
         conclusion = parts[1].strip() if len(parts) > 1 else ""
-        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     else:
-        formatted_content = cleaned
+        # Fallback אם ה-AI לא כלל את המילה לסיכום - פיצול אוטומטי למשפטים
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', cleaned) if s.strip()]
+        if len(sentences) > 1:
+            explanation = " ".join(sentences[:-1])
+            conclusion = sentences[-1]
+        else:
+            explanation = cleaned
+            conclusion = cleaned
 
-    formatted_content = format_numbers_in_text(formatted_content)
-    return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
-
-
-def format_conclusion_only_text(text):
-    if isinstance(text, list):
-        text = " ".join(str(item) for item in text)
-    elif not isinstance(text, str):
-        text = str(text)
-
-    text = text.strip()
-    if text.startswith("[") and text.endswith("]"):
-        try:
-            parsed_list = json.loads(text)
-            if isinstance(parsed_list, list):
-                text = " ".join(str(item) for item in parsed_list)
-        except Exception:
-            pass
-
-    cleaned = (
-        text.replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-
-    cleaned = re.sub(r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
-    
-    cleaned = re.sub(r'(?:לסיכום|מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
-    
-    parts = [p.strip() for p in cleaned.split('.') if p.strip()]
-    if len(parts) >= 1:
-        conclusion = parts[-1] + '.'
-        formatted_content = f"<strong>לסיכום:</strong><br>{conclusion}"
-    else:
-        formatted_content = f"<strong>לסיכום:</strong><br>{cleaned}"
-
+    # שימוש ב-<br> יחיד ללא שורה ריקה בין הטקסט ל-"לסיכום:"
+    formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
 
 
 def format_analyst_points_clean(text1, text2):
-    return format_conclusion_only_text(text1), format_conclusion_only_text(text2)
+    return format_phase1_text(text1), format_phase1_text(text2)
 
 
 def get_stock_logo_url(ticker):
