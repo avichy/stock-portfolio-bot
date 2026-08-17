@@ -182,6 +182,9 @@ def format_phase1_text(text):
         ]
         if sentences:
             conclusion = sentences[-1]
+            explanation = (
+                " ".join(sentences[:-1]) if len(sentences) > 1 else explanation
+            )
         else:
             conclusion = (
                 explanation
@@ -199,76 +202,6 @@ def format_phase1_text(text):
         f'<span class="leading-relaxed text-sm text-gray-200 block'
         f' mt-1">{formatted_content}</span>'
     )
-
-
-def format_analyst_points_clean(text1, text2):
-    if isinstance(text1, list):
-        text1 = " ".join(str(item) for item in text1)
-    elif not isinstance(text1, str):
-        text1 = str(text1)
-    if isinstance(text2, list):
-        text2 = " ".join(str(item) for item in text2)
-    elif not isinstance(text2, str):
-        text2 = str(text2)
-
-    clean1 = (
-        text1.strip()
-        .replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-    clean1 = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        "",
-        clean1,
-        flags=re.IGNORECASE,
-    )
-    clean1 = re.sub(
-        r"לסיכום.*", "", clean1, flags=re.IGNORECASE | re.DOTALL
-    ).strip()
-    clean1 = format_numbers_in_text(clean1)
-    res1 = f'<span class="leading-relaxed text-sm text-gray-200 block mt-1">{clean1}</span>'
-
-    clean2 = (
-        text2.strip()
-        .replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-    clean2 = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        "",
-        clean2,
-        flags=re.IGNORECASE,
-    )
-    clean2 = re.sub(
-        r"לסיכום\s*[:\-]*", "", clean2, flags=re.IGNORECASE
-    ).strip()
-
-    explanation = clean2
-    conclusion = ""
-    sentences = [
-        s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
-    ]
-    if sentences:
-        conclusion = sentences[-1]
-        explanation = " ".join(sentences[:-1]) if len(sentences) > 1 else explanation
-    else:
-        conclusion = "נתון זה ממשיך להשפיע על כיוון השוק הכללי."
-
-    formatted_content2 = (
-        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
-    )
-    formatted_content2 = format_numbers_in_text(formatted_content2)
-    res2 = f'<span class="leading-relaxed text-sm text-gray-200 block mt-1">{formatted_content2}</span>'
-
-    return res1, res2
 
 
 def get_stock_logo_url(ticker):
@@ -1244,9 +1177,12 @@ if __name__ == "__main__":
             except Exception as ex:
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
-        formatted_analyst_1, formatted_analyst_2 = format_analyst_points_clean(
-            ai_insights.get("ANALYST_POINT_1", ""),
-            ai_insights.get("ANALYST_POINT_2", ""),
+        # תיקון נקודות האנליסטים לשימוש ב-format_phase1_text האחיד והנקי
+        formatted_analyst_1 = format_phase1_text(
+            ai_insights.get("ANALYST_POINT_1", "")
+        )
+        formatted_analyst_2 = format_phase1_text(
+            ai_insights.get("ANALYST_POINT_2", "")
         )
 
         replacements = {
