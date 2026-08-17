@@ -145,7 +145,6 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    # מניעת כפילויות של "לסיכום:"
     if text.count("לסיכום:") > 1:
         parts = text.split("לסיכום:")
         text = (
@@ -155,7 +154,7 @@ def format_ai_text(text):
         )
 
     text = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה社?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?|מה\s*זה\s*אומר:?)\s*[:\-]?\s*",
+        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?|מה\s*זה\s*אומר:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
@@ -173,7 +172,6 @@ def format_ai_text(text):
     cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
     cleaned = re.sub(r"(^|<br>|<p>)\s*[:\-]\s*", r"\1", cleaned, flags=re.IGNORECASE)
 
-    # המרה אחידה ל-"לסיכום:" בלבד בכל המערכת
     cleaned = re.sub(
         r"\s*(?:מה\s*זה\s*אומר|לסיכום\s*:?)\s*[\?\-\*\s]*",
         r"<br><br><strong>לסיכום:</strong><br>",
@@ -649,7 +647,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
 2. NO REPETITION & CONCLUSION: For RISK_MANAGEMENT_TEXT and ACTION_RECOMMENDATIONS_TEXT, write fluent professional Hebrew paragraphs. Do NOT repeat phrases like "לסיכום:". Include "לסיכום:" EXACTLY ONCE at the end of the text as a summary implication.
-3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a summary and concluding with "לסיכום:").
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a clear and concise summary of the article, without concluding with "לסיכום:").
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -876,6 +874,9 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
+        # נקו לחלוטין כל הופעה מיותרת של "לסיכום:" בשלב 8
+        p_desc = re.sub(r'(?:<br>\s*)*(?:<strong>)?לסיכום\s*:?(?:</strong>)?.*$', '', p_desc, flags=re.IGNORECASE).strip()
+
         if p_desc and not p_desc.startswith("סיכום הכתבה:"):
             p_desc = f"סיכום הכתבה: {p_desc}"
 
@@ -951,9 +952,7 @@ if __name__ == "__main__":
                 market_news_data.append({
                     "news_link": h["link"],
                     "news_title": h["title"],
-                    "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.<br><br><strong>לסיכום:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
-                    ),
+                    "news_desc": f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.",
                 })
             ai_insights["market_news"] = market_news_data
 
@@ -1188,6 +1187,14 @@ if __name__ == "__main__":
             content = content.replace("{{" + k + "}}", str(v))
 
         content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
+
+        # המרה גורפת של כל מופע סטטי של "מה זה אומר" ל-"לסיכום:" בכל שלבי המערכת (למעט שלב 8 שמנוקה בנפרד)
+        content = re.sub(
+            r'מה\s*זה\s*אומר\s*[:\?]?\s*',
+            'לסיכום: ',
+            content,
+            flags=re.IGNORECASE
+        )
 
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(content)
