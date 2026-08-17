@@ -156,7 +156,7 @@ def format_phase1_text(text):
 
     cleaned = re.sub(
         r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        ="",
+        "",
         cleaned,
         flags=re.IGNORECASE,
     )
