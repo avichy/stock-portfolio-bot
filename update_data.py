@@ -145,16 +145,8 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    if text.count("לסיכום:") > 1:
-        parts = text.split("לסיכום:")
-        text = (
-            parts[0].strip()
-            + "<br><br><strong>לסיכום:</strong> "
-            + " ".join([p.strip() for p in parts[1:] if p.strip()])
-        )
-
     text = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?|מה\s*זה\s*אומר:?)\s*[:\-]?\s*",
+        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
@@ -170,17 +162,24 @@ def format_ai_text(text):
     )
 
     cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
-    cleaned = re.sub(r"(^|<br>|<p>)\s*[:\-]\s*", r"\1", cleaned, flags=re.IGNORECASE)
-
-    cleaned = re.sub(
-        r"\s*(?:מה\s*זה\s*אומר|לסיכום\s*:?)\s*[\?\-\*\s]*",
-        r"<br><br><strong>לסיכום:</strong><br>",
-        cleaned,
-        flags=re.IGNORECASE,
-    )
+    
+    cleaned = re.sub(r'(?:לסיכום|מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE)
+    parts = cleaned.split('.')
+    
+    if len(parts) >= 2:
+        main_body = '.'.join(parts[:-1]).strip() + '.'
+        conclusion = parts[-1].strip()
+        if not conclusion and len(parts) >= 3:
+            conclusion = parts[-2].strip()
+            main_body = '.'.join(parts[:-2]).strip() + '.'
+            
+        cleaned = f"{main_body}<br><br><strong>מה זה אומר:</strong><br>{conclusion}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+    else:
+        cleaned = f"<br><br><strong>מה זה אומר:</strong><br>{cleaned}<br><br><strong>לסיכום:</strong><br>{cleaned}"
 
     cleaned = format_numbers_in_text(cleaned)
-    return f'<div class="leading-relaxed text-sm text-gray-300">{cleaned}</div>'
+    # הוספת מרווח חיצוני תחתון (mb-6) כדי להבטיח רווח ברור בינו לבין התת-סעיף שאחריו
+    return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{cleaned}</div>'
 
 
 def format_analyst_points_clean(text1, text2):
@@ -583,7 +582,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
-3. DETAILED ANALYSIS & CONCLUSION FORMAT: For every analysis field, you MUST write a rich, detailed professional economic analysis paragraph explaining the current market movement, and conclude it with "לסיכום:" followed by the practical takeaway. Never leave it empty.
+3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include both "מה זה אומר:" and "לסיכום:" explicitly at the end of the text without empty lines.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -646,8 +645,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. NO REPETITION & CONCLUSION: For RISK_MANAGEMENT_TEXT and ACTION_RECOMMENDATIONS_TEXT, write fluent professional Hebrew paragraphs. Do NOT repeat phrases like "לסיכום:". Include "לסיכום:" EXACTLY ONCE at the end of the text as a summary implication.
-3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a clear and concise summary of the article, without concluding with "לסיכום:").
+2. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "מה זה אומר:" and "לסיכום:". Never leave them empty.
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a clear and concise summary).
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -874,7 +873,6 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
-        # נקו לחלוטין כל הופעה מיותרת של "לסיכום:" בשלב 8
         p_desc = re.sub(r'(?:<br>\s*)*(?:<strong>)?לסיכום\s*:?(?:</strong>)?.*$', '', p_desc, flags=re.IGNORECASE).strip()
 
         if p_desc and not p_desc.startswith("סיכום הכתבה:"):
@@ -1187,14 +1185,6 @@ if __name__ == "__main__":
             content = content.replace("{{" + k + "}}", str(v))
 
         content = re.sub(r"\{\{[A-Z0-9_]+\}\}", "''", content)
-
-        # המרה גורפת של כל מופע סטטי של "מה זה אומר" ל-"לסיכום:" בכל שלבי המערכת (למעט שלב 8 שמנוקה בנפרד)
-        content = re.sub(
-            r'מה\s*זה\s*אומר\s*[:\?]?\s*',
-            'לסיכום: ',
-            content,
-            flags=re.IGNORECASE
-        )
 
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(content)
