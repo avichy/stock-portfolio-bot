@@ -130,7 +130,7 @@ def format_numbers_in_text(text):
     )
 
 
-def format_text_with_conclusion(text):
+def format_text_with_conclusion(text, prefix_num=None):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -234,6 +234,10 @@ def format_text_with_conclusion(text):
         r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
 
+    if prefix_num is not None:
+        explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
+        explanation = f"{prefix_num}. {explanation}"
+
     # מבנה מדויק: טקסט AI, שורה חדשה, "לסיכום:", שורה חדשה, סיכום AI
     formatted_content = (
         f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
@@ -249,8 +253,8 @@ def format_phase1_text(text):
     return format_text_with_conclusion(text)
 
 
-def format_analyst_text(text):
-    return format_text_with_conclusion(text)
+def format_analyst_text(text, point_num=None):
+    return format_text_with_conclusion(text, prefix_num=point_num)
 
 
 def get_stock_logo_url(ticker):
@@ -696,6 +700,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
 3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text.
+4. ANALYST_POINT_1 must start with "1. " and ANALYST_POINT_2 must start with "2. ".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1226,10 +1231,10 @@ if __name__ == "__main__":
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
         formatted_analyst_1 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_1", "")
+            ai_insights.get("ANALYST_POINT_1", ""), 1
         )
         formatted_analyst_2 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_2", "")
+            ai_insights.get("ANALYST_POINT_2", ""), 2
         )
 
         replacements = {
