@@ -23,19 +23,26 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
 
 def get_best_available_model(client):
-    """שולף בזמן אמת את רשימת הדגמים הפעילים ובוחר אוטומטית
-
-    את המודל החכם והמתקדם ביותר הזמין.
+    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים הדורשים אישור מיוחד (כמו canopylabs),
+    ובוחר אוטומטית את מודל הטקסט החכם והמתקדם ביותר הזמין.
     """
     try:
         models_response = client.models.list()
-        available_ids = [m.id for m in models_response.data]
+        # סינון מודלים בעייתיים שלא תומכים בצ'אט טקסטואלי או דורשים אישור תנאים מיוחד
+        available_ids = [
+            m.id
+            for m in models_response.data
+            if "canopylabs" not in m.id.lower()
+            and "whisper" not in m.id.lower()
+            and "embedding" not in m.id.lower()
+        ]
 
         # סדר עדיפויות יורד: מהמודל החדש והמתקדם ביותר לדגמים וותיקים יותר
         preferred_hierarchy = [
             "llama-3.3-70b-versatile",
             "llama-3.1-70b-versatile",
             "llama3-70b-8192",
+            "llama-3.1-8b-instant",
         ]
 
         # בדיקה האם אחד מהמודלים המועדפים ביותר זמין כרגע
@@ -44,21 +51,21 @@ def get_best_available_model(client):
                 print(f"🎯 Selected highest-tier model: {preferred}")
                 return preferred
 
-        # אם אף אחד מהמועדפים לא נמצא, נחפש כל דגם חזק אחר שמכיל את המילים המרכזיות
+        # אם אף אחד מהמועדפים לא נמצא, נחפש כל דגם חזק אחר שמכיל את המילים למה
         for model_id in available_ids:
-            if "llama" in model_id.lower() and "70b" in model_id.lower():
-                print(f"🎯 Selected available 70b model: {model_id}")
+            if "llama" in model_id.lower():
+                print(f"🎯 Selected available Llama model: {model_id}")
                 return model_id
 
-        # ברירת מחדל אם הרשימה ריקה מסיבה כלשהי
+        # ברירת מחדל בטוחה מתוך הרשימה המסוננת
         if available_ids:
-            print(f"⚠️ Falling back to first available model: {available_ids[0]}")
+            print(f"⚠️ Falling back to first safe model: {available_ids[0]}")
             return available_ids[0]
 
     except Exception as e:
         print(f"⚠️ Could not fetch model list dynamically: {e}")
 
-    # ברירת מחדל בטוחה למקרה של תקלת תקשורת זמנית מול השרת
+    # ברירת מחדל קשיחה ואמינה למקרה של תקלה
     return "llama-3.1-70b-versatile"
 
 
@@ -619,7 +626,6 @@ def fetch_ai_insights_split(
             )
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
-            # זיהוי דינמי של המודל הטוב והמתקדם ביותר הזמין כרגע בשרת
             best_model = get_best_available_model(client)
 
             prompt1 = f"""
@@ -693,7 +699,6 @@ Return a valid JSON object with exactly these keys:
             )
             print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
 
-            # זיהוי דינמי של המודל הטוב והמתקדם ביותר הזמין כרגע בשרת
             best_model = get_best_available_model(client)
 
             prompt2 = f"""
