@@ -163,23 +163,23 @@ def format_ai_text(text):
 
     cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
     
+    # הסרת מילות מפתח קיימות כדי למנוע כפילויות
     cleaned = re.sub(r'(?:לסיכום|מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE)
-    parts = cleaned.split('.')
+    
+    parts = [p.strip() for p in cleaned.split('.') if p.strip()]
     
     if len(parts) >= 2:
-        main_body = '.'.join(parts[:-1]).strip() + '.'
-        conclusion = parts[-1].strip()
-        if not conclusion and len(parts) >= 3:
-            conclusion = parts[-2].strip()
-            main_body = '.'.join(parts[:-2]).strip() + '.'
-            
-        cleaned = f"{main_body}<br><br><strong>מה זה אומר:</strong><br>{conclusion}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        conclusion = parts[-1] + '.'
+        main_body = '. '.join(parts[:-1]) + '.'
+        formatted_content = f"<strong>מה זה אומר:</strong><br>{main_body}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+    elif len(parts) == 1:
+        formatted_content = f"<strong>מה זה אומר:</strong><br>{parts[0]}.<br><br><strong>לסיכום:</strong><br>{parts[0]}."
     else:
-        cleaned = f"<br><br><strong>מה זה אומר:</strong><br>{cleaned}<br><br><strong>לסיכום:</strong><br>{cleaned}"
+        formatted_content = f"<strong>מה זה אומר:</strong><br>{cleaned}<br><br><strong>לסיכום:</strong><br>{cleaned}"
 
-    cleaned = format_numbers_in_text(cleaned)
-    # הוספת מרווח חיצוני תחתון (mb-6) כדי להבטיח רווח ברור בינו לבין התת-סעיף שאחריו
-    return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{cleaned}</div>'
+    formatted_content = format_numbers_in_text(formatted_content)
+    # הוספת מרווח בטוח (mb-6) בתחתית כדי להבטיח שורה ריקה ומרווח נקי לפני התת-סעיף הבא
+    return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
 
 
 def format_analyst_points_clean(text1, text2):
