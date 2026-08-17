@@ -204,6 +204,52 @@ def format_phase1_text(text):
     )
 
 
+def format_analyst_text(text):
+    if isinstance(text, list):
+        text = " ".join(str(item) for item in text)
+    elif not isinstance(text, str):
+        text = str(text)
+
+    text = text.strip()
+    cleaned = (
+        text.replace("{", "")
+        .replace("}", "")
+        .replace("[", "")
+        .replace("]", "")
+        .replace('"', "")
+        .replace("'", "")
+    )
+
+    cleaned = re.sub(
+        r"מה\s*זה\s*אומר\s*[:\-]*", "", cleaned, flags=re.IGNORECASE
+    ).strip()
+    cleaned = re.sub(
+        r"לסיכום\s*[:\-]*", "", cleaned, flags=re.IGNORECASE
+    ).strip()
+
+    sentences = [
+        s.strip() for s in re.split(r"(?<=[.!?])\s+", cleaned) if s.strip()
+    ]
+    if len(sentences) > 1:
+        conclusion = sentences[-1]
+        explanation = " ".join(sentences[:-1])
+    elif len(sentences) == 1:
+        explanation = sentences[0]
+        conclusion = explanation
+    else:
+        explanation = (
+            "האנליסטים ממליצים על מעקב דרוך אחר כיוון השוק והמגמות."
+        )
+        conclusion = "יש להתאים את התיק בהתאם להתפתחויות."
+
+    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+    formatted_content = format_numbers_in_text(formatted_content)
+    return (
+        f'<span class="leading-relaxed text-sm text-gray-200 block'
+        f' mt-1">{formatted_content}</span>'
+    )
+
+
 def get_stock_logo_url(ticker):
     clean_ticker = str(ticker).strip().upper()
     parqet_ticker = clean_ticker.replace("-", ".")
@@ -1177,11 +1223,11 @@ if __name__ == "__main__":
             except Exception as ex:
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
-        # תיקון נקודות האנליסטים לשימוש ב-format_phase1_text האחיד והנקי
-        formatted_analyst_1 = format_phase1_text(
+        # שימוש בפונקציה הייעודית לאנליסטים בלבד כדי למנוע כפילות של "לסיכום:"
+        formatted_analyst_1 = format_analyst_text(
             ai_insights.get("ANALYST_POINT_1", "")
         )
-        formatted_analyst_2 = format_phase1_text(
+        formatted_analyst_2 = format_analyst_text(
             ai_insights.get("ANALYST_POINT_2", "")
         )
 
