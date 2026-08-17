@@ -155,22 +155,17 @@ def format_phase1_text(text):
     )
 
     cleaned = re.sub(r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
-    
-    cleaned = re.sub(r'(?:מה\s*זה\s*אומר)\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
+
+    # הסרת "מה זה אומר" כך שיופיע רק טקסט ה-AI ולאחריו "לסיכום"
+    cleaned = re.sub(r'מה\s*זה\s*אומר\s*[:\-]*', '', cleaned, flags=re.IGNORECASE).strip()
 
     if "לסיכום" in cleaned:
         parts = re.split(r'לסיכום\s*[:\-]*', cleaned, flags=re.IGNORECASE)
         explanation = parts[0].strip()
         conclusion = parts[1].strip() if len(parts) > 1 else ""
-        formatted_content = f"<strong>מה זה אומר:</strong><br>{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     else:
-        sentences = [s.strip() for s in cleaned.split('.') if s.strip()]
-        if len(sentences) > 1:
-            explanation = ". ".join(sentences[:-1]) + "."
-            conclusion = sentences[-1] + "."
-            formatted_content = f"<strong>מה זה אומר:</strong><br>{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
-        else:
-            formatted_content = f"<strong>מה זה אומר:</strong><br>{cleaned}"
+        formatted_content = cleaned
 
     formatted_content = format_numbers_in_text(formatted_content)
     return f'<div class="leading-relaxed text-sm text-gray-300 mb-6">{formatted_content}</div>'
@@ -615,7 +610,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
-3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end of the text without empty lines.
+3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -679,7 +674,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
 2. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:". Never leave them empty.
-3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a clear and concise summary).
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, without repeating titles).
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -910,10 +905,7 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
-        p_desc = re.sub(r'(?:<br>\s*)*(?:<strong>)?לסיכום\s*:?(?:</strong>)?.*$', '', p_desc, flags=re.IGNORECASE).strip()
-
-        if p_desc and not p_desc.startswith("סיכום הכתבה:"):
-            p_desc = f"סיכום הכתבה: {p_desc}"
+        p_desc = re.sub(r'^(?:סיכום הכתבה:\s*)*', '', p_desc).strip()
 
         desc_block = (
             f'<p class="text-gray-300 mt-2">{p_desc}</p>' if p_desc else ""
@@ -921,7 +913,7 @@ def build_market_news_html(market_news_list):
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold text-base">כותרת: {p_title}</h3>
+            <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
             <p class="mt-2">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             {desc_block}
         </div>
@@ -988,7 +980,7 @@ if __name__ == "__main__":
                 market_news_data.append({
                     "news_link": h["link"],
                     "news_title": h["title"],
-                    "news_desc": f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.",
+                    "news_desc": f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.",
                 })
             ai_insights["market_news"] = market_news_data
 
@@ -1150,7 +1142,7 @@ if __name__ == "__main__":
             "DXY_PRICE": dxy_price,
             "DXY_PCT": dxy_change,
             
-            # שלב 1: שומר על "מה זה אומר" בהתחלה וגם "לסיכום"
+            # ללא הכותרת "מה זה אומר:", רק תוכן ה-AI ו-"לסיכום:"
             "SP500_ANALYSIS": format_phase1_text(
                 ai_insights.get("SP500_ANALYSIS", "")
             ),
@@ -1181,11 +1173,9 @@ if __name__ == "__main__":
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
             
-            # חדשות השוק בארה"ב ובישראל (סיכום כתבה - רק לסיכום)
             "US_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("US_MARKET_NEWS", "")),
             "IL_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("IL_MARKET_NEWS", "")),
             
-            # שלבים 3, 6, 7 ואחרים: רק "לסיכום"
             "CATALYST_EARNINGS": format_conclusion_only_text(
                 ai_insights.get("CATALYST_EARNINGS", "")
             ),
