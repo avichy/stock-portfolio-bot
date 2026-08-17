@@ -145,14 +145,17 @@ def format_ai_text(text):
         except Exception:
             pass
 
+    # מניעת כפילויות של "מה זה אומר:" - נשאיר רק מופע אחד נקי אם הופיע יותר מפעמיים
+    if text.count("מה זה אומר:") > 1:
+        parts = text.split("מה זה אומר:")
+        text = (
+            parts[0].strip()
+            + "<br><br><strong>מה זה אומר:</strong> "
+            + " ".join([p.strip() for p in parts[1:] if p.strip()])
+        )
+
     text = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        "",
-        text,
-        flags=re.IGNORECASE,
-    )
-    text = re.sub(
-        r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
+        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה社?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
@@ -188,12 +191,6 @@ def format_analyst_points_clean(text1, text2):
         elif not isinstance(t, str):
             t = str(t)
         t = t.strip()
-        t = re.sub(
-            r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
-            "",
-            t,
-            flags=re.IGNORECASE,
-        )
         cleaned = (
             t.replace("{", "")
             .replace("}", "")
@@ -247,31 +244,7 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-    url = "https://www.bizportal.co.il/rss"
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as response:
-            xml_data = response.read()
-            root = ET.fromstring(xml_data)
-            news_items = []
-            for item in root.findall(".//item"):
-                title = item.find("title")
-                link = item.find("link")
-                if (
-                    title is not None
-                    and title.text
-                    and link is not None
-                    and link.text
-                ):
-                    news_items.append(
-                        {"title": title.text.strip(), "link": link.text.strip()}
-                    )
-            return news_items[:15]
-    except Exception as e:
-        print(f"Warning: Error fetching Bizportal RSS: {e}")
-        return []
+    return []
 
 
 LT_STOCKS_META = [
@@ -584,16 +557,11 @@ def fetch_ai_insights_split(
     }
 
     inv_formatted = (
-        "\n".join([f"- Investing Title: {h['title']} | Link: {h['link']}" for h in investing_headlines])
+        "\n".join([f"- Title: {h['title']} | Link: {h['link']}" for h in investing_headlines])
         if investing_headlines
-        else "No Investing headlines."
+        else "No headlines."
     )
-    biz_formatted = (
-        "\n".join([f"- Bizportal Title: {h['title']} | Link: {h['link']}" for h in bizportal_headlines])
-        if bizportal_headlines
-        else "No Bizportal headlines."
-    )
-    headlines_formatted = f"{inv_formatted}\n{biz_formatted}"
+    headlines_formatted = inv_formatted
 
     combined_result = load_ai_cache()
     if not isinstance(combined_result, dict):
@@ -611,34 +579,33 @@ def fetch_ai_insights_split(
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
             prompt1 = f"""
-You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
+You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES & FORMATTING:
-1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
-2. UNIFORM "מה זה אומר:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
-3. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
-4. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
+🚨 STRICT GUIDELINES:
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
+2. ACCURACY: At least 95% accurate.
+3. UNIFORM FORMAT: For every analysis field, include a clear explanation starting with "מה זה אומר:".
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com and Bizportal:
+Headlines:
 {headlines_formatted}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (Must include \n\nמה זה אומר:\n)
-2. NASDAQ_ANALYSIS (Must include \n\nמה זה אומר:\n)
-3. DOW_ANALYSIS (Must include \n\nמה זה אומר:\n)
-4. VIX_ANALYSIS (Must include \n\nמה זה אומר:\n)
-5. DXY_ANALYSIS (Must include \n\nמה זה אומר:\n)
-6. USD_ILS_EXPLANATION (Must include \n\nמה זה אומר:\n)
-7. OIL_EXPLANATION (Must include \n\nמה זה אומר:\n)
-8. GOLD_EXPLANATION (Must include \n\nמה זה אומר:\n)
-9. BTC_EXPLANATION (Must include \n\nמה זה אומר:\n)
-10. US_MARKET_NEWS (Comprehensive, deep analysis of US market news)
-11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel based heavily on Bizportal updates)
+1. SP500_ANALYSIS
+2. NASDAQ_ANALYSIS
+3. DOW_ANALYSIS
+4. VIX_ANALYSIS
+5. DXY_ANALYSIS
+6. USD_ILS_EXPLANATION
+7. OIL_EXPLANATION
+8. GOLD_EXPLANATION
+9. BTC_EXPLANATION
+10. US_MARKET_NEWS
+11. IL_MARKET_NEWS
 12. COMMUNITY_SENTIMENT
 13. ANALYST_POINT_1
 14. ANALYST_POINT_2
@@ -648,7 +615,7 @@ Return a valid JSON object with exactly these keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                max_tokens=6000,
+                max_tokens=4000,
             )
 
             raw_text1 = response1.choices[0].message.content.strip()
@@ -678,17 +645,16 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES & FORMATTING:
-1. ACCURACY: At least 95% accurate.
-2. UNIFORM "מה זה אומר:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
-3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
-4. `market_news`: Array of at least 10 items. Each item MUST be an object containing: `news_title` (the exact headline), `news_link` (the exact link from the headlines provided), and `news_desc` (starting with "סיכום הכתבה: " followed by a deep summary and concluding with a new line "מה זה אומר:").
-5. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
-6. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
+🚨 STRICT GUIDELINES:
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
+2. NO REPETITION: For RISK_MANAGEMENT_TEXT and ACTION_RECOMMENDATIONS_TEXT, write fluent professional Hebrew paragraphs. Do NOT repeat the phrase "מה זה אומר:" multiple times. Include "מה זה אומר:" EXACTLY ONCE at the end of the text as a summary implication.
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a summary and concluding with "מה זה אומר:").
+4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
+5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com and Bizportal:
+Headlines (Use these exact links for market_news):
 {headlines_formatted}
 
 Current Market Data:
@@ -698,18 +664,18 @@ Return a valid JSON object with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
-4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nמה זה אומר:\n)
-5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nמה זה אומר:\n)
-6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nמה זה אומר:\n)
-7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nמה זה אומר:\n)
-8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nמה זה אומר:\n)
+4. CATALYST_EARNINGS
+5. CATALYST_MONETARY
+6. CATALYST_HARDWARE
+7. RISK_MANAGEMENT_TEXT
+8. ACTION_RECOMMENDATIONS_TEXT
 """
 
             response2 = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                max_tokens=6000,
+                max_tokens=4000,
             )
 
             raw_text2 = response2.choices[0].message.content.strip()
@@ -889,7 +855,6 @@ def build_market_news_html(market_news_list):
     for item in market_news_list:
         if not isinstance(item, dict):
             continue
-        # שליפה גמישה מכל מפתח אפשרי שה-AI עשוי להחזיר
         p_link = (
             item.get("news_link")
             or item.get("link")
@@ -972,10 +937,17 @@ if __name__ == "__main__":
                 save_ai_cache(ai_insights)
 
         market_news_data = ai_insights.get("market_news", [])
-        if not isinstance(market_news_data, list) or len(market_news_data) < 10:
+        combined_all_headlines = investing_headlines + bizportal_headlines
+
+        # וידוא שקישורי החדשות תמיד מצביעים לכתבות האמיתיות מה-RSS ולא לכתובת כללית
+        if isinstance(market_news_data, list) and len(market_news_data) > 0:
+            for idx, item in enumerate(market_news_data):
+                if idx < len(combined_all_headlines):
+                    if not item.get("news_link") or item.get("news_link") == "https://il.investing.com":
+                        item["news_link"] = combined_all_headlines[idx]["link"]
+        else:
             market_news_data = []
-            combined_all_headlines = investing_headlines + bizportal_headlines
-            for h in combined_all_headlines[:12]:
+            for h in combined_all_headlines[:10]:
                 market_news_data.append({
                     "news_link": h["link"],
                     "news_title": h["title"],
