@@ -145,17 +145,17 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    # מניעת כפילויות של "מה זה אומר:" - נשאיר רק מופע אחד נקי אם הופיע יותר מפעמיים
-    if text.count("מה זה אומר:") > 1:
-        parts = text.split("מה זה אומר:")
+    # מניעת כפילויות של "לסיכום:"
+    if text.count("לסיכום:") > 1:
+        parts = text.split("לסיכום:")
         text = (
             parts[0].strip()
-            + "<br><br><strong>מה זה אומר:</strong> "
+            + "<br><br><strong>לסיכום:</strong> "
             + " ".join([p.strip() for p in parts[1:] if p.strip()])
         )
 
     text = re.sub(
-        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה社?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
+        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה社?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?|מה\s*זה\s*אומר:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
@@ -173,9 +173,10 @@ def format_ai_text(text):
     cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
     cleaned = re.sub(r"(^|<br>|<p>)\s*[:\-]\s*", r"\1", cleaned, flags=re.IGNORECASE)
 
+    # המרה אחידה ל-"לסיכום:" בלבד בכל המערכת
     cleaned = re.sub(
-        r"\s*(?:מה\s*זה\s*אומר\s*:?)\s*[\?\-\*\s]*",
-        r"<br><br><strong>מה זה אומר:</strong><br>",
+        r"\s*(?:מה\s*זה\s*אומר|לסיכום\s*:?)\s*[\?\-\*\s]*",
+        r"<br><br><strong>לסיכום:</strong><br>",
         cleaned,
         flags=re.IGNORECASE,
     )
@@ -584,7 +585,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
-3. UNIFORM FORMAT: For every analysis field, include a clear explanation starting with "מה זה אומר:".
+3. DETAILED ANALYSIS & CONCLUSION FORMAT: For every analysis field, you MUST write a rich, detailed professional economic analysis paragraph explaining the current market movement, and conclude it with "לסיכום:" followed by the practical takeaway. Never leave it empty.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -647,8 +648,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. NO REPETITION: For RISK_MANAGEMENT_TEXT and ACTION_RECOMMENDATIONS_TEXT, write fluent professional Hebrew paragraphs. Do NOT repeat the phrase "מה זה אומר:" multiple times. Include "מה זה אומר:" EXACTLY ONCE at the end of the text as a summary implication.
-3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a summary and concluding with "מה זה אומר:").
+2. NO REPETITION & CONCLUSION: For RISK_MANAGEMENT_TEXT and ACTION_RECOMMENDATIONS_TEXT, write fluent professional Hebrew paragraphs. Do NOT repeat phrases like "לסיכום:". Include "לסיכום:" EXACTLY ONCE at the end of the text as a summary implication.
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with "סיכום הכתבה: " followed by a summary and concluding with "לסיכום:").
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -939,7 +940,6 @@ if __name__ == "__main__":
         market_news_data = ai_insights.get("market_news", [])
         combined_all_headlines = investing_headlines + bizportal_headlines
 
-        # וידוא שקישורי החדשות תמיד מצביעים לכתבות האמיתיות מה-RSS ולא לכתובת כללית
         if isinstance(market_news_data, list) and len(market_news_data) > 0:
             for idx, item in enumerate(market_news_data):
                 if idx < len(combined_all_headlines):
@@ -952,7 +952,7 @@ if __name__ == "__main__":
                     "news_link": h["link"],
                     "news_title": h["title"],
                     "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.<br><br><strong>לסיכום:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
                     ),
                 })
             ai_insights["market_news"] = market_news_data
