@@ -251,7 +251,6 @@ def format_text_with_conclusion(text, prefix_num=None):
 
 
 def format_news_description(text):
-    """מנקה את תיאור הכתבה בשלב 8 ומסיר את החלק של 'לסיכום' מבלי להסיר את 'סיכום הכתבה'"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -285,8 +284,8 @@ def format_phase1_text(text):
     return format_text_with_conclusion(text)
 
 
-def format_analyst_text(text, point_num=None):
-    return format_text_with_conclusion(text, prefix_num=point_num)
+def format_analyst_text(text):
+    return format_text_with_conclusion(text, prefix_num=None)
 
 
 def get_stock_logo_url(ticker):
@@ -1256,10 +1255,10 @@ if __name__ == "__main__":
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
         formatted_analyst_1 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_1", ""), 1
+            ai_insights.get("ANALYST_POINT_1", "")
         )
         formatted_analyst_2 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_2", ""), 2
+            ai_insights.get("ANALYST_POINT_2", "")
         )
 
         replacements = {
