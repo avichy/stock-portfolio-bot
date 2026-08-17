@@ -21,12 +21,6 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-# רשימת המודלים המעודכנת והפעילה ב-Groq
-SAFE_MODEL_HIERARCHY = [
-    "llama-3.1-70b-versatile",
-    "llama3-70b-8192",
-]
-
 
 def get_all_groq_keys():
     keys_env = [
@@ -151,20 +145,12 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    # הסרת קידומות מיותרות, מילות מפתח באנגלית וביטויים משובשים בצורה חלקה
     text = re.sub(
-        r"^[\s\n]*(?:analysis|strategy|recommendations|המלצה|המלצות|ניתוח\s+ה?-?[^\n:]*|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
+        r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
     )
-    text = re.sub(
-        r"\b(?:analysis|strategy|recommendations)\b\s*[:\-]?\s*",
-        "",
-        text,
-        flags=re.IGNORECASE,
-    )
-
     text = re.sub(
         r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
         "",
@@ -181,9 +167,12 @@ def format_ai_text(text):
         .replace("'", "")
     )
 
+    cleaned = re.sub(r"^\s*[:\-]\s*$", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"(^|<br>|<p>)\s*[:\-]\s*", r"\1", cleaned, flags=re.IGNORECASE)
+
     cleaned = re.sub(
-        r"\s*(?:מה\s*זה\s*אומר|לסיכום)\s*:?\s*[\?\-\*\s]*(?:זה\s*אומר\s*(?:ש)?\s*)?",
-        r"<br><strong>לסיכום:</strong><br>",
+        r"\s*(?:מה\s*זה\s*אומר\s*:?)\s*[\?\-\*\s]*",
+        r"<br><br><strong>מה זה אומר:</strong><br>",
         cleaned,
         flags=re.IGNORECASE,
     )
@@ -200,13 +189,7 @@ def format_analyst_points_clean(text1, text2):
             t = str(t)
         t = t.strip()
         t = re.sub(
-            r"^[\s\n]*(?:analysis|strategy|recommendations|המלצה|המלצות|נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
-            "",
-            t,
-            flags=re.IGNORECASE,
-        )
-        t = re.sub(
-            r"\b(?:analysis|strategy|recommendations)\b\s*[:\-]?\s*",
+            r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
             "",
             t,
             flags=re.IGNORECASE,
@@ -401,11 +384,11 @@ SW_STOCKS_META = [
         "why_invest": "כלי גידור מעולה לשוק המניות המציע תנועות מחיר מהירות סביב הזהב.",
     },
     {
-        "ticker": "TQQQ",
-        "name": "ProShares UltraPro QQQ",
-        "desc": "תעודת סל ממונפת פי 3 על מדד הנאסד\"ק.",
-        "news": "כלי מסחר יומי מובהק המבוסס על תנודתיות גבוהה ומינוף לטווח קצר.",
-        "why_invest": "מינוף גבוה המאפשר מיצוי מקסימלי של מגמות עולות בנאסד\"ק במסחר קצר.",
+        "ticker": "AAPL",
+        "name": "Apple Inc.",
+        "desc": "פיתוח מכשירים ניידים, שירותים דיגיטליים וטכנולוגיה צרכנית.",
+        "news": "תנועות מחיר חסונות וביקושים יציבים למוצרי הדגל סביב השקות ואקוסיסטם.",
+        "why_invest": "מומנטום מסחר חזק ובסיס נרחב המייצרים תנועות סווינג צפויות ואמינות.",
     },
 ]
 
@@ -589,28 +572,21 @@ def fetch_ai_insights_split(
     # PART 1: Macro, Indices, Geopolitics & Deep News
     # ==========================================
     print("🔄 Starting Groq AI Part 1 (Macro, Indices & News)...")
-    part1_success = False
     for key_name, api_key in api_keys:
-        if part1_success:
-            break
         try:
             client = Groq(
                 api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
             )
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
 
-            for model_name in SAFE_MODEL_HIERARCHY:
-                try:
-                    print(f"🎯 Trying model: {model_name} (Part 1)...")
-                    prompt1 = f"""
+            prompt1 = f"""
 You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
-1. LANGUAGE & ACCURACY: Write in completely standard, fluent, and professional Hebrew financial terminology ONLY. Never use bizarre translation errors, slang, or unrelated words (such as translating financial terms incorrectly like "צנון"). At least 95% accurate.
-2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
-3. UNIFORM "לסיכום:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication (start directly with the conclusion without repeating phrases like "זה אומר ש...").
-4. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
-5. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
+1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
+2. UNIFORM "מה זה אומר:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+3. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
+4. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -621,15 +597,15 @@ Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
 Return a valid JSON object with exactly these keys:
-1. SP500_ANALYSIS (Must include \n\nלסיכום:\n)
-2. NASDAQ_ANALYSIS (Must include \n\nלסיכום:\n)
-3. DOW_ANALYSIS (Must include \n\nלסיכום:\n)
-4. VIX_ANALYSIS (Must include \n\nלסיכום:\n)
-5. DXY_ANALYSIS (Must include \n\nלסיכום:\n)
-6. USD_ILS_EXPLANATION (Must include \n\nלסיכום:\n)
-7. OIL_EXPLANATION (Must include \n\nלסיכום:\n)
-8. GOLD_EXPLANATION (Must include \n\nלסיכום:\n)
-9. BTC_EXPLANATION (Must include \n\nלסיכום:\n)
+1. SP500_ANALYSIS (Must include \n\nמה זה אומר:\n)
+2. NASDAQ_ANALYSIS (Must include \n\nמה זה אומר:\n)
+3. DOW_ANALYSIS (Must include \n\nמה זה אומר:\n)
+4. VIX_ANALYSIS (Must include \n\nמה זה אומר:\n)
+5. DXY_ANALYSIS (Must include \n\nמה זה אומר:\n)
+6. USD_ILS_EXPLANATION (Must include \n\nמה זה אומר:\n)
+7. OIL_EXPLANATION (Must include \n\nמה זה אומר:\n)
+8. GOLD_EXPLANATION (Must include \n\nמה זה אומר:\n)
+9. BTC_EXPLANATION (Must include \n\nמה זה אומר:\n)
 10. US_MARKET_NEWS (Comprehensive, deep analysis of US market news)
 11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel)
 12. COMMUNITY_SENTIMENT
@@ -637,59 +613,47 @@ Return a valid JSON object with exactly these keys:
 14. ANALYST_POINT_2
 """
 
-                    response1 = client.chat.completions.create(
-                        model=model_name,
-                        messages=[{"role": "user", "content": prompt1}],
-                        response_format={"type": "json_object"},
-                        max_tokens=4096,
-                    )
-                    raw_text1 = response1.choices[0].message.content.strip()
-                    parsed1 = json.loads(raw_text1)
-                    combined_result.update(parsed1)
-                    print(
-                        f"✅ Successfully parsed Part 1 JSON using model: {model_name}"
-                        f" and key: {key_name}"
-                    )
-                    part1_success = True
-                    break
-                except Exception as model_err:
-                    print(f"⚠️ Model {model_name} failed: {model_err}")
-                    if "429" in str(model_err) or "rate_limit_exceeded" in str(model_err):
-                        print("⏳ Rate limit hit. Waiting 30 seconds...")
-                        time.sleep(30)
-                    else:
-                        time.sleep(2)
+            response1 = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt1}],
+                response_format={"type": "json_object"},
+                max_tokens=6000,
+            )
+
+            raw_text1 = response1.choices[0].message.content.strip()
+            parsed1 = json.loads(raw_text1)
+            combined_result.update(parsed1)
+            print("Successfully parsed Part 1 JSON using key:", key_name)
+            break
         except Exception as e:
-            print(f"⚠️ Part 1 key attempt failed with {key_name}: {e}")
+            print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+            else:
+                time.sleep(5)
 
     # ==========================================
     # PART 2: Stocks, Catalysts, Risk Management & Action
     # ==========================================
     print("🔄 Starting Groq AI Part 2 (Stocks, Catalysts & Strategy)...")
-    part2_success = False
     for key_name, api_key in api_keys:
-        if part2_success:
-            break
         try:
             client = Groq(
                 api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
             )
             print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
 
-            for model_name in SAFE_MODEL_HIERARCHY:
-                try:
-                    print(f"🎯 Trying model: {model_name} (Part 2)...")
-                    prompt2 = f"""
+            prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
-1. LANGUAGE & ACCURACY: Write in completely standard, fluent, and professional Hebrew financial terminology ONLY. At least 95% accurate.
-2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
-3. UNIFORM "לסיכום:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication.
-4. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
-5. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "לסיכום:".
-6. `long_term_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
-7. `swing_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
+1. ACCURACY: At least 95% accurate.
+2. UNIFORM "מה זה אומר:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
+3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
+4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "מה זה אומר:".
+5. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds (such as XLF, XLE, XLC, etc.), NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
+6. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds (like TQQQ). Each object: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -703,37 +667,32 @@ Return a valid JSON object with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
-4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nלסיכום:\n)
-5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nלסיכום:\n)
-6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nלסיכום:\n)
-7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nלסיכום:\n)
-8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nלסיכום:\n)
+4. CATALYST_EARNINGS (Deep analysis of earnings reports. Must include \n\nמה זה אומר:\n)
+5. CATALYST_MONETARY (Deep analysis of monetary policy/Fed. Must include \n\nמה זה אומר:\n)
+6. CATALYST_HARDWARE (Deep analysis of hardware/infrastructure investments. Must include \n\nמה זה אומר:\n)
+7. RISK_MANAGEMENT_TEXT (Advanced, non-obvious professional risk management strategy. Must include \n\nמה זה אומר:\n)
+8. ACTION_RECOMMENDATIONS_TEXT (Advanced, specific tactical recommendations for investors. Must include \n\nמה זה אומר:\n)
 """
 
-                    response2 = client.chat.completions.create(
-                        model=model_name,
-                        messages=[{"role": "user", "content": prompt2}],
-                        response_format={"type": "json_object"},
-                        max_tokens=4096,
-                    )
-                    raw_text2 = response2.choices[0].message.content.strip()
-                    parsed2 = json.loads(raw_text2)
-                    combined_result.update(parsed2)
-                    print(
-                        f"✅ Successfully parsed Part 2 JSON using model: {model_name}"
-                        f" and key: {key_name}"
-                    )
-                    part2_success = True
-                    break
-                except Exception as model_err:
-                    print(f"⚠️ Model {model_name} failed: {model_err}")
-                    if "429" in str(model_err) or "rate_limit_exceeded" in str(model_err):
-                        print("⏳ Rate limit hit. Waiting 30 seconds...")
-                        time.sleep(30)
-                    else:
-                        time.sleep(2)
+            response2 = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt2}],
+                response_format={"type": "json_object"},
+                max_tokens=6000,
+            )
+
+            raw_text2 = response2.choices[0].message.content.strip()
+            parsed2 = json.loads(raw_text2)
+            combined_result.update(parsed2)
+            print("Successfully parsed Part 2 JSON using key:", key_name)
+            break
         except Exception as e:
-            print(f"⚠️ Part 2 key attempt failed with {key_name}: {e}")
+            print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+            else:
+                time.sleep(5)
 
     combined_result["ai_updated_at"] = f"{date_str} | {time.strftime('%H:%M')}"
     return combined_result
@@ -969,7 +928,7 @@ if __name__ == "__main__":
                     "news_link": h["link"],
                     "news_title": h["title"],
                     "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><strong>לסיכום:</strong><br>עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
                     ),
                 })
             ai_insights["market_news"] = market_news_data
