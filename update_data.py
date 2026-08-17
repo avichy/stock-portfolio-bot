@@ -22,6 +22,46 @@ GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
 
+def get_best_available_model(client):
+    """שולף בזמן אמת את רשימת הדגמים הפעילים ובוחר אוטומטית
+
+    את המודל החכם והמתקדם ביותר הזמין.
+    """
+    try:
+        models_response = client.models.list()
+        available_ids = [m.id for m in models_response.data]
+
+        # סדר עדיפויות יורד: מהמודל החדש והמתקדם ביותר לדגמים וותיקים יותר
+        preferred_hierarchy = [
+            "llama-3.3-70b-versatile",
+            "llama-3.1-70b-versatile",
+            "llama3-70b-8192",
+        ]
+
+        # בדיקה האם אחד מהמודלים המועדפים ביותר זמין כרגע
+        for preferred in preferred_hierarchy:
+            if preferred in available_ids:
+                print(f"🎯 Selected highest-tier model: {preferred}")
+                return preferred
+
+        # אם אף אחד מהמועדפים לא נמצא, נחפש כל דגם חזק אחר שמכיל את המילים המרכזיות
+        for model_id in available_ids:
+            if "llama" in model_id.lower() and "70b" in model_id.lower():
+                print(f"🎯 Selected available 70b model: {model_id}")
+                return model_id
+
+        # ברירת מחדל אם הרשימה ריקה מסיבה כלשהי
+        if available_ids:
+            print(f"⚠️ Falling back to first available model: {available_ids[0]}")
+            return available_ids[0]
+
+    except Exception as e:
+        print(f"⚠️ Could not fetch model list dynamically: {e}")
+
+    # ברירת מחדל בטוחה למקרה של תקלת תקשורת זמנית מול השרת
+    return "llama-3.1-70b-versatile"
+
+
 def get_all_groq_keys():
     keys_env = [
         "GROQ_API_KEY",
@@ -167,7 +207,6 @@ def format_ai_text(text):
         .replace("'", "")
     )
 
-    # המרה אחידה ל"לסיכום:" והסרת כפילויות של "זה אומר ש..." או תווים מיותרים בצורה נקייה ללא שורות ריקות מיותרות
     cleaned = re.sub(
         r"\s*(?:מה\s*זה\s*אומר|לסיכום)\s*:?\s*[\?\-\*\s]*(?:זה\s*אומר\s*(?:ש)?\s*)?",
         r"<br><strong>לסיכום:</strong><br>",
@@ -570,12 +609,18 @@ def fetch_ai_insights_split(
     # PART 1: Macro, Indices, Geopolitics & Deep News
     # ==========================================
     print("🔄 Starting Groq AI Part 1 (Macro, Indices & News)...")
+    part1_success = False
     for key_name, api_key in api_keys:
+        if part1_success:
+            break
         try:
             client = Groq(
                 api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
             )
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
+
+            # זיהוי דינמי של המודל הטוב והמתקדם ביותר הזמין כרגע בשרת
+            best_model = get_best_available_model(client)
 
             prompt1 = f"""
 You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
@@ -612,21 +657,24 @@ Return a valid JSON object with exactly these keys:
 """
 
             response1 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=best_model,
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
                 max_tokens=6000,
             )
-
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
             combined_result.update(parsed1)
-            print("Successfully parsed Part 1 JSON using key:", key_name)
+            print(
+                f"Successfully parsed Part 1 JSON using model: {best_model}"
+                f" and key: {key_name}"
+            )
+            part1_success = True
             break
         except Exception as e:
             print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
             if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                print("⏳ Rate limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
                 time.sleep(5)
@@ -635,12 +683,18 @@ Return a valid JSON object with exactly these keys:
     # PART 2: Stocks, Catalysts, Risk Management & Action
     # ==========================================
     print("🔄 Starting Groq AI Part 2 (Stocks, Catalysts & Strategy)...")
+    part2_success = False
     for key_name, api_key in api_keys:
+        if part2_success:
+            break
         try:
             client = Groq(
                 api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
             )
             print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
+
+            # זיהוי דינמי של המודל הטוב והמתקדם ביותר הזמין כרגע בשרת
+            best_model = get_best_available_model(client)
 
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
@@ -673,21 +727,24 @@ Return a valid JSON object with exactly these 8 keys:
 """
 
             response2 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=best_model,
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
                 max_tokens=6000,
             )
-
             raw_text2 = response2.choices[0].message.content.strip()
             parsed2 = json.loads(raw_text2)
             combined_result.update(parsed2)
-            print("Successfully parsed Part 2 JSON using key:", key_name)
+            print(
+                f"Successfully parsed Part 2 JSON using model: {best_model}"
+                f" and key: {key_name}"
+            )
+            part2_success = True
             break
         except Exception as e:
             print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
             if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+                print("⏳ Rate limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
                 time.sleep(5)
