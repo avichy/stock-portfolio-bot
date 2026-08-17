@@ -21,9 +21,10 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-# רשימת המודלים המעודכנת והפעילה בלבד ב-Groq
+# רשימת המודלים המעודכנת והפעילה ב-Groq
 SAFE_MODEL_HIERARCHY = [
-    "llama-3.3-70b-versatile",
+    "llama-3.1-70b-versatile",
+    "llama3-70b-8192",
 ]
 
 
