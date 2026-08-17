@@ -193,7 +193,6 @@ def format_phase1_text(text):
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
 
-    # סידור: "לסיכום:" בשורה חדשה בפני עצמה, וטקסט הסיכום בשורה שמתחתיה
     formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
@@ -1014,7 +1013,6 @@ if __name__ == "__main__":
         market_news_data = ai_insights.get("market_news", [])
         combined_all_headlines = investing_headlines + bizportal_headlines
 
-        # וידוא ששלב 8 מכיל את כל החדשות בצורה מלאה ועשירה (לפחות 8 ידיעות מהפיד)
         if not isinstance(market_news_data, list):
             market_news_data = []
 
@@ -1159,11 +1157,7 @@ if __name__ == "__main__":
                     info.get("name") or fetched_price_data.get("name") or ticker
                 )
 
-                target_str = (
-                    f"${format_num(fetched_target)}"
-                    if fetched_target > 0
-                    else ""
-                )
+                target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else ""
 
                 portfolio_js_list.append(
                     {
