@@ -235,7 +235,6 @@ def format_text_with_conclusion(text, prefix_num=None):
     ).strip()
 
     if prefix_num is not None:
-        # תיקון בטוח למספור מבלי למחוק את תוכן הטקסט
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
         if not explanation:
             explanation = text.strip()
@@ -249,6 +248,37 @@ def format_text_with_conclusion(text, prefix_num=None):
         f'<span class="leading-relaxed text-sm text-gray-200 block'
         f' mt-1">{formatted_content}</span>'
     )
+
+
+def format_news_description(text):
+    """מנקה את תיאור הכתבה בשלב 8 ומסיר את החלק של 'לסיכום' מבלי להסיר את 'סיכום הכתבה'"""
+    if isinstance(text, list):
+        text = " ".join(str(item) for item in text)
+    elif not isinstance(text, str):
+        text = str(text)
+
+    cleaned = text.strip()
+    cleaned = (
+        cleaned.replace("{", "")
+        .replace("}", "")
+        .replace("[", "")
+        .replace("]", "")
+        .replace('"', "")
+        .replace("'", "")
+    )
+
+    cleaned = re.sub(
+        r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
+
+    if "לסיכום" in cleaned:
+        parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
+        cleaned = parts[0].strip()
+
+    return format_numbers_in_text(cleaned)
 
 
 def format_phase1_text(text):
@@ -702,7 +732,6 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
 3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text.
-4. ANALYST_POINT_1 must start with "1. " and ANALYST_POINT_2 must start with "2. ".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -997,8 +1026,7 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
-        # מעבר דרך הפונקציה כדי להבטיח מבנה אחיד של סיכום נפרד
-        formatted_desc = format_text_with_conclusion(p_desc)
+        formatted_desc = format_news_description(p_desc)
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
