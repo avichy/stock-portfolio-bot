@@ -211,28 +211,7 @@ def format_conclusion_only_text(text):
 
 
 def format_analyst_points_clean(text1, text2):
-    def clean_t(t):
-        if isinstance(t, list):
-            t = " ".join(str(item) for item in t)
-        elif not isinstance(t, str):
-            t = str(t)
-        t = t.strip()
-        cleaned = (
-            t.replace("{", "")
-            .replace("}", "")
-            .replace("[", "")
-            .replace("]", "")
-            .replace('"', "")
-            .replace("'", "")
-        )
-        return format_numbers_in_text(cleaned)
-
-    c1 = clean_t(text1)
-    c2 = clean_t(text2)
-
-    html1 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c1}</div>'
-    html2 = f'<div class="mb-3 text-xs text-gray-300 leading-relaxed">{c2}</div>'
-    return html1, html2
+    return format_conclusion_only_text(text1), format_conclusion_only_text(text2)
 
 
 def get_stock_logo_url(ticker):
@@ -908,7 +887,7 @@ def build_market_news_html(market_news_list):
         p_desc = re.sub(r'^(?:סיכום הכתבה:\s*)*', '', p_desc).strip()
 
         desc_block = (
-            f'<p class="text-gray-300 mt-2">{p_desc}</p>' if p_desc else ""
+            f'<p class="text-gray-300 mt-2"><strong>סיכום הכתבה:</strong> {p_desc}</p>' if p_desc else ""
         )
 
         card_html = f"""
@@ -1142,7 +1121,6 @@ if __name__ == "__main__":
             "DXY_PRICE": dxy_price,
             "DXY_PCT": dxy_change,
             
-            # ללא הכותרת "מה זה אומר:", רק תוכן ה-AI ו-"לסיכום:"
             "SP500_ANALYSIS": format_phase1_text(
                 ai_insights.get("SP500_ANALYSIS", "")
             ),
@@ -1173,29 +1151,36 @@ if __name__ == "__main__":
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
             
-            "US_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("US_MARKET_NEWS", "")),
-            "IL_MARKET_NEWS": format_conclusion_only_text(ai_insights.get("IL_MARKET_NEWS", "")),
+            # שלב 1 - חדשות שוק
+            "US_MARKET_NEWS": format_phase1_text(ai_insights.get("US_MARKET_NEWS", "")),
+            "IL_MARKET_NEWS": format_phase1_text(ai_insights.get("IL_MARKET_NEWS", "")),
             
-            "CATALYST_EARNINGS": format_conclusion_only_text(
+            # שלב 3 - קטליסטים
+            "CATALYST_EARNINGS": format_phase1_text(
                 ai_insights.get("CATALYST_EARNINGS", "")
             ),
-            "CATALYST_MONETARY": format_conclusion_only_text(
+            "CATALYST_MONETARY": format_phase1_text(
                 ai_insights.get("CATALYST_MONETARY", "")
             ),
-            "CATALYST_HARDWARE": format_conclusion_only_text(
+            "CATALYST_HARDWARE": format_phase1_text(
                 ai_insights.get("CATALYST_HARDWARE", "")
             ),
-            "COMMUNITY_SENTIMENT": format_conclusion_only_text(
+            
+            # שלב 6 - סנטימנט ואנליסטים
+            "COMMUNITY_SENTIMENT": format_phase1_text(
                 ai_insights.get("COMMUNITY_SENTIMENT", "")
             ),
             "ANALYST_POINT_1": formatted_analyst_1,
             "ANALYST_POINT_2": formatted_analyst_2,
-            "RISK_MANAGEMENT_TEXT": format_conclusion_only_text(
+            
+            # שלב 7 - סיכון ואסטרטגיה
+            "RISK_MANAGEMENT_TEXT": format_phase1_text(
                 ai_insights.get("RISK_MANAGEMENT_TEXT", "")
             ),
-            "ACTION_RECOMMENDATIONS_TEXT": format_conclusion_only_text(
+            "ACTION_RECOMMENDATIONS_TEXT": format_phase1_text(
                 ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
             ),
+            
             "LONG_TERM_STOCKS_SECTION": lt_html,
             "SWING_STOCKS_SECTION": sw_html,
             "PORTFOLIO_NEWS_SECTION": news_html,
