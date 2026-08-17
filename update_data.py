@@ -235,10 +235,12 @@ def format_text_with_conclusion(text, prefix_num=None):
     ).strip()
 
     if prefix_num is not None:
+        # תיקון בטוח למספור מבלי למחוק את תוכן הטקסט
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
+        if not explanation:
+            explanation = text.strip()
         explanation = f"{prefix_num}. {explanation}"
 
-    # מבנה מדויק: טקסט AI, שורה חדשה, "לסיכום:", שורה חדשה, סיכום AI
     formatted_content = (
         f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
@@ -762,7 +764,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
 2. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:". Never leave them empty.
-3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, without repeating titles).
+3. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, including "לסיכום:" at the end).
 4. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 5. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -995,19 +997,14 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
-        p_desc = re.sub(r"^(?:סיכום הכתבה:\s*)*", "", p_desc).strip()
-
-        desc_block = (
-            f'<p class="text-gray-300 mt-2"><strong>סיכום הכתבה:</strong><br>{p_desc}</p>'
-            if p_desc
-            else ""
-        )
+        # מעבר דרך הפונקציה כדי להבטיח מבנה אחיד של סיכום נפרד
+        formatted_desc = format_text_with_conclusion(p_desc)
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
             <p class="mt-2">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
-            {desc_block}
+            <p class="mt-2"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
         </div>
         """
         html_parts.append(card_html)
