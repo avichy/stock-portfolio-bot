@@ -23,7 +23,7 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
 
 def get_best_available_model(client):
-    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים בעייתיים (כמו canopylabs או prompt-guard),
+    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים בעייתיים (כמו canopylabs, guard או compound),
     ובוחר אוטומטית את מודל הטקסט החכם והמתקדם ביותר הזמין.
     """
     try:
@@ -36,6 +36,7 @@ def get_best_available_model(client):
             and "embedding" not in m.id.lower()
             and "prompt-guard" not in m.id.lower()
             and "guard" not in m.id.lower()
+            and "compound" not in m.id.lower()
         ]
 
         preferred_hierarchy = [
