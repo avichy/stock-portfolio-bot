@@ -614,7 +614,7 @@ Return a valid JSON object with exactly these keys:
 """
 
             response1 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
                 max_tokens=6000,
@@ -675,7 +675,7 @@ Return a valid JSON object with exactly these 8 keys:
 """
 
             response2 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
                 max_tokens=6000,
