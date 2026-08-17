@@ -21,12 +21,9 @@ OUTPUT_FILE = "index.html"
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-# רשימת הגיבוי הקבועה והבטוחה של מודלי ה-Llama המובילים והיציבים ל-JSON
+# רשימת המודלים המעודכנת והפעילה בלבד ב-Groq
 SAFE_MODEL_HIERARCHY = [
     "llama-3.3-70b-versatile",
-    "llama-3.1-70b-versatile",
-    "llama3-70b-8192",
-    "llama-3.1-8b-instant",
 ]
 
 
@@ -153,12 +150,20 @@ def format_ai_text(text):
         except Exception:
             pass
 
+    # הסרת קידומות מיותרות כגון analysis, strategy, recommendations, המלצות וכדומה
     text = re.sub(
-        r"^(?:ניתוח\s+ה?-?[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
+        r"^(?:analysis|strategy|recommendations|המלצה|המלצות|ניתוח\s+ה?-?[^\n:]*|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
     )
+    text = re.sub(
+        r"(?:^|\n)\s*(?:analysis|strategy|recommendations|המלצה|embeddings|המלצות)\s*[:\-]?\s*",
+        "\n",
+        text,
+        flags=re.IGNORECASE,
+    )
+
     text = re.sub(
         r"^(?:🇺🇸|🇮🇱|US|IL)\s*(?:השפעות על השוק[^:]*)?[:\-]?\s*",
         "",
@@ -194,7 +199,7 @@ def format_analyst_points_clean(text1, text2):
             t = str(t)
         t = t.strip()
         t = re.sub(
-            r"^(?:נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
+            r"^(?:analysis|strategy|recommendations|המלצה|המלצות|נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
             "",
             t,
             flags=re.IGNORECASE,
@@ -595,9 +600,10 @@ You are an expert Chief Market Strategist who explains financial and geopolitica
 
 🚨 STRICT GUIDELINES & FORMATTING:
 1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
-2. UNIFORM "לסיכום:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication (start directly with the conclusion without repeating phrases like "זה אומר ש...").
-3. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
-4. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
+2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
+3. UNIFORM "לסיכום:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication (start directly with the conclusion without repeating phrases like "זה אומר ש...").
+4. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
+5. NO INTRODUCTORY LABELS: Start writing immediately without labels like "ניתוח ה-...".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -671,11 +677,12 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
 1. ACCURACY: At least 95% accurate.
-2. UNIFORM "לסיכום:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication.
-3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
-4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "לסיכום:".
-5. `long_term_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
-6. `swing_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
+2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
+3. UNIFORM "לסיכום:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication.
+4. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
+5. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "לסיכום:".
+6. `long_term_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
+7. `swing_stocks`: EXACTLY 10 corporate stocks. Each object: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
