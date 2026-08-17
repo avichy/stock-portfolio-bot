@@ -28,7 +28,6 @@ def get_best_available_model(client):
     """
     try:
         models_response = client.models.list()
-        # סינון מודלים בעייתיים שלא תומכים בצ'אט טקסטואלי ארוך או דורשים אישור מיוחד
         available_ids = [
             m.id
             for m in models_response.data
@@ -39,7 +38,6 @@ def get_best_available_model(client):
             and "guard" not in m.id.lower()
         ]
 
-        # סדר עדיפויות יורד: מהמודל החדש והמתקדם ביותר לדגמים וותיקים יותר
         preferred_hierarchy = [
             "llama-3.3-70b-versatile",
             "llama-3.1-70b-versatile",
@@ -47,19 +45,16 @@ def get_best_available_model(client):
             "llama-3.1-8b-instant",
         ]
 
-        # בדיקה האם אחד מהמודלים המועדפים ביותר זמין כרגע
         for preferred in preferred_hierarchy:
             if preferred in available_ids:
                 print(f"🎯 Selected highest-tier model: {preferred}")
                 return preferred
 
-        # אם אף אחד מהמועדפים לא נמצא, נחפש דגם טקסט של למה שאינו מודל אבטחה/שמירה
         for model_id in available_ids:
             if "llama" in model_id.lower() and "guard" not in model_id.lower():
                 print(f"🎯 Selected available Llama model: {model_id}")
                 return model_id
 
-        # ברירת מחדל בטוחה מתוך הרשימה המסוננת
         if available_ids:
             print(f"⚠️ Falling back to first safe model: {available_ids[0]}")
             return available_ids[0]
@@ -67,7 +62,6 @@ def get_best_available_model(client):
     except Exception as e:
         print(f"⚠️ Could not fetch model list dynamically: {e}")
 
-    # ברירת מחדל קשיחה ואמינה למקרה של תקלה
     return "llama-3.1-70b-versatile"
 
 
@@ -668,7 +662,7 @@ Return a valid JSON object with exactly these keys:
                 model=best_model,
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                max_tokens=6000,
+                max_tokens=4096,
             )
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
@@ -737,7 +731,7 @@ Return a valid JSON object with exactly these 8 keys:
                 model=best_model,
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                max_tokens=6000,
+                max_tokens=4096,
             )
             raw_text2 = response2.choices[0].message.content.strip()
             parsed2 = json.loads(raw_text2)
