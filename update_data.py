@@ -23,18 +23,20 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
 
 def get_best_available_model(client):
-    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים הדורשים אישור מיוחד (כמו canopylabs),
+    """שולף בזמן אמת את רשימת הדגמים הפעילים, מסנן מודלים בעייתיים (כמו canopylabs או prompt-guard),
     ובוחר אוטומטית את מודל הטקסט החכם והמתקדם ביותר הזמין.
     """
     try:
         models_response = client.models.list()
-        # סינון מודלים בעייתיים שלא תומכים בצ'אט טקסטואלי או דורשים אישור תנאים מיוחד
+        # סינון מודלים בעייתיים שלא תומכים בצ'אט טקסטואלי ארוך או דורשים אישור מיוחד
         available_ids = [
             m.id
             for m in models_response.data
             if "canopylabs" not in m.id.lower()
             and "whisper" not in m.id.lower()
             and "embedding" not in m.id.lower()
+            and "prompt-guard" not in m.id.lower()
+            and "guard" not in m.id.lower()
         ]
 
         # סדר עדיפויות יורד: מהמודל החדש והמתקדם ביותר לדגמים וותיקים יותר
@@ -51,9 +53,9 @@ def get_best_available_model(client):
                 print(f"🎯 Selected highest-tier model: {preferred}")
                 return preferred
 
-        # אם אף אחד מהמועדפים לא נמצא, נחפש כל דגם חזק אחר שמכיל את המילים למה
+        # אם אף אחד מהמועדפים לא נמצא, נחפש דגם טקסט של למה שאינו מודל אבטחה/שמירה
         for model_id in available_ids:
-            if "llama" in model_id.lower():
+            if "llama" in model_id.lower() and "guard" not in model_id.lower():
                 print(f"🎯 Selected available Llama model: {model_id}")
                 return model_id
 
