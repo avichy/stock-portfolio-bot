@@ -246,6 +246,34 @@ def fetch_investing_news():
         return []
 
 
+def fetch_bizportal_news():
+    url = "https://www.bizportal.co.il/rss"
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            xml_data = response.read()
+            root = ET.fromstring(xml_data)
+            news_items = []
+            for item in root.findall(".//item"):
+                title = item.find("title")
+                link = item.find("link")
+                if (
+                    title is not None
+                    and title.text
+                    and link is not None
+                    and link.text
+                ):
+                    news_items.append(
+                        {"title": title.text.strip(), "link": link.text.strip()}
+                    )
+            return news_items[:15]
+    except Exception as e:
+        print(f"Warning: Error fetching Bizportal RSS: {e}")
+        return []
+
+
 LT_STOCKS_META = [
     {
         "ticker": "MSFT",
@@ -542,7 +570,7 @@ def fetch_market_data(tickers):
 
 
 def fetch_ai_insights_split(
-    market_data, portfolio_stocks, date_str, day_name, investing_headlines
+    market_data, portfolio_stocks, date_str, day_name, investing_headlines, bizportal_headlines
 ):
     api_keys = get_all_groq_keys()
     if not api_keys:
@@ -555,14 +583,17 @@ def fetch_ai_insights_split(
         for t, d in market_data.items()
     }
 
-    headlines_formatted = (
-        "\n".join([
-            f"- Title: {h['title']} | Link: {h['link']}"
-            for h in investing_headlines
-        ])
+    inv_formatted = (
+        "\n".join([f"- Investing Title: {h['title']} | Link: {h['link']}" for h in investing_headlines])
         if investing_headlines
-        else "No headlines available."
+        else "No Investing headlines."
     )
+    biz_formatted = (
+        "\n".join([f"- Bizportal Title: {h['title']} | Link: {h['link']}" for h in bizportal_headlines])
+        if bizportal_headlines
+        else "No Bizportal headlines."
+    )
+    headlines_formatted = f"{inv_formatted}\n{biz_formatted}"
 
     combined_result = load_ai_cache()
     if not isinstance(combined_result, dict):
@@ -590,7 +621,7 @@ You are an expert Chief Market Strategist who explains financial and geopolitica
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com:
+Headlines from Investing.com and Bizportal:
 {headlines_formatted}
 
 Current Market Data:
@@ -607,7 +638,7 @@ Return a valid JSON object with exactly these keys:
 8. GOLD_EXPLANATION (Must include \n\nמה זה אומר:\n)
 9. BTC_EXPLANATION (Must include \n\nמה זה אומר:\n)
 10. US_MARKET_NEWS (Comprehensive, deep analysis of US market news)
-11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel)
+11. IL_MARKET_NEWS (Comprehensive, deep analysis of Israeli market news and Shekel based heavily on Bizportal updates)
 12. COMMUNITY_SENTIMENT
 13. ANALYST_POINT_1
 14. ANALYST_POINT_2
@@ -651,13 +682,13 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. ACCURACY: At least 95% accurate.
 2. UNIFORM "מה זה אומר:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "מה זה אומר:" followed by the practical implication.
 3. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
-4. `market_news`: Array of at least 10 items. EVERY description MUST start with "סיכום הכתבה: " followed by a deep summary and conclude with a new line "מה זה אומר:".
-5. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds (such as XLF, XLE, XLC, etc.), NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
-6. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds (like TQQQ). Each object: ticker, name, desc, news, why_invest.
+4. `market_news`: Array of at least 10 items. Each item MUST be an object containing: `news_title` (the exact headline), `news_link` (the exact link from the headlines provided), and `news_desc` (starting with "סיכום הכתבה: " followed by a deep summary and concluding with a new line "מה זה אומר:").
+5. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
+6. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY (מניות חברה פרטניות בלבד). ABSOLUTELY NO ETFs, NO sector funds, NO indices, and NO leveraged funds. Each object: ticker, name, desc, news, why_invest.
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines from Investing.com:
+Headlines from Investing.com and Bizportal:
 {headlines_formatted}
 
 Current Market Data:
@@ -858,9 +889,27 @@ def build_market_news_html(market_news_list):
     for item in market_news_list:
         if not isinstance(item, dict):
             continue
-        p_link = item.get("news_link", "https://il.investing.com")
-        p_title = item.get("news_title", "עדכון שוק יומי")
-        p_desc = item.get("news_desc", "")
+        # שליפה גמישה מכל מפתח אפשרי שה-AI עשוי להחזיר
+        p_link = (
+            item.get("news_link")
+            or item.get("link")
+            or item.get("url")
+            or "https://il.investing.com"
+        )
+        p_title = (
+            item.get("news_title")
+            or item.get("title")
+            or item.get("headline")
+            or "עדכון שוק יומי"
+        )
+        p_desc = (
+            item.get("news_desc")
+            or item.get("description")
+            or item.get("summary")
+            or item.get("desc")
+            or ""
+        )
+
         if p_desc and not p_desc.startswith("סיכום הכתבה:"):
             p_desc = f"סיכום הכתבה: {p_desc}"
 
@@ -871,7 +920,7 @@ def build_market_news_html(market_news_list):
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base">כותרת: {p_title}</h3>
-            <p class="mt-2">🔗 <strong>קישור למקור (Investing בעברית):</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
+            <p class="mt-2">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
             {desc_block}
         </div>
         """
@@ -905,6 +954,7 @@ if __name__ == "__main__":
         is_yahoo_only = not is_ai_time
 
         investing_headlines = fetch_investing_news()
+        bizportal_headlines = fetch_bizportal_news()
 
         ai_insights = {}
         if is_yahoo_only:
@@ -916,6 +966,7 @@ if __name__ == "__main__":
                 date_str,
                 day_name,
                 investing_headlines,
+                bizportal_headlines,
             )
             if ai_insights and isinstance(ai_insights, dict) and len(ai_insights) > 3:
                 save_ai_cache(ai_insights)
@@ -923,12 +974,13 @@ if __name__ == "__main__":
         market_news_data = ai_insights.get("market_news", [])
         if not isinstance(market_news_data, list) or len(market_news_data) < 10:
             market_news_data = []
-            for h in investing_headlines[:12]:
+            combined_all_headlines = investing_headlines + bizportal_headlines
+            for h in combined_all_headlines[:12]:
                 market_news_data.append({
                     "news_link": h["link"],
                     "news_title": h["title"],
                     "news_desc": (
-                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על הכלכלה הגלובלית.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
+                        f"סיכום הכתבה: הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות על השווקים.<br><br><strong>מה זה אומר:</strong><br> עבור המשקיע הממוצע, מדובר בהתפתחות המחייבת מעקב אחר תנודות המחירים."
                     ),
                 })
             ai_insights["market_news"] = market_news_data
