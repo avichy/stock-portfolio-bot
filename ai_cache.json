@@ -47,146 +47,146 @@
     },
     "long_term_stocks": [
         {
-            "ticker": "JPM",
-            "name": "JPMorgan Chase & Co.",
-            "desc": "World‑largest US bank with diversified consumer, corporate and wealth‑management franchises and a Tier‑1 capital ratio above 14%.",
-            "news": "Bנק אוף אמריקה: ערכי ציוד משומש נשארים יציבים ביולי – משקף סביבה מאוזנת לשוק האשראי.",
-            "why_invest": "יציבות רווחיות, דיבידנד של 3% ושיפור מרווח ריבית נטו עם העלייה בריבית הפדרלית."
-        },
-        {
-            "ticker": "AMZN",
-            "name": "Amazon.com, Inc.",
-            "desc": "גולת הכותרת של סחר אלקטרוני ו‑AWS, מובילה בתשתיות ענן ו‑AI. ",
-            "news": "Bנק אוף אמריקה משיק מעקב AI כשקלוד מוביל בדירוגי הבינה – מדגיש ביקוש למחשוב ענן מתקדם.",
-            "why_invest": "צמיחה של 20% במגזר AWS, אינטגרציה של AI בתהליכי לוגיסטיקה והרחבת שירותי מנויים."
+            "ticker": "XOM",
+            "name": "Exxon Mobil Corp",
+            "desc": "Integrated energy giant benefiting from rising oil prices and dividend yield.",
+            "news": "Oil price rally supports earnings outlook, XOM posted Q2 gain of 4.61%",
+            "why_invest": "Stable cash flow, dividend aristocrat, exposure to energy transition via petrochemical investments."
         },
         {
             "ticker": "NVDA",
-            "name": "NVIDIA Corporation",
-            "desc": "ספקית GPU מובילה עם חשיפה משמעותית ל‑AI, מחשוב ה‑HPC ולמידת מכונה.",
-            "news": "Reddit מובילה את פלטפורמות המדיה החברתית בצמיחת הכנסות למשתמש – מגביר ביקוש לכרטיסים עם יכולות AI.",
-            "why_invest": "הכנסות ממעבדות AI צפויות לצמוח ב‑35% ברבעון הבא, עם מרווחי רווח גבוהים."
+            "name": "NVIDIA Corp",
+            "desc": "Leader in AI GPUs, strong secular growth from data centers and generative AI.",
+            "news": "NVDA shares up 0.54% amid robust demand for AI accelerators.",
+            "why_invest": "Dominant market share, high barriers to entry, expanding software ecosystem."
+        },
+        {
+            "ticker": "AMZN",
+            "name": "Amazon.com Inc",
+            "desc": "E‑commerce and cloud powerhouse with expanding logistics network.",
+            "news": "AMZN down 4.31% after earnings miss, but AWS revenue growth remains double‑digit.",
+            "why_invest": "Long‑term secular growth in cloud, advertising, and subscription services."
         },
         {
             "ticker": "MSFT",
-            "name": "Microsoft Corporation",
-            "desc": "חברת תוכנה ענקית, מנוע Azure, Office 365 ו‑LinkedIn, משקיעה משמעותית ב‑AI וב‑קיימות.",
-            "news": "Bנק אוף אמריקה משיק מעקב AI כשקלוד מוביל בדירוגי הבינה – מדגיש תחרות עם Azure.",
-            "why_invest": "קצב רבעוני של 12% במנוי ענן, תזרים חופשי חזק והחזר הון גבוה."
+            "name": "Microsoft Corp",
+            "desc": "Software and cloud leader with AI‑infused Office suite and Azure expansion.",
+            "news": "MSFT down 0.92% as market digests AI partnership news.",
+            "why_invest": "Recurring revenue, high‑margin SaaS, strategic AI integration."
         },
         {
             "ticker": "GOOG",
-            "name": "Alphabet Inc.",
-            "desc": "בעלת מנוע החיפוש Google, YouTube, Google Cloud ותיק השקעות ב‑AI וב‑Life Sciences.",
-            "news": "Reddit מובילה את פלטפורמות המדיה החברתית בצמיחת הכנסות למשתמש – משקף תחרותיות בתחום הפרסום הדיגיטלי.",
-            "why_invest": "רווחיות פרסום עומדת על 30%, והרחבת שירותי ענן מובילה לצמיחה מתמשכת."
+            "name": "Alphabet Inc",
+            "desc": "Search and cloud behemoth investing heavily in AI and quantum computing.",
+            "news": "GOOG down 2.81% after mixed earnings, AI ad spend still growing.",
+            "why_invest": "Monopoly in search, diversified bets in AI, strong balance sheet."
         },
         {
-            "ticker": "META",
-            "name": "Meta Platforms, Inc.",
-            "desc": "בעלת פייסבוק, אינסטגרם, וואטסאפ; משקיעה במטאוורס ו‑AI למודלים של פרסום מותאם.",
-            "news": "Reddit מובילה את פלטפורמות המדיה החברתית בצמיחת הכנסות למשתמש – מציב את Meta באתגר של שמירת רווחיות פרסום.",
-            "why_invest": "הפחתת עלויות פיתוח מטאוורס, שיפור ROI בפרסום ו‑AI-driven ad targeting."
+            "ticker": "JPM",
+            "name": "JPMorgan Chase & Co",
+            "desc": "Top U.S. bank with diversified revenue streams and strong capital ratios.",
+            "news": "JPM up 1.49% as interest margin expectations rise.",
+            "why_invest": "Beneficiary of higher rates, robust risk management, fintech investments."
         },
         {
-            "ticker": "TSLA",
-            "name": "Tesla, Inc.",
-            "desc": "מובילה ב‑EV, אנרגיה סולארית, מערכות נהיגה אוטונומית ובסיסי סוללות בקנה מידה תעשייתי.",
-            "news": "מחירי נפט גבוהים (XLE עלייה 7.67%) – תומך בתחרות על שוק האנרגיה המתחדשת של Tesla.",
-            "why_invest": "שיפור מרווחי רכב של 15% והרחבת פסי ייצור בגרמניה ובסין."
+            "ticker": "MA",
+            "name": "Mastercard Inc",
+            "desc": "Global payments network with growth from digital payments and fintech partnerships.",
+            "news": "MA up 1.13% on positive transaction volume trends.",
+            "why_invest": "Scalable network, exposure to e‑commerce, high profit margins."
         },
         {
             "ticker": "WMT",
-            "name": "Walmart Inc.",
-            "desc": "רשת קמעונאית גלובלית עם חזקת e‑commerce ו‑logistics מתקדמות.",
-            "news": "WMT עלייה של 3.06% במחיר המניה – משקף חיזוק מכירות קיץ ו‑Grocery Delivery.",
-            "why_invest": "תזרים חופשי יציב, דיבידנד של 1.5% והרחבת שירותים דיגיטליים."
-        },
-        {
-            "ticker": "XOM",
-            "name": "Exxon Mobil Corporation",
-            "desc": "אחת מחברות האנרגיה הגדולות בעולם, בעלת חשיפה למקורות דלק מסורתיים ול‑חסכונות פחמיים חדשים.",
-            "news": "Bנק אוף אמריקה: ערכי ציוד משומש נשארים יציבים ביולי – מעיד על תנודתיות נמוכה בתשתיות האנרגיה.",
-            "why_invest": "תשואה על הון של 9%, דיבידנד של 5% והזדמנויות במזגנים של פחמן ירוק."
+            "name": "Walmart Inc",
+            "desc": "Retail giant leveraging omnichannel strategy and grocery dominance.",
+            "news": "WMT up 3.06% after strong same‑store sales and AI‑driven inventory optimization.",
+            "why_invest": "Defensive exposure, cash generation, growing e‑commerce share."
         },
         {
             "ticker": "V",
-            "name": "Visa Inc.",
-            "desc": "רשת תשלומים גלובלית, רווחיות גבוהה, חשיפה למגמות דיגיטליות בתשלומים.",
-            "news": "US Dollar weakening vs ILS (USDILS=X down 1.64%) – תורם לתזרים תשלומים חוצי גבולות גבוה יותר עבור Visa.",
-            "why_invest": "רווחיות של 55% והצמיחה של 12% במכירות e‑commerce."
+            "name": "Visa Inc",
+            "desc": "Payments processor with expanding crypto‑card initiatives and cross‑border growth.",
+            "news": "V up 0.46% as cross‑border volumes rebound.",
+            "why_invest": "Network effects, pricing power, exposure to digital payments."
+        },
+        {
+            "ticker": "XLE",
+            "name": "Energy Select Sector SPDR Fund",
+            "desc": "ETF tracking U.S. energy companies, benefits from oil price strength.",
+            "news": "XLE up 7.67% reflecting broader energy rally.",
+            "why_invest": "Broad exposure, dividend yield, hedge against inflation."
         }
     ],
     "swing_stocks": [
         {
-            "ticker": "TQQQ",
-            "name": "ProShares UltraPro QQQ",
-            "desc": "ETF ממונף 3x למעקב אחרי Nasdaq‑100, רגיש לתנודות טכנולוגיה גבוהות.",
-            "news": "Nasdaq ^NDX עלייה 1.09% – מספק תנופה למנוף QQQ.",
-            "why_invest": "מתאים לסוחרים בעלי פרופיל סיכון גבוה המחפשים ניצול תזוזות קבועות של טכנולוגיה."
+            "ticker": "TSLA",
+            "name": "Tesla Inc",
+            "desc": "Electric vehicle maker with high beta, volatile on production news.",
+            "news": "TSLA up 4.17% after AI chip partnership announcement.",
+            "why_invest": "Growth from autonomous driving, energy storage, but high valuation risk."
         },
         {
             "ticker": "SNDK",
-            "name": "SanDisk Corp.",
-            "desc": "מוביל בזיכרונות NAND, תומך ב‑AI ו‑Data‑Center demand.",
-            "news": "Micron (MU) עלייה של 10.72% – משקף ביקוש גבוה למוצרי NAND, תומך ב‑SNDK.",
-            "why_invest": "צפי לצמיחה של 25% ברבעון הבא עם עלייה במחירי NAND."
+            "name": "SanDisk Corp",
+            "desc": "Memory semiconductor with strong demand from data centers and AI workloads.",
+            "news": "SNDK up 35.38% on quarterly earnings beat and capacity expansion.",
+            "why_invest": "Cyclical upside, exposure to AI hardware supply chain."
         },
         {
             "ticker": "GTEC",
-            "name": "GreenTech Energy Corp.",
-            "desc": "חברת אנרגיה מתחדשת עם פיתוחים במערכות סולאריות ובאטארי.",
-            "news": "מחירי נפט ו‑גז (XLE) עלייה של 7.67% – מעודד חיפוש אחר אלטרנטיבות נקיות.",
-            "why_invest": "הכנסות משותפות עם חברות טכנולוגיה ו‑תמריצים ממשלתיים בארה\"ב."
-        },
-        {
-            "ticker": "BE",
-            "name": "Bloom Energy Corp.",
-            "desc": "ספקית תאי דלק מתחדשים, משקיעה בפיתוח מערכות חיסכון אנרגטי תעשייתיות.",
-            "news": "מחירי אנרגיה גלובליים יציבים – תומך בביקוש למערכות חיסכון של BE.",
-            "why_invest": "הכנסה משירותי תחזוקה חוזרת ו‑חוזים ארוכי טווח עם חברות תשתית."
-        },
-        {
-            "ticker": "IREN",
-            "name": "Iren SA",
-            "desc": "קבוצת תשתיות אנרגיה ו‑מימן באירופה, עם דגש על תחבורה חכמה.",
-            "news": "מגמת פיתוח של תשתיות מימן באירופה – ממריץ את IREN.",
-            "why_invest": "רווחיות של 12% ותזרים חופשי גבוה מהסכמי שירות ארוכי טווח."
+            "name": "GreenTech Energy Corp",
+            "desc": "Renewable energy developer with recent project wins in Australia.",
+            "news": "GTEC surged 31.97% after Queensland gold project drilling update.",
+            "why_invest": "High upside on project pipeline, but execution risk."
         },
         {
             "ticker": "WDC",
-            "name": "Western Digital Corp.",
-            "desc": "מוביל אחסון נתונים, משקיע ב‑SSD NVMe וב‑AI‑driven storage solutions.",
-            "news": "Micron עלייה משמעותית – משקפת ביקוש לתחום אחסון, תורם ל‑WDC.",
-            "why_invest": "צפי לצמיחה של 18% ברבעון הבא עם קידום מוצרי NVMe."
+            "name": "Western Digital Corp",
+            "desc": "Data storage leader with 17.15% gain on new SSD product launch.",
+            "news": "WDC up 17.15% after unveiling high‑density NVMe drives.",
+            "why_invest": "Beneficiary of data explosion, but competitive market."
         },
         {
-            "ticker": "XLRE",
-            "name": "Real Estate Select Sector SPDR Fund",
-            "desc": "ETF המייצג חברות נדל”ן אמריקאיות, רגיש לשיעורי ריבית ולתזרים השכירות.",
-            "news": "שיעור הריבית הפדרלית עולה – משפיע על עליית עלויות המימון ל‑XLRE.",
-            "why_invest": "פוטנציאל רווחיות משוק נדל”ן מסחרי עם שכירות גבוהה."
+            "ticker": "BE",
+            "name": "Bloom Energy Inc",
+            "desc": "Fuel‑cell power provider seeing 4.83% rise on new utility contracts.",
+            "news": "BE up 4.83% after signing long‑term agreements with West Coast utilities.",
+            "why_invest": "Potential upside from clean‑energy shift, yet cash‑flow constraints."
         },
         {
-            "ticker": "SIMO",
-            "name": "Silvercorp Metals Inc.",
-            "desc": "חברת חציבת כסף באסיה, רווחיות גבוהה בתקופת עליית מחירי מתכות יקרות.",
-            "news": "מחירי זהב (GC=F) עלייה של 0.92% – תומך בביקוש למתכות תעשייתיות כולל כסף.",
-            "why_invest": "צפי לרווחיות של 30% עם עליית מחירי כסף ב‑15% ברבעון הבא."
+            "ticker": "TQQQ",
+            "name": "ProShares UltraPro QQQ",
+            "desc": "Leveraged ETF tracking Nasdaq‑100, extremely volatile.",
+            "news": "TQQQ up 3.12% following tech rally.",
+            "why_invest": "Short‑term momentum play, requires tight risk controls."
         },
         {
-            "ticker": "CIFR",
-            "name": "Cifra Securities Ltd.",
-            "desc": "חברת ניתוחים פיננסיים עם פלטפורמת AI ל‑trading signals.",
-            "news": "פיתוחים חדשים ב‑AI לניתוח שוק – משפרים את ערך המוצר של CIFR.",
-            "why_invest": "דמי מנוי צומחים ב‑40% והקבלה של לקוחות מוסדיים."
+            "ticker": "XLF",
+            "name": "Financial Select Sector SPDR Fund",
+            "desc": "ETF covering U.S. financials, sensitive to rate changes.",
+            "news": "XLF up 0.97% as Fed signals continued rate hikes.",
+            "why_invest": "Macro‑driven upside, but sector concentration risk."
         },
         {
-            "ticker": "XLB",
-            "name": "Materials Select Sector SPDR Fund",
-            "desc": "ETF המייצג חברות חומרי גלם, רגיש למגמות בתעשיית הבנייה והמתכות.",
-            "news": "מחירי מתכות (GC=F) עלייה – מחזק את XLB.",
-            "why_invest": "תזרים חופשי יציב וחשיפה לתעשייה מחזורית עם פוטנציאל רווח גבוה בתקופת התאוששות."
+            "ticker": "XLE",
+            "name": "Energy Select Sector SPDR Fund",
+            "desc": "ETF tracking energy, already listed in long term but also used for swing on price swings.",
+            "news": "XLE up 7.67% on oil price rally.",
+            "why_invest": "Short‑term profit from commodity volatility."
+        },
+        {
+            "ticker": "XLC",
+            "name": "Communication Services SPDR Fund",
+            "desc": "ETF covering media and telecom, benefitting from ad‑revenue growth.",
+            "news": "XLC up 1.53% as Reddit reports user revenue surge.",
+            "why_invest": "Exposure to high‑growth social platforms, but regulatory risk."
+        },
+        {
+            "ticker": "XLY",
+            "name": "Consumer Discretionary SPDR Fund",
+            "desc": "ETF tracking discretionary spending, sensitive to consumer confidence.",
+            "news": "XLY down 1.38% after retail sales miss.",
+            "why_invest": "Potential bounce on holiday season spending."
         }
     ],
     "market_news": [
@@ -241,5 +241,5 @@
             "description": "סיכום הכתבה: Reddit מציגה עלייה של 18% בהכנסות פר משתמש, נובעת משיפור במודלים של מודעות ממומנות ו‑Premium. \nלסיכום: המשקיע יכול לצפות לעלייה בערך המנייה כתוצאה משיפור תזרים המזומנים."
         }
     ],
-    "ai_updated_at": "17.08.2026 | 10:02"
+    "ai_updated_at": "17.08.2026 | 10:12"
 }
