@@ -176,27 +176,34 @@ def format_phase1_text(text):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
+    sentences = [
+        s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
+    ]
+
     if not conclusion:
-        sentences = [
-            s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
-        ]
-        if sentences:
+        if len(sentences) > 1:
             conclusion = sentences[-1]
-            explanation = (
-                " ".join(sentences[:-1]) if len(sentences) > 1 else explanation
-            )
+            explanation = " ".join(sentences[:-1])
         else:
-            conclusion = (
-                explanation
-                if explanation
-                else "נתון זה ממשיך להשפיע על כיוון השוק הכללי."
-            )
+            conclusion = "שילוב נתונים אלו מחייב מעקב דרוך וניהול סיכונים מושכל."
+
+    if conclusion == explanation or not explanation:
+        if len(sentences) > 1:
+            explanation = " ".join(sentences[:-1])
+            conclusion = sentences[-1]
+            if conclusion == explanation:
+                conclusion = "נדרשת תשומת לב מיוחדת והתאמת אסטרטגיה בשוק."
+        else:
+            conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את השפעות המאקרו."
+
+    if explanation == conclusion:
+        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני היא מפתח ההצלחה."
 
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
 
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -235,14 +242,19 @@ def format_analyst_text(text):
         explanation = " ".join(sentences[:-1])
     elif len(sentences) == 1:
         explanation = sentences[0]
-        conclusion = explanation
+        conclusion = "מומלץ להמשיך לעקוב אחר התפתחות המדדים והסנטימנט בשוק."
     else:
         explanation = (
             "האנליסטים ממליצים על מעקב דרוך אחר כיוון השוק והמגמות."
         )
         conclusion = "יש להתאים את התיק בהתאם להתפתחויות."
 
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+    if conclusion == explanation:
+        conclusion = (
+            "ההמלצה המרכזית היא שמירה על גמישות ניהולית והתאמת חשיפה לפי סיכון."
+        )
+
+    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -1223,7 +1235,6 @@ if __name__ == "__main__":
             except Exception as ex:
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
-        # שימוש בפונקציה הייעודית לאנליסטים בלבד כדי למנוע כפילות של "לסיכום:"
         formatted_analyst_1 = format_analyst_text(
             ai_insights.get("ANALYST_POINT_1", "")
         )
