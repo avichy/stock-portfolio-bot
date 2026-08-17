@@ -156,7 +156,7 @@ def format_phase1_text(text):
 
     cleaned = re.sub(
         r"^(?:ניהול\s*סיכונים|המלצות\s*פעולה|סיכונים|ניתוח\s+הסבר[^\n:]+|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
-        "",
+        ="",
         cleaned,
         flags=re.IGNORECASE,
     )
@@ -172,7 +172,6 @@ def format_phase1_text(text):
         explanation = parts[0].strip()
         if len(parts) > 1:
             conclusion = parts[1].strip()
-            # ניקוי מניעת כפילויות של "לסיכום" אם המשתנה מכיל אותן בפנים
             conclusion = re.sub(
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
@@ -190,13 +189,12 @@ def format_phase1_text(text):
                 else "נתון זה ממשיך להשפיע על כיוון השוק הכללי."
             )
 
-    # הסרת כפולות נוספות מתוך ההסבר
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
 
-    # מעבר שורה יחיד ונקי במקום רווח כפול
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+    # סידור: "לסיכום:" בשורה חדשה בפני עצמה, וטקסט הסיכום בשורה שמתחתיה
+    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -1016,28 +1014,29 @@ if __name__ == "__main__":
         market_news_data = ai_insights.get("market_news", [])
         combined_all_headlines = investing_headlines + bizportal_headlines
 
-        if isinstance(market_news_data, list) and len(market_news_data) > 0:
-            for idx, item in enumerate(market_news_data):
-                if idx < len(combined_all_headlines):
-                    if (
-                        not item.get("news_link")
-                        or item.get("news_link") == "https://il.investing.com"
-                    ):
-                        item["news_link"] = combined_all_headlines[idx]["link"]
-        else:
+        # וידוא ששלב 8 מכיל את כל החדשות בצורה מלאה ועשירה (לפחות 8 ידיעות מהפיד)
+        if not isinstance(market_news_data, list):
             market_news_data = []
-            for h in combined_all_headlines[:10]:
-                market_news_data.append(
-                    {
-                        "news_link": h["link"],
-                        "news_title": h["title"],
-                        "news_desc": (
-                            f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות"
-                            " על השווקים."
-                        ),
-                    }
-                )
-            ai_insights["market_news"] = market_news_data
+
+        filled_news_data = []
+        for idx, h in enumerate(combined_all_headlines[:8]):
+            desc = (
+                f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות"
+                " על השווקים."
+            )
+            if idx < len(market_news_data) and isinstance(
+                market_news_data[idx], dict
+            ):
+                ai_item = market_news_data[idx]
+                if ai_item.get("news_desc"):
+                    desc = ai_item.get("news_desc")
+            filled_news_data.append(
+                {"news_link": h["link"], "news_title": h["title"], "news_desc": desc}
+            )
+
+        if filled_news_data:
+            market_news_data = filled_news_data
+        ai_insights["market_news"] = market_news_data
 
         new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
         if not isinstance(new_lt, list) or not new_lt:
