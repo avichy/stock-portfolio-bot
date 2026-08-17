@@ -150,16 +150,16 @@ def format_ai_text(text):
         except Exception:
             pass
 
-    # הסרת קידומות מיותרות כגון analysis, strategy, recommendations, המלצות וכדומה
+    # הסרת קידומות מיותרות, מילות מפתח באנגלית וביטויים משובשים בצורה חלקה
     text = re.sub(
-        r"^(?:analysis|strategy|recommendations|המלצה|המלצות|ניתוח\s+ה?-?[^\n:]*|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
+        r"^[\s\n]*(?:analysis|strategy|recommendations|המלצה|המלצות|ניתוח\s+ה?-?[^\n:]*|קָטָלִיסט[^\n:]*|השפעות[^\n:]*|סיכום הכתבה:?)\s*[:\-]?\s*",
         "",
         text,
         flags=re.IGNORECASE,
     )
     text = re.sub(
-        r"(?:^|\n)\s*(?:analysis|strategy|recommendations|המלצה|embeddings|המלצות)\s*[:\-]?\s*",
-        "\n",
+        r"\b(?:analysis|strategy|recommendations)\b\s*[:\-]?\s*",
+        "",
         text,
         flags=re.IGNORECASE,
     )
@@ -199,7 +199,13 @@ def format_analyst_points_clean(text1, text2):
             t = str(t)
         t = t.strip()
         t = re.sub(
-            r"^(?:analysis|strategy|recommendations|המלצה|המלצות|נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
+            r"^[\s\n]*(?:analysis|strategy|recommendations|המלצה|המלצות|נקודת המנתח\s*\d*|אנליסט\s*\d*|ניתוח)[^\n:]*[:\-]?\s*",
+            "",
+            t,
+            flags=re.IGNORECASE,
+        )
+        t = re.sub(
+            r"\b(?:analysis|strategy|recommendations)\b\s*[:\-]?\s*",
             "",
             t,
             flags=re.IGNORECASE,
@@ -599,7 +605,7 @@ def fetch_ai_insights_split(
 You are an expert Chief Market Strategist who explains financial and geopolitical markets clearly, deeply, and professionally. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
-1. ACCURACY: You must be at least 95% accurate. Never guess or hallucinate numbers or events.
+1. LANGUAGE & ACCURACY: Write in completely standard, fluent, and professional Hebrew financial terminology ONLY. Never use bizarre translation errors, slang, or unrelated words (such as translating financial terms incorrectly like "צנון"). At least 95% accurate.
 2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
 3. UNIFORM "לסיכום:" FORMAT: For EVERY single analysis field below (indices, USD/ILS, oil, gold, btc, and news), you MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication (start directly with the conclusion without repeating phrases like "זה אומר ש...").
 4. DEPTH: Provide comprehensive, professional analysis in clear Hebrew. Avoid generic clichés.
@@ -676,7 +682,7 @@ Return a valid JSON object with exactly these keys:
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES & FORMATTING:
-1. ACCURACY: At least 95% accurate.
+1. LANGUAGE & ACCURACY: Write in completely standard, fluent, and professional Hebrew financial terminology ONLY. At least 95% accurate.
 2. CLEAN TEXT: Do NOT include internal artifact prefixes like "analysis:", "strategy:", "recommendations:", or "המלצה:" at the beginning of any text field. Start the analysis directly with the content.
 3. UNIFORM "לסיכום:" FORMAT: For Catalysts, Risk Management, and Action Recommendations, every point MUST include a new line with exact text: "לסיכום:" followed directly by the practical implication.
 4. DEPTH & ADVANCED INSIGHTS: Avoid obvious, generic statements. Provide advanced, sharp professional insights for risk management and action recommendations.
