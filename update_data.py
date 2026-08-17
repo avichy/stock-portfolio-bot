@@ -164,24 +164,31 @@ def format_phase1_text(text):
         r"מה\s*זה\s*אומר\s*[:\-]*", "", cleaned, flags=re.IGNORECASE
     ).strip()
 
+    explanation = cleaned
+    conclusion = ""
+
     if "לסיכום" in cleaned:
         parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
         explanation = parts[0].strip()
-        conclusion = parts[1].strip() if len(parts) > 1 else ""
-    else:
+        if len(parts) > 1:
+            conclusion = parts[1].strip()
+
+    # מבטיחים שתמיד יהיה סיכום: אם המודל לא סיפק, ניקח את המשפט האחרון או טקסט ברירת מחדל
+    if not conclusion:
         sentences = [
-            s.strip() for s in re.split(r"(?<=[.!?])\s+", cleaned) if s.strip()
+            s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
         ]
-        if len(sentences) > 1:
-            explanation = " ".join(sentences[:-1])
+        if sentences:
             conclusion = sentences[-1]
         else:
-            explanation = cleaned
-            conclusion = cleaned
+            conclusion = (
+                explanation
+                if explanation
+                else "נתון זה ממשיך להשפיע על כיוון השוק הכללי."
+            )
 
-    formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+    formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong> {conclusion}"
     formatted_content = format_numbers_in_text(formatted_content)
-    # שימוש ב-span במקום div כדי למנוע שבירה של ה-DOM ורווחים מיותרים בתוך תגיות span קיימות
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
         f' mt-1">{formatted_content}</span>'
