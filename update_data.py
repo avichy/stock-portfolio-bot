@@ -250,47 +250,15 @@ def format_text_with_conclusion(text, prefix_num=None):
     )
 
 
-def format_news_description(text):
-    if isinstance(text, list):
-        text = " ".join(str(item) for item in text)
-    elif not isinstance(text, str):
-        text = str(text)
-
-    cleaned = text.strip()
-    cleaned = (
-        cleaned.replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
-
-    cleaned = re.sub(
-        r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*",
-        "",
-        cleaned,
-        flags=re.IGNORECASE,
-    ).strip()
-
-    if "לסיכום" in cleaned:
-        parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
-        cleaned = parts[0].strip()
-
-    return format_numbers_in_text(cleaned)
-
-
 def format_phase1_text(text):
     return format_text_with_conclusion(text)
 
 
-def format_analyst_text(text):
-    if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-        text = (
-            "הערכות האנליסטים מצביעות על כך שהחברות המובילות שומרות על חוסן"
-            " פיננסי ויציבות, אך נדרשת בקרה קפדנית לאור תנודתיות השוק."
-        )
-    return format_text_with_conclusion(text, prefix_num=None)
+def format_analyst_text(text, point_num=None):
+    # הסרת הוספת מספר בפייתון והפיכת הרכיב ל-inline כדי שיישאר באותה שורה עם המספר שב-HTML
+    res = format_text_with_conclusion(text, prefix_num=None)
+    res = res.replace("block mt-1", "inline")
+    return res
 
 
 def get_stock_logo_url(ticker):
@@ -736,6 +704,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
 3. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text.
+4. ANALYST_POINT_1 must start with "1. " and ANALYST_POINT_2 must start with "2. ".
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1030,7 +999,7 @@ def build_market_news_html(market_news_list):
             or ""
         )
 
-        formatted_desc = format_news_description(p_desc)
+        formatted_desc = format_text_with_conclusion(p_desc)
 
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
@@ -1260,10 +1229,10 @@ if __name__ == "__main__":
                 print(f"Error processing portfolio stock {ticker}: {ex}")
 
         formatted_analyst_1 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_1", "")
+            ai_insights.get("ANALYST_POINT_1", ""), 1
         )
         formatted_analyst_2 = format_analyst_text(
-            ai_insights.get("ANALYST_POINT_2", "")
+            ai_insights.get("ANALYST_POINT_2", ""), 2
         )
 
         replacements = {
