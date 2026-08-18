@@ -133,7 +133,21 @@ def format_numbers_in_text(text):
 def force_source_on_newline(text):
     if not isinstance(text, str):
         return str(text)
-    return re.sub(r"(?<!<br>)\s*(\(מקור\s*:\s*[^)]+\))", r"<br>\1", text)
+
+    # הסרת שבירת שורה לפני המקור כדי שיישאר באותה שורה עם הטקסט
+    text = re.sub(
+        r"<br>\s*(\(מקור\s*:[^)]+\))", r" \1", text, flags=re.IGNORECASE
+    )
+
+    # הבטחת שבירת שורה (מעבר שורה) בדיוק אחרי המקור עבור הפסקה או הבלוק הבא
+    text = re.sub(
+        r"(\(מקור\s*:[^)]+\))(?!\s*<br\s*/?>)",
+        r"\1<br>",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    return text
 
 
 def format_text_with_conclusion(text, prefix_num=None):
@@ -749,7 +763,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. STRICT TRUTH & NO HALLUCINATION (GEOPOLITICS): You are allowed to analyze geopolitical and macroeconomic factors affecting the market, BUT you must base them **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, do not invent it.
 3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices, technical data, or your own strategic assessment without relying on a specific headline, DO NOT write any source (omit source entirely, do not write anything about sources).
-4. SOURCE FORMATTING (NEW LINE): Whenever you include a source at the end, it MUST be placed on a brand-new line at the very end of the text using a line break (e.g., `<br>(מקור: Investing.com)`), so that the source stands completely alone on its final line.
+4. SOURCE FORMATTING: Whenever you include a source at the end, it MUST be placed on the same line as the text (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after the source there MUST be a line break (`<br>`) so the next block starts on a new line.
 5. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text (right before the source line).
 
 Today is {day_name}, Date: {date_str}.
@@ -813,9 +827,9 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
 2. STRICT TRUTH & NO HALLUCINATION (GEOPOLITICS): You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, do not invent it.
 3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data or your own strategic assessment without relying on a specific headline, DO NOT write any source (omit source entirely, do not write anything about sources).
-4. SOURCE FORMATTING (NEW LINE): Whenever you include a source at the end, it MUST be placed on a brand-new line using a line break (e.g., `<br>(מקור: Investing.com)`).
+4. SOURCE FORMATTING: Whenever you include a source at the end, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`).
 5. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:". Never leave them empty.
-6. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, including "לסיכום:" at the end, and if sourced, source on a new line).
+6. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`).
 7. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 8. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
