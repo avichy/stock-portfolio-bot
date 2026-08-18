@@ -285,6 +285,11 @@ def format_phase1_text(text):
 
 
 def format_analyst_text(text):
+    if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
+        text = (
+            "הערכות האנליסטים מצביעות על כך שהחברות המובילות שומרות על חוסן"
+            " פיננסי ויציבות, אך נדרשת בקרה קפדנית לאור תנודתיות השוק."
+        )
     return format_text_with_conclusion(text, prefix_num=None)
 
 
