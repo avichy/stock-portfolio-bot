@@ -130,6 +130,12 @@ def format_numbers_in_text(text):
     )
 
 
+def force_source_on_newline(text):
+    if not isinstance(text, str):
+        return str(text)
+    return re.sub(r"(?<!<br>)\s*(\(מקור\s*:\s*[^)]+\))", r"<br>\1", text)
+
+
 def format_text_with_conclusion(text, prefix_num=None):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
@@ -244,6 +250,8 @@ def format_text_with_conclusion(text, prefix_num=None):
         f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
+    formatted_content = force_source_on_newline(formatted_content)
+
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
         f' mt-1">{formatted_content}</span>'
@@ -277,7 +285,8 @@ def format_news_description(text):
         parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
         cleaned = parts[0].strip()
 
-    return format_numbers_in_text(cleaned)
+    cleaned = format_numbers_in_text(cleaned)
+    return force_source_on_newline(cleaned)
 
 
 def format_phase1_text(text):
@@ -955,11 +964,13 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
                 or "עדכון וניתוח יומי."
             )
             news = re.sub(r"^סיכום הכתבה:\s*", "", news)
+            news = force_source_on_newline(news)
             why_invest = (
                 s.get("why_invest")
                 or s.get("investment_reason")
                 or "מומנטום חיובי ונתונים פונדמנטליים חזקים המצדיקים כדאיות השקעה."
             )
+            why_invest = force_source_on_newline(why_invest)
         else:
             continue
 
