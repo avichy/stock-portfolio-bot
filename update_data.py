@@ -1069,11 +1069,11 @@ if __name__ == "__main__":
         investing_headlines = fetch_investing_news()
         bizportal_headlines = fetch_bizportal_news()
 
-        ai_insights = {}
+ai_insights = {}
         if is_yahoo_only:
             ai_insights = load_ai_cache()
             if isinstance(ai_insights, dict) and ai_insights:
-                ai_insights["ai_updated_at"] = now_il_str
+                # ai_insights["ai_updated_at"] = now_il_str
         else:
             ai_insights = fetch_ai_insights_split(
                 base_market_data,
