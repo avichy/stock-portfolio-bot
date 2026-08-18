@@ -1069,27 +1069,31 @@ if __name__ == "__main__":
         investing_headlines = fetch_investing_news()
         bizportal_headlines = fetch_bizportal_news()
 
-ai_insights = {}
-        if is_yahoo_only:
-            ai_insights = load_ai_cache()
-            if isinstance(ai_insights, dict) and ai_insights:
-                # ai_insights["ai_updated_at"] = now_il_str
-        else:
-            ai_insights = fetch_ai_insights_split(
-                base_market_data,
-                portfolio_buys,
-                date_str,
-                day_name,
-                investing_headlines,
-                bizportal_headlines,
-                now_il_str,
-            )
-            if (
-                ai_insights
-                and isinstance(ai_insights, dict)
-                and len(ai_insights) > 3
-            ):
-                save_ai_cache(ai_insights)
+        try:
+            ai_insights = {}
+            if is_yahoo_only:
+                ai_insights = load_ai_cache()
+                if isinstance(ai_insights, dict) and ai_insights:
+                    # ai_insights["ai_updated_at"] = now_il_str
+            else:
+                ai_insights = fetch_ai_insights_split(
+                    base_market_data,
+                    portfolio_buys,
+                    date_str,
+                    day_name,
+                    investing_headlines,
+                    bizportal_headlines,
+                    now_il_str,
+                )
+                if (
+                    ai_insights
+                    and isinstance(ai_insights, dict)
+                    and len(ai_insights) > 3
+                ):
+                    save_ai_cache(ai_insights)
+        except Exception as e:
+            print(f"Error handling AI insights: {e}")
+            ai_insights = {}
 
         market_news_data = ai_insights.get("market_news", [])
         combined_all_headlines = investing_headlines + bizportal_headlines
