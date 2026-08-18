@@ -319,7 +319,11 @@ def fetch_investing_news():
                     and link.text
                 ):
                     news_items.append(
-                        {"title": title.text.strip(), "link": link.text.strip()}
+                        {
+                            "title": title.text.strip(),
+                            "link": link.text.strip(),
+                            "source": "Investing.com",
+                        }
                     )
             return news_items[:15]
     except Exception as e:
@@ -709,7 +713,7 @@ def fetch_ai_insights_split(
 
     inv_formatted = (
         "\n".join(
-            [f"- Title: {h['title']} | Link: {h['link']}" for h in investing_headlines]
+            [f"- Title: {h['title']} | Source: {h.get('source', 'Investing.com')} | Link: {h['link']}" for h in investing_headlines]
         )
         if investing_headlines
         else "No headlines."
@@ -735,7 +739,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. ACCURACY: At least 95% accurate.
-3. SOURCES & VERIFICATION: Only include a source in parentheses (e.g., (מקור: Investing)) if the analysis or insight is directly derived from a specific news headline provided below. If the analysis is based on general market prices, technical data, or your own strategic assessment without relying on a specific headline, **do not write any source** (omit source entirely).
+3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If the analysis is based on general market prices, technical data, or your own strategic assessment without relying on a specific headline, DO NOT write any source (omit source entirely, do not write anything about sources).
 4. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph starting with "מה זה אומר:" followed by the analysis, and include "לסיכום:" explicitly at the end of the text.
 
 Today is {day_name}, Date: {date_str}.
@@ -797,7 +801,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. SOURCES & VERIFICATION: Only include a source in parentheses (e.g., (מקור: Investing)) if the insight or update is directly derived from a specific news headline provided below. If it is based on general data or your own strategic assessment without relying on a specific headline, **do not write any source** (omit source entirely).
+2. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data or your own strategic assessment without relying on a specific headline, DO NOT write any source (omit source entirely, do not write anything about sources).
 3. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:". Never leave them empty.
 4. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear and concise summary, including "לסיכום:" at the end).
 5. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
