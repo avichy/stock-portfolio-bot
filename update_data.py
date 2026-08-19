@@ -87,6 +87,29 @@ def load_portfolio_buys():
 portfolio_buys = load_portfolio_buys()
 
 
+def verify_sentence_numbers(sentence, actual_value, tolerance=0.05):
+    """
+    פילטר הזיות נומרי חכם: בודק האם המספרים במשפט תואמים לערך האמיתי מה-API בגבולות סובלנות.
+    """
+    if not sentence or actual_value is None:
+        return False
+        
+    clean_sentence = sentence.replace(',', '')
+    found_numbers = re.findall(r'\d+(?:\.\d+)?', clean_sentence)
+    
+    if not found_numbers:
+        return True 
+
+    float_numbers = [float(num) for num in found_numbers]
+    
+    for num in float_numbers:
+        if abs(num - float(actual_value)) <= max(tolerance, float(actual_value) * 0.005):
+            return True
+            
+    print(f"🛡️ Hallucination Number Filter: Omitted unverified sentence -> '{sentence}' (Value mismatch with actual: {actual_value})")
+    return False
+
+
 def filter_hallucinations(text, headlines_list):
     """
     מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות.
@@ -232,7 +255,6 @@ def format_text_with_conclusion(text, prefix_num=None):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
-    # ניקוי ירידות שורה נסתרות והסרת מקור פנימי למניעת רווחים מיותרים בשלבים 3, 7 ו-8
     explanation = re.sub(r'\s*\n+\s*', ' ', explanation).strip()
     conclusion = re.sub(r'\s*\n+\s*', ' ', conclusion).strip()
     
@@ -356,7 +378,6 @@ def format_news_description(text):
             conclusion_news = parts[1].strip()
             conclusion_news = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion_news).strip()
 
-    # ניקוי שורות ושאריות מקור בחדשות
     cleaned = re.sub(r'\s*\n+\s*', ' ', cleaned).strip()
     conclusion_news = re.sub(r'\s*\n+\s*', ' ', conclusion_news).strip()
     cleaned = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', cleaned)
@@ -462,7 +483,7 @@ LT_STOCKS_META = [
         "name": "Walmart Inc.",
         "desc": "רשת הקמעונאות והמרכולים הגדולה בעולם (סקטור צרכנות בסיסית).",
         "news": "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר האלקטרוני.",
-        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרحב המבטיחים צמיחה יציבה.",
+        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרחב המבטיחים צמיחה יציבה.",
     },
     {
         "ticker": "AMZN",
@@ -876,7 +897,23 @@ Return a valid JSON object with exactly these keys:
             
             for k, v in parsed1.items():
                 if isinstance(v, str):
-                    parsed1[k] = filter_hallucinations(v, safe_investing_headlines)
+                    filtered_v = filter_hallucinations(v, safe_investing_headlines)
+                    
+                    # הפשטת וידוא נומרי למדדים/נכסים מרכזיים לפי מחירי אמת
+                    if k == "OIL_EXPLANATION" and "CL=F" in market_data:
+                        if not verify_sentence_numbers(filtered_v, market_data["CL=F"].get("price")):
+                            filtered_v = f"המחיר הריאלי של הנפט נסחר סביב ${market_data['CL=F'].get('price')}.<br><strong>לסיכום:</strong><br>מעקב הדוק אחר מחירי האנרגיה בשוק."
+                    elif k == "BTC_EXPLANATION" and "BTC-USD" in market_data:
+                        if not verify_sentence_numbers(filtered_v, market_data["BTC-USD"].get("price")):
+                            filtered_v = f"שער הביטקוין נסחר סביב ${format_num(market_data['BTC-USD'].get('price'))}.<br><strong>לסיכום:</strong><br>נכסי הקריפטו ממשיכים להציג תנודתיות גבוהה."
+                    elif k == "GOLD_EXPLANATION" and "GC=F" in market_data:
+                        if not verify_sentence_numbers(filtered_v, market_data["GC=F"].get("price")):
+                            filtered_v = f"מחיר הזהב עומד על סביב ${format_num(market_data['GC=F'].get('price'))}.<br><strong>לסיכום:</strong><br>הזהב משמש כעוגן גידור מרכזי בשווקים."
+                    elif k == "USD_ILS_EXPLANATION" and "USDILS=X" in market_data:
+                        if not verify_sentence_numbers(filtered_v, market_data["USDILS=X"].get("price")):
+                            filtered_v = f"שער החליפין דולר-שקל נסחר סביב {format_num(market_data['USDILS=X'].get('price'))}₪.<br><strong>לסיכום:</strong><br>שערי המט"ח מחייבים מעקב רציף."
+                            
+                    parsed1[k] = filtered_v
 
             combined_result.update(parsed1)
             print("Successfully parsed Part 1 JSON using key:", key_name)
