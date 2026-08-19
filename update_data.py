@@ -272,9 +272,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    # שימוש ברווח אנכי נקי (<br><br>) המפריד בין גוף ההסבר לתיבת הסיכום
+    # שימוש בשורה נקייה וישירה (מניעת שורת רווח כפולה)
     formatted_content = (
-        f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
@@ -321,7 +321,7 @@ def format_news_description(text):
     cleaned = force_source_on_newline(cleaned)
 
     if conclusion_news:
-        return f"{cleaned}<br><br><strong>לסיכום:</strong><br>{conclusion_news}"
+        return f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
     return cleaned
 
 
