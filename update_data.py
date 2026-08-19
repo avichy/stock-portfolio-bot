@@ -909,11 +909,11 @@ Return a valid JSON object with exactly these keys:
                     elif k == "GOLD_EXPLANATION" and "GC=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["GC=F"].get("price")):
                             filtered_v = f"מחיר הזהב עומד על סביב ${format_num(market_data['GC=F'].get('price'))}.<br><strong>לסיכום:</strong><br>הזהב משמש כעוגן גידור מרכזי בשווקים."
-                    elif k == "USD_ILS_EXPLANATION" and "USDILS=X" in market_data:
-                        if not verify_sentence_numbers(filtered_v, market_data["USDILS=X"].get("price")):
-filtered_v = f"""שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))} ...
+elif k == "USD ILS EXPLANATION" and "USDILS=X" in market_data:
+            if not verify_sentence_numbers(filtered_v, market_data['USDILS=X'].get('price')):
+                filtered_v = f"""שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))} ...
 <br><strong>לסיכום:</strong><br>
-כאן יבוא שאר הטקסט שלך..."""                            
+הטקסט שלך כאן..."""                   
                     parsed1[k] = filtered_v
 
             combined_result.update(parsed1)
