@@ -134,23 +134,17 @@ def force_source_on_newline(text):
     if not isinstance(text, str):
         return str(text)
 
-    # הסרת סימני פיסוק מיותרים בתחילת שורות (כמו ;)
     text = re.sub(r"(^|<br>)\s*;\s*", r"\1", text)
     text = re.sub(r"(^|<br>)\s*,\s*", r"\1", text)
-
-    # הסרת שבירת שורה לפני המקור כדי שיישאר באותה שורה עם הטקסט
     text = re.sub(
         r"<br>\s*(\(מקור\s*:[^)]+\))", r" \1", text, flags=re.IGNORECASE
     )
-
-    # הבטחת שבירת שורה (מעבר שורה) בדיוק אחרי המקור עבור הפסקה או הבלוק הבא
     text = re.sub(
         r"(\(מקור\s*:[^)]+\))(?!\s*<br\s*/?>)",
         r"\1<br>",
         text,
         flags=re.IGNORECASE,
     )
-
     return text
 
 
@@ -169,7 +163,6 @@ def format_text_with_conclusion(text, prefix_num=None):
         except Exception:
             pass
 
-    # שליפת המקור אם קיים בטקסט כדי להבטיח שלא ייכנס לסיכום
     source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
     source_str = source_match.group(1) if source_match else ""
     if source_str:
@@ -206,7 +199,6 @@ def format_text_with_conclusion(text, prefix_num=None):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
-    # ניקוי סימני פיסוק עודפים מההתחלה
     explanation = re.sub(r"(^|<br>)\s*;\s*", r"\1", explanation)
     conclusion = re.sub(r"(^|<br>)\s*;\s*", r"\1", conclusion)
 
@@ -267,8 +259,6 @@ def format_text_with_conclusion(text, prefix_num=None):
     conclusion = re.sub(
         r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
-
-    # לוודא שאין מקור בחלק של הסיכום בשום אופן
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
     if prefix_num is not None:
@@ -277,7 +267,6 @@ def format_text_with_conclusion(text, prefix_num=None):
             explanation = text.strip()
         explanation = f"{prefix_num}. {explanation}"
 
-    # החזרת המקור אך ורק לסוף ההסבר הראשי (לפני הסיכום)
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
@@ -1439,3 +1428,4 @@ if __name__ == "__main__":
         print(f"❌ Critical Error in main execution: {e}")
         traceback.print_exc()
         exit(1)
+```[cite: 5]
