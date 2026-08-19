@@ -145,6 +145,7 @@ def force_source_on_newline(text):
         text,
         flags=re.IGNORECASE,
     )
+
     return text
 
 
@@ -259,6 +260,7 @@ def format_text_with_conclusion(text, prefix_num=None):
     conclusion = re.sub(
         r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
+
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
     if prefix_num is not None:
@@ -1428,4 +1430,3 @@ if __name__ == "__main__":
         print(f"❌ Critical Error in main execution: {e}")
         traceback.print_exc()
         exit(1)
-```[cite: 5]
