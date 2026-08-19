@@ -149,7 +149,28 @@ def force_source_on_newline(text):
     return text
 
 
-def format_text_with_conclusion(text, prefix_num=None):
+def clean_conclusion_spacing(text: str) -> str:
+    """
+    מתקן מעברי שורה מיותרים לפני המילה 'לסיכום:' 
+    וממיר אותם למעבר שורה בודד באמצעות <br> (רלוונטי לשלבים 3, 7 ו-8).
+    """
+    if not text:
+        return ""
+    return re.sub(r'\n+\s*(לסיכום:)', r'<br>\1', text)
+
+
+def strip_sources(text: str) -> str:
+    """
+    מסיר לחלוטין כל אזכור של מקור מתוך טקסט ה-AI (לשימוש בשלב 8 בלבד).
+    """
+    if not text:
+        return ""
+    cleaned = re.sub(r'\s*\(מקור:.*?\)', '', text, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\s*\[מקור:.*?\]', '', cleaned, flags=re.IGNORECASE)
+    return cleaned.strip()
+
+
+def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -164,10 +185,14 @@ def format_text_with_conclusion(text, prefix_num=None):
         except Exception:
             pass
 
-    source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
-    source_str = source_match.group(1) if source_match else ""
-    if source_str:
-        text = text.replace(source_str, "").strip()
+    source_str = ""
+    if remove_sources:
+        text = strip_sources(text)
+    else:
+        source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
+        source_str = source_match.group(1) if source_match else ""
+        if source_str:
+            text = text.replace(source_str, "").strip()
 
     cleaned = (
         text.replace("{", "")
@@ -261,7 +286,8 @@ def format_text_with_conclusion(text, prefix_num=None):
         r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
 
-    conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
+    if not remove_sources:
+        conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
     if prefix_num is not None:
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
@@ -269,15 +295,17 @@ def format_text_with_conclusion(text, prefix_num=None):
             explanation = text.strip()
         explanation = f"{prefix_num}. {explanation}"
 
-    if source_str:
+    if source_str and not remove_sources:
         explanation = explanation.strip() + " " + source_str
 
-    # שימוש בשורה נקייה וישירה (מניעת שורת רווח כפולה)
     formatted_content = (
         f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
+    
+    # תיקון רווח שורות עבור שלבים 7 ו-8
+    formatted_content = clean_conclusion_spacing(formatted_content)
 
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -321,7 +349,9 @@ def format_news_description(text):
     cleaned = force_source_on_newline(cleaned)
 
     if conclusion_news:
-        return f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
+        formatted_news = f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
+        # תיקון רווח שורות עבור שלב 3
+        return clean_conclusion_spacing(formatted_news)
     return cleaned
 
 
@@ -1402,11 +1432,11 @@ if __name__ == "__main__":
             ),
             "ANALYST_POINT_1": formatted_analyst_1,
             "ANALYST_POINT_2": formatted_analyst_2,
-            "RISK_MANAGEMENT_TEXT": format_phase1_text(
-                ai_insights.get("RISK_MANAGEMENT_TEXT", "")
+            "RISK_MANAGEMENT_TEXT": format_text_with_conclusion(
+                ai_insights.get("RISK_MANAGEMENT_TEXT", ""), remove_sources=False
             ),
-            "ACTION_RECOMMENDATIONS_TEXT": format_phase1_text(
-                ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
+            "ACTION_RECOMMENDATIONS_TEXT": format_text_with_conclusion(
+                ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""), remove_sources=True
             ),
             "LONG_TERM_STOCKS_SECTION": lt_html,
             "SWING_STOCKS_SECTION": sw_html,
