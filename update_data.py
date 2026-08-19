@@ -272,8 +272,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
+    # שימוש ברווח אנכי נקי (<br><br>) המפריד בין גוף ההסבר לתיבת הסיכום
     formatted_content = (
-        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+        f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
@@ -307,13 +308,21 @@ def format_news_description(text):
         flags=re.IGNORECASE,
     ).strip()
 
+    conclusion_news = ""
     if "לסיכום" in cleaned:
         parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
         cleaned = parts[0].strip()
+        if len(parts) > 1:
+            conclusion_news = parts[1].strip()
+            conclusion_news = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion_news).strip()
 
     cleaned = re.sub(r"(^|<br>)\s*;\s*", r"\1", cleaned)
     cleaned = format_numbers_in_text(cleaned)
-    return force_source_on_newline(cleaned)
+    cleaned = force_source_on_newline(cleaned)
+
+    if conclusion_news:
+        return f"{cleaned}<br><br><strong>לסיכום:</strong><br>{conclusion_news}"
+    return cleaned
 
 
 def format_phase1_text(text):
@@ -774,9 +783,9 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. STRICT TRUTH & NO HALLUCINATION (GEOPOLITICS): You are allowed to analyze geopolitical and macroeconomic factors affecting the market, BUT you must base them **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, do not invent it.
-3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices, technical data, or your own strategic assessment without relying on a specific headline, DO NOT write any source (omit source entirely, do not write anything about sources).
-4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after the source there MUST be a line break (`<br>`) so the next block starts on a new line. **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
+2. STRICT TRUTH & NO HALLUCINATION: Base your analysis **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, do not invent it.
+3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices or technical data without relying on a specific headline, DO NOT write any source.
+4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after it there MUST be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line, sentence, or block with punctuation characters like `;` or `,`. Start clean with text.
 6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
 
@@ -839,8 +848,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. STRICT TRUTH & NO HALLUCINATION (GEOPOLITICS): You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, do not invent it.
-3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data or your own strategic assessment without relying on a specific headline, DO NOT write any source.
+2. STRICT TRUTH & NO HALLUCINATION: You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, do not invent it.
+3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data without relying on a specific headline, DO NOT write any source.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main text body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line or bullet point with punctuation characters like `;` or `,`.
 6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
