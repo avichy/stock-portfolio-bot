@@ -87,6 +87,38 @@ def load_portfolio_buys():
 portfolio_buys = load_portfolio_buys()
 
 
+def filter_hallucinations(text, headlines_list):
+    """
+    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות.
+    """
+    if not text or not isinstance(text, str):
+        return ""
+
+    headline_keywords = set()
+    for h in headlines_list:
+        title = h.get('title', '') if isinstance(h, dict) else str(h)
+        words = [w.strip(".,!?()[]{}<>:-") for w in title.split() if len(w.strip(".,!?()[]{}<>:-")) > 3]
+        headline_keywords.update(words)
+
+    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
+    valid_sentences = []
+
+    for sentence in sentences:
+        if any(k in sentence for k in ['לסיכום', 'מומלץ', 'תנודתיות', 'שוק', 'מגמה', 'מסחר', 'מדד']):
+            valid_sentences.append(sentence)
+            continue
+
+        sentence_words = set(w.strip(".,!?()[]{}<>:-") for w in sentence.split() if len(w.strip(".,!?()[]{}<>:-")) > 3)
+        intersection = sentence_words.intersection(headline_keywords)
+        
+        if len(headline_keywords) == 0 or len(intersection) > 0 or "מקור:" in sentence:
+            valid_sentences.append(sentence)
+        else:
+            print(f"🛡️ Hallucination Filter: Omitted unverified sentence -> '{sentence[:40]}...'")
+
+    return " ".join(valid_sentences)
+
+
 def format_num(val, decimals=2):
     try:
         num = float(val)
@@ -750,6 +782,9 @@ def fetch_ai_insights_split(
         cached = load_ai_cache()
         return cached if cached else {}
 
+    # הגבלת כמות החדשות שנשלחות ל-AI ל-8 פריטים למניעת שגיאת 413 (Token limit)
+    safe_investing_headlines = investing_headlines[:8] if investing_headlines else []
+
     market_summary = {
         t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
         for t, d in market_data.items()
@@ -757,9 +792,9 @@ def fetch_ai_insights_split(
 
     inv_formatted = (
         "\n".join(
-            [f"- Title: {h['title']} | Source: {h.get('source', 'Investing.com')} | Link: {h['link']}" for h in investing_headlines]
+            [f"- Title: {h['title']} | Source: {h.get('source', 'Investing.com')} | Link: {h['link']}" for h in safe_investing_headlines]
         )
-        if investing_headlines
+        if safe_investing_headlines
         else "No headlines."
     )
     headlines_formatted = inv_formatted
@@ -786,7 +821,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices or technical data without relying on a specific headline, DO NOT write any source.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after it there MUST be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line, sentence, or block with punctuation characters like `;` or `,`. Start clean with text.
-6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich, deep, comprehensive economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
+6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -817,18 +852,24 @@ Return a valid JSON object with exactly these keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                max_tokens=8192,  # מוגדל ל-8192 למניעת חיתוך ומתן הסברים עמוקים
+                max_tokens=4000,
             )
 
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
+            
+            # הפעלת מסנן המצאות על התשובות
+            for k, v in parsed1.items():
+                if isinstance(v, str):
+                    parsed1[k] = filter_hallucinations(v, safe_investing_headlines)
+
             combined_result.update(parsed1)
             print("Successfully parsed Part 1 JSON using key:", key_name)
             break
         except Exception as e:
             print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+                print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
                 time.sleep(5)
@@ -851,8 +892,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data without relying on a specific headline, DO NOT write any source.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main text body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line or bullet point with punctuation characters like `;` or `,`.
-6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed, deep, professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
-7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear, deep summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`, but strictly NO source inside the conclusion).
+6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
+7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`, but strictly NO source inside the conclusion).
 8. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 9. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -879,18 +920,28 @@ Return a valid JSON object with exactly these 8 keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                max_tokens=8192,  # מוגדל ל-8192 למניעת חיתוך ומתן הסברים עמוקים
+                max_tokens=4000,
             )
 
             raw_text2 = response2.choices[0].message.content.strip()
             parsed2 = json.loads(raw_text2)
+            
+            # הפעלת מסנן המצאות על התשובות
+            for k, v in parsed2.items():
+                if isinstance(v, str):
+                    parsed2[k] = filter_hallucinations(v, safe_investing_headlines)
+                elif isinstance(v, list) and k == 'market_news':
+                    for item in v:
+                        if isinstance(item, dict) and 'news_desc' in item:
+                            item['news_desc'] = filter_hallucinations(item['news_desc'], safe_investing_headlines)
+
             combined_result.update(parsed2)
             print("Successfully parsed Part 2 JSON using key:", key_name)
             break
         except Exception as e:
             print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e):
-                print(f"⏳ Rate limit hit. Waiting 60 seconds...")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+                print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
                 time.sleep(5)
