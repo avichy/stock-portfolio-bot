@@ -232,6 +232,15 @@ def format_text_with_conclusion(text, prefix_num=None):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
+    # ניקוי ירידות שורה נסתרות והסרת מקור פנימי למניעת רווחים מיותרים בשלבים 3, 7 ו-8
+    explanation = re.sub(r'\s*\n+\s*', ' ', explanation).strip()
+    conclusion = re.sub(r'\s*\n+\s*', ' ', conclusion).strip()
+    
+    explanation = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', explanation)
+    explanation = re.sub(r'מקור:\s*.*?(?=<|$)', '', explanation)
+    conclusion = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', conclusion)
+    conclusion = re.sub(r'מקור:\s*.*?(?=<|$)', '', conclusion)
+
     explanation = re.sub(r"(^|<br>)\s*;\s*", r"\1", explanation)
     conclusion = re.sub(r"(^|<br>)\s*;\s*", r"\1", conclusion)
 
@@ -312,7 +321,7 @@ def format_text_with_conclusion(text, prefix_num=None):
 
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
-        f' mt-1">{formatted_content}</span>'
+        f' mt-1 mb-4">{formatted_content}</span>'
     )
 
 
@@ -346,6 +355,14 @@ def format_news_description(text):
         if len(parts) > 1:
             conclusion_news = parts[1].strip()
             conclusion_news = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion_news).strip()
+
+    # ניקוי שורות ושאריות מקור בחדשות
+    cleaned = re.sub(r'\s*\n+\s*', ' ', cleaned).strip()
+    conclusion_news = re.sub(r'\s*\n+\s*', ' ', conclusion_news).strip()
+    cleaned = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', cleaned)
+    cleaned = re.sub(r'מקור:\s*.*?(?=<|$)', '', cleaned)
+    conclusion_news = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', conclusion_news)
+    conclusion_news = re.sub(r'מקור:\s*.*?(?=<|$)', '', conclusion_news)
 
     cleaned = re.sub(r"(^|<br>)\s*;\s*", r"\1", cleaned)
     cleaned = format_numbers_in_text(cleaned)
@@ -445,7 +462,7 @@ LT_STOCKS_META = [
         "name": "Walmart Inc.",
         "desc": "רשת הקמעונאות והמרכולים הגדולה בעולם (סקטור צרכנות בסיסית).",
         "news": "ביקושים יציבים בכל תנאי מאקרו וצמיחה מרשימה בפעילות המסחר האלקטרוני.",
-        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרחב המבטיחים צמיחה יציבה.",
+        "why_invest": "חסינות אינפלציונית מוכחת ונוכחות אלקטרונית מתרحב המבטיחים צמיחה יציבה.",
     },
     {
         "ticker": "AMZN",
@@ -782,7 +799,6 @@ def fetch_ai_insights_split(
         cached = load_ai_cache()
         return cached if cached else {}
 
-    # הגבלת כמות החדשות שנשלחות ל-AI ל-8 פריטים למניעת שגיאת 413 (Token limit)
     safe_investing_headlines = investing_headlines[:8] if investing_headlines else []
 
     market_summary = {
@@ -858,7 +874,6 @@ Return a valid JSON object with exactly these keys:
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
             
-            # הפעלת מסנן המצאות על התשובות
             for k, v in parsed1.items():
                 if isinstance(v, str):
                     parsed1[k] = filter_hallucinations(v, safe_investing_headlines)
@@ -926,7 +941,6 @@ Return a valid JSON object with exactly these 8 keys:
             raw_text2 = response2.choices[0].message.content.strip()
             parsed2 = json.loads(raw_text2)
             
-            # הפעלת מסנן המצאות על התשובות
             for k, v in parsed2.items():
                 if isinstance(v, str):
                     parsed2[k] = filter_hallucinations(v, safe_investing_headlines)
