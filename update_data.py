@@ -895,9 +895,9 @@ Return a valid JSON object with exactly these keys:
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
             
-   for k, v in parsed1.items():
+            for k, v in parsed1.items():
                 if isinstance(v, str):
-                    filtered_v = filter_hallucinations(v, safe_investing_headline)
+                    filtered_v = filter_hallucinations(v, safe_investing_headlines)
 
                     # הוספת הגנה עבור מספרים/נתונים ספציפיים לפי שפה אחת
                     if k == "OIL_EXPLANATION" and "CL=F" in market_data:
