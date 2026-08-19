@@ -149,28 +149,7 @@ def force_source_on_newline(text):
     return text
 
 
-def clean_conclusion_spacing(text: str) -> str:
-    """
-    מתקן מעברי שורה מיותרים לפני המילה 'לסיכום:' 
-    וממיר אותם למעבר שורה בודד באמצעות <br> (רלוונטי לשלבים 3, 7 ו-8).
-    """
-    if not text:
-        return ""
-    return re.sub(r'\n+\s*(לסיכום:)', r'<br>\1', text)
-
-
-def strip_sources(text: str) -> str:
-    """
-    מסיר לחלוטין כל אזכור של מקור מתוך טקסט ה-AI (לשימוש בשלב 8 בלבד).
-    """
-    if not text:
-        return ""
-    cleaned = re.sub(r'\s*\(מקור:.*?\)', '', text, flags=re.IGNORECASE)
-    cleaned = re.sub(r'\s*\[מקור:.*?\]', '', cleaned, flags=re.IGNORECASE)
-    return cleaned.strip()
-
-
-def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
+def format_text_with_conclusion(text, prefix_num=None):
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -185,14 +164,10 @@ def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
         except Exception:
             pass
 
-    source_str = ""
-    if remove_sources:
-        text = strip_sources(text)
-    else:
-        source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
-        source_str = source_match.group(1) if source_match else ""
-        if source_str:
-            text = text.replace(source_str, "").strip()
+    source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
+    source_str = source_match.group(1) if source_match else ""
+    if source_str:
+        text = text.replace(source_str, "").strip()
 
     cleaned = (
         text.replace("{", "")
@@ -286,8 +261,7 @@ def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
         r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
 
-    if not remove_sources:
-        conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
+    conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
     if prefix_num is not None:
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
@@ -295,7 +269,7 @@ def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
             explanation = text.strip()
         explanation = f"{prefix_num}. {explanation}"
 
-    if source_str and not remove_sources:
+    if source_str:
         explanation = explanation.strip() + " " + source_str
 
     formatted_content = (
@@ -303,9 +277,6 @@ def format_text_with_conclusion(text, prefix_num=None, remove_sources=False):
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
-    
-    # תיקון רווח שורות עבור שלבים 7 ו-8
-    formatted_content = clean_conclusion_spacing(formatted_content)
 
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
@@ -349,9 +320,7 @@ def format_news_description(text):
     cleaned = force_source_on_newline(cleaned)
 
     if conclusion_news:
-        formatted_news = f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
-        # תיקון רווח שורות עבור שלב 3
-        return clean_conclusion_spacing(formatted_news)
+        return f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
     return cleaned
 
 
@@ -817,7 +786,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices or technical data without relying on a specific headline, DO NOT write any source.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after it there MUST be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line, sentence, or block with punctuation characters like `;` or `,`. Start clean with text.
-6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
+6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich, deep, comprehensive economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -848,7 +817,7 @@ Return a valid JSON object with exactly these keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                max_tokens=4000,
+                max_tokens=8192,  # מוגדל ל-8192 למניעת חיתוך ומתן הסברים עמוקים
             )
 
             raw_text1 = response1.choices[0].message.content.strip()
@@ -882,8 +851,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data without relying on a specific headline, DO NOT write any source.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main text body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line or bullet point with punctuation characters like `;` or `,`.
-6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
-7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`, but strictly NO source inside the conclusion).
+6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed, deep, professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
+7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear, deep summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`, but strictly NO source inside the conclusion).
 8. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 9. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
@@ -910,7 +879,7 @@ Return a valid JSON object with exactly these 8 keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                max_tokens=4000,
+                max_tokens=8192,  # מוגדל ל-8192 למניעת חיתוך ומתן הסברים עמוקים
             )
 
             raw_text2 = response2.choices[0].message.content.strip()
@@ -1432,11 +1401,11 @@ if __name__ == "__main__":
             ),
             "ANALYST_POINT_1": formatted_analyst_1,
             "ANALYST_POINT_2": formatted_analyst_2,
-            "RISK_MANAGEMENT_TEXT": format_text_with_conclusion(
-                ai_insights.get("RISK_MANAGEMENT_TEXT", ""), remove_sources=False
+            "RISK_MANAGEMENT_TEXT": format_phase1_text(
+                ai_insights.get("RISK_MANAGEMENT_TEXT", "")
             ),
-            "ACTION_RECOMMENDATIONS_TEXT": format_text_with_conclusion(
-                ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", ""), remove_sources=True
+            "ACTION_RECOMMENDATIONS_TEXT": format_phase1_text(
+                ai_insights.get("ACTION_RECOMMENDATIONS_TEXT", "")
             ),
             "LONG_TERM_STOCKS_SECTION": lt_html,
             "SWING_STOCKS_SECTION": sw_html,
