@@ -1,7 +1,9 @@
+import base64
 from datetime import datetime
 import json
 import os
 import re
+import time
 import traceback
 import urllib.parse
 import urllib.request
@@ -865,7 +867,7 @@ Return a valid JSON object with exactly these keys:
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
                 temperature=0.0,
-                max_tokens=4000,
+                max_tokens=8000,
             )
 
             raw_text1 = response1.choices[0].message.content.strip()
