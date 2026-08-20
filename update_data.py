@@ -335,8 +335,8 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    formatted_content = (
-        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+formatted_content = (
+        f"{explanation}<div class='mt-2'><strong>לסיכום:</strong></div><div class='mt-1'>{conclusion}</div>"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
