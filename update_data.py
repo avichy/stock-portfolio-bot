@@ -335,8 +335,8 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-formatted_content = (
-        f"{explanation}<div class='mt-2'><strong>לסיכום:</strong></div><div class='mt-1'>{conclusion}</div>"
+    formatted_content = (
+        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
@@ -899,7 +899,6 @@ Return a valid JSON object with exactly these keys:
                 if isinstance(v, str):
                     filtered_v = filter_hallucinations(v, safe_investing_headlines)
 
-                    # הוספת הגנה עבור מספרים/נתונים ספציפיים לפי שפה אחת
                     if k == "OIL_EXPLANATION" and "CL=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["CL=F"].get("price")):
                             filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}.<br><strong>לסיכום:</strong><br>מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
