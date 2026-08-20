@@ -8,6 +8,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 import pytz
 import requests
+from bs4 import BeautifulSoup
 from groq import Groq
 
 AI_CACHE_FILE = "ai_cache.json"
@@ -370,7 +371,45 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-    return []
+    """
+    שליפת כותרות חדשותיות פיננסיות מעמוד הבית של ביזפורטל עבור השוק הישראלי
+    """
+    url = "https://www.bizportal.co.il/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"Failed to fetch Bizportal, status code: {response.status_code}")
+            return []
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        news_items = []
+        seen_titles = set()
+        
+        for a_tag in soup.find_all('a', href=True):
+            text = a_tag.get_text(strip=True)
+            href = a_tag['href']
+            if len(text) > 20 and text not in seen_titles:
+                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר"]):
+                    if href.startswith('/'):
+                        link = f"https://www.bizportal.co.il{href}"
+                    elif not href.startswith('http'):
+                        link = f"https://www.bizportal.co.il/{href}"
+                    else:
+                        link = href
+                        
+                    seen_titles.add(text)
+                    news_items.append({
+                        "title": text,
+                        "link": link,
+                        "source": "Bizportal"
+                    })
+        return news_items[:15]
+    except Exception as e:
+        print(f"Warning: Error fetching Bizportal: {e}")
+        return []
 
 
 LT_STOCKS_META = [
@@ -745,6 +784,7 @@ def fetch_ai_insights_split(
         return cached if cached else {}
 
     safe_investing_headlines = investing_headlines[:8] if investing_headlines else []
+    safe_bizportal_headlines = bizportal_headlines[:8] if bizportal_headlines else []
 
     market_summary = {
         t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
@@ -756,9 +796,18 @@ def fetch_ai_insights_split(
             [f"- Title: {h['title']} | Source: {h.get('source', 'Investing.com')} | Link: {h['link']}" for h in safe_investing_headlines]
         )
         if safe_investing_headlines
-        else "No headlines."
+        else "No US headlines."
     )
-    headlines_formatted = inv_formatted
+    biz_formatted = (
+        "\n".join(
+            [f"- Title: {h['title']} | Source: {h.get('source', 'Bizportal')} | Link: {h['link']}" for h in safe_bizportal_headlines]
+        )
+        if safe_bizportal_headlines
+        else "No Israeli headlines."
+    )
+    
+    headlines_formatted = f"--- US / Global Headlines (Investing.com) ---\n{inv_formatted}\n\n--- Israeli Market Headlines (Bizportal) ---\n{biz_formatted}"
+    all_safe_headlines = safe_investing_headlines + safe_bizportal_headlines
 
     combined_result = load_ai_cache()
     if not isinstance(combined_result, dict):
@@ -779,10 +828,10 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES (GEOPOLITICAL PRIORITY, SOURCES & MANDATORY CONCLUSION):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. MANDATORY CONCLUSION: Every single analysis field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2) MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
-3. GEOPOLITICAL PRIORITY & SOURCES: In `US_MARKET_NEWS` and `IL_MARKET_NEWS`, give absolute priority to geopolitical events (wars, tariffs, trade agreements, sanctions, international conflicts) derived strictly from the provided headlines below. Every insight MUST include its reliable source explicitly (e.g., (מקור: Investing.com)).
-4. MARKET SEPARATION:
-   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macro, and global geopolitical trade impacts.
-   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, **Israeli macroeconomics** (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), security/geopolitical impacts on Israel, and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר, חברות ישראליות). **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
+3. GEOPOLITICAL PRIORITY & SOURCES: Every insight MUST include its reliable source explicitly (e.g., (מקור: Investing.com) or (מקור: Bizportal)).
+4. STRICT MARKET SEPARATION:
+   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macro, and global trade/tariffs using the Investing.com headlines.
+   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, Israeli macroeconomics (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), security/geopolitical impacts on Israel, and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר) **strictly using the Bizportal headlines provided above**. **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
 5. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 6. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
 
@@ -825,7 +874,7 @@ Return a valid JSON object with exactly these keys:
             for k, v in parsed1.items():
                 if isinstance(v, str):
                     if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
-                        filtered_v = filter_hallucinations(v, safe_investing_headlines)
+                        filtered_v = filter_hallucinations(v, all_safe_headlines)
                     else:
                         filtered_v = v
                     parsed1[k] = filtered_v
@@ -898,7 +947,7 @@ Return a valid JSON object with exactly these 8 keys:
                 elif isinstance(v, list) and k == 'market_news':
                     for item in v:
                         if isinstance(item, dict) and 'news_desc' in item:
-                            item['news_desc'] = filter_hallucinations(item['news_desc'], safe_investing_headlines)
+                            item['news_desc'] = filter_hallucinations(item['news_desc'], all_safe_headlines)
 
             combined_result.update(parsed2)
             print("Successfully parsed Part 2 JSON using key:", key_name)
@@ -1167,7 +1216,7 @@ if __name__ == "__main__":
             ai_insights = {}
 
         market_news_data = ai_insights.get("market_news", [])
-        combined_all_headlines = investing_headlines + bizportal_headlines
+        combined_all_headlines = investing_headlines[:4] + bizportal_headlines[:4]
 
         if not isinstance(market_news_data, list):
             market_news_data = []
