@@ -315,7 +315,7 @@ def format_text_with_conclusion(text, prefix_num=None):
             conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את התנאים בשוק."
 
     if explanation == conclusion:
-        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני היא מפתח ההצלחה."
+        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני هي מפתח ההצלחה."
 
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
@@ -335,9 +335,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    # תוקן כאן: שורה אחת בלבד לפני "לסיכום:", והצמדת הטקסט מיד לאחר מכן
+    # סידור מחדש: ה"לסיכום:" בשורה חדשה, והטקסט מתחתיו בשורה חדשה נוספת
     formatted_content = (
-        f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
@@ -349,6 +349,9 @@ def format_text_with_conclusion(text, prefix_num=None):
 
 
 def format_news_description(text):
+    """
+    שלב 8: מציג את סיכום הכתבה ללא שום מופע של "לסיכום:", אלא רק עם "סיכום הכתבה:".
+    """
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -371,28 +374,13 @@ def format_news_description(text):
         flags=re.IGNORECASE,
     ).strip()
 
-    conclusion_news = ""
-    if "לסיכום" in cleaned:
-        parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
-        cleaned = parts[0].strip()
-        if len(parts) > 1:
-            conclusion_news = parts[1].strip()
-            conclusion_news = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion_news).strip()
-
     cleaned = re.sub(r'\s*\n+\s*', ' ', cleaned).strip()
-    conclusion_news = re.sub(r'\s*\n+\s*', ' ', conclusion_news).strip()
     cleaned = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', cleaned)
     cleaned = re.sub(r'מקור:\s*.*?(?=<|$)', '', cleaned)
-    conclusion_news = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', conclusion_news)
-    conclusion_news = re.sub(r'מקור:\s*.*?(?=<|$)', '', conclusion_news)
 
-    cleaned = re.sub(r"(^|<br>)\s*;\s*", r"\1", cleaned)
     cleaned = format_numbers_in_text(cleaned)
     cleaned = force_source_on_newline(cleaned)
 
-    # תוקן כאן: שורה אחת בלבד לפני "לסיכום:", והצמדת הטקסט מיד לאחר מכן
-    if conclusion_news:
-        return f"{cleaned}<br><strong>לסיכום:</strong> {conclusion_news}"
     return cleaned
 
 
@@ -903,16 +891,16 @@ Return a valid JSON object with exactly these keys:
 
                     if k == "OIL_EXPLANATION" and "CL=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["CL=F"].get("price")):
-                            filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}.<br><strong>לסיכום:</strong> מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
-                    elif k == "BTC-USD" and "BTC-USD" in market_data:
+                            filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}. לסיכום מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
+                    elif k == "BTC_EXPLANATION" and "BTC-USD" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["BTC-USD"].get("price")):
-                            filtered_v = f"שער הביטקוין נסחר סביב {format_num(market_data['BTC-USD'].get('price'))}.<br><strong>לסיכום:</strong> הניתוח הטכני מצביע על תנודתיות גבוהה בטווח הקצר."
+                            filtered_v = f"שער הביטקוין נסחר סביב {format_num(market_data['BTC-USD'].get('price'))}. לסיכום הניתוח הטכני מצביע על תנודתיות גבוהה בטווח הקצר."
                     elif k == "GOLD_EXPLANATION" and "GC=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["GC=F"].get("price")):
-                            filtered_v = f"שער הזהב נסחר סביב {format_num(market_data['GC=F'].get('price'))}.<br><strong>לסיכום:</strong> הביקוש לנכסי מקלט בטוח ממשיך לתמוך במגמה."
-                    elif k == "USD ILS EXPLANATION" and "USDILS=X" in market_data:
+                            filtered_v = f"שער הזהב נסחר סביב {format_num(market_data['GC=F'].get('price'))}. לסיכום הביקוש לנכסי מקלט בטוח ממשיך לתמוך במגמה."
+                    elif k == "USD_ILS_EXPLANATION" and "USDILS=X" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data['USDILS=X'].get('price')):
-                            filtered_v = f"שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))}.<br><strong>לסיכום:</strong> שער החליפין דולר-שקל מציב רצף יציב למסחר."
+                            filtered_v = f"שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))}. לסיכום שער החליפין דולר-שקל מציב רצף יציב למסחר."
 
                     parsed1[k] = filtered_v
 
@@ -946,7 +934,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main text body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line or bullet point with punctuation characters like `;` or `,`.
 6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
-7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (starting with a clear summary, including "לסיכום:" at the end, and if sourced, source on the same line followed by `<br>`, but strictly NO source inside the conclusion).
+7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news without any mention of "לסיכום:").
 8. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 9. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
 
