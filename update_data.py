@@ -1,10 +1,7 @@
-import base64
 from datetime import datetime
 import json
 import os
 import re
-import subprocess
-import time
 import traceback
 import urllib.parse
 import urllib.request
@@ -247,58 +244,19 @@ def format_text_with_conclusion(text, prefix_num=None):
         s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
     ]
 
+    # הוסרת ההמלצות הגנריות המזויפות לחלוטין - אם אין סיכום, מציגים את הטקסט נקי ללא המצאות
     if not conclusion:
         if len(sentences) > 1:
             conclusion = sentences[-1]
             explanation = " ".join(sentences[:-1])
         else:
-            sentence = sentences[0] if sentences else cleaned
-            if (
-                "טכנולוגיה" in sentence
-                or "NASDAQ" in sentence
-                or "AI" in sentence
-                or "שבבים" in sentence
-            ):
-                conclusion = (
-                    "מומלץ לשמור על ברזל תשואות וניהול חשיפה מדוד לסקטור הטכנולוגי."
-                )
-            elif "דולר" in sentence or "שקל" in sentence or "מט" in sentence:
-                conclusion = (
-                    "נדרש מעקב רציף אחר שערי החליפין והשפעתם על תיק ההשקעות."
-                )
-            elif (
-                "סיכון" in sentence
-                or "תנודתיות" in sentence
-                or "VIX" in sentence
-            ):
-                conclusion = (
-                    "הקפדה על כללי ניהול סיכונים ופיזור מושכל היא קריטית לשמירה"
-                    " על התיק."
-                )
-            else:
-                conclusion = (
-                    "יישום אסטרטגיה זהירה ומעקב שוטף אחר התפתחויות השוק מבטיחים"
-                    " יציבות."
-                )
-            explanation = sentence
-
-    if conclusion == explanation or not explanation:
-        if len(sentences) > 1:
-            explanation = " ".join(sentences[:-1])
-            conclusion = sentences[-1]
-            if conclusion == explanation:
-                conclusion = "נדרשת תשומת לב מיוחדת והתאמת אסטרטגיה בשוק."
-        else:
-            conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את התנאים בשוק."
-
-    if explanation == conclusion:
-        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני היא מפתח ההצלחה."
+            conclusion = ""
 
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
     conclusion = re.sub(
-        r"^(בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
+        r"^(|בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
     ).strip()
 
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
@@ -312,9 +270,11 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    formatted_content = (
-        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
-    )
+    if conclusion:
+        formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+    else:
+        formatted_content = explanation
+
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
 
@@ -363,10 +323,7 @@ def format_phase1_text(text):
 
 def format_analyst_text(text):
     if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-        text = (
-            "הערכות האנליסטים מצביעות על כך שהחברות המובילות שומרות על חוסן"
-            " פיננסי ויציבות, אך נדרשת בקרה קפדנית לאור תנודתיות השוק."
-        )
+        text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים."
     return format_text_with_conclusion(text, prefix_num=None)
 
 
@@ -815,13 +772,12 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES:
+🚨 STRICT GUIDELINES (ZERO HALLUCINATION):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. STRICT TRUTH & NO HALLUCINATION: Base your analysis **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, do not invent it.
-3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If the analysis is based on general market prices or technical data without relying on a specific headline, DO NOT write any source.
+2. STRICT TRUTH: Base your analysis **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, write: "אין נתונים גולמיים עדכניים לסעיף זה כרגע." ואל תמציא כלום.
+3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If there is no headline backing it, do not invent sources.
 4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after it there MUST be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
 5. NO LEADING PUNCTUATION: Never start any line, sentence, or block with punctuation characters like `;` or `,`. Start clean with text.
-6. DETAILED ANALYSIS & FORMAT: For every analysis field, write a rich economic explanation paragraph, and include "לסיכום:" explicitly at the end followed by a clean summary without any source tag.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -852,6 +808,7 @@ Return a valid JSON object with exactly these keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
+                temperature=0.0,  # אכיפת דטרמיניזם מלא למניעת הזיות
                 max_tokens=4000,
             )
 
@@ -860,7 +817,6 @@ Return a valid JSON object with exactly these keys:
             
             for k, v in parsed1.items():
                 if isinstance(v, str):
-                    # פילטר הזיות מופעל רק על חדשות שוק ייעודיות ולא על סקירות מאקרו/קריפטו
                     if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
                         filtered_v = filter_hallucinations(v, safe_investing_headlines)
                     else:
@@ -890,16 +846,12 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in risk management or action recommendations.
-2. STRICT TRUTH & NO HALLUCINATION: You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, do not invent it.
-3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text. If it is based on general data without relying on a specific headline, DO NOT write any source.
-4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text, and right after it there must be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main text body, **NEVER** inside or after the "לסיכום:" section.
-5. NO LEADING PUNCTUATION: Never start any line or bullet point with punctuation characters like `;` or `,`.
-6. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must include a detailed professional Hebrew paragraph followed by "לסיכום:" and a clean conclusion without sources. Never leave them empty.
-7. `market_news`: Array of 8 items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news without any mention of "לסיכום:").
-8. `long_term_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
-9. `swing_stocks`: EXACTLY 10 INDIVIDUAL CORPORATE STOCKS ONLY. No ETFs. Object keys: ticker, name, desc, news, why_invest.
+🚨 STRICT GUIDELINES (ZERO HALLUCINATION):
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
+2. STRICT TRUTH: You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, state explicitly: "אין נתונים גולמיים עדכניים לסעיף זה כרגע." ואל תמציא המלצות ריקות או פשרות גנריות.
+3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text.
+4. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must rely strictly on real data. Never leave them empty or generic.
+5. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news based strictly on the headline).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -924,6 +876,7 @@ Return a valid JSON object with exactly these 8 keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
+                temperature=0.0,  # אכיפת דטרמיניזם מלא
                 max_tokens=4000,
             )
 
@@ -933,9 +886,8 @@ Return a valid JSON object with exactly these 8 keys:
             for k, v in parsed2.items():
                 if isinstance(v, str):
                     if k == 'market_news':
-                        pass # handled below
+                        pass
                     else:
-                        # אין צורך לסנן הזיות בשלב 7 (ניהול סיכונים והמלצות פעולה) כי אלו המלצות אסטרטגיות
                         parsed2[k] = v
                 elif isinstance(v, list) and k == 'market_news':
                     for item in v:
