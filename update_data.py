@@ -87,32 +87,9 @@ def load_portfolio_buys():
 portfolio_buys = load_portfolio_buys()
 
 
-def verify_sentence_numbers(sentence, actual_value, tolerance=0.05):
-    """
-    פילטר הזיות נומרי חכם: בודק האם המספרים במשפט תואמים לערך האמיתי מה-API בגבולות סובלנות.
-    """
-    if not sentence or actual_value is None:
-        return False
-        
-    clean_sentence = sentence.replace(',', '')
-    found_numbers = re.findall(r'\d+(?:\.\d+)?', clean_sentence)
-    
-    if not found_numbers:
-        return True 
-
-    float_numbers = [float(num) for num in found_numbers]
-    
-    for num in float_numbers:
-        if abs(num - float(actual_value)) <= max(tolerance, float(actual_value) * 0.005):
-            return True
-            
-    print(f"🛡️ Hallucination Number Filter: Omitted unverified sentence -> '{sentence}' (Value mismatch with actual: {actual_value})")
-    return False
-
-
 def filter_hallucinations(text, headlines_list):
     """
-    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות.
+    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות (מופעל רק על חדשות שוק).
     """
     if not text or not isinstance(text, str):
         return ""
@@ -315,7 +292,7 @@ def format_text_with_conclusion(text, prefix_num=None):
             conclusion = "מומלץ לשמור על גמישות ניהולית ולבחון את התנאים בשוק."
 
     if explanation == conclusion:
-        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני هي מפתח ההצלחה."
+        conclusion = "שמירה על משמעת מסחר וניהול סיכונים קפדני היא מפתח ההצלחה."
 
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
@@ -335,7 +312,6 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    # סידור מחדש: ה"לסיכום:" בשורה חדשה, והטקסט מתחתיו בשורה חדשה נוספת
     formatted_content = (
         f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
@@ -349,9 +325,6 @@ def format_text_with_conclusion(text, prefix_num=None):
 
 
 def format_news_description(text):
-    """
-    שלב 8: מציג את סיכום הכתבה ללא שום מופע של "לסיכום:", אלא רק עם "סיכום הכתבה:".
-    """
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -887,21 +860,11 @@ Return a valid JSON object with exactly these keys:
             
             for k, v in parsed1.items():
                 if isinstance(v, str):
-                    filtered_v = filter_hallucinations(v, safe_investing_headlines)
-
-                    if k == "OIL_EXPLANATION" and "CL=F" in market_data:
-                        if not verify_sentence_numbers(filtered_v, market_data["CL=F"].get("price")):
-                            filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}. לסיכום מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
-                    elif k == "BTC_EXPLANATION" and "BTC-USD" in market_data:
-                        if not verify_sentence_numbers(filtered_v, market_data["BTC-USD"].get("price")):
-                            filtered_v = f"שער הביטקוין נסחר סביב {format_num(market_data['BTC-USD'].get('price'))}. לסיכום הניתוח הטכני מצביע על תנודתיות גבוהה בטווח הקצר."
-                    elif k == "GOLD_EXPLANATION" and "GC=F" in market_data:
-                        if not verify_sentence_numbers(filtered_v, market_data["GC=F"].get("price")):
-                            filtered_v = f"שער הזהב נסחר סביב {format_num(market_data['GC=F'].get('price'))}. לסיכום הביקוש לנכסי מקלט בטוח ממשיך לתמוך במגמה."
-                    elif k == "USD_ILS_EXPLANATION" and "USDILS=X" in market_data:
-                        if not verify_sentence_numbers(filtered_v, market_data['USDILS=X'].get('price')):
-                            filtered_v = f"שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))}. לסיכום שער החליפין דולר-שקל מציב רצף יציב למסחר."
-
+                    # פילטר הזיות מופעל רק על חדשות שוק ייעודיות ולא על סקירות מאקרו/קריפטו
+                    if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
+                        filtered_v = filter_hallucinations(v, safe_investing_headlines)
+                    else:
+                        filtered_v = v
                     parsed1[k] = filtered_v
 
             combined_result.update(parsed1)
@@ -969,7 +932,11 @@ Return a valid JSON object with exactly these 8 keys:
             
             for k, v in parsed2.items():
                 if isinstance(v, str):
-                    parsed2[k] = filter_hallucinations(v, safe_investing_headlines)
+                    if k == 'market_news':
+                        pass # handled below
+                    else:
+                        # אין צורך לסנן הזיות בשלב 7 (ניהול סיכונים והמלצות פעולה) כי אלו המלצות אסטרטגיות
+                        parsed2[k] = v
                 elif isinstance(v, list) and k == 'market_news':
                     for item in v:
                         if isinstance(item, dict) and 'news_desc' in item:
