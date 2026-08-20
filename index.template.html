@@ -48,220 +48,88 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 1: סקירה מאקרו-כלכלית וגיאופוליטית 🌍</h2>
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                
-                <!-- מדדים מובילים (Indices) -->
-                <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
+                <div class="lg:col-span-5 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
-                    <div class="space-y-4 text-sm">
-                        
-                        <!-- S&P 500 -->
-                        <div class="space-y-2 pb-3 border-b border-gray-700/50">
-                            <div class="flex justify-between items-center">
-                                <strong class="text-gray-200">S&P 500</strong>
-                                <span class="text-cyan-300 font-mono">{{SP500_PRICE}} (<span class="text-xs">{{SP500_PCT}}</span>)</span>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2">
-                                <div>
-                                    <strong class="text-cyan-400 block mb-0.5">מה זה אומר:</strong>
-                                    <div class="text-gray-200 leading-relaxed">{{SP500_ANALYSIS}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{SP500_CONCLUSION}}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- NASDAQ -->
-                        <div class="space-y-2 pb-3 border-b border-gray-700/50">
-                            <div class="flex justify-between items-center">
-                                <strong class="text-gray-200">NASDAQ</strong>
-                                <span class="text-cyan-300 font-mono">{{NASDAQ_PRICE}} (<span class="text-xs">{{NASDAQ_PCT}}</span>)</span>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2">
-                                <div>
-                                    <strong class="text-cyan-400 block mb-0.5">מה זה אומר:</strong>
-                                    <div class="text-gray-200 leading-relaxed">{{NASDAQ_ANALYSIS}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{NASDAQ_CONCLUSION}}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Dow Jones -->
-                        <div class="space-y-2 pb-3 border-b border-gray-700/50">
-                            <div class="flex justify-between items-center">
-                                <strong class="text-gray-200">Dow Jones (DJI)</strong>
-                                <span class="text-cyan-300 font-mono">{{DOW_PRICE}} (<span class="text-xs">{{DOW_PCT}}</span>)</span>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2">
-                                <div>
-                                    <strong class="text-cyan-400 block mb-0.5">מה זה אומר:</strong>
-                                    <div class="text-gray-200 leading-relaxed">{{DOW_ANALYSIS}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{DOW_CONCLUSION}}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VIX -->
-                        <div class="space-y-2 pb-3 border-b border-gray-700/50">
-                            <div class="flex justify-between items-center">
-                                <strong class="text-gray-200">VIX (מדד הפחד)</strong>
-                                <span class="text-cyan-300 font-mono">{{VIX_PRICE}} (<span class="text-xs">{{VIX_PCT}}</span>)</span>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2">
-                                <div>
-                                    <strong class="text-cyan-400 block mb-0.5">מה זה אומר:</strong>
-                                    <div class="text-gray-200 leading-relaxed">{{VIX_ANALYSIS}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{VIX_CONCLUSION}}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- DXY -->
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center">
-                                <strong class="text-gray-200">DXY (מדד הדולר)</strong>
-                                <span class="text-cyan-300 font-mono">{{DXY_PRICE}} (<span class="text-xs">{{DXY_PCT}}</span>)</span>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2">
-                                <div>
-                                    <strong class="text-cyan-400 block mb-0.5">מה זה אומר:</strong>
-                                    <div class="text-gray-200 leading-relaxed">{{DXY_ANALYSIS}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{DXY_CONCLUSION}}</div>
-                                </div>
-                            </div>
-                        </div>
-
+                    <div class="space-y-3 text-sm">
+                        <p class="text-gray-300">
+                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{SP500_ANALYSIS}}</span></span>
+                        </p>
+                        <p class="text-gray-300">
+                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{NASDAQ_ANALYSIS}}</span></span>
+                        </p>
+                        <p class="text-gray-300">
+                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DOW_ANALYSIS}}</span></span>
+                        </p>
+                        <p class="text-gray-300">
+                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{VIX_ANALYSIS}}</span></span>
+                        </p>
+                        <p class="text-gray-300">
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DXY_ANALYSIS}}</span></span>
+                        </p>
                     </div>
                 </div>
 
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- שער הדולר -->
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
                         <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS}}</strong> (<span class="text-cyan-300">{{USD_ILS_CHANGE}}</span>)</p>
-                        <div class="text-xs text-gray-300 space-y-3 pt-1">
-                            <div>
-                                <strong class="text-cyan-400 block mb-1">מה זה אומר:</strong>
-                                <div class="text-gray-200 leading-relaxed">{{USD_ILS_EXPLANATION}}</div>
-                            </div>
-                            <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300">
-                                <span class="font-bold text-cyan-400 block mb-1">לסיכום:</span>
-                                <div class="text-gray-200 leading-relaxed">{{USD_ILS_CONCLUSION}}</div>
-                            </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            <strong>מה זה אומר בשפה פשוטה:</strong>
+                            <div class="text-gray-200">{{USD_ILS_EXPLANATION}}</div>
                         </div>
                     </div>
 
-                    <!-- נפט -->
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
                         <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> (<span class="text-cyan-300">{{OIL_CHANGE}}</span>)</p>
-                        <div class="text-xs text-gray-300 space-y-3 pt-1">
-                            <div>
-                                <strong class="text-cyan-400 block mb-1">מה זה אומר:</strong>
-                                <div class="text-gray-200 leading-relaxed">{{OIL_EXPLANATION}}</div>
-                            </div>
-                            <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300">
-                                <span class="font-bold text-cyan-400 block mb-1">לסיכום:</span>
-                                <div class="text-gray-200 leading-relaxed">{{OIL_CONCLUSION}}</div>
-                            </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            <strong>מה זה אומר בשפה פשוטה:</strong>
+                            <div class="text-gray-200">{{OIL_EXPLANATION}}</div>
                         </div>
                     </div>
 
-                    <!-- זהב -->
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
                         <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> (<span class="text-cyan-300">{{GOLD_CHANGE}}</span>)</p>
-                        <div class="text-xs text-gray-300 space-y-3 pt-1">
-                            <div>
-                                <strong class="text-cyan-400 block mb-1">מה זה אומר:</strong>
-                                <div class="text-gray-200 leading-relaxed">{{GOLD_EXPLANATION}}</div>
-                            </div>
-                            <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300">
-                                <span class="font-bold text-cyan-400 block mb-1">לסיכום:</span>
-                                <div class="text-gray-200 leading-relaxed">{{GOLD_CONCLUSION}}</div>
-                            </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            <strong>מה זה אומר בשפה פשוטה:</strong>
+                            <div class="text-gray-200">{{GOLD_EXPLANATION}}</div>
                         </div>
                     </div>
 
-                    <!-- ביטקוין -->
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400 flex items-center gap-2">
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>
                         <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> (<span class="text-cyan-300">{{BTC_CHANGE}}</span>)</p>
-                        <div class="text-xs text-gray-300 space-y-3 pt-1">
-                            <div>
-                                <strong class="text-cyan-400 block mb-1">מה זה אומר:</strong>
-                                <div class="text-gray-200 leading-relaxed">{{BTC_EXPLANATION}}</div>
-                            </div>
-                            <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300">
-                                <span class="font-bold text-cyan-400 block mb-1">לסיכום:</span>
-                                <div class="text-gray-200 leading-relaxed">{{BTC_CONCLUSION}}</div>
-                            </div>
+                        <div class="text-xs text-gray-300 space-y-1">
+                            <strong>מה זה אומר בשפה פשוטה:</strong>
+                            <div class="text-gray-200">{{BTC_EXPLANATION}}</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- חדשות ועדכונים (אמריקאי וישראלי) -->
-                <div class="lg:col-span-12 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4">
+                <div class="lg:col-span-12 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                     <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
                         חדשות ועדכונים (שוק אמריקאי ושוק ישראלי) 📰
                     </h3>
-                    <div class="text-sm text-gray-300 space-y-4">
-                        
-                        <!-- השפעות על השוק האמריקאי -->
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2">
-                                <img src="https://flagcdn.com/w20/us.png" alt="US" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow">
-                                <strong>השפעות על השוק האמריקאי:</strong>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2 pr-7">
-                                <div>
-                                    <span class="text-cyan-400 font-semibold">מה זה אומר:</span>
-                                    <div class="text-gray-200 leading-relaxed mt-0.5">{{US_MARKET_EXPLANATION}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{US_MARKET_CONCLUSION}}</div>
-                                </div>
-                            </div>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <div class="flex items-start gap-2">
+                            <img src="https://flagcdn.com/w20/us.png" alt="US" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow mt-1">
+                            <div><strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</div>
                         </div>
-
-                        <!-- השפעות על השוק הישראלי -->
-                        <div class="space-y-2 pt-2 border-t border-gray-700/50">
-                            <div class="flex items-center gap-2">
-                                <img src="https://flagcdn.com/w20/il.png" alt="IL" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow">
-                                <strong>השפעות על השוק הישראלי:</strong>
-                            </div>
-                            <div class="text-xs text-gray-300 space-y-2 pr-7">
-                                <div>
-                                    <span class="text-cyan-400 font-semibold">מה זה אומר:</span>
-                                    <div class="text-gray-200 leading-relaxed mt-0.5">{{IL_MARKET_EXPLANATION}}</div>
-                                </div>
-                                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300">
-                                    <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                                    <div class="text-gray-200 leading-relaxed">{{IL_MARKET_CONCLUSION}}</div>
-                                </div>
-                            </div>
+                        <div class="flex items-start gap-2">
+                            <img src="https://flagcdn.com/w20/il.png" alt="IL" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow mt-1">
+                            <div><strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -292,19 +160,10 @@
         <!-- שלב 3: זרימים -->
         <div id="tab-3" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
-                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg space-y-1">
-                    <span class="font-bold text-cyan-400 block mb-1">📑 דיווחי תוצאות לרבעון:</span>
-                    <div class="text-gray-200 leading-relaxed">{{CATALYST_EARNINGS}}</div>
-                </div>
-                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg space-y-1">
-                    <span class="font-bold text-cyan-400 block mb-1">🏦 הודעות מדיניות מוניטרית:</span>
-                    <div class="text-gray-200 leading-relaxed">{{CATALYST_MONETARY}}</div>
-                </div>
-                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg space-y-1">
-                    <span class="font-bold text-cyan-400 block mb-1">🎮 השקות חומרה ועדכוני תוכנה:</span>
-                    <div class="text-gray-200 leading-relaxed">{{CATALYST_HARDWARE}}</div>
-                </div>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
+                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> {{CATALYST_EARNINGS}}</p>
+                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> {{CATALYST_MONETARY}}</p>
+                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> {{CATALYST_HARDWARE}}</p>
             </div>
         </div>
 
@@ -364,90 +223,48 @@
         </div>
 
         <!-- שלב 6: סנטימנט -->
+<!-- שלב 6: סנטימנט -->
         <div id="tab-6" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-right" dir="rtl">
-                <div class="text-base font-bold text-cyan-400">💬 סנטימנט קהילות המסחר:</div>
-                <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300 text-sm">
-                    <span class="font-bold text-cyan-400 block mb-1">לסיכום:</span>
-                    <div class="text-gray-200 leading-relaxed">{{COMMUNITY_SENTIMENT}}</div>
-                </div>
-                
-                <div class="mt-4 space-y-3">
-                    <div class="text-base font-bold text-cyan-400">📊 מה האנליסטים אומרים בקשר להמשך כיוון השוק:</div>
-                    <div class="space-y-3 text-xs md:text-sm text-gray-300">
-                        <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300 text-sm">
-                            <span class="font-bold text-cyan-400 block mb-1">1. לסיכום:</span>
-                            <div class="text-gray-200 leading-relaxed">{{ANALYST_POINT_1}}</div>
-                        </div>
-                        <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-3 rounded-l-lg text-gray-300 text-sm">
-                            <span class="font-bold text-cyan-400 block mb-1">2. לסיכום:</span>
-                            <div class="text-gray-200 leading-relaxed">{{ANALYST_POINT_2}}</div>
-                        </div>
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
+                <div class="text-lg font-bold text-cyan-400">💬 סנטימנט קהילות המסחר:</div>
+                <div class="text-xs md:text-sm text-gray-300 leading-relaxed">{{COMMUNITY_SENTIMENT}}</div>
+                <div class="mt-4 space-y-2">
+                    <div class="text-lg font-bold text-cyan-400">📊 מה האנליסטים אומרים בקשר להמשך כיוון השוק:</div>
+                    <div class="space-y-2 text-xs md:text-sm text-gray-300 leading-relaxed">
+<!-- שלב 6 - סעיף 1 -->
+<div class="analyst-item mb-4 text-right" dir="rtl">
+    <div class="text-content flex items-start gap-2" dir="rtl">
+        <strong style="color: #3b82f6;" class="shrink-0">1.</strong>
+        <span>{{ANALYST_POINT_1}}</span>
+    </div>
+</div>
+
+<!-- שלב 6 - סעיף 2 -->
+<div class="analyst-item mb-4 text-right" dir="rtl">
+    <div class="text-content flex items-start gap-2" dir="rtl">
+        <strong style="color: #3b82f6;" class="shrink-0">2.</strong>
+        <span>{{ANALYST_POINT_2}}</span>
+    </div>
+</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- שלב 7: סיכון (ללא "מה זה אומר") -->
+        <!-- שלב 7: סיכון -->
         <div id="tab-7" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-4 text-sm text-gray-300">
-                
-                <!-- ניהול סיכונים -->
-                <div class="space-y-2 pb-3 border-b border-gray-700/50">
-                    <strong class="text-cyan-400 block text-base">🛡️ ניהול סיכונים:</strong>
-                    <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300 text-xs md:text-sm">
-                        <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                        <div class="text-gray-200 leading-relaxed">{{RISK_MANAGEMENT_CONCLUSION}}</div>
-                    </div>
-                </div>
-
-                <!-- המלצות פעולה -->
-                <div class="space-y-2">
-                    <strong class="text-cyan-400 block text-base">📋 המלצות פעולה:</strong>
-                    <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300 text-xs md:text-sm">
-                        <span class="font-bold text-cyan-400 block mb-0.5">לסיכום:</span>
-                        <div class="text-gray-200 leading-relaxed">{{ACTION_RECOMMENDATIONS_CONCLUSION}}</div>
-                    </div>
-                </div>
-
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
+                <p>🛡️ <strong>ניהול סיכונים:</strong> {{RISK_MANAGEMENT_TEXT}}</p>
+                <p>📋 <strong>המלצות פעולה:</strong> {{ACTION_RECOMMENDATIONS_TEXT}}</p>
             </div>
         </div>
 
-        <!-- שלב 8: חדשות (ללא "מה זה אומר") -->
+        <!-- שלב 8: חדשות -->
         <div id="tab-8" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 8: חדשות שכולות לעניין אותך (מניות התיק והמעקב) 📰</h2>
-            <div class="space-y-4">
-                
-                <!-- חדשות 1 -->
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                        <strong class="text-cyan-400 text-base">{{NEWS_1_TITLE}}</strong>
-                        <span class="text-xs text-gray-400" dir="ltr">{{NEWS_1_DATE}}</span>
-                    </div>
-                    <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300 text-xs md:text-sm">
-                        <span class="font-bold text-cyan-400 block mb-0.5">סיכום הכתבה:</span>
-                        <div class="text-gray-200 leading-relaxed">{{NEWS_1_CONCLUSION}}</div>
-                    </div>
-                </div>
-
-                <!-- חדשות 2 -->
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                        <strong class="text-cyan-400 text-base">{{NEWS_2_TITLE}}</strong>
-                        <span class="text-xs text-gray-400" dir="ltr">{{NEWS_2_DATE}}</span>
-                    </div>
-                    <div class="bg-gray-900/50 border-r-4 border-cyan-400 p-2.5 rounded-l-lg text-gray-300 text-xs md:text-sm">
-                        <span class="font-bold text-cyan-400 block mb-0.5">סיכום הכתבה:</span>
-                        <div class="text-gray-200 leading-relaxed">{{NEWS_2_CONCLUSION}}</div>
-                    </div>
-                </div>
-
-                <!-- תמיכה בהזרקת בלוק HTML דינמי שלם מפייתון במידת הצורך -->
-                {{PORTFOLIO_NEWS_SECTION}}
-
-            </div>
+            {{PORTFOLIO_NEWS_SECTION}}
         </div>
 
     </main>
