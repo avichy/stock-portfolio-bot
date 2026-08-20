@@ -335,8 +335,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
+    # תוקן כאן: שורה אחת בלבד לפני "לסיכום:", והצמדת הטקסט מיד לאחר מכן
     formatted_content = (
-        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+        f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
     )
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
@@ -389,8 +390,9 @@ def format_news_description(text):
     cleaned = format_numbers_in_text(cleaned)
     cleaned = force_source_on_newline(cleaned)
 
+    # תוקן כאן: שורה אחת בלבד לפני "לסיכום:", והצמדת הטקסט מיד לאחר מכן
     if conclusion_news:
-        return f"{cleaned}<br><strong>לסיכום:</strong><br>{conclusion_news}"
+        return f"{cleaned}<br><strong>לסיכום:</strong> {conclusion_news}"
     return cleaned
 
 
@@ -901,16 +903,16 @@ Return a valid JSON object with exactly these keys:
 
                     if k == "OIL_EXPLANATION" and "CL=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["CL=F"].get("price")):
-                            filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}.<br><strong>לסיכום:</strong><br>מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
+                            filtered_v = f"שער הנפט יורד סביב {format_num(market_data['CL=F'].get('price'))}.<br><strong>לסיכום:</strong> מצב השוק הנוכחי מושפע מצד היצע ודרישה באנרגיה."
                     elif k == "BTC-USD" and "BTC-USD" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["BTC-USD"].get("price")):
-                            filtered_v = f"שער הביטקוין נסחר סביב {format_num(market_data['BTC-USD'].get('price'))}.<br><strong>לסיכום:</strong><br>הניתוח הטכני מצביע על תנודתיות גבוהה בטווח הקצר."
+                            filtered_v = f"שער הביטקוין נסחר סביב {format_num(market_data['BTC-USD'].get('price'))}.<br><strong>לסיכום:</strong> הניתוח הטכני מצביע על תנודתיות גבוהה בטווח הקצר."
                     elif k == "GOLD_EXPLANATION" and "GC=F" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data["GC=F"].get("price")):
-                            filtered_v = f"שער הזהב נסחר סביב {format_num(market_data['GC=F'].get('price'))}.<br><strong>לסיכום:</strong><br>הביקוש לנכסי מקלט בטוח ממשיך לתמוך במגמה."
+                            filtered_v = f"שער הזהב נסחר סביב {format_num(market_data['GC=F'].get('price'))}.<br><strong>לסיכום:</strong> הביקוש לנכסי מקלט בטוח ממשיך לתמוך במגמה."
                     elif k == "USD ILS EXPLANATION" and "USDILS=X" in market_data:
                         if not verify_sentence_numbers(filtered_v, market_data['USDILS=X'].get('price')):
-                            filtered_v = f"שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))}.<br><strong>לסיכום:</strong><br>שער החליפין דולר-שקל מציב רצף יציב למסחר."
+                            filtered_v = f"שער החליפין דולר-שקל סביב {format_num(market_data['USDILS=X'].get('price'))}.<br><strong>לסיכום:</strong> שער החליפין דולר-שקל מציב רצף יציב למסחר."
 
                     parsed1[k] = filtered_v
 
