@@ -260,7 +260,6 @@ def format_text_with_conclusion(text, prefix_num=None):
 
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
-    # שבירת שורה אוטומטית למספרים סידוריים (כדי שסעיפים 1, 2, 3 ירדו שורה)
     explanation = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', explanation)
     conclusion = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', conclusion)
 
@@ -326,7 +325,9 @@ def format_phase1_text(text):
 
 def format_analyst_text(text):
     if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-        text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים."
+        text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים."
+    if "לסיכום" not in str(text):
+        text = str(text).strip() + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
     return format_text_with_conclusion(text, prefix_num=None)
 
 
@@ -775,13 +776,13 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (ZERO HALLUCINATION & MANDATORY CONCLUSION):
+🚨 STRICT GUIDELINES (GEOPOLITICAL PRIORITY, SOURCES & MANDATORY CONCLUSION):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. MANDATORY CONCLUSION: Every single analysis field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS) MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
-3. MARKET SEPARATION:
-   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macroeconomic data, and American companies.
-   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, **Israeli macroeconomics** (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר, חברות ישראליות). **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
-4. SOURCES & VERIFICATION: If an insight derives from the headlines below, include the exact source (e.g., (מקור: Investing.com)).
+2. MANDATORY CONCLUSION: Every single analysis field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2) MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
+3. GEOPOLITICAL PRIORITY & SOURCES: In `US_MARKET_NEWS` and `IL_MARKET_NEWS`, give absolute priority to geopolitical events (wars, tariffs, trade agreements, sanctions, international conflicts) derived strictly from the provided headlines below. Every insight MUST include its reliable source explicitly (e.g., (מקור: Investing.com)).
+4. MARKET SEPARATION:
+   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macro, and global geopolitical trade impacts.
+   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, **Israeli macroeconomics** (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), security/geopolitical impacts on Israel, and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר, חברות ישראליות). **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
 5. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 6. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
 
@@ -852,10 +853,11 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (ZERO HALLUCINATION & STRUCTURED LISTS):
+🚨 STRICT GUIDELINES (PROFESSIONAL CATALYSTS & STRUCTURED LISTS):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
-3. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news).
+2. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs explaining upcoming earnings seasons, central bank monetary policy decisions, and major hardware/AI technology releases. DO NOT output raw ticker lists. Every catalyst must end with "לסיכום:".
+3. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
+4. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news with reliable source).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1174,7 +1176,7 @@ if __name__ == "__main__":
         for idx, h in enumerate(combined_all_headlines[:8]):
             desc = (
                 f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות"
-                " על השווקים."
+                f" על השווקים. (מקור: {h.get('source', 'Investing.com')})"
             )
             if idx < len(market_news_data) and isinstance(
                 market_news_data[idx], dict
