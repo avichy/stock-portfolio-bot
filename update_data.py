@@ -101,7 +101,7 @@ def filter_hallucinations(text, headlines_list):
     valid_sentences = []
 
     for sentence in sentences:
-        if any(k in sentence for k in ['לסיכום', 'מומלץ', 'תנודתיות', 'שוק', 'מגמה', 'מסחר', 'מדד']):
+        if any(k in sentence for k in ['לסיכום', 'מומלץ', 'תנודתיות', 'שוק', 'מגמה', 'מסחר', 'מדד', 'ישראל', 'תל אביב', 'בנק ישראל']):
             valid_sentences.append(sentence)
             continue
 
@@ -244,7 +244,6 @@ def format_text_with_conclusion(text, prefix_num=None):
         s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
     ]
 
-    # הוסרת ההמלצות הגנריות המזויפות לחלוטין - אם אין סיכום, מציגים את הטקסט נקי ללא המצאות
     if not conclusion:
         if len(sentences) > 1:
             conclusion = sentences[-1]
@@ -260,6 +259,10 @@ def format_text_with_conclusion(text, prefix_num=None):
     ).strip()
 
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
+
+    # שבירת שורה אוטומטית למספרים סידוריים (כדי שסעיפים 1, 2, 3 ירדו שורה)
+    explanation = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', explanation)
+    conclusion = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', conclusion)
 
     if prefix_num is not None:
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
@@ -772,12 +775,15 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (ZERO HALLUCINATION):
+🚨 STRICT GUIDELINES (ZERO HALLUCINATION & MANDATORY CONCLUSION):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. STRICT TRUTH: Base your analysis **ONLY** on the actual headlines provided below. NEVER use your internal memory to bring up past historical events, old wars, or past military incidents from previous months or years. If an event is not explicitly in today's headlines, write: "אין נתונים גולמיים עדכניים לסעיף זה כרגע." ואל תמציא כלום.
-3. SOURCES & VERIFICATION: If the analysis or insight is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)). If there is no headline backing it, do not invent sources.
-4. SOURCE FORMATTING & PLACEMENT: Whenever you include a source, it MUST be placed on the same line as the text/explanation (e.g., `...המשך הטקסט (מקור: Investing.com)`), and right after it there MUST be a line break (`<br>`). **CRITICAL:** Sources must appear **ONLY** in the main explanation body, **NEVER** inside or after the "לסיכום:" section.
-5. NO LEADING PUNCTUATION: Never start any line, sentence, or block with punctuation characters like `;` or `,`. Start clean with text.
+2. MANDATORY CONCLUSION: Every single analysis field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS) MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
+3. MARKET SEPARATION:
+   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macroeconomic data, and American companies.
+   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, **Israeli macroeconomics** (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר, חברות ישראליות). **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
+4. SOURCES & VERIFICATION: If an insight derives from the headlines below, include the exact source (e.g., (מקור: Investing.com)).
+5. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+6. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -808,7 +814,7 @@ Return a valid JSON object with exactly these keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                temperature=0.0,  # אכיפת דטרמיניזם מלא למניעת הזיות
+                temperature=0.0,
                 max_tokens=4000,
             )
 
@@ -846,16 +852,14 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (ZERO HALLUCINATION):
+🚨 STRICT GUIDELINES (ZERO HALLUCINATION & STRUCTURED LISTS):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. STRICT TRUTH: You may analyze macroeconomic/geopolitical trends ONLY if they are explicitly derived from the headlines below. NEVER use internal memory or past historical events/wars. If it's not in today's headlines, state explicitly: "אין נתונים גולמיים עדכניים לסעיף זה כרגע." ואל תמציא המלצות ריקות או פשרות גנריות.
-3. SOURCES & VERIFICATION: If the insight or update is directly derived from a specific news headline provided below, you MUST include the exact source website name (e.g., (מקור: Investing.com)) at the end of the text.
-4. FORMAT FOR CATALYSTS & STRATEGY: CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, and ACTION_RECOMMENDATIONS_TEXT must rely strictly on real data. Never leave them empty or generic.
-5. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news based strictly on the headline).
+2. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
+3. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news).
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines (Use these exact links for market_news):
+Headlines:
 {headlines_formatted}
 
 Current Market Data:
@@ -876,7 +880,7 @@ Return a valid JSON object with exactly these 8 keys:
                 model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                temperature=0.0,  # אכיפת דטרמיניזם מלא
+                temperature=0.0,
                 max_tokens=4000,
             )
 
