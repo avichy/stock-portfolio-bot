@@ -1,101 +1,101 @@
 {
     "NVDA": {
-        "buy": 184.9,
+        "buy": "184.90",
         "shares": 3,
         "name": "NVIDIA"
     },
     "AMD": {
-        "buy": 211.34,
+        "buy": "211.34",
         "shares": 20,
         "name": "Advanced Micro Devices"
     },
     "MU": {
-        "buy": 316.32,
+        "buy": "316.32",
         "shares": 6,
         "name": "Micron Technology"
     },
     "SNDK": {
-        "buy": 630.26,
+        "buy": "630.26",
         "shares": 4,
         "name": "SanDisk"
     },
     "WDC": {
-        "buy": 223.23,
+        "buy": "223.23",
         "shares": 6,
         "name": "Western Digital"
     },
     "INTC": {
-        "buy": 43.05,
+        "buy": "43.05",
         "shares": 20,
         "name": "Intel"
     },
     "SIMO": {
-        "buy": 131.32,
+        "buy": "131.32",
         "shares": 30,
         "name": "Silicon Motion"
     },
     "IREN": {
-        "buy": 52.75,
+        "buy": "52.75",
         "shares": 54,
         "name": "Iris Energy"
     },
     "CIFR": {
-        "buy": 17.5,
+        "buy": "17.50",
         "shares": 28,
         "name": "Cipher Mining"
     },
     "META": {
-        "buy": 661,
+        "buy": "661.00",
         "shares": 2,
         "name": "Meta Platforms"
     },
     "AMZN": {
-        "buy": 229.29,
+        "buy": "229.29",
         "shares": 6,
         "name": "Amazon"
     },
     "GOOG": {
-        "buy": 317.95,
+        "buy": "317.95",
         "shares": 4,
         "name": "Alphabet / Google"
     },
     "TTWO": {
-        "buy": 235.5,
+        "buy": "235.50",
         "shares": 5,
         "name": "Take-Two Interactive"
     },
     "WMT": {
-        "buy": 119.45,
+        "buy": "119.45",
         "shares": 16,
         "name": "Walmart"
     },
     "NFLX": {
-        "buy": 94.03,
+        "buy": "94.03",
         "shares": 14,
         "name": "Netflix"
     },
     "MA": {
-        "buy": 503.99,
+        "buy": "503.99",
         "shares": 4,
         "name": "Mastercard"
     },
     "IBIT": {
-        "buy": 60.48,
+        "buy": "60.48",
         "shares": 14,
         "name": "iShares Bitcoin Trust"
     },
     "GTEC": {
-        "buy": 1.27,
+        "buy": "1.27",
         "shares": 260,
         "name": "Greenland Technologies"
     },
     "TQQQ": {
-        "buy": 56.53,
+        "buy": "56.53",
         "shares": 28,
         "name": "ProShares UltraPro QQQ"
     },
     "BE": {
-        "buy": 225.8,
+        "buy": 213.31,
         "shares": 2,
         "name": "Bloom Energy Corp"
     }
