@@ -373,9 +373,6 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-    """
-    שליפת כותרות חדשותיות פיננסיות מעמוד הבית של ביזפורטל עבור השוק הישראלי
-    """
     url = "https://www.bizportal.co.il/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -808,7 +805,6 @@ def fetch_ai_insights_split(
         else "No Israeli headlines."
     )
     
-    headlines_formatted = f"--- US / Global Headlines (Investing.com) ---\n{inv_formatted}\n\n--- Israeli Market Headlines (Bizportal) ---\n{biz_formatted}"
     all_safe_headlines = safe_investing_headlines + safe_bizportal_headlines
 
     combined_result = load_ai_cache()
@@ -827,20 +823,22 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (GEOPOLITICAL PRIORITY, SOURCES & MANDATORY CONCLUSION):
+🚨 STRICT GUIDELINES (STRICT SOURCE SEPARATION & MANDATORY CONCLUSION):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. MANDATORY CONCLUSION: Every single analysis field (SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2) MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
-3. GEOPOLITICAL PRIORITY & SOURCES: Every insight MUST include its reliable source explicitly (e.g., (מקור: Investing.com) or (מקור: Bizportal)).
-4. STRICT MARKET SEPARATION:
-   - **US_MARKET_NEWS**: Focus strictly on Wall Street, US indices, US macro, and global trade/tariffs using the Investing.com headlines.
-   - **IL_MARKET_NEWS**: Must focus **EXCLUSIVELY** on the Israeli economy, Israeli macroeconomics (Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit), security/geopolitical impacts on Israel, and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר) **strictly using the Bizportal headlines provided above**. **אסור לחלוטין** להכניס לכאן חברות זרות או מניות אמריקאיות/סיניות שנסחרות בנאסד"ק.
-5. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
-6. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
+3. STRICT SOURCE SEPARATION (CRITICAL):
+   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade.
+   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Focus **EXCLUSIVELY** on the Israeli economy, Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit, security/geopolitical impacts on Israel, and the local market (הבורסה בתל אביב - ת"א 35/125, שער השקל-דולר). **NEVER** use Investing.com headlines for IL_MARKET_NEWS and **NEVER** mix foreign US companies or stocks into it.
+4. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+5. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines:
-{headlines_formatted}
+--- US / Global Headlines (Investing.com) ---
+{inv_formatted}
+
+--- Israeli Market Headlines (Bizportal) ---
+{biz_formatted}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
@@ -912,8 +910,11 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 Today is {day_name}, Date: {date_str}.
 
-Headlines:
-{headlines_formatted}
+--- US / Global Headlines (Investing.com) ---
+{inv_formatted}
+
+--- Israeli Market Headlines (Bizportal) ---
+{biz_formatted}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
@@ -1103,12 +1104,12 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
         clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
         card_html = f"""
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right" dir="rtl">
+        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl">
             <div class="flex items-center gap-3 mb-3">
                 <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
             </div>
-            <div class="text-sm text-gray-300 space-y-1">
+            <div class="text-sm text-gray-300 space-y-1 break-words">
                 <div><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
                 {target_html}
@@ -1157,10 +1158,10 @@ def build_market_news_html(market_news_list):
         formatted_desc = format_news_description(p_desc)
 
         card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold text-base">{p_title}</h3>
-            <p class="mt-2">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline">{p_link}</a></p>
-            <p class="mt-2"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl">
+            <h3 class="text-cyan-400 font-semibold text-base break-words">{p_title}</h3>
+            <p class="mt-2 break-words">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
+            <p class="mt-2 break-words"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
         </div>
         """
         html_parts.append(card_html)
