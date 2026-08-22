@@ -8,6 +8,7 @@ import traceback
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import feedparser
 import pytz
 import requests
 from bs4 import BeautifulSoup
@@ -85,6 +86,70 @@ def load_portfolio_buys():
 
 
 portfolio_buys = load_portfolio_buys()
+
+
+def fetch_us_market_news():
+    """שליפת חדשות שוק אמריקאי בזמן אמת מ-Google News RSS (עוקף חסימות Cloudflare)"""
+    try:
+        query = "Wall Street stock market S&P 500 Nasdaq economy breaking news"
+        url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+        feed = feedparser.parse(url)
+        news_items = []
+
+        for entry in feed.entries[:6]:
+            title = entry.get("title", "")
+            summary = entry.get("summary", "")
+            news_items.append(f"- {title}\n  תיאור: {summary}")
+
+        return (
+            "\n".join(news_items)
+            if news_items
+            else "No recent US market news available."
+        )
+    except Exception as e:
+        print(f"Error fetching US news: {e}")
+        return "Failed to fetch US market news."
+
+
+def fetch_bizportal_news():
+    url = "https://www.bizportal.co.il/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7"
+    }
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code != 200:
+            print(f"Failed to fetch Bizportal, status code: {response.status_code}")
+            return []
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        news_items = []
+        seen_titles = set()
+        
+        for a_tag in soup.find_all('a', href=True):
+            text = a_tag.get_text(strip=True)
+            href = a_tag['href']
+            if len(text) > 25 and text not in seen_titles:
+                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש", "מערכת", "שירות לקוחות", "תפריט"]):
+                    if href.startswith('/'):
+                        link = f"https://www.bizportal.co.il{href}"
+                    elif not href.startswith('http'):
+                        link = f"https://www.bizportal.co.il/{href}"
+                    else:
+                        link = href
+                        
+                    seen_titles.add(text)
+                    news_items.append({
+                        "title": text,
+                        "link": link,
+                        "source": "Bizportal"
+                    })
+        return news_items[:15]
+    except Exception as e:
+        print(f"Warning: Error fetching Bizportal: {e}")
+        return []
 
 
 def filter_hallucinations(text, headlines_list):
@@ -335,79 +400,6 @@ def get_stock_logo_url(ticker):
     clean_ticker = str(ticker).strip().upper()
     parqet_ticker = clean_ticker.replace("-", ".")
     return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
-
-
-def fetch_investing_news():
-    url = "https://il.investing.com/rss/news.rss"
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as response:
-            xml_data = response.read()
-            root = ET.fromstring(xml_data)
-            news_items = []
-            for item in root.findall(".//item"):
-                title = item.find("title")
-                link = item.find("link")
-                if (
-                    title is not None
-                    and title.text
-                    and link is not None
-                    and link.text
-                ):
-                    news_items.append(
-                        {
-                            "title": title.text.strip(),
-                            "link": link.text.strip(),
-                            "source": "Investing.com",
-                        }
-                    )
-            return news_items[:15]
-    except Exception as e:
-        print(f"Warning: Error fetching Hebrew Investing RSS: {e}")
-        return []
-
-
-def fetch_bizportal_news():
-    url = "https://www.bizportal.co.il/"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7"
-    }
-    try:
-        response = requests.get(url, headers=headers, timeout=10)
-        if response.status_code != 200:
-            print(f"Failed to fetch Bizportal, status code: {response.status_code}")
-            return []
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        news_items = []
-        seen_titles = set()
-        
-        for a_tag in soup.find_all('a', href=True):
-            text = a_tag.get_text(strip=True)
-            href = a_tag['href']
-            if len(text) > 25 and text not in seen_titles:
-                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש", "מערכת", "שירות לקוחות", "תפריט"]):
-                    if href.startswith('/'):
-                        link = f"https://www.bizportal.co.il{href}"
-                    elif not href.startswith('http'):
-                        link = f"https://www.bizportal.co.il/{href}"
-                    else:
-                        link = href
-                        
-                    seen_titles.add(text)
-                    news_items.append({
-                        "title": text,
-                        "link": link,
-                        "source": "Bizportal"
-                    })
-        return news_items[:15]
-    except Exception as e:
-        print(f"Warning: Error fetching Bizportal: {e}")
-        return []
 
 
 LT_STOCKS_META = [
@@ -771,7 +763,7 @@ def fetch_ai_insights_split(
     portfolio_stocks,
     date_str,
     day_name,
-    investing_headlines,
+    us_market_news,
     bizportal_headlines,
     now_il_str,
 ):
@@ -781,7 +773,6 @@ def fetch_ai_insights_split(
         cached = load_ai_cache()
         return cached if cached else {}
 
-    safe_investing_headlines = investing_headlines[:8] if investing_headlines else []
     safe_bizportal_headlines = bizportal_headlines[:8] if bizportal_headlines else []
 
     market_summary = {
@@ -789,13 +780,6 @@ def fetch_ai_insights_split(
         for t, d in market_data.items()
     }
 
-    inv_formatted = (
-        "\n".join(
-            [f"- Title: {h['title']} | Source: {h.get('source', 'Investing.com')} | Link: {h['link']}" for h in safe_investing_headlines]
-        )
-        if safe_investing_headlines
-        else "No US headlines."
-    )
     biz_formatted = (
         "\n".join(
             [f"- Title: {h['title']} | Source: {h.get('source', 'Bizportal')} | Link: {h['link']}" for h in safe_bizportal_headlines]
@@ -803,8 +787,6 @@ def fetch_ai_insights_split(
         if safe_bizportal_headlines
         else "No Israeli headlines."
     )
-    
-    all_safe_headlines = safe_investing_headlines + safe_bizportal_headlines
 
     combined_result = load_ai_cache()
     if not isinstance(combined_result, dict):
@@ -818,17 +800,17 @@ def fetch_ai_insights_split(
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 1 using {key_name}...")
+            print(f"🤖 Connecting to Groq AI Part 1 using {key_name} (llama-3.3-70b-versatile)...")
 
             prompt1 = f"""
-You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
+אתה אנליסט פיננסי ומאקרו-כלכלי בכיר. עליך לספק ניתוחים מקצועיים, מעמיקים, מנומקים ומפורטים היטב בעברית. אסור לתת תשובות קצרות או שבלוניות.
+Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. NO FABRICATION: Do not invent data.
 3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
    - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
-   - **ABSOLUTELY FORBIDDEN**: Do NOT write generic filler conclusions.
 4. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
@@ -849,10 +831,10 @@ Return a valid JSON object with exactly these 9 keys:
 """
 
             response1 = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
+                model="llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
-                temperature=0.0,
+                temperature=0.3,
                 max_tokens=4000,
             )
 
@@ -879,10 +861,11 @@ Return a valid JSON object with exactly these 9 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
+            print(f"🤖 Connecting to Groq AI Part 2 using {key_name} (llama-3.3-70b-versatile)...")
 
             prompt2 = f"""
-You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
+אתה אנליסט שווקים בכיר בוול סטריט. עליך לספק ניתוחים מקצועיים ומעמיקים.
+Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
@@ -890,17 +873,16 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
    - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
 4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
-   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source. **NEVER leave this empty.**
-   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
-5. CROSS-IMPACT MECHANISM (חוק השפעה צולבת): Do not discard local, regional, or geopolitical events if they carry a clear economic transmission mechanism affecting global energy, inflation, or US/global markets. Explicitly analyze their broader financial transmission where applicable.
-6. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Google News / מקור: Google News RSS. **NEVER leave this empty.**
+   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source.
+5. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
 
---- US / Global Headlines (Investing.com) ---
-{inv_formatted}
+--- US / Global Headlines (Google News RSS) ---
+{us_market_news}
 
---- Israeli Market Headlines (Bizportal - Prioritize Geopolitical & Macro) ---
+--- Israeli Market Headlines (Bizportal) ---
 {biz_formatted}
 
 Return a valid JSON object with exactly these 5 keys:
@@ -912,24 +894,15 @@ Return a valid JSON object with exactly these 5 keys:
 """
 
             response2 = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
+                model="llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
-                temperature=0.0,
+                temperature=0.3,
                 max_tokens=4000,
             )
 
             raw_text2 = response2.choices[0].message.content.strip()
             parsed2 = json.loads(raw_text2)
-            
-            for k, v in parsed2.items():
-                if isinstance(v, str):
-                    if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
-                        filtered_v = filter_hallucinations(v, all_safe_headlines)
-                    else:
-                        filtered_v = v
-                    parsed2[k] = filtered_v
-
             combined_result.update(parsed2)
             print("Successfully parsed Part 2 JSON using key:", key_name)
             break
@@ -951,10 +924,11 @@ Return a valid JSON object with exactly these 5 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 3 using {key_name}...")
+            print(f"🤖 Connecting to Groq AI Part 3 using {key_name} (llama-3.3-70b-versatile)...")
 
             prompt3 = f"""
-You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
+Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
@@ -965,8 +939,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 Today is {day_name}, Date: {date_str}.
 
---- US / Global Headlines (Investing.com) ---
-{inv_formatted}
+--- US / Global Headlines (Google News RSS) ---
+{us_market_news}
 
 --- Israeli Market Headlines (Bizportal) ---
 {biz_formatted}
@@ -986,24 +960,15 @@ Return a valid JSON object with exactly these 8 keys:
 """
 
             response3 = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
+                model="llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": prompt3}],
                 response_format={"type": "json_object"},
-                temperature=0.0,
+                temperature=0.3,
                 max_tokens=4000,
             )
 
             raw_text3 = response3.choices[0].message.content.strip()
             parsed3 = json.loads(raw_text3)
-            
-            for k, v in parsed3.items():
-                if isinstance(v, str):
-                    pass
-                elif isinstance(v, list) and k == 'market_news':
-                    for item in v:
-                        if isinstance(item, dict) and 'news_desc' in item:
-                            item['news_desc'] = filter_hallucinations(item['news_desc'], all_safe_headlines)
-
             combined_result.update(parsed3)
             print("Successfully parsed Part 3 JSON using key:", key_name)
             break
@@ -1224,7 +1189,7 @@ def build_market_news_html(market_news_list):
             item.get("news_link")
             or item.get("link")
             or item.get("url")
-            or "https://il.investing.com"
+            or "https://news.google.com"
         )
         p_title = (
             item.get("news_title")
@@ -1276,7 +1241,7 @@ if __name__ == "__main__":
         is_ai_time = is_manual or is_scheduled_ai_time
         is_yahoo_only = not is_ai_time
 
-        investing_headlines = fetch_investing_news()
+        us_market_news = fetch_us_market_news()
         bizportal_headlines = fetch_bizportal_news()
 
         try:
@@ -1289,7 +1254,7 @@ if __name__ == "__main__":
                     portfolio_buys,
                     date_str,
                     day_name,
-                    investing_headlines,
+                    us_market_news,
                     bizportal_headlines,
                     now_il_str,
                 )
@@ -1305,15 +1270,11 @@ if __name__ == "__main__":
 
         # 🛡️ Python-side Robust Fallback & Enforcement
         us_news_text = ai_insights.get("US_MARKET_NEWS", "")
-        if not us_news_text or len(us_news_text.strip()) < 10 or "Investing.com" not in us_news_text:
-            if investing_headlines:
-                us_lines = [f"• {h['title']} (מקור: Investing.com)" for h in investing_headlines[:3]]
-                us_news_text = "<br>".join(us_lines) + "<br>לסיכום: השווקים הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
-            else:
-                us_news_text = "אין עדכונים חדשותיים חדשים מ-Investing.com כרגע. (מקור: Investing.com)<br>לסיכום: השווקים בארה\"ב נסחרים בדריכות בהמתנה להודעות פד."
+        if not us_news_text or len(us_news_text.strip()) < 10 or "Google News" not in us_news_text:
+            us_news_text = f"{us_market_news} (מקור: Google News RSS)<br>לסיכום: השווקים הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
 
         il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
-        if not il_news_text or len(il_news_text.strip()) < 10 or "Investing.com" in il_news_text:
+        if not il_news_text or len(il_news_text.strip()) < 10 or "Google News" in il_news_text:
             if bizportal_headlines:
                 il_lines = [f"• {h['title']} (מקור: Bizportal)" for h in bizportal_headlines[:3]]
                 il_news_text = "<br>".join(il_lines) + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו."
@@ -1324,31 +1285,8 @@ if __name__ == "__main__":
         ai_insights["IL_MARKET_NEWS"] = il_news_text
 
         market_news_data = ai_insights.get("market_news", [])
-        combined_all_headlines = investing_headlines[:4] + bizportal_headlines[:4]
-
         if not isinstance(market_news_data, list):
             market_news_data = []
-
-        filled_news_data = []
-        for idx, h in enumerate(combined_all_headlines[:8]):
-            src_name = h.get('source', 'Investing.com')
-            desc = (
-                f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות"
-                f" על השווקים. (מקור: {src_name})"
-            )
-            if idx < len(market_news_data) and isinstance(
-                market_news_data[idx], dict
-            ):
-                ai_item = market_news_data[idx]
-                if ai_item.get("news_desc"):
-                    desc = ai_item.get("news_desc")
-            filled_news_data.append(
-                {"news_link": h["link"], "news_title": h["title"], "news_desc": desc}
-            )
-
-        if filled_news_data:
-            market_news_data = filled_news_data
-        ai_insights["market_news"] = market_news_data
 
         new_lt = clean_stocks_list(ai_insights.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
         new_sw = clean_stocks_list(ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
