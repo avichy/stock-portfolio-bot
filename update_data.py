@@ -810,7 +810,8 @@ def fetch_ai_insights_split(
     if not isinstance(combined_result, dict):
         combined_result = {}
 
-    print("🔄 Starting Groq AI Part 1 (Macro, Indices & News)...")
+    # --- PART 1: Indices & Macro Explanations ---
+    print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
     for key_name, api_key in api_keys:
         try:
             client = Groq(
@@ -822,30 +823,20 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES (חוקי ברזל להפרדת מקורות ודיוק):
+🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. NO FABRICATION: Do not invent news.
+2. NO FABRICATION: Do not invent data.
 3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
    - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
-   - **ABSOLUTELY FORBIDDEN**: Do NOT write generic filler conclusions like "המשק מגיב להתפתחויות הכלכליות" or "הבורסה מגיבה למגמות". The conclusion must state a sharp, actionable bottom-line or specific risk/opportunity derived directly from the provided headlines.
-4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
-   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source. **NEVER leave this empty.**
-   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
-5. CROSS-IMPACT MECHANISM (חוק השפעה צולבת): Do not discard local, regional, or geopolitical events (such as energy/oil routes like the Strait of Hormuz, supply chain shifts, or major infrastructure/aviation updates) if they carry a clear economic transmission mechanism affecting global energy, inflation, or US/global markets. Explicitly analyze their broader financial transmission where applicable.
-6. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+   - **ABSOLUTELY FORBIDDEN**: Do NOT write generic filler conclusions.
+4. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
-
---- US / Global Headlines (Investing.com) ---
-{inv_formatted}
-
---- Israeli Market Headlines (Bizportal - Prioritize Geopolitical & Macro) ---
-{biz_formatted}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-Return a valid JSON object with exactly these keys:
+Return a valid JSON object with exactly these 9 keys:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
@@ -855,11 +846,6 @@ Return a valid JSON object with exactly these keys:
 7. OIL_EXPLANATION
 8. GOLD_EXPLANATION
 9. BTC_EXPLANATION
-10. US_MARKET_NEWS
-11. IL_MARKET_NEWS
-12. COMMUNITY_SENTIMENT
-13. ANALYST_POINT_1
-14. ANALYST_POINT_2
 """
 
             response1 = client.chat.completions.create(
@@ -867,20 +853,11 @@ Return a valid JSON object with exactly these keys:
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
                 temperature=0.0,
-                max_tokens=8000,
+                max_tokens=4000,
             )
 
             raw_text1 = response1.choices[0].message.content.strip()
             parsed1 = json.loads(raw_text1)
-            
-            for k, v in parsed1.items():
-                if isinstance(v, str):
-                    if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
-                        filtered_v = filter_hallucinations(v, all_safe_headlines)
-                    else:
-                        filtered_v = v
-                    parsed1[k] = filtered_v
-
             combined_result.update(parsed1)
             print("Successfully parsed Part 1 JSON using key:", key_name)
             break
@@ -892,7 +869,10 @@ Return a valid JSON object with exactly these keys:
             else:
                 time.sleep(5)
 
-    print("🔄 Starting Groq AI Part 2 (Stocks, Catalysts & Strategy)...")
+    time.sleep(3)
+
+    # --- PART 2: News, Sentiment & Analyst Points ---
+    print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
     for key_name, api_key in api_keys:
         try:
             client = Groq(
@@ -902,6 +882,78 @@ Return a valid JSON object with exactly these keys:
             print(f"🤖 Connecting to Groq AI Part 2 using {key_name}...")
 
             prompt2 = f"""
+You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
+
+🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
+2. NO FABRICATION: Do not invent news.
+3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
+   - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
+4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
+   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source. **NEVER leave this empty.**
+   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
+5. CROSS-IMPACT MECHANISM (חוק השפעה צולבת): Do not discard local, regional, or geopolitical events if they carry a clear economic transmission mechanism affecting global energy, inflation, or US/global markets. Explicitly analyze their broader financial transmission where applicable.
+6. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+
+Today is {day_name}, Date: {date_str}.
+
+--- US / Global Headlines (Investing.com) ---
+{inv_formatted}
+
+--- Israeli Market Headlines (Bizportal - Prioritize Geopolitical & Macro) ---
+{biz_formatted}
+
+Return a valid JSON object with exactly these 5 keys:
+1. US_MARKET_NEWS
+2. IL_MARKET_NEWS
+3. COMMUNITY_SENTIMENT
+4. ANALYST_POINT_1
+5. ANALYST_POINT_2
+"""
+
+            response2 = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                messages=[{"role": "user", "content": prompt2}],
+                response_format={"type": "json_object"},
+                temperature=0.0,
+                max_tokens=4000,
+            )
+
+            raw_text2 = response2.choices[0].message.content.strip()
+            parsed2 = json.loads(raw_text2)
+            
+            for k, v in parsed2.items():
+                if isinstance(v, str):
+                    if k in ["US_MARKET_NEWS", "IL_MARKET_NEWS"]:
+                        filtered_v = filter_hallucinations(v, all_safe_headlines)
+                    else:
+                        filtered_v = v
+                    parsed2[k] = filtered_v
+
+            combined_result.update(parsed2)
+            print("Successfully parsed Part 2 JSON using key:", key_name)
+            break
+        except Exception as e:
+            print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+                print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+                time.sleep(60)
+            else:
+                time.sleep(5)
+
+    time.sleep(3)
+
+    # --- PART 3: Stocks, Catalysts & Strategy ---
+    print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
+    for key_name, api_key in api_keys:
+        try:
+            client = Groq(
+                api_key=api_key,
+                base_url="https://groq-proxy.avichy65.workers.dev",
+            )
+            print(f"🤖 Connecting to Groq AI Part 3 using {key_name}...")
+
+            prompt3 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
@@ -933,18 +985,18 @@ Return a valid JSON object with exactly these 8 keys:
 8. ACTION_RECOMMENDATIONS_TEXT
 """
 
-            response2 = client.chat.completions.create(
+            response3 = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
-                messages=[{"role": "user", "content": prompt2}],
+                messages=[{"role": "user", "content": prompt3}],
                 response_format={"type": "json_object"},
                 temperature=0.0,
                 max_tokens=4000,
             )
 
-            raw_text2 = response2.choices[0].message.content.strip()
-            parsed2 = json.loads(raw_text2)
+            raw_text3 = response3.choices[0].message.content.strip()
+            parsed3 = json.loads(raw_text3)
             
-            for k, v in parsed2.items():
+            for k, v in parsed3.items():
                 if isinstance(v, str):
                     pass
                 elif isinstance(v, list) and k == 'market_news':
@@ -952,11 +1004,11 @@ Return a valid JSON object with exactly these 8 keys:
                         if isinstance(item, dict) and 'news_desc' in item:
                             item['news_desc'] = filter_hallucinations(item['news_desc'], all_safe_headlines)
 
-            combined_result.update(parsed2)
-            print("Successfully parsed Part 2 JSON using key:", key_name)
+            combined_result.update(parsed3)
+            print("Successfully parsed Part 3 JSON using key:", key_name)
             break
         except Exception as e:
-            print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+            print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
             if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
                 print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
