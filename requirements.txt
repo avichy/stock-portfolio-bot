@@ -3,4 +3,5 @@ yfinance
 pytz
 requests
 google-genai
+feedparser
 groq
