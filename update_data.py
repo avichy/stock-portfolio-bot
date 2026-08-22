@@ -1,4 +1,4 @@
-[cite: 3] import base64
+import base64
 from datetime import datetime
 import json
 import os
@@ -89,7 +89,7 @@ portfolio_buys = load_portfolio_buys()
 
 def filter_hallucinations(text, headlines_list):
     """
-    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות (מופעל רק על חדשות שוק).
+    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות.
     """
     if not text or not isinstance(text, str):
         return ""
@@ -373,7 +373,6 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-    """גריפת כותרות מ־Bizportal עם User-Agent מעודכן למניעת חסימת בוטים"""
     url = "https://www.bizportal.co.il/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
