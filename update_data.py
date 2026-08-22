@@ -1,4 +1,4 @@
-import base64
+[cite: 3] import base64
 from datetime import datetime
 import json
 import os
@@ -373,9 +373,11 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
+    """גריפת כותרות מ־Bizportal עם User-Agent מעודכן למניעת חסימת בוטים"""
     url = "https://www.bizportal.co.il/"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en-@q=0.7"
     }
     try:
         response = requests.get(url, headers=headers, timeout=10)
@@ -391,7 +393,7 @@ def fetch_bizportal_news():
             text = a_tag.get_text(strip=True)
             href = a_tag['href']
             if len(text) > 20 and text not in seen_titles:
-                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר"]):
+                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש"]):
                     if href.startswith('/'):
                         link = f"https://www.bizportal.co.il{href}"
                     elif not href.startswith('http'):
@@ -1226,9 +1228,10 @@ if __name__ == "__main__":
 
         filled_news_data = []
         for idx, h in enumerate(combined_all_headlines[:8]):
+            src_name = h.get('source', 'Investing.com')
             desc = (
                 f"הידיעה עוסקת ב-{h['title']} ומנתחת את ההשלכות הרוחביות"
-                f" על השווקים. (מקור: {h.get('source', 'Investing.com')})"
+                f" על השווקים. (מקור: {src_name})"
             )
             if idx < len(market_news_data) and isinstance(
                 market_news_data[idx], dict
