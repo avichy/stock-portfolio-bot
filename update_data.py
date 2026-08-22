@@ -831,7 +831,8 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
    - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source. **NEVER leave this empty.**
    - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
-5. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
+5. CROSS-IMPACT MECHANISM (חוק השפעה צולבת): Do not discard local, regional, or geopolitical events (such as energy/oil routes like the Strait of Hormuz, supply chain shifts, or major infrastructure/aviation updates) if they carry a clear economic transmission mechanism affecting global energy, inflation, or US/global markets. Explicitly analyze their broader financial transmission where applicable.
+6. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
 
