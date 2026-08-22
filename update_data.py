@@ -88,9 +88,6 @@ portfolio_buys = load_portfolio_buys()
 
 
 def filter_hallucinations(text, headlines_list):
-    """
-    מסנן משפטים שה-AI המציא ואין להם שום עוגן בכותרות החדשותיות המקוריות.
-    """
     if not text or not isinstance(text, str):
         return ""
 
@@ -376,7 +373,8 @@ def fetch_bizportal_news():
     url = "https://www.bizportal.co.il/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en-@q=0.7"
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7"
     }
     try:
         response = requests.get(url, headers=headers, timeout=10)
@@ -391,8 +389,8 @@ def fetch_bizportal_news():
         for a_tag in soup.find_all('a', href=True):
             text = a_tag.get_text(strip=True)
             href = a_tag['href']
-            if len(text) > 20 and text not in seen_titles:
-                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש"]):
+            if len(text) > 25 and text not in seen_titles:
+                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש", "מערכת", "שירות לקוחות", "תפריט"]):
                     if href.startswith('/'):
                         link = f"https://www.bizportal.co.il{href}"
                     elif not href.startswith('http'):
@@ -905,9 +903,10 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES (PROFESSIONAL CATALYSTS & STRUCTURED LISTS):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs explaining upcoming earnings seasons, central bank monetary policy decisions, and major hardware/AI technology releases. DO NOT output raw ticker lists. Every catalyst must end with "לסיכום:".
-3. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
-4. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news with reliable source).
+2. STOCK SELECTION RESTRICTIONS (`long_term_stocks`, `swing_stocks`): MUST contain ONLY individual corporate stocks (e.g., MSFT, AAPL, NVDA, TSLA, JPM, AMZN, GOOGL). STRICTLY FORBIDDEN to include sector ETFs, SPDR sector indices, or broad market indices (such as XLK, XLV, XLP, XLF, XLE, XLI, XLB, XLC, XLU, XLRE, SPY, QQQ). Every item must be a real individual company stock with its correct ticker symbol.
+3. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs explaining upcoming earnings seasons, central bank monetary policy decisions, and major hardware/AI technology releases. DO NOT output raw ticker lists. Every catalyst must end with "לסיכום:".
+4. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
+5. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news with reliable source).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -998,13 +997,34 @@ sector_tickers_map = {
     "REAL_ESTATE": "XLRE",
 }
 
+# Strict filter set to prevent sector ETFs or indices from showing up as stocks
+forbidden_stock_tickers = set(sector_tickers_map.values()).union({
+    "^GSPC", "^NDX", "^DJI", "^VIX", "DX-Y.NYB", "CL=F", "GC=F", "BTC-USD", "USDILS=X", "SPY", "QQQ"
+})
+
+def clean_stocks_list(stocks_list, default_meta):
+    if not isinstance(stocks_list, list) or not stocks_list:
+        return default_meta
+    cleaned = []
+    for s in stocks_list:
+        if isinstance(s, dict):
+            t = str(s.get("ticker") or s.get("symbol") or "").strip().upper()
+            if t and t not in forbidden_stock_tickers:
+                cleaned.append(s)
+        elif isinstance(s, str):
+            t = s.strip().upper()
+            if t and t not in forbidden_stock_tickers:
+                # Find matching default if string was returned
+                matched = next((item for item in default_meta if item.get("ticker") == t), None)
+                if matched:
+                    cleaned.append(matched)
+                else:
+                    cleaned.append({"ticker": t, "name": t, "desc": "מניה מובילה בשוק.", "news": "מעקב שוטף.", "why_invest": "פוטנציאל חיובי."})
+    return cleaned if len(cleaned) >= 5 else default_meta
+
 cached_ai_init = load_ai_cache()
-init_lt = cached_ai_init.get("long_term_stocks", LT_STOCKS_META)
-if not isinstance(init_lt, list) or not init_lt:
-    init_lt = LT_STOCKS_META
-init_sw = cached_ai_init.get("swing_stocks", SW_STOCKS_META)
-if not isinstance(init_sw, list) or not init_sw:
-    init_sw = SW_STOCKS_META
+init_lt = clean_stocks_list(cached_ai_init.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
+init_sw = clean_stocks_list(cached_ai_init.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
 
 base_market_tickers = list(
     set(
@@ -1046,6 +1066,8 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     for s in stocks_meta:
         if isinstance(s, str):
             ticker = s.strip().upper()
+            if ticker in forbidden_stock_tickers:
+                continue
             name = ticker
             desc = "מניה מובילה שנבחרה על ידי מערכת ה-AI."
             news = "מעקב יומי וניתוח מומנטום בשוק."
@@ -1054,7 +1076,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             ticker = str(
                 s.get("ticker") or s.get("symbol") or s.get("name") or ""
             ).strip().upper()
-            if not ticker:
+            if not ticker or ticker in forbidden_stock_tickers:
                 continue
             name = s.get("name") or s.get("company") or s.get("title") or ticker
             desc = (
@@ -1246,13 +1268,8 @@ if __name__ == "__main__":
             market_news_data = filled_news_data
         ai_insights["market_news"] = market_news_data
 
-        new_lt = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-        if not isinstance(new_lt, list) or not new_lt:
-            new_lt = LT_STOCKS_META
-
-        new_sw = ai_insights.get("swing_stocks", SW_STOCKS_META)
-        if not isinstance(new_sw, list) or not new_sw:
-            new_sw = SW_STOCKS_META
+        new_lt = clean_stocks_list(ai_insights.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
+        new_sw = clean_stocks_list(ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
 
         extra_tickers = []
         for s in new_lt + new_sw:
@@ -1325,13 +1342,8 @@ if __name__ == "__main__":
         with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
             content = f.read()
 
-        lt_stocks_data = ai_insights.get("long_term_stocks", LT_STOCKS_META)
-        if not isinstance(lt_stocks_data, list) or not lt_stocks_data:
-            lt_stocks_data = LT_STOCKS_META
-
-        sw_stocks_data = ai_insights.get("swing_stocks", SW_STOCKS_META)
-        if not isinstance(sw_stocks_data, list) or not sw_stocks_data:
-            sw_stocks_data = SW_STOCKS_META
+        lt_stocks_data = new_lt
+        sw_stocks_data = new_sw
 
         lt_html = build_structured_stocks_html(
             lt_stocks_data,
@@ -1451,7 +1463,7 @@ if __name__ == "__main__":
             "BTC_EXPLANATION": format_phase1_text(
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
-            "US_MARKET_NEWS": format_phase1_text(
+            "US_MARKET_README": format_phase1_text(
                 ai_insights.get("US_MARKET_NEWS", "")
             ),
             "IL_MARKET_NEWS": format_phase1_text(
