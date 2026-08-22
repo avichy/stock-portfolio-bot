@@ -822,15 +822,14 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION GUIDELINES (חוקי ברזל למניעת המצאות):
+🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES (חוקי ברזל להפרדת מקורות):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. NO FABRICATION / ZERO-HALLUCINATION: You are strictly forbidden from inventing, guessing, or assuming economic events, news stories, or data points that are not explicitly present in the provided headlines. If no concrete news exists for a specific section, you must write exactly: 'אין עדכונים חדשותיים דרמטיים היום; המעקב מבוסס על נתונים טכניים ומחיר חי בלבד.'
+2. NO FABRICATION: Do not invent news.
 3. MANDATORY CONCLUSION: Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
 4. STRICT SOURCE SEPARATION (CRITICAL):
-   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade.
-   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Focus **EXCLUSIVELY** on the Israeli economy, Bank of Israel interest rate, inflation/CPI, GDP growth, employment, fiscal deficit, security/geopolitical impacts on Israel, and the local market. **NEVER** mix foreign US companies or stocks into it.
-5. SOURCE FORMATTING & PLACEMENT: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
-6. NO LEADING PUNCTUATION: Never start lines with `;` or `,`.
+   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source.
+   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Focus **EXCLUSIVELY** on the Israeli economy, Bank of Israel interest rate, inflation/CPI, GDP growth, and local market headlines from Bizportal. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
+5. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -902,13 +901,12 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION GUIDELINES (חוקי ברזל למניעת המצאות):
+🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. ZERO-HALLUCINATION ON NEWS & STOCKS: Do not invent catalysts, earnings reports, or corporate news that are not backed by the input headlines or hard quantitative data.
-3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects. Each object MUST contain: `ticker` (string symbol, e.g., MSFT, TSLA), `name` (company name in Hebrew/English), `desc` (detailed business description in Hebrew), `news` (daily news/momentum update in Hebrew based on real facts or technical status), `why_invest` (investment rationale in Hebrew). STRICTLY FORBIDDEN to include sector ETFs, SPDR sector indices, or broad market indices.
-4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs based strictly on real economic schedules and rules. Every catalyst must end with "לסיכום:".
-5. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
-6. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news with reliable source based strictly on the headline text).
+2. ZERO-HALLUCINATION ON NEWS & STOCKS: Do not invent catalysts or corporate news.
+3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with "לסיכום:".
+5. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -945,10 +943,7 @@ Return a valid JSON object with exactly these 8 keys:
             
             for k, v in parsed2.items():
                 if isinstance(v, str):
-                    if k == 'market_news':
-                        pass
-                    else:
-                        parsed2[k] = v
+                    pass
                 elif isinstance(v, list) and k == 'market_news':
                     for item in v:
                         if isinstance(item, dict) and 'news_desc' in item:
@@ -1252,6 +1247,26 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error handling AI insights: {e}")
             ai_insights = {}
+
+        # 🛡️ Python-side Enforcement & Fallback for US (Investing) and IL (Bizportal) News
+        us_news_text = ai_insights.get("US_MARKET_NEWS", "")
+        if not us_news_text or len(us_news_text.strip()) < 10 or "Investing.com" not in us_news_text:
+            if investing_headlines:
+                us_lines = [f"• {h['title']} (מקור: Investing.com)" for h in investing_headlines[:3]]
+                us_news_text = "<br>".join(us_lines) + "<br>לסיכום: השווקים הבינלאומיים ממשיכים לעקוב אחר נתוני המאקרו והמסחר בוול סטריט."
+            else:
+                us_news_text = "אין עדכונים חדשותיים חדשים מ-Investing.com כרגע. (מקור: Investing.com)<br>לסיכום: שוק האנרגיה והמדדים בארה\"ב נסחרים בדריכות."
+
+        il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
+        if not il_news_text or len(il_news_text.strip()) < 10 or "Investing.com" in il_news_text or "Creative Medical" in il_news_text:
+            if bizportal_headlines:
+                il_lines = [f"• {h['title']} (מקור: Bizportal)" for h in bizportal_headlines[:3]]
+                il_news_text = "<br>".join(il_lines) + "<br>לסיכום: הבורסה בתל אביב והמשק הישראלי מגיבים להתפתחויות הכלכליות והעסקיות המקומיות."
+            else:
+                il_news_text = "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור: Bizportal)<br>לסיכום: השוק המקומי מתנהל בהתאם למגמות הכלכליות בארץ."
+
+        ai_insights["US_MARKET_NEWS"] = us_news_text
+        ai_insights["IL_MARKET_NEWS"] = il_news_text
 
         market_news_data = ai_insights.get("market_news", [])
         combined_all_headlines = investing_headlines[:4] + bizportal_headlines[:4]
