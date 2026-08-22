@@ -901,10 +901,10 @@ Return a valid JSON object with exactly these keys:
             prompt2 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES (PROFESSIONAL CATALYSTS & STRUCTURED LISTS):
+🚨 STRICT GUIDELINES (PROFESSIONAL CATALYSTS & STRUCTURED STOCKS):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. STOCK SELECTION RESTRICTIONS (`long_term_stocks`, `swing_stocks`): MUST contain ONLY individual corporate stocks (e.g., MSFT, AAPL, NVDA, TSLA, JPM, AMZN, GOOGL). STRICTLY FORBIDDEN to include sector ETFs, SPDR sector indices, or broad market indices (such as XLK, XLV, XLP, XLF, XLE, XLI, XLB, XLC, XLU, XLRE, SPY, QQQ). Every item must be a real individual company stock with its correct ticker symbol.
-3. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs explaining upcoming earnings seasons, central bank monetary policy decisions, and major hardware/AI technology releases. DO NOT output raw ticker lists. Every catalyst must end with "לסיכום:".
+2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects. Each object MUST contain: `ticker` (string symbol, e.g., MSFT, TSLA), `name` (company name in Hebrew/English), `desc` (detailed business description in Hebrew), `news` (daily news/momentum update in Hebrew), `why_invest` (investment rationale in Hebrew). STRICTLY FORBIDDEN to include sector ETFs, SPDR sector indices, or broad market indices (such as XLK, XLV, XLP, XLF, XLE, XLI, XLB, XLC, XLU, XLRE, SPY, QQQ).
+3. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional, detailed analytical paragraphs explaining upcoming earnings seasons, central bank monetary policy decisions, and major hardware/AI technology releases. Every catalyst must end with "לסיכום:".
 4. STRUCTURED RECOMMENDATIONS: For `RISK_MANAGEMENT_TEXT` and `ACTION_RECOMMENDATIONS_TEXT`, format distinct points with clear numbers (e.g., "1. ... 2. ... 3. ...") and ensure each point starts with a new line or clear separation. End with a "לסיכום:" section.
 5. `market_news`: Array of items. Each item MUST be an object containing: `news_title` (exact headline), `news_link` (exact matching link from the headlines provided below), and `news_desc` (clean description summarizing the news with reliable source).
 
@@ -997,7 +997,6 @@ sector_tickers_map = {
     "REAL_ESTATE": "XLRE",
 }
 
-# Strict filter set to prevent sector ETFs or indices from showing up as stocks
 forbidden_stock_tickers = set(sector_tickers_map.values()).union({
     "^GSPC", "^NDX", "^DJI", "^VIX", "DX-Y.NYB", "CL=F", "GC=F", "BTC-USD", "USDILS=X", "SPY", "QQQ"
 })
@@ -1010,17 +1009,28 @@ def clean_stocks_list(stocks_list, default_meta):
         if isinstance(s, dict):
             t = str(s.get("ticker") or s.get("symbol") or "").strip().upper()
             if t and t not in forbidden_stock_tickers:
-                cleaned.append(s)
+                cleaned.append({
+                    "ticker": t,
+                    "name": s.get("name") or s.get("company") or t,
+                    "desc": s.get("desc") or s.get("description") or f"חברה מובילה ({t}) הפועלת בשוק הגלובלי.",
+                    "news": s.get("news") or s.get("rationale") or "עדכון שוטף וניתוח טכני של תנועת המחיר.",
+                    "why_invest": s.get("why_invest") or s.get("investment_reason") or "פוטנציאל תשואה חיובי בהתאם לנתונים הפונדמנטליים."
+                })
         elif isinstance(s, str):
             t = s.strip().upper()
             if t and t not in forbidden_stock_tickers:
-                # Find matching default if string was returned
                 matched = next((item for item in default_meta if item.get("ticker") == t), None)
                 if matched:
                     cleaned.append(matched)
                 else:
-                    cleaned.append({"ticker": t, "name": t, "desc": "מניה מובילה בשוק.", "news": "מעקב שוטף.", "why_invest": "פוטנציאל חיובי."})
-    return cleaned if len(cleaned) >= 5 else default_meta
+                    cleaned.append({
+                        "ticker": t,
+                        "name": t,
+                        "desc": f"חברה מובילה ({t}) המרכזת עניין בשווקים.",
+                        "news": "מעקב שוטף אחר התפתחות המסחר והמומנטום.",
+                        "why_invest": "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
+                    })
+    return cleaned if len(cleaned) >= 3 else default_meta
 
 cached_ai_init = load_ai_cache()
 init_lt = clean_stocks_list(cached_ai_init.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
@@ -1069,9 +1079,9 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             if ticker in forbidden_stock_tickers:
                 continue
             name = ticker
-            desc = "מניה מובילה שנבחרה על ידי מערכת ה-AI."
-            news = "מעקב יומי וניתוח מומנטום בשוק."
-            why_invest = "פוטנציאל תשואה אטרקטיבי וניהול פיננסי יציב."
+            desc = f"חברה מובילה ({ticker}) המרכזת עניין בשווקים."
+            news = "מעקב שוטף אחר התפתחות המסחר והמומנטום."
+            why_invest = "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
         elif isinstance(s, dict):
             ticker = str(
                 s.get("ticker") or s.get("symbol") or s.get("name") or ""
@@ -1083,20 +1093,20 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
                 s.get("desc")
                 or s.get("description")
                 or s.get("reason")
-                or "עיסוק ופעילות גלובלית בשווקים."
+                or f"חברה מובילה ({ticker}) הפועלת בשוק הגלובלי."
             )
             news = (
                 s.get("news")
                 or s.get("rationale")
                 or s.get("update")
-                or "עדכון וניתוח יומי."
+                or "עדכון שוטף וניתוח טכני של תנועת המחיר."
             )
             news = re.sub(r"^סיכום הכתבה:\s*", "", news)
             news = force_source_on_newline(news)
             why_invest = (
                 s.get("why_invest")
                 or s.get("investment_reason")
-                or "מומנטום חיובי ונתונים פונדמנטליים חזקים המצדיקים כדאיות השקעה."
+                or "פוטנציאל תשואה חיובי בהתאם לנתונים הפונדמנטליים."
             )
             why_invest = force_source_on_newline(why_invest)
         else:
