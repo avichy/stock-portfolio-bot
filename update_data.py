@@ -822,13 +822,15 @@ def fetch_ai_insights_split(
             prompt1 = f"""
 You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES (חוקי ברזל להפרדת מקורות):
+🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES (חוקי ברזל להפרדת מקורות ודיוק):
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. NO FABRICATION: Do not invent news.
-3. MANDATORY CONCLUSION: Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a concluding sentence at the end.
-4. STRICT SOURCE SEPARATION (CRITICAL):
-   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source.
-   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Focus **EXCLUSIVELY** on the Israeli economy, Bank of Israel interest rate, inflation/CPI, GDP growth, and local market headlines from Bizportal. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
+3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
+   - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
+   - **ABSOLUTELY FORBIDDEN**: Do NOT write generic filler conclusions like "המשק מגיב להתפתחויות הכלכליות" or "הבורסה מגיבה למגמות". The conclusion must state a sharp, actionable bottom-line or specific risk/opportunity derived directly from the provided headlines.
+4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
+   - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Investing.com provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Investing.com as the source. **NEVER leave this empty.**
+   - **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. **PRIORITY 1**: You MUST prioritize and highlight **geopolitical events, security/military developments, macroeconomic shifts (inflation, Bank of Israel interest rate, currency), and major local business/energy news**. Focus on how these geopolitical/macro events impact the Israeli economy and TASE. Must explicitly mention Bizportal as the source. **NEVER** put Investing.com headlines or American stocks here.
 5. SOURCE FORMATTING: Sources must appear **ONLY** in the main explanation body on the same line followed by `<br>`, **NEVER** inside or after the "לסיכום:" section.
 
 Today is {day_name}, Date: {date_str}.
@@ -836,7 +838,7 @@ Today is {day_name}, Date: {date_str}.
 --- US / Global Headlines (Investing.com) ---
 {inv_formatted}
 
---- Israeli Market Headlines (Bizportal) ---
+--- Israeli Market Headlines (Bizportal - Prioritize Geopolitical & Macro) ---
 {biz_formatted}
 
 Current Market Data:
@@ -905,7 +907,7 @@ You are an expert Chief Market Strategist. Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. ZERO-HALLUCINATION ON NEWS & STOCKS: Do not invent catalysts or corporate news.
 3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with "לסיכום:".
+4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with a sharp, non-generic "לסיכום:".
 5. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
@@ -1248,22 +1250,22 @@ if __name__ == "__main__":
             print(f"Error handling AI insights: {e}")
             ai_insights = {}
 
-        # 🛡️ Python-side Enforcement & Fallback for US (Investing) and IL (Bizportal) News
+        # 🛡️ Python-side Robust Fallback & Enforcement
         us_news_text = ai_insights.get("US_MARKET_NEWS", "")
         if not us_news_text or len(us_news_text.strip()) < 10 or "Investing.com" not in us_news_text:
             if investing_headlines:
                 us_lines = [f"• {h['title']} (מקור: Investing.com)" for h in investing_headlines[:3]]
-                us_news_text = "<br>".join(us_lines) + "<br>לסיכום: השווקים הבינלאומיים ממשיכים לעקוב אחר נתוני המאקרו והמסחר בוול סטריט."
+                us_news_text = "<br>".join(us_lines) + "<br>לסיכום: השווקים הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
             else:
-                us_news_text = "אין עדכונים חדשותיים חדשים מ-Investing.com כרגע. (מקור: Investing.com)<br>לסיכום: שוק האנרגיה והמדדים בארה\"ב נסחרים בדריכות."
+                us_news_text = "אין עדכונים חדשותיים חדשים מ-Investing.com כרגע. (מקור: Investing.com)<br>לסיכום: השווקים בארה\"ב נסחרים בדריכות בהמתנה להודעות פד."
 
         il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
-        if not il_news_text or len(il_news_text.strip()) < 10 or "Investing.com" in il_news_text or "Creative Medical" in il_news_text:
+        if not il_news_text or len(il_news_text.strip()) < 10 or "Investing.com" in il_news_text:
             if bizportal_headlines:
                 il_lines = [f"• {h['title']} (מקור: Bizportal)" for h in bizportal_headlines[:3]]
-                il_news_text = "<br>".join(il_lines) + "<br>לסיכום: הבורסה בתל אביב והמשק הישראלי מגיבים להתפתחויות הכלכליות והעסקיות המקומיות."
+                il_news_text = "<br>".join(il_lines) + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו."
             else:
-                il_news_text = "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור: Bizportal)<br>לסיכום: השוק המקומי מתנהל בהתאם למגמות הכלכליות בארץ."
+                il_news_text = "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור: Bizportal)<br>לסיכום: הבורסה בתל אביב מתנהלת בהתאם למצב הביטחוני והכלכלי."
 
         ai_insights["US_MARKET_NEWS"] = us_news_text
         ai_insights["IL_MARKET_NEWS"] = il_news_text
