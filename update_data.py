@@ -114,9 +114,10 @@ def fetch_us_market_news():
 
 
 def fetch_investing_news():
-    """שליפת חדשות פיננסיות וגיאופוליטיות עבור שלב 8 דרך פידי ה-RSS הרשמיים של Investing.com (עוקף חסימות)"""
+    """שליפת חדשות פיננסיות וגיאופוליטיות עבור שלב 8 מ-https://il.investing.com/ דרך פידי ה-RSS שלהם"""
     try:
         rss_urls = [
+            "https://il.investing.com/rss/news.rss",
             "https://www.investing.com/rss/news.rss",
             "https://www.investing.com/rss/stock_market.rss"
         ]
@@ -125,10 +126,10 @@ def fetch_investing_news():
 
         for url in rss_urls:
             feed = feedparser.parse(url)
-            for entry in feed.entries[:8]:
+            for entry in feed.entries[:10]:
                 title = entry.get("title", "")
                 summary = entry.get("summary", "") or entry.get("description", "")
-                link = entry.get("link", "https://www.investing.com")
+                link = entry.get("link", "https://il.investing.com/")
                 if title and title not in seen_titles:
                     seen_titles.add(title)
                     news_items.append(f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}")
@@ -246,6 +247,7 @@ def force_source_on_newline(text):
 
 
 def format_text_with_conclusion(text, prefix_num=None):
+    """משמש רק לשלבים 1, 3, 6, 7 שבהם נדרש סיכום תקני ומסודר"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -340,7 +342,7 @@ def format_text_with_conclusion(text, prefix_num=None):
         explanation = explanation.strip() + " " + source_str
 
     if conclusion:
-        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     else:
         formatted_content = explanation
 
@@ -349,12 +351,29 @@ def format_text_with_conclusion(text, prefix_num=None):
 
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
-        f' mt-1 mb-4">{formatted_content}</span>'
+        f' mt-1 mb-3">{formatted_content}</span>'
+    )
+
+
+def format_simple_text(text):
+    """משמש לכל שאר השלבים שבהם אין צורך במבנה 'לסיכום'"""
+    if isinstance(text, list):
+        text = " ".join(str(item) for item in text)
+    elif not isinstance(text, str):
+        text = str(text)
+
+    text = text.strip()
+    text = format_numbers_in_text(text)
+    text = force_source_on_newline(text)
+
+    return (
+        f'<span class="leading-relaxed text-sm text-gray-200 block'
+        f' mt-1 mb-3">{text}</span>'
     )
 
 
 def format_news_description(text):
-    """עיצוב אחיד גם לתיאורי הכתבות בשלב 8 עם שורת רווח תקינה לפני הסיכום"""
+    """עיצוב מדויק לשלב 8: ללא סיכום, רק טקסט נקי תחת 'סיכום הכתבה:'"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -368,37 +387,13 @@ def format_news_description(text):
 
     cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
     cleaned = re.sub(r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE).strip()
+    cleaned = re.sub(r"לסיכום.*$", "", cleaned, flags=re.IGNORECASE).strip()
 
-    explanation = cleaned
-    conclusion = ""
-
-    if "לסיכום" in cleaned:
-        parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
-        explanation = parts[0].strip()
-        if len(parts) > 1:
-            conclusion = parts[1].strip()
-
-    explanation = re.sub(r'\s*\n+\s*', ' ', explanation).strip()
-    conclusion = re.sub(r'\s*\n+\s*', ' ', conclusion).strip()
-
-    if not conclusion:
-        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()]
-        if len(sentences) > 1:
-            conclusion = sentences[-1]
-            explanation = " ".join(sentences[:-1])
-
-    explanation = format_numbers_in_text(explanation)
-    conclusion = format_numbers_in_text(conclusion)
-
+    cleaned = format_numbers_in_text(cleaned)
     if source_str:
-        explanation = explanation.strip() + " " + source_str
+        cleaned = cleaned.strip() + " " + source_str
 
-    if conclusion:
-        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
-    else:
-        formatted_content = explanation
-
-    return force_source_on_newline(formatted_content)
+    return force_source_on_newline(cleaned)
 
 
 def format_phase1_text(text):
@@ -810,7 +805,7 @@ def fetch_ai_insights_split(
     if not isinstance(combined_result, dict):
         combined_result = {}
 
-    # --- PART 1: Indices & Macro Explanations ---
+    # --- PART 1: Indices & Macro Explanations (שלב 1 - כולל סיכום) ---
     print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
     for key_name, api_key in api_keys:
         try:
@@ -871,7 +866,7 @@ Return a valid JSON object with exactly these 9 keys:
 
     time.sleep(3)
 
-    # --- PART 2: News, Sentiment & Analyst Points ---
+    # --- PART 2: News, Sentiment & Analyst Points (שלב 6, שלב 7) ---
     print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
     for key_name, api_key in api_keys:
         try:
@@ -888,7 +883,7 @@ Output a valid JSON object ONLY.
 🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. NO FABRICATION: Do not invent news.
-3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי): 
+3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי בשדות הסנטימנט והאנליסטים - שלב 6 ו-7): 
    - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
 4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
    - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Google News / מקור: Google News RSS. **NEVER leave this empty.**
@@ -934,7 +929,7 @@ Return a valid JSON object with exactly these 5 keys:
 
     time.sleep(3)
 
-    # --- PART 3: Stocks, Catalysts & Strategy ---
+    # --- PART 3: Stocks, Catalysts & Strategy (שלב 3 - דרימים / קטליסטים כולל סיכום, שלב 8 חדשות מניות מ-Investing) ---
     print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
     for key_name, api_key in api_keys:
         try:
@@ -951,14 +946,14 @@ Output a valid JSON object ONLY.
 🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. ZERO-HALLUCINATION ON NEWS & STOCKS: Do not invent catalysts or corporate news.
-3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with a sharp, non-generic "לסיכום:".
-5. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
-   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines provided below. **PRIORITY 1**: You MUST prioritize and extract news items related to **geopolitical events, global conflicts, security developments, and major macroeconomic shifts** that impact the markets, alongside general stock market news. Each item must accurately include its original title, link, and a detailed summary ending with "לסיכום:".
+3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`. (No forced "לסיכום" in stock descriptions).
+4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE` - שלב 3): Write professional analytical paragraphs ending with a sharp "לסיכום:".
+5. `market_news` (שלב 8): Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
+   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines from https://il.investing.com/ provided below. **PRIORITY 1**: You MUST prioritize and extract news items related to **geopolitical events, global conflicts, security developments, and major macroeconomic shifts** that impact the markets, alongside general stock market news. Each item must accurately include its original title, link, and a clean professional summary **WITHOUT any conclusion or "לסיכום"**.
 
 Today is {day_name}, Date: {date_str}.
 
---- Investing.com Headlines (RSS) ---
+--- Investing.com Headlines (https://il.investing.com/) ---
 {investing_news}
 
 --- Israeli Market Headlines (Bizportal) ---
@@ -1194,6 +1189,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
 
 
 def build_market_news_html(market_news_list):
+    """שלב 8: כותרת, קישור מתחתיו, ותחתיו הכיתוב 'סיכום הכתבה:' וטקסט הסיכום (ללא לסיכום)"""
     if not isinstance(market_news_list, list) or not market_news_list:
         return (
             '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות'
@@ -1208,7 +1204,7 @@ def build_market_news_html(market_news_list):
             item.get("news_link")
             or item.get("link")
             or item.get("url")
-            or "https://www.investing.com"
+            or "https://il.investing.com/"
         )
         p_title = (
             item.get("news_title")
@@ -1229,7 +1225,7 @@ def build_market_news_html(market_news_list):
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl">
             <h3 class="text-cyan-400 font-semibold text-base break-words">{p_title}</h3>
-            <p class="mt-2 break-words">🔗 <strong>קישור למקור:</strong> <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
+            <p class="mt-1 break-words"><a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
             <p class="mt-2 break-words"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
         </div>
         """
