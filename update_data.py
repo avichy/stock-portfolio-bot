@@ -372,9 +372,10 @@ def format_text_with_conclusion(text, prefix_num=None):
     formatted_content = format_numbers_in_text(formatted_content)
     formatted_content = force_source_on_newline(formatted_content)
 
+    # הוספת dir="rtl" ו-style="text-align: right;" למניעת יישור דו-צידי (justify)
     return (
         f'<span class="leading-relaxed text-sm text-gray-200 block'
-        f' mt-1 mb-3">{formatted_content}</span>'
+        f' mt-1 mb-3" dir="rtl" style="text-align: right;">{formatted_content}</span>'
     )
 
 
@@ -1174,7 +1175,7 @@ base_market_tickers = list(
 def build_structured_stocks_html(stocks_meta, market_data, section_title):
     html_parts = [
         f'<div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right"'
-        f' dir="rtl">{section_title}</div>'
+        f' dir="rtl" style="text-align: right;">{section_title}</div>'
     ]
     if not isinstance(stocks_meta, list) or not stocks_meta:
         stocks_meta = LT_STOCKS_META
@@ -1229,7 +1230,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
         if raw_target and float(raw_target) > 0:
             target_val = f"${format_num(raw_target)}"
             target_html = (
-                f"<div><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>"
+                f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>'
             )
 
         change_val = data.get("change", 0.0)
@@ -1244,20 +1245,21 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
         logo_url = get_stock_logo_url(ticker)
         clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
+        # הוספת style="text-align: right;" מפורש למניעת justify
         card_html = f"""
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl">
-            <div class="flex items-center gap-3 mb-3">
+        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
+            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
                 <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
-                <span class="text-base font-bold text-white">{name} (טיקר: {ticker}):</span>
+                <span class="text-base font-bold text-white" style="text-align: right;">{name} (טיקר: {ticker}):</span>
             </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words">
-                <div><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
+            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
+                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> ${price}</div>
+                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
                 {target_html}
-                <div><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
-                <div><strong>עיסוק החברה:</strong> {desc}</div>
-                <div><strong>חדשות ורציונל יומי:</strong> {news}</div>
-                <div><strong>למה כדאי להשקיע במניה:</strong> {why_invest}</div>
+                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
+                <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
+                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> {news}</div>
+                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> {why_invest}</div>
             </div>
         </div>
         """
@@ -1268,8 +1270,8 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
 def build_market_news_html(market_news_list):
     if not isinstance(market_news_list, list) or not market_news_list:
         return (
-            '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות'
-            " כרגע.</div>"
+            '<div class="text-gray-400 text-right" dir="rtl"'
+            ' style="text-align: right;">אין חדשות שוק זמינות כרגע.</div>'
         )
 
     html_parts = []
@@ -1298,11 +1300,12 @@ def build_market_news_html(market_news_list):
 
         formatted_desc = format_news_description(p_desc)
 
+        # הוספת style="text-align: right;" מפורש לכרטיסים ולפסקאות החדשות
         card_html = f"""
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl">
-            <h3 class="text-cyan-400 font-semibold text-base break-words">{p_title}</h3>
-            <p class="mt-1 break-words"><a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
-            <p class="mt-2 break-words"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
+            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">{p_title}</h3>
+            <p class="mt-1 break-words" style="text-align: right;"><a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
+            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
         </div>
         """
         html_parts.append(card_html)
@@ -1605,7 +1608,6 @@ if __name__ == "__main__":
             "BTC_EXPLANATION": format_phase1_text(
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
-            # תיקון כאן: מפתח US_MARKET_NEWS תואם כעת בדיוק למה שמופיע בתבנית ה-HTML
             "US_MARKET_NEWS": format_phase1_text(
                 ai_insights.get("US_MARKET_NEWS", "")
             ),
