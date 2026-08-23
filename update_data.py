@@ -840,6 +840,47 @@ if __name__ == "__main__":
       with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
         template_content = tf.read()
 
+      # 1. החלפת משתני תאריך וימים
+      template_content = template_content.replace("{{DAY_NAME}}", day_name)
+      template_content = template_content.replace(
+          "{{AI_LAST_UPDATED}}", ai_insights.get("ai_updated_at", now_il_str)
+      )
+      template_content = template_content.replace(
+          "{{LAST_UPDATED}}", now_il_str
+      )
+
+      # 2. החלפת מחירי השוק והשינויים האחוזים
+      market_mappings = {
+          "GC=F": ("GOLD_PRICE", "GOLD_CHANGE"),
+          "CL=F": ("OIL_PRICE", "OIL_CHANGE"),
+          "BTC-USD": ("BTC_PRICE", "BTC_CHANGE"),
+          "USDILS=X": ("USD_ILS", "USD_ILS_CHANGE"),
+          "^GSPC": ("SP500_PRICE", "SP500_PCT"),
+          "^NDX": ("NASDAQ_PRICE", "NASDAQ_PCT"),
+          "^DJI": ("DOW_PRICE", "DOW_PCT"),
+          "^VIX": ("VIX_PRICE", "VIX_PCT"),
+          "DX-Y.NYB": ("DXY_PRICE", "DXY_PCT"),
+      }
+
+      for ticker, (price_key, change_key) in market_mappings.items():
+        d = base_market_data.get(ticker, {})
+        p_str = format_num(d.get("price", 0))
+        c_str = format_pct_colored(d.get("change", 0))
+        template_content = template_content.replace(
+            f"{{{{{price_key}}}}}", p_str
+        )
+        template_content = template_content.replace(
+            f"{{{{{change_key}}}}}", c_str
+        )
+        # תמיכה בשמות חלופיים תואמים לטמפלייט
+        template_content = template_content.replace(
+            f"{{{{{price_key.replace('_PRICE', '_CHANGE')}}}}}", c_str
+        )
+        template_content = template_content.replace(
+            f"{{{{{price_key.replace('_PRICE', '_PCT')}}}}}", c_str
+        )
+
+      # 3. החלפת מניות מבניות וחדשות שוק
       lt_stocks = clean_stocks_list(
           ai_insights.get("long_term_stocks", LT_STOCKS_META),
           LT_STOCKS_META,
@@ -874,7 +915,7 @@ if __name__ == "__main__":
           "{{MARKET_NEWS}}", market_news_html
       )
 
-      # החלפת כל שאר המפתחות באופן דינמי בתבנית
+      # 4. החלפת שאר תגי ה-AI הדינמיים
       for k, v in ai_insights.items():
         if isinstance(v, str):
           template_content = template_content.replace(
@@ -883,7 +924,7 @@ if __name__ == "__main__":
 
       with open(OUTPUT_FILE, "w", encoding="utf-8") as of:
         of.write(template_content)
-      print("Successfully generated index.html from template!")
+      print("Successfully generated index.html from template with prices!")
     else:
       print("Warning: index.template.html not found, skipped HTML generation.")
 
