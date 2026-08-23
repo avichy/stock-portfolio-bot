@@ -356,7 +356,7 @@ def format_text_with_conclusion(text, prefix_num=None):
 
   if conclusion:
     formatted_content = (
-        f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+        f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
     )
   else:
     formatted_content = explanation
