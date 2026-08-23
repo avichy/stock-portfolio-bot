@@ -712,14 +712,20 @@ def fetch_yahoo_direct(ticker):
       change = 0.0
 
     target_mean = info.get("targetMeanPrice", 0.0) or 0.0
-    pre_market_price = info.get("preMarketPrice") or current_price
+    
+    # טיפול מדויק בטרום פתיחה - אם אין נתון אמיתי מ-Yahoo, יוגדר כ"השוק סגור"
+    pre_market_price = info.get("preMarketPrice")
+    if pre_market_price and float(pre_market_price) > 0:
+      pre_market_val = round(float(pre_market_price), 2)
+    else:
+      pre_market_val = "השוק סגור"
 
     if current_price and current_price > 0:
       return {
           "price": round(float(current_price), 2),
           "change": round(float(change), 2),
           "target": float(target_mean) if target_mean else 0.0,
-          "pre_market": round(float(pre_market_price), 2),
+          "pre_market": pre_market_val,
       }
   except Exception as e:
     print(f"yfinance fetch error for {clean_ticker}: {e}")
@@ -739,121 +745,121 @@ def fetch_market_data(tickers):
               "price": 3.65,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 3.65,
+              "pre_market": "השוק סגור",
           },
           "^GSPC": {
               "price": 5500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 5500.0,
+              "pre_market": "השוק סגור",
           },
           "^NDX": {
               "price": 19500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 19500.0,
+              "pre_market": "השוק סגור",
           },
           "^DJI": {
               "price": 41000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 41000.0,
+              "pre_market": "השוק סגור",
           },
           "^VIX": {
               "price": 15.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 15.0,
+              "pre_market": "השוק סגור",
           },
           "DX-Y.NYB": {
               "price": 103.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 103.0,
+              "pre_market": "השוק סגור",
           },
           "CL=F": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 75.0,
+              "pre_market": "השוק סגור",
           },
           "GC=F": {
               "price": 2400.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 2400.0,
+              "pre_market": "השוק סגור",
           },
           "BTC-USD": {
               "price": 60000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 60000.0,
+              "pre_market": "השוק סגור",
           },
           "XLK": {
               "price": 220.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 220.0,
+              "pre_market": "השוק סגור",
           },
           "XLF": {
               "price": 45.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 45.0,
+              "pre_market": "השוק סגור",
           },
           "XLV": {
               "price": 140.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 140.0,
+              "pre_market": "השוק סגור",
           },
           "XLY": {
               "price": 180.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 180.0,
+              "pre_market": "השוק סגור",
           },
           "XLP": {
               "price": 80.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 80.0,
+              "pre_market": "השוק סגור",
           },
           "XLE": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 90.0,
+              "pre_market": "השוק סגור",
           },
           "XLI": {
               "price": 130.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 130.0,
+              "pre_market": "השוק סגור",
           },
           "XLB": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 90.0,
+              "pre_market": "השוק סגור",
           },
           "XLC": {
               "price": 95.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 95.0,
+              "pre_market": "השוק סגור",
           },
           "XLU": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 75.0,
+              "pre_market": "השוק סגור",
           },
           "XLRE": {
               "price": 40.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 40.0,
+              "pre_market": "השוק סגור",
           },
       }
       market_data[ticker] = defaults.get(
@@ -862,7 +868,7 @@ def fetch_market_data(tickers):
               "price": 100.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 100.0,
+              "pre_market": "השוק סגור",
           },
       )
   return market_data
@@ -1274,7 +1280,13 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
 
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
-    pre_market = format_num(data.get("pre_market", 0))
+    
+    # טיפול נכון בהצגת טרום פתיחה (מספר או טקסט "השוק סגור") ללא סימן דולר מיותר
+    raw_pre = data.get("pre_market", "השוק סגור")
+    if isinstance(raw_pre, (int, float)) or (isinstance(raw_pre, str) and str(raw_pre).replace('.', '', 1).isdigit()):
+      pre_market_display = f"${format_num(raw_pre)}"
+    else:
+      pre_market_display = str(raw_pre)
 
     raw_target = data.get("target", 0)
     if raw_target and float(raw_target) > 0:
@@ -1303,7 +1315,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
                 <div style="text-align: right;"><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
+                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> {pre_market_display}</div>
                 {target_html}
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
@@ -1574,7 +1586,13 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         fetched_target = fetched_price_data.get("target") or 0.0
-        pre_p = fetched_price_data.get("pre_market") or curr_p
+        
+        # טיפול מותאם לטרום פתיחה בתיק
+        raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
+        if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
+          pre_str = f"${format_num(raw_pre_p)}"
+        else:
+          pre_str = str(raw_pre_p)
 
         ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
         sign = "+" if ret > 0 else ""
@@ -1597,7 +1615,7 @@ if __name__ == "__main__":
             "shares": shares_count,
             "buyPrice": format_num(buy_p),
             "current": f"${format_num(curr_p)}",
-            "pre": f"${format_num(pre_p)}",
+            "pre": pre_str,
             "target": target_str,
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
