@@ -322,7 +322,6 @@ def format_pct_colored(val):
 def replace_dollar_word(text):
   if not isinstance(text, str):
     return str(text)
-  # מחליף מופעים כמו "77,721.73 דולר" ל-"77,721.73$"
   text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"\1$", text, flags=re.IGNORECASE)
   return text
 
@@ -718,18 +717,29 @@ def fetch_yahoo_direct(ticker):
 
   target_mean = 0.0
   pre_market_price = 0.0
-  summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=price,financialData"
+  summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=price,financialData,defaultKeyStatistics"
   try:
     resp_sum = requests.get(summary_url, headers=headers, timeout=10)
     if resp_sum.status_code == 200:
       sum_json = resp_sum.json()
       fin_result = sum_json.get("quoteSummary", {}).get("result", [{}])[0]
 
-      # Target Mean Price
+      # Target Mean Price from financialData
       financial_data = fin_result.get("financialData", {})
       target_obj = financial_data.get("targetMeanPrice", {})
       if isinstance(target_obj, dict):
         target_mean = target_obj.get("raw", 0.0)
+      elif isinstance(target_obj, (int, float)):
+        target_mean = float(target_obj)
+
+      # Fallback to defaultKeyStatistics if target_mean is missing
+      if not target_mean or target_mean <= 0.0:
+        default_stats = fin_result.get("defaultKeyStatistics", {})
+        target_obj_2 = default_stats.get("targetMeanPrice", {})
+        if isinstance(target_obj_2, dict):
+          target_mean = target_obj_2.get("raw", 0.0)
+        elif isinstance(target_obj_2, (int, float)):
+          target_mean = float(target_obj_2)
 
       # Pre-market Price
       price_module = fin_result.get("price", {})
@@ -1308,13 +1318,11 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     pre_market = format_num(data.get("pre_market", 0))
 
     raw_target = data.get("target", 0)
-    target_html = ""
     if raw_target and float(raw_target) > 0:
       target_val = f"${format_num(raw_target)}"
-      target_html = (
-          f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong>'
-          f" {target_val}</div>"
-      )
+      target_html = f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>'
+    else:
+      target_html = '<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> לא זמין</div>'
 
     change_val = data.get("change", 0.0)
 
@@ -1413,7 +1421,6 @@ if __name__ == "__main__":
     is_ai_time = is_manual or is_scheduled_ai_time
     is_yahoo_only = not is_ai_time
 
-    # --- שליפת חדשות וסינון מחמיר ---
     us_news_raw = fetch_us_market_news()
     safe_us_headlines = get_filtered_us_news(us_news_raw)
     us_market_news_text = (
@@ -1619,8 +1626,11 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
+        # עדכון יעד אנליסטים ממוצע גם לשלב 5 (עם תמיכה בברירת מחדל אם ריק)
         target_str = (
-            f"${format_num(fetched_target)}" if fetched_target > 0 else ""
+            f"${format_num(fetched_target)}"
+            if fetched_target and float(fetched_target) > 0
+            else "לא זמין"
         )
 
         portfolio_js_list.append({
