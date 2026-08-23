@@ -1,51 +1,21 @@
 {
-    "long_term_stocks": [
-        "AI sector",
-        "Energy sector",
-        "Healthcare/biotech"
-    ],
-    "swing_stocks": [
-        "AI‑picked energy stock (short‑term momentum)",
-        "Freight/logistics stocks (Hub Group)"
-    ],
-    "market_news": [
-        "Gulf markets rise as oil prices climb on Iran sanction fears",
-        "Organon earnings up next: Can drugmaker rebound after Q1 miss?",
-        "ATAI Beckley earnings up next in final report before acquisition",
-        "Hub Group earnings up next as freight recovery meets execution risk",
-        "Forte Biosciences earnings on deck as argenx deal looms",
-        "Iran says new sanctions threatened by ’desperate’ US will fail",
-        "Up another 12% Friday, this AI-picked energy stock is now up +90%",
-        "Iran warns neighbours against joining U.S. sanctions as Hormuz stays closed",
-        "Saudi Arabia stocks higher at close of trade; Tadawul All Share up 1.13%",
-        "Robots can outrun humans, but can they plug in a cable?"
-    ],
-    "CATALYST_EARNINGS": [
-        "Organon",
-        "ATAI Beckley",
-        "Hub Group",
-        "Forte Biosciences"
-    ],
-    "CATALYST_MONETARY": [
-        "Iran sanctions and related oil price moves",
-        "Inflation focus in Wall Street coverage",
-        "Potential Fed policy discussions"
-    ],
-    "CATALYST_HARDWARE": [
-        "AI and semiconductor focus in Israeli articles (Nvidia, AMD, Intel)",
-        "Stanford conference on AI and chips"
-    ],
-    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, use stop‑losses on high‑volatility AI picks, and monitor oil‑price and sanctions developments for sector rotation risk.",
-    "ACTION_RECOMMENDATIONS_TEXT": "Consider adding exposure to AI and energy sectors for upside, but hedge with defensive assets; stay alert to earnings releases and geopolitical updates before adjusting positions.",
-    "ai_updated_at": "23.08.2026 | 17:10",
-    "SP500_ANALYSIS": "The S&P 500 faces mixed pressure: oil‑price gains from Iran‑related sanctions support energy names, while inflation concerns and upcoming earnings keep investors cautious.",
-    "NASDAQ_ANALYSIS": "NASDAQ sentiment is tilted bullish on AI and semiconductor themes, highlighted by the AI‑picked energy rally and multiple headlines on Nvidia, AMD and Intel in Israeli coverage.",
-    "DOW_ANALYSIS": "Dow‑Jones is likely to be weighed down by geopolitical risk from Iran sanctions and the broader inflation debate, despite modest gains in Saudi and Gulf markets.",
-    "VIX_ANALYSIS": "Volatility expectations are elevated as sanctions fears and upcoming earnings create uncertainty, reflected in heightened VIX attention.",
-    "DXY_ANALYSIS": "The dollar index may see support from safe‑haven demand amid sanctions, but inflation focus and Fed outlook could introduce downside pressure.",
-    "OIL_EXPLANATION": "Oil prices are climbing as markets price in the risk of new Iran sanctions and the closure of the Hormuz Strait, boosting Gulf market performance.",
-    "GOLD_EXPLANATION": "",
-    "BTC_EXPLANATION": "",
+    "long_term_stocks": "Based on the focus on AI and semiconductor leadership, long‑term investors may consider exposure to leading chip makers such as Nvidia (אנבידיה) and AMD, provided valuation is acceptable.",
+    "swing_stocks": "Short‑term swing ideas could include the unnamed AI‑picked energy stock that has rallied 90% and any freight or logistics stocks highlighted by Hub Group earnings expectations.",
+    "market_news": "Global markets are reacting to geopolitical tension over Iran sanctions, rising oil prices, and upcoming earnings reports, while Israeli investors focus on AI, semiconductor competition, inflation, and central bank policy.",
+    "CATALYST_EARNINGS": "Upcoming earnings from Organon, ATAI Beckley, Hub Group, and Forte Biosciences could act as catalysts for sector moves.",
+    "CATALYST_MONETARY": "Inflation returning to focus and potential Fed actions are highlighted as monetary catalysts in the Israeli headlines.",
+    "CATALYST_HARDWARE": "The Nvidia (אנבידיה) versus AMD/Intel rivalry and the Stanford conference are hardware‑related catalysts.",
+    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, limit position size in highly volatile AI‑energy stocks, and monitor oil price spikes and inflation data for stop‑loss adjustments.",
+    "ACTION_RECOMMENDATIONS_TEXT": "Consider adding exposure to leading semiconductor names for the long term, use the AI‑energy stock for short‑term swing trades with tight risk controls, and stay alert to earnings releases and any escalation in Iran‑related sanctions.",
+    "ai_updated_at": "23.08.2026 | 17:30",
+    "SP500_ANALYSIS": "The S&P 500 is likely to be pressured by rising oil prices from Middle‑East tensions and uncertainty around earnings from healthcare and logistics firms, while AI‑related energy stocks may add upside.",
+    "NASDAQ_ANALYSIS": "NASDAQ sentiment is mixed; AI hype fuels energy‑sector rallies, but semiconductor competition (Nvidia vs AMD/Intel) and inflation concerns could create volatility.",
+    "DOW_ANALYSIS": "Dow‑Jones may feel the impact of higher energy costs and geopolitical risk, offset by potential gains in industrials if freight recovery continues.",
+    "VIX_ANALYSIS": "VIX is expected to rise modestly as investors price in geopolitical uncertainty and earnings volatility.",
+    "DXY_ANALYSIS": "The dollar index may strengthen on safe‑haven demand amid Iran‑related sanctions risk, though no specific data are provided.",
+    "OIL_EXPLANATION": "Oil prices are climbing due to fears of expanded sanctions on Iran and the closure of the Hormuz Strait, which threatens supply flow.",
+    "GOLD_EXPLANATION": "Gold may attract investors seeking a hedge against inflation and geopolitical risk, though no price data are given.",
+    "BTC_EXPLANATION": "Cryptocurrency sentiment is not directly addressed in the headlines, so no specific BTC analysis can be provided.",
     "US_MARKET_NEWS": [
         "Gulf markets rise as oil prices climb on Iran sanction fears",
         "Organon earnings up next: Can drugmaker rebound after Q1 miss?",
@@ -68,9 +38,9 @@
         "לא עוד כתובה של מיליון שקל: הרבנות מגבילה את הסכום ל-360 אלף שקל",
         "השותפה של דלק מהמרת על היתוך גרעיני: \"בית הזיקוק הבא שלנו\""
     ],
-    "COMMUNITY_SENTIMENT": "Investors appear jittery about geopolitical risk yet optimistic about AI‑driven upside, creating a split between defensive caution and speculative enthusiasm.",
-    "ANALYST_POINT_1": "Geopolitical tension around Iran is the primary driver for energy‑related price moves this week.",
-    "ANALYST_POINT_2": "AI and semiconductor narratives dominate both US and Israeli headlines, indicating sector momentum.",
-    "USD_ILS_EXPLANATION": "Sanctions on Iran can affect regional trade flows, potentially influencing the shekel’s demand for dollars; higher oil prices generally strengthen the USD against ILS.",
+    "COMMUNITY_SENTIMENT": "Overall sentiment is cautious optimism in energy and AI sectors, with heightened wariness about geopolitical risk and inflation pressures.",
+    "ANALYST_POINT_1": "Geopolitical tension in the Middle East is the primary driver of oil price gains and market volatility.",
+    "ANALYST_POINT_2": "AI and semiconductor competition dominate both US and Israeli market narratives, indicating sector‑specific focus for investors.",
+    "USD_ILS_EXPLANATION": "Rising oil prices and geopolitical tension typically support a stronger USD, which could put downward pressure on the ILS unless offset by local monetary policy moves.",
     "DXY_EXPLANATION": "The DXY measures the USD against a basket of major currencies; a sell signal indicates expectations of relative USD depreciation when Treasury yields rise without clear Fed guidance."
 }
