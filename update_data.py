@@ -126,7 +126,7 @@ def fetch_us_market_news():
 
 
 def get_filtered_us_news(headlines):
-  """סינון חכם לחדשות ארה\"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
+  """סינון חכם לחדשות ארה"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
   us_market_drivers = [
       "Fed",
       "הפד",
@@ -914,21 +914,27 @@ def fetch_ai_insights_split(
           " (openai/gpt-oss-120b)..."
       )
 
+      system_instruction_1 = (
+          "אתה אנליסט מאקרו-כלכלי בכיר. חובה עליך להשיב בעברית תקנית, עשירה"
+          " וברורה בלבד! חל איסור מוחלט לשלב טקסט באנגלית בערכי ה-JSON"
+          " (למעט שמות מפתחות ה-JSON)."
+      )
+
       prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, תוך שימוש במונחים פיננסיים מקצועיים וזורמים.
-אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
+אסור בתכלית האיסור לתת תשובות גנריות או שטחיות.
 
 🚨 דגשים קריטיים:
-- הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
+- הקפד על עברית תקנית לחלוטין. חל איסור מוחלט להשתמש באנגלית בתוכן.
 - בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש תמיד בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 
 Output a valid JSON object ONLY.
 
 🚨 STRICT STRUCTURE GUIDELINES FOR EACH FIELD:
 Every single field below MUST contain:
-1. הסבר מקצועי מעמיק ומפורט.
-2. שורת סיכום המתחילה במפורש במילה "לסיכום:" ולאחריה תובענה חד-משמעית.
+1. הסבר מקצועי מעמיק ומפורט בעברית.
+2. שורת סיכום המתחילה במפורש במילה "לסיכום:" ולאחריה תובנה חד-משמעית בעברית.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -949,7 +955,10 @@ Return a valid JSON object with exactly these 9 keys:
 
       response1 = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt1}],
+          messages=[
+              {"role": "system", "content": system_instruction_1},
+              {"role": "user", "content": prompt1},
+          ],
           response_format={"type": "json_object"},
           temperature=0.3,
           max_tokens=4000,
@@ -963,7 +972,7 @@ Return a valid JSON object with exactly these 9 keys:
     except Exception as e:
       print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+        print("⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
         time.sleep(60)
       else:
         time.sleep(5)
@@ -985,16 +994,22 @@ Return a valid JSON object with exactly these 9 keys:
           " (openai/gpt-oss-120b)..."
       )
 
+      system_instruction_2 = (
+          "אתה אנליסט שווקים בינלאומי בכיר. חובה עליך לקרוא ולנתח את הכתבות"
+          " והחדשות בלועזית (מאנגלית) ולסכם ולתרגם אותן בעברית מלאה ורציפה בלבד!"
+          " חל איסור מוחלט לכתוב תשובות או משפטים באנגלית בתוך ה-JSON."
+      )
+
       prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 Output a valid JSON object ONLY.
 
 🚨 STRICT RULES & FORMATTING:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English sentences or text allowed in the values. Translate all US market news from English into fluent Hebrew.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
-4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
-5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
+4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion in Hebrew.
+5. **US_MARKET_NEWS**: MUST summarize and translate into Hebrew using **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
 6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
@@ -1015,7 +1030,10 @@ Return a valid JSON object with exactly these 5 keys:
 
       response2 = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt2}],
+          messages=[
+              {"role": "system", "content": system_instruction_2},
+              {"role": "user", "content": prompt2},
+          ],
           response_format={"type": "json_object"},
           temperature=0.3,
           max_tokens=4000,
@@ -1029,7 +1047,7 @@ Return a valid JSON object with exactly these 5 keys:
     except Exception as e:
       print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+        print("⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
         time.sleep(60)
       else:
         time.sleep(5)
@@ -1048,17 +1066,23 @@ Return a valid JSON object with exactly these 5 keys:
           " (openai/gpt-oss-120b)..."
       )
 
+      system_instruction_3 = (
+          "אתה מנהל תיקים ואנליסט מניות בכיר. חובה עליך לכתוב את כל התכנים,"
+          " תיאורי המניות, הניתוחים והחדשות בעברית מלאה ורהוטה בלבד. תרגם כל"
+          " מידע מ-Investing.com מאנגלית לעברית."
+      )
+
       prompt3 = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית בלבד.
 Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text in values. All stock descriptions, news summaries, and rationale MUST be written in fluent Hebrew.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
 5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
-6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
+6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להיות מתורגם ומסוכם בעברית מלאה בלבד.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1084,7 +1108,10 @@ Return a valid JSON object with exactly these 8 keys:
 
       response3 = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt3}],
+          messages=[
+              {"role": "system", "content": system_instruction_3},
+              {"role": "user", "content": prompt3},
+          ],
           response_format={"type": "json_object"},
           temperature=0.3,
           max_tokens=4000,
@@ -1098,7 +1125,7 @@ Return a valid JSON object with exactly these 8 keys:
     except Exception as e:
       print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+        print("⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
         time.sleep(60)
       else:
         time.sleep(5)
