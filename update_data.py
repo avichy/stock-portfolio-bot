@@ -89,7 +89,6 @@ portfolio_buys = load_portfolio_buys()
 
 
 def fetch_us_market_news():
-  """שליפת חדשות שוק אמריקאי עבור שלב 1 מ-Google News RSS"""
   try:
     query = "Wall Street stock market S&P 500 Nasdaq economy breaking news"
     encoded_query = urllib.parse.quote_plus(query)
@@ -114,7 +113,6 @@ def fetch_us_market_news():
 
 
 def fetch_investing_news():
-  """שליפת חדשות פיננסיות מ-Investing.com עם סינון מוקדם (Pre-processing)"""
   try:
     url = "https://www.investing.com/rss/news.rss"
     feed = feedparser.parse(url)
@@ -159,7 +157,7 @@ def fetch_bizportal_news():
     for a_tag in soup.find_all("a", href=True):
       text = a_tag.get_text(strip=True)
       href = a_tag["href"]
-      if len(text) > 25 and text not in seen_titles:
+      if len(text) > 20 and text not in seen_titles:
         if not any(
             w in text
             for w in [
@@ -172,6 +170,8 @@ def fetch_bizportal_news():
                 "מערכת",
                 "שירות לקוחות",
                 "תפריט",
+                "שערים",
+                "בורסה",
             ]
         ):
           if href.startswith("/"):
@@ -251,22 +251,13 @@ def force_source_on_newline(text):
   return text
 
 
-def format_text_with_conclusion(text, prefix_num=None):
+def format_ai_text(text, force_conclusion=False):
   if isinstance(text, list):
     text = " ".join(str(item) for item in text)
   elif not isinstance(text, str):
     text = str(text)
 
-  text = text.strip()
-  text = text.replace("\\n", "<br>").replace("\n", "<br>")
-
-  if text.startswith("[") and text.endswith("]"):
-    try:
-      parsed_list = json.loads(text)
-      if isinstance(parsed_list, list):
-        text = " ".join(str(item) for item in parsed_list)
-    except Exception:
-      pass
+  text = text.strip().replace("\\n", "<br>").replace("\n", "<br>")
 
   source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
   source_str = source_match.group(1) if source_match else ""
@@ -295,34 +286,19 @@ def format_text_with_conclusion(text, prefix_num=None):
   explanation = cleaned
   conclusion = ""
 
-  if "לסיכום" in cleaned:
-    parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
-    explanation = parts[0].strip()
-    if len(parts) > 1:
-      conclusion = parts[1].strip()
-      conclusion = re.sub(
-          r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
-      ).strip()
-
-  explanation = re.sub(r"\s*<br>\s*", "<br>", explanation).strip()
-  conclusion = re.sub(r"\s*<br>\s*", "<br>", conclusion).strip()
-
-  explanation = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", explanation)
-  conclusion = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", conclusion)
-
-  sentences = [
-      s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
-  ]
-
-  if not conclusion:
-    if len(sentences) > 2:
-      conclusion = sentences[-1]
-      explanation = " ".join(sentences[:-1])
-    elif len(sentences) == 2:
-      conclusion = sentences[1]
-      explanation = sentences[0]
+  if force_conclusion:
+    if "לסיכום" in cleaned:
+      parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
+      explanation = parts[0].strip()
+      if len(parts) > 1:
+        conclusion = parts[1].strip()
     else:
-      conclusion = ""
+      sentences = [
+          s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
+      ]
+      if len(sentences) > 1:
+        conclusion = sentences[-1]
+        explanation = " ".join(sentences[:-1])
 
   explanation = re.sub(
       r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
@@ -331,25 +307,19 @@ def format_text_with_conclusion(text, prefix_num=None):
       r"^(|בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
   ).strip()
 
-  conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
-
-  if prefix_num is not None:
-    explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
-    if not explanation:
-      explanation = text.strip()
-    explanation = f"{prefix_num}. {explanation}"
+  explanation = format_numbers_in_text(explanation)
+  conclusion = format_numbers_in_text(conclusion)
 
   if source_str:
     explanation = explanation.strip() + " " + source_str
 
-  if conclusion:
+  if force_conclusion and conclusion:
     formatted_content = (
         f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     )
   else:
     formatted_content = explanation
 
-  formatted_content = format_numbers_in_text(formatted_content)
   formatted_content = force_source_on_newline(formatted_content)
 
   return (
@@ -364,8 +334,7 @@ def format_news_description(text):
   elif not isinstance(text, str):
     text = str(text)
 
-  text = text.strip()
-  text = text.replace("\\n", "<br>").replace("\n", "<br>")
+  text = text.strip().replace("\\n", "<br>").replace("\n", "<br>")
   source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
   source_str = source_match.group(1) if source_match else ""
   if source_str:
@@ -386,27 +355,12 @@ def format_news_description(text):
       flags=re.IGNORECASE,
   ).strip()
   cleaned = re.sub(r"לסיכום.*$", "", cleaned, flags=re.IGNORECASE).strip()
-
   cleaned = format_numbers_in_text(cleaned)
+
   if source_str:
     cleaned = cleaned.strip() + " " + source_str
 
   return force_source_on_newline(cleaned)
-
-
-def format_phase1_text(text):
-  return format_text_with_conclusion(text)
-
-
-def format_analyst_text(text):
-  if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-    text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים."
-  if "לסיכום" not in str(text):
-    text = (
-        str(text).strip()
-        + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
-    )
-  return format_text_with_conclusion(text, prefix_num=None)
 
 
 def get_stock_logo_url(ticker):
@@ -552,35 +506,17 @@ def fetch_ai_insights_split(
     cached = load_ai_cache()
     return cached if cached else {}
 
-  safe_bizportal_headlines = (
-      bizportal_headlines[:8] if bizportal_headlines else []
-  )
-  market_summary = {
-      t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
-      for t, d in market_data.items()
-  }
-
-  biz_formatted = (
-      "\n".join(
-          [
-              f"- Title: {h['title']} | Source: {h.get('source', 'Bizportal')} | Link: {h['link']}"
-              for h in safe_bizportal_headlines
-          ]
-      )
-      if safe_bizportal_headlines
-      else "No Israeli headlines."
-  )
+  raw_headlines = [item["title"] for item in investing_news_items]
+  biz_titles = [h["title"] for h in bizportal_headlines]
 
   combined_result = load_ai_cache()
   if not isinstance(combined_result, dict):
     combined_result = {}
 
   print(
-      "🔄 Starting Groq AI Analysis with Data Isolation & Deterministic"
-      " Settings..."
+      "🔄 Starting Groq AI Analysis with Strict Hebrew Enforcement & Data"
+      " Isolation..."
   )
-
-  raw_headlines = [item["title"] for item in investing_news_items]
 
   for key_name, api_key in api_keys:
     try:
@@ -591,18 +527,19 @@ def fetch_ai_insights_split(
       print(f"🤖 Connecting to Groq AI using {key_name} (openai/gpt-oss-120b)...")
 
       prompt = f"""
-אתה אנליסט פיננסי דטרמיניסטי. נתח אך ורק את הכותרות הבאות.
-חוקים נוקשים:
-- אסור להמציא מספרים או נתונים שלא קיימים במקור.
-- אם אינו בטוח בהקשר, התעלם מהידיעה לחלוטין.
-- החזר אובייקט JSON חוקי בלבד המכיל את המפתחות הנדרשים: market_news, US_MARKET_NEWS, IL_MARKET_NEWS, long_term_stocks, swing_stocks, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.
+אתה אנליסט פיננסי דטרמיניסטי מקצועי. נתח אך ורק את הנתונים והכותרות המסופקים להלן.
+חוקים נוקשים ומחייבים:
+1. חובה לכתוב את *כל* הטקסטים, הניתוחים, ההסברים, הכותרות והסיכומים באובייקט ה-JSON אך ורק בשפה העברית הרשמית והתקינה. אסור בשום אופן להחזיר תשובות באנגלית.
+2. אסור להמציא מספרים או נתונים שלא קיימים במקור.
+3. עבור IL_MARKET_NEWS: השתמש אך ורק בכותרות מ-Bizportal המסופקות להלן כדי לנתח את השוק הישראלי, הבורסה בתל אביב והכלכלה המקומית בישראל בלבד בעברית. אל תכניס לכאן חדשות אמריקאיות.
+4. החזר אובייקט JSON חוקי בלבד המכיל בדיוק את המפתחות הנדרשים: market_news, US_MARKET_NEWS, IL_MARKET_NEWS, long_term_stocks, swing_stocks, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.
 
 <us_headlines>
 {json.dumps(raw_headlines, ensure_ascii=False)}
 </us_headlines>
 
 <bizportal_headlines>
-{biz_formatted}
+{json.dumps(biz_titles, ensure_ascii=False)}
 </bizportal_headlines>
 
 Today is {day_name}, Date: {date_str}.
@@ -835,12 +772,10 @@ if __name__ == "__main__":
       il_news_text = str(il_news_text).strip() + " (מקור: Bizportal)"
     ai_insights["IL_MARKET_NEWS"] = il_news_text
 
-    # --- יצירת קובץ ה-HTML מתוך ה-Template ---
     if os.path.exists(TEMPLATE_FILE):
       with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
         template_content = tf.read()
 
-      # 1. החלפת משתני תאריך וימים
       template_content = template_content.replace("{{DAY_NAME}}", day_name)
       template_content = template_content.replace(
           "{{AI_LAST_UPDATED}}", ai_insights.get("ai_updated_at", now_il_str)
@@ -849,7 +784,6 @@ if __name__ == "__main__":
           "{{LAST_UPDATED}}", now_il_str
       )
 
-      # 2. החלפת מחירי השוק והשינויים האחוזים
       market_mappings = {
           "GC=F": ("GOLD_PRICE", "GOLD_CHANGE"),
           "CL=F": ("OIL_PRICE", "OIL_CHANGE"),
@@ -872,7 +806,6 @@ if __name__ == "__main__":
         template_content = template_content.replace(
             f"{{{{{change_key}}}}}", c_str
         )
-        # תמיכה בשמות חלופיים תואמים לטמפלייט
         template_content = template_content.replace(
             f"{{{{{price_key.replace('_PRICE', '_CHANGE')}}}}}", c_str
         )
@@ -880,7 +813,6 @@ if __name__ == "__main__":
             f"{{{{{price_key.replace('_PRICE', '_PCT')}}}}}", c_str
         )
 
-      # 3. החלפת מניות מבניות וחדשות שוק
       lt_stocks = clean_stocks_list(
           ai_insights.get("long_term_stocks", LT_STOCKS_META),
           LT_STOCKS_META,
@@ -900,12 +832,6 @@ if __name__ == "__main__":
       )
 
       template_content = template_content.replace(
-          "{{US_MARKET_NEWS}}", format_phase1_text(us_news_text)
-      )
-      template_content = template_content.replace(
-          "{{IL_MARKET_NEWS}}", format_phase1_text(il_news_text)
-      )
-      template_content = template_content.replace(
           "{{LONG_TERM_STOCKS}}", lt_html
       )
       template_content = template_content.replace(
@@ -915,16 +841,44 @@ if __name__ == "__main__":
           "{{MARKET_NEWS}}", market_news_html
       )
 
-      # 4. החלפת שאר תגי ה-AI הדינמיים
+      # הגדרת המפתחות עבור שלב 1, 3, 6 ו-7 שבהם תהיה שורת סיכום נפרדת
+      force_conclusion_keys = {
+          # שלב 1 (מאקרו)
+          "US_MARKET_NEWS",
+          "IL_MARKET_NEWS",
+          "SP500_ANALYSIS",
+          "NASDAQ_ANALYSIS",
+          "DOW_ANALYSIS",
+          "VIX_ANALYSIS",
+          "DXY_ANALYSIS",
+          "USD_ILS_EXPLANATION",
+          "OIL_EXPLANATION",
+          "GOLD_EXPLANATION",
+          "BTC_EXPLANATION",
+          # שלב 3 (זרימים)
+          "FLOW_ANALYSIS",
+          "SECTOR_FLOWS",
+          # שלב 6 (סנטימנט, אנליסטים וקטליסטים)
+          "COMMUNITY_SENTIMENT",
+          "ANALYST_POINT_1",
+          "ANALYST_POINT_2",
+          "CATALYST_EARNINGS",
+          "CATALYST_MONETARY",
+          "CATALYST_HARDWARE",
+          # שלב 7 (סיכון והמלצות פעולה)
+          "RISK_MANAGEMENT_TEXT",
+          "ACTION_RECOMMENDATIONS_TEXT",
+      }
+
       for k, v in ai_insights.items():
         if isinstance(v, str):
-          template_content = template_content.replace(
-              f"{{{{{k}}}}}", format_phase1_text(v)
-          )
+          force_c = k in force_conclusion_keys
+          formatted_val = format_ai_text(v, force_conclusion=force_c)
+          template_content = template_content.replace(f"{{{{{k}}}}}", formatted_val)
 
       with open(OUTPUT_FILE, "w", encoding="utf-8") as of:
         of.write(template_content)
-      print("Successfully generated index.html from template with prices!")
+      print("Successfully generated index.html with correct Hebrew & formatting!")
     else:
       print("Warning: index.template.html not found, skipped HTML generation.")
 
