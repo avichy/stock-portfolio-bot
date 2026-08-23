@@ -12,14 +12,14 @@
     <header class="bg-gray-800 border-b border-gray-700 py-6 px-4 shadow-lg text-center">
         <div class="container mx-auto">
             <h1 class="text-2xl md:text-3xl font-extrabold text-cyan-400 mb-2">
-                דו"ח סקייל שוק ההון המלא ליום {{DAY_NAME}} - מותאם אישית 📊
+                דו"ח סקייל שוק ההון המלא ליום ראשון - מותאם אישית 📊
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div class="text-xs text-gray-400 mt-3">
-             עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">{{LAST_UPDATED}}</span>
+             עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">23.08.2026 | 15:29</span>
             </div>
             <div class="text-xs text-gray-400 mt-1">
-            עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">{{AI_LAST_UPDATED}}</span>
+            עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">23.08.2026 | 15:29</span>
             </div>
         </div>
     </header>
@@ -52,24 +52,24 @@
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
                     <div class="space-y-3 text-sm">
                         <p class="text-gray-300">
-                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">The SP500 shows mixed signals: Nvidia is expected to trade higher after earnings, supporting the tech weight, while energy names like Eni and Sinopec benefit from sector‑specific catalysts.<br><br><strong>לסיכום:</strong><br>No direct SP500 component appears in the headlines, so overall bias remains neutral.</span></span></span>
+                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>7,674.37</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-1.43%</span></span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">The expectation of higher Nvidia pricing post‑earnings and strong AI funding from Alibaba provide upside bias for the SP500, tempered by geopolitical risk from the Middle East crisis affecting energy stocks.</span></span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">NASDAQ‑heavy names dominate the news – Alibaba’s $10‑$10.2 B AI funding, Nvidia’s earnings outlook, and the AMD/Intel competition.<br><br><strong>לסיכום:</strong><br>These suggest continued strength for growth‑oriented tech stocks.</span></span></span>
+                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>29,308.86</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-2.45%</span></span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">AI‑centric names such as Nvidia and Alibaba dominate the Nasdaq narrative, suggesting continued sector strength, while semiconductor rivalry (AMD, Intel) adds volatility.</span></span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">No Dow‑Industrial‑specific headlines were provided; therefore no actionable insight for the Dow index can be derived.</span></span></span>
+                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>53,277.01</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.85%</span></span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Industrial exposure remains mixed; energy firms like Eni and Sinopec could benefit from higher oil prices, but the broader market may be weighed down by uncertainty over Fed policy credibility.</span></span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Geopolitical headlines (Iran‑Pakistan visit) and uncertainty around USD policy credibility imply a modest rise in implied volatility, but no concrete VIX figure is available.</span></span></span>
+                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>15.13</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.39%</span></span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Geopolitical tension (Middle East) and questions about Fed credibility are likely to keep implied volatility elevated, supporting a higher VIX reading.</span></span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">The USD outlook is tied to UST yields and Fed credibility, indicating that any shift in Treasury rates or policy stance could move the dollar index.</span></span></span>
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>98.84</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.81%</span></span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">The USD outlook hinges on UST yields and Fed policy credibility, implying that any shift in monetary stance could move the DXY sharply.</span></span></span>
                         </p>
                     </div>
                 </div>
@@ -77,28 +77,28 @@
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS}}</strong> (<span class="text-cyan-300">{{USD_ILS_CHANGE}}</span>)</p>
+                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>2.99</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+1.08%</span></span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">The USD/ILS pair will likely react to the same Fed credibility concerns and any trade‑policy news such as Canada’s $20 bn anti‑tariff measure, but no specific rate is quoted.</span></div>
+                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">USD strength relative to ILS will be influenced by UST yields and Fed policy; Israeli market sentiment may react to global risk appetite and local fiscal developments.</span></div>
                         </div>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> (<span class="text-cyan-300">{{OIL_CHANGE}}</span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>87.06</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+2.45%</span></span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Sinopec posted a 19% profit jump despite a Middle‑East crisis, showing resilience in oil earnings.<br><br><strong>לסיכום:</strong><br>Eni’s long‑term fusion target signals a future shift but does not affect current oil supply.</span></div>
+                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Sinopec’s 19% profit jump and Eni’s fusion target signal continued demand for traditional and future energy sources, supporting oil price resilience.</span></div>
                         </div>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> (<span class="text-cyan-300">{{GOLD_CHANGE}}</span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>4,680.60</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+7.21%</span></span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;"></span></div>
+                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">No specific gold‑related headlines were provided; therefore no directional insight can be offered.</span></div>
                         </div>
                     </div>
 
@@ -107,10 +107,10 @@
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> (<span class="text-cyan-300">{{BTC_CHANGE}}</span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>77,040.21</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+11.22%</span></span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Bitcoin slipped below $77,000, a level that improves mining economics and could attract short‑term buying pressure.</span></div>
+                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Bitcoin slipped under $77,000, reflecting a modest correction after a rally that improved mining economics, indicating short‑term volatility but underlying demand remains.</span></div>
                         </div>
                     </div>
                 </div>
@@ -161,9 +161,9 @@
         <div id="tab-3" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Nvidia earnings, Castle Biosciences fair‑value call, Alibaba share placement.</span></p>
-                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">USD outlook linked to UST yields and Fed policy credibility.</span></p>
-                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Competitive dynamics among Nvidia, AMD and Intel highlighted at the Stanford conference.</span></p>
+                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Nvidia quarterly results are a primary earnings catalyst for tech stocks and broader market momentum.</span></p>
+                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Fed policy credibility and UST yield movements will drive currency and bond market dynamics, influencing equity risk appetite.</span></p>
+                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Semiconductor competition (Nvidia vs AMD vs Intel) and AI hardware demand are key hardware catalysts.</span></p>
             </div>
         </div>
 
@@ -228,7 +228,7 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
                 <div class="text-lg font-bold text-cyan-400">💬 סנטימנט קהילות המסחר:</div>
-                <div class="text-xs md:text-sm text-gray-300 leading-relaxed"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Positive sentiment around Castle Biosciences (+67%) and Alibaba’s AI funding; cautious/negative sentiment for Modiin Energy (quarter loss of $5.7 M) and Bitcoin’s price dip.</span></div>
+                <div class="text-xs md:text-sm text-gray-300 leading-relaxed"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Investors appear bullish on AI and energy transition themes, cautious on geopolitical risk and Fed policy uncertainty, and moderately optimistic on crypto corrections.</span></div>
                 <div class="mt-4 space-y-2">
                     <div class="text-lg font-bold text-cyan-400">📊 מה האנליסטים אומרים בקשר להמשך כיוון השוק:</div>
                     <div class="space-y-2 text-xs md:text-sm text-gray-300 leading-relaxed">
@@ -236,7 +236,7 @@
 <div class="analyst-item mb-4 text-right" dir="rtl">
     <div class="text-content flex items-start gap-2" dir="rtl">
         <strong style="color: #3b82f6;" class="shrink-0">1.</strong>
-        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Tech funding remains robust – Alibaba’s $10‑$10.2 B AI placement and Nvidia’s earnings optimism support a bullish stance on growth stocks.</span></span>
+        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">AI financing activity (Alibaba $10 B) and Nvidia earnings expectations create a strong growth narrative for technology‑heavy indices.</span></span>
     </div>
 </div>
 
@@ -244,7 +244,7 @@
 <div class="analyst-item mb-4 text-right" dir="rtl">
     <div class="text-content flex items-start gap-2" dir="rtl">
         <strong style="color: #3b82f6;" class="shrink-0">2.</strong>
-        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Energy earnings are solid – Sinopec’s 19% profit rise and Eni’s fusion roadmap provide defensive upside, though macro‑geopolitical risk persists.</span></span>
+        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Geopolitical and monetary uncertainty (Middle East crisis, Fed credibility) act as downside risks across risk‑off assets.</span></span>
     </div>
 </div>
                     </div>
@@ -256,8 +256,8 @@
         <div id="tab-7" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🛡️ <strong>ניהול סיכונים:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Maintain sector diversification, limit exposure to high‑volatility swing plays (e.g., Vicor, Bitcoin), and monitor macro cues such as Fed credibility and geopolitical developments.</span></p>
-                <p>📋 <strong>המלצות פעולה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Consider adding Alibaba and Nvidia for long‑term growth; take swing positions in Castle Biosciences and Bitcoin if price retraces; stay out of Modiin Energy until earnings clarity; watch USD/ILS and Treasury moves for timing entry points.</span></p>
+                <p>🛡️ <strong>ניהול סיכונים:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Maintain sector diversification, monitor Fed communications and geopolitical developments, and use stop‑losses on high‑volatility names like Vicor and Bitcoin.</span></p>
+                <p>📋 <strong>המלצות פעולה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">Consider overweighting AI‑related equities (Nvidia, Alibaba) for the long term, allocate a modest swing position to Castle Biosciences and Vicor, keep a defensive hedge in cash or Treasury assets pending Fed clarity, and limit exposure to crypto to a small portfolio fraction.</span></p>
             </div>
         </div>
 
