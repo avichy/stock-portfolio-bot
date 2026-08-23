@@ -465,7 +465,7 @@ def format_text_with_conclusion(text, prefix_num=None):
     if conclusion:
         # תיקון קריטי: שילוב "לסיכום:" באותה שורה אחרי רווח בודד ללא שורה ריקה מיותרת
         formatted_content = (
-            f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
+            f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
         )
     else:
         formatted_content = explanation
