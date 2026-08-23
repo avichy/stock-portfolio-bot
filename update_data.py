@@ -120,7 +120,6 @@ def fetch_us_market_news():
 
 
 def get_filtered_us_news(headlines):
-  """סינון חכם לחדשות ארה\"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
   us_market_drivers = [
       "Fed",
       "הפד",
@@ -166,7 +165,6 @@ def get_filtered_us_news(headlines):
 
 
 def get_filtered_israel_news(headlines):
-  """סינון מחמיר לחדשות ישראל - מניעת זליגה לחדשות חוץ ודגש על הכלכלה המקומית בלבד"""
   local_mandatory = [
       "ישראל",
       "תל אביב",
@@ -213,7 +211,6 @@ def get_filtered_israel_news(headlines):
 
 
 def fetch_investing_news():
-  """שליפת חדשות פיננסיות וגיאופוליטיות מ-Investing.com דרך פידי ה-RSS שלהם"""
   try:
     rss_urls = [
         "https://il.investing.com/rss/news.rss",
@@ -977,6 +974,14 @@ def fetch_market_data(tickers):
   return market_data
 
 
+def truncate_text(text, max_chars=2500):
+  if not isinstance(text, str):
+    return str(text)
+  if len(text) > max_chars:
+    return text[:max_chars] + "\n[... Content truncated for size ...] "
+  return text
+
+
 def fetch_ai_insights_split(
     market_data,
     portfolio_stocks,
@@ -1002,173 +1007,157 @@ def fetch_ai_insights_split(
   if not isinstance(combined_result, dict):
     combined_result = {}
 
-  # --- PART 1: Indices & Macro Explanations (Strictly Grounded in News & Geopolitics) ---
-  print(
-      "🔄 Starting Groq AI Part 1 (Indices & Macro Explanations - Grounded in"
-      " News)..."
-  )
-  for key_name, api_key in api_keys:
+  safe_us_news = truncate_text(us_market_news_text, 2000)
+  safe_investing = truncate_text(investing_news, 2000)
+  safe_bizportal = truncate_text(bizportal_headlines_text, 1500)
+
+  key_iter = iter(api_keys)
+
+  def get_next_client():
+    nonlocal key_iter
     try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      print(
-          f"🤖 Connecting to Groq AI Part 1 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
+      k_name, k_val = next(key_iter)
+    except StopIteration:
+      key_iter = iter(api_keys)
+      k_name, k_val = next(key_iter)
+    client = Groq(
+        api_key=k_val, base_url="https://groq-proxy.avichy65.workers.dev"
+    )
+    return client, k_name
 
+  # --- PART 1: Major Indices (SP500, NASDAQ, DOW, VIX, DXY) ---
+  print("🔄 Starting Groq AI Part 1 (Major Indices)...")
+  for attempt in range(len(api_keys) * 2):
+    try:
+      client, key_name = get_next_client()
+      print(f"🤖 Part 1 via {key_name}...")
       prompt1 = f"""
-אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
-עליך להתבסס אך ורק על החדשות והנתונים הגיאופוליטיים והכלכליים שסופקו למטה כדי להסביר את תנועות השוק והמדדים היום. חל איסור מוחלט להמציא מידע או לתת תשובות גנריות.
-Output a valid JSON object ONLY.
-
-🚨 STRICT STRUCTURE GUIDELINES FOR EACH FIELD:
-Every single field below MUST contain:
-1. טקסט ניתוח מפורט ומבוסס על החדשות המצורפות.
-2. שורת סיכום המתחילה במדויק במילה "לסיכום:" ולאחריה תובענה חד-משמעית.
+אתה אנליסט מאקרו-כלכלי בכיר. התבסס אך ורק על החדשות המצורפות.
+Output a valid JSON object ONLY in Hebrew.
+Every field MUST include descriptive analysis and end with a separate summary line starting with "לסיכום:".
 
 Today is {day_name}, Date: {date_str}.
+--- News ---
+{safe_us_news}
+{safe_investing}
 
---- Provided Global & Geopolitical News (Google News & Investing) ---
-{us_market_news_text}
-{investing_news}
-
-Current Market Data:
-{json.dumps(market_summary, ensure_ascii=False)}
-
-Return a valid JSON object with exactly these 9 keys:
+Return valid JSON with exactly these 5 keys:
 1. SP500_ANALYSIS
 2. NASDAQ_ANALYSIS
 3. DOW_ANALYSIS
 4. VIX_ANALYSIS
 5. DXY_ANALYSIS
-6. USD_ILS_EXPLANATION
-7. OIL_EXPLANATION
-8. GOLD_EXPLANATION
-9. BTC_EXPLANATION
 """
-
-      response1 = client.chat.completions.create(
+      res = client.chat.completions.create(
           model="openai/gpt-oss-120b",
           messages=[{"role": "user", "content": prompt1}],
           response_format={"type": "json_object"},
           temperature=0.2,
-          max_tokens=4000,
+          max_tokens=1500,
       )
-
-      raw_text1 = response1.choices[0].message.content.strip()
-      parsed1 = json.loads(raw_text1)
+      parsed1 = json.loads(res.choices[0].message.content.strip())
       combined_result.update(parsed1)
-      print("Successfully parsed Part 1 JSON using key:", key_name)
+      time.sleep(12)  # Pause to respect Groq TPM
       break
     except Exception as e:
-      print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"⚠️ Part 1 error: {e}")
+      time.sleep(15)
 
-  time.sleep(3)
-
-  # --- PART 2: News, Sentiment & Analyst Points with Sources ---
-  print(
-      "🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points with"
-      " Sources)..."
-  )
-  for key_name, api_key in api_keys:
+  # --- PART 2: Commodities & Currencies (USD_ILS, OIL, GOLD, BTC) ---
+  print("🔄 Starting Groq AI Part 2 (Commodities & Currencies)...")
+  for attempt in range(len(api_keys) * 2):
     try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      print(
-          f"🤖 Connecting to Groq AI Part 2 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
-
+      client, key_name = get_next_client()
+      print(f"🤖 Part 2 via {key_name}...")
       prompt2 = f"""
-אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים על בסיס הנתונים בלבד.
-Output a valid JSON object ONLY.
-
-🚨 STRICT ZERO-HALLUCINATION & MANDATORY SOURCE ASSIGNMENT:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
-2. MANDATORY STRUCTURE: Every field must include detailed text followed by "לסיכום:" and an operational conclusion.
-3. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-4. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). Must explicitly end with `(מקור: Bizportal)`.
+אתה אנליסט סחורות ומט"ח בכיר. התבסס אך ורק על החדשות המצורפות.
+Output a valid JSON object ONLY in Hebrew.
+Every field MUST include descriptive analysis and end with a separate summary line starting with "לסיכום:".
 
 Today is {day_name}, Date: {date_str}.
+--- News ---
+{safe_us_news}
+{safe_investing}
 
---- US / Global Headlines (Google News RSS) ---
-{us_market_news_text}
+Return valid JSON with exactly these 4 keys:
+1. USD_ILS_EXPLANATION
+2. OIL_EXPLANATION
+3. GOLD_EXPLANATION
+4. BTC_EXPLANATION
+"""
+      res = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt2}],
+          response_format={"type": "json_object"},
+          temperature=0.2,
+          max_tokens=1500,
+      )
+      parsed2 = json.loads(res.choices[0].message.content.strip())
+      combined_result.update(parsed2)
+      time.sleep(12)
+      break
+    except Exception as e:
+      print(f"⚠️ Part 2 error: {e}")
+      time.sleep(15)
 
---- Israeli Market Headlines (Bizportal) ---
-{bizportal_headlines_text}
+  # --- PART 3: News, Sentiment & Analyst Points ---
+  print("🔄 Starting Groq AI Part 3 (News & Sentiment)...")
+  for attempt in range(len(api_keys) * 2):
+    try:
+      client, key_name = get_next_client()
+      print(f"🤖 Part 3 via {key_name}...")
+      prompt3 = f"""
+אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מדויקים בעברית בלבד.
+Every field must end with "לסיכום:".
+US_MARKET_NEWS must use Google News headlines and end with (מקור: Google News RSS).
+IL_MARKET_NEWS must focus on Israeli economy and end with (מקור: Bizportal).
 
-Return a valid JSON object with exactly these 5 keys:
+Today is {day_name}, Date: {date_str}.
+--- US News ---
+{safe_us_news}
+--- IL News ---
+{safe_bizportal}
+
+Return valid JSON with exactly these 5 keys:
 1. US_MARKET_NEWS
 2. IL_MARKET_NEWS
 3. COMMUNITY_SENTIMENT
 4. ANALYST_POINT_1
 5. ANALYST_POINT_2
 """
-
-      response2 = client.chat.completions.create(
+      res = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt2}],
+          messages=[{"role": "user", "content": prompt3}],
           response_format={"type": "json_object"},
           temperature=0.2,
-          max_tokens=4000,
+          max_tokens=1500,
       )
-
-      raw_text2 = response2.choices[0].message.content.strip()
-      parsed2 = json.loads(raw_text2)
-      combined_result.update(parsed2)
-      print("Successfully parsed Part 2 JSON using key:", key_name)
+      parsed3 = json.loads(res.choices[0].message.content.strip())
+      combined_result.update(parsed3)
+      time.sleep(12)
       break
     except Exception as e:
-      print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"⚠️ Part 3 error: {e}")
+      time.sleep(15)
 
-  time.sleep(3)
-
-  # --- PART 3: Stocks, Catalysts & Strategy (Grounded in Real News) ---
-  print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
-  for key_name, api_key in api_keys:
+  # --- PART 4: Stocks, Catalysts & Strategy ---
+  print("🔄 Starting Groq AI Part 4 (Stocks & Strategy)...")
+  for attempt in range(len(api_keys) * 2):
     try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      print(
-          f"🤖 Connecting to Groq AI Part 3 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
-
-      prompt3 = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך להתבסס אך ורק על חדשות הכלכלה והגיאופוליטיקה המצורפות.
-Output a valid JSON object ONLY.
-
-🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-3. CATALYSTS & TEXT FIELDS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`, `RISK_MANAGEMENT_TEXT`, `ACTION_RECOMMENDATIONS_TEXT`): Each field MUST contain descriptive text followed by a separate summary line starting with "לסיכום:".
-4. `market_news`: Array of items. Each item MUST contain `news_title`, `news_link`, and `news_desc` (comprehensive summary without the word "לסיכום").
+      client, key_name = get_next_client()
+      print(f"🤖 Part 4 via {key_name}...")
+      prompt4 = f"""
+אתה מנהל תיקים ואנליסט בכיר. עליך להחזיר JSON תקין בלבד בעברית.
+long_term_stocks & swing_stocks: JSON arrays of objects with keys: ticker, name, desc, news, why_invest.
+market_news: array of items with news_title, news_link, news_desc.
+Other fields must end with "לסיכום:".
 
 Today is {day_name}, Date: {date_str}.
+--- News ---
+{safe_investing}
+{safe_us_news}
 
---- Investing.com Headlines & Geopolitical News ---
-{investing_news}
-
---- US / Global Headlines ---
-{us_market_news_text}
-
-Current Market Data:
-{json.dumps(market_summary, ensure_ascii=False)}
-
-Return a valid JSON object with exactly these 8 keys:
+Return valid JSON with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
@@ -1178,27 +1167,20 @@ Return a valid JSON object with exactly these 8 keys:
 7. RISK_MANAGEMENT_TEXT
 8. ACTION_RECOMMENDATIONS_TEXT
 """
-
-      response3 = client.chat.completions.create(
+      res = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt3}],
+          messages=[{"role": "user", "content": prompt4}],
           response_format={"type": "json_object"},
           temperature=0.2,
-          max_tokens=4000,
+          max_tokens=2000,
       )
-
-      raw_text3 = response3.choices[0].message.content.strip()
-      parsed3 = json.loads(raw_text3)
-      combined_result.update(parsed3)
-      print("Successfully parsed Part 3 JSON using key:", key_name)
+      parsed4 = json.loads(res.choices[0].message.content.strip())
+      combined_result.update(parsed4)
+      time.sleep(12)
       break
     except Exception as e:
-      print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"⚠️ Part 4 error: {e}")
+      time.sleep(15)
 
   combined_result["ai_updated_at"] = now_il_str
   return combined_result
