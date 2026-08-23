@@ -125,7 +125,6 @@ def fetch_investing_news():
       title = entry.get("title", "").strip()
       summary = entry.get("summary", "") or entry.get("description", "")
       link = entry.get("link", "https://www.investing.com/")
-      # סינון מוקדם: כותרות מעל 5 תווים וללא כפילויות
       if title and len(title) > 5 and title not in seen_titles:
         seen_titles.add(title)
         raw_headlines.append({"title": title, "link": link, "summary": summary})
@@ -820,7 +819,6 @@ if __name__ == "__main__":
       print(f"Error handling AI insights: {e}")
       ai_insights = load_ai_cache()
 
-    # --- טיפול ב-US_MARKET_NEWS עם הגנה מפני רשימה ---
     us_news_text = ai_insights.get("US_MARKET_NEWS", "")
     if isinstance(us_news_text, list):
       us_news_text = " ".join(str(item) for item in us_news_text)
@@ -829,7 +827,6 @@ if __name__ == "__main__":
       us_news_text = str(us_news_text).strip() + " (מקור: Google News RSS)"
     ai_insights["US_MARKET_NEWS"] = us_news_text
 
-    # --- טיפול ב-IL_MARKET_NEWS עם הגנה מפני רשימה ---
     il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
     if isinstance(il_news_text, list):
       il_news_text = " ".join(str(item) for item in il_news_text)
@@ -837,6 +834,58 @@ if __name__ == "__main__":
     if "(מקור:" not in str(il_news_text):
       il_news_text = str(il_news_text).strip() + " (מקור: Bizportal)"
     ai_insights["IL_MARKET_NEWS"] = il_news_text
+
+    # --- יצירת קובץ ה-HTML מתוך ה-Template ---
+    if os.path.exists(TEMPLATE_FILE):
+      with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
+        template_content = tf.read()
+
+      lt_stocks = clean_stocks_list(
+          ai_insights.get("long_term_stocks", LT_STOCKS_META),
+          LT_STOCKS_META,
+      )
+      sw_stocks = clean_stocks_list(
+          ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META
+      )
+
+      lt_html = build_structured_stocks_html(
+          lt_stocks, base_market_data, "מניות לטווח ארוך"
+      )
+      sw_html = build_structured_stocks_html(
+          sw_stocks, base_market_data, "מניות לסווינג"
+      )
+      market_news_html = build_market_news_html(
+          ai_insights.get("market_news", [])
+      )
+
+      template_content = template_content.replace(
+          "{{US_MARKET_NEWS}}", format_phase1_text(us_news_text)
+      )
+      template_content = template_content.replace(
+          "{{IL_MARKET_NEWS}}", format_phase1_text(il_news_text)
+      )
+      template_content = template_content.replace(
+          "{{LONG_TERM_STOCKS}}", lt_html
+      )
+      template_content = template_content.replace(
+          "{{SWING_STOCKS}}", sw_html
+      )
+      template_content = template_content.replace(
+          "{{MARKET_NEWS}}", market_news_html
+      )
+
+      # החלפת כל שאר המפתחות באופן דינמי בתבנית
+      for k, v in ai_insights.items():
+        if isinstance(v, str):
+          template_content = template_content.replace(
+              f"{{{{{k}}}}}", format_phase1_text(v)
+          )
+
+      with open(OUTPUT_FILE, "w", encoding="utf-8") as of:
+        of.write(template_content)
+      print("Successfully generated index.html from template!")
+    else:
+      print("Warning: index.template.html not found, skipped HTML generation.")
 
     print("Dashboard generation completed successfully.")
 
