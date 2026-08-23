@@ -576,7 +576,6 @@ def fetch_ai_insights_split(
   if not isinstance(combined_result, dict):
     combined_result = {}
 
-  # --- Data Isolation & Pre-processed Investing RSS with temperature=0 ---
   print(
       "🔄 Starting Groq AI Analysis with Data Isolation & Deterministic"
       " Settings..."
@@ -611,10 +610,10 @@ Today is {day_name}, Date: {date_str}.
 """
 
       response = client.chat.completions.create(
-          model="openai/gpt-oss-120b",  # מעודכן למודל הנכון
+          model="openai/gpt-oss-120b",
           messages=[{"role": "user", "content": prompt}],
           response_format={"type": "json_object"},
-          temperature=0,  # איפוס מלא למניעת יצירתיות והזיות
+          temperature=0,
           max_tokens=4000,
       )
 
@@ -821,14 +820,22 @@ if __name__ == "__main__":
       print(f"Error handling AI insights: {e}")
       ai_insights = load_ai_cache()
 
+    # --- טיפול ב-US_MARKET_NEWS עם הגנה מפני רשימה ---
     us_news_text = ai_insights.get("US_MARKET_NEWS", "")
-    if "(מקור:" not in us_news_text:
-      us_news_text = us_news_text.strip() + " (מקור: Google News RSS)"
+    if isinstance(us_news_text, list):
+      us_news_text = " ".join(str(item) for item in us_news_text)
+
+    if "(מקור:" not in str(us_news_text):
+      us_news_text = str(us_news_text).strip() + " (מקור: Google News RSS)"
     ai_insights["US_MARKET_NEWS"] = us_news_text
 
+    # --- טיפול ב-IL_MARKET_NEWS עם הגנה מפני רשימה ---
     il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
-    if "(מקור:" not in il_news_text:
-      il_news_text = il_news_text.strip() + " (מקור: Bizportal)"
+    if isinstance(il_news_text, list):
+      il_news_text = " ".join(str(item) for item in il_news_text)
+
+    if "(מקור:" not in str(il_news_text):
+      il_news_text = str(il_news_text).strip() + " (מקור: Bizportal)"
     ai_insights["IL_MARKET_NEWS"] = il_news_text
 
     print("Dashboard generation completed successfully.")
