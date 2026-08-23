@@ -311,7 +311,6 @@ def format_text_with_conclusion(text, prefix_num=None):
     conclusion = ""
     extra_line = ""
 
-    # פירוק לפי שורות / מילות מפתח אם קיימות (הסבר, לסיכום, שורה נוספת)
     if "תחזית:" in cleaned or "השפעה קדימה:" in cleaned or "מבט קדימה:" in cleaned:
         parts = re.split(
             r"(?:תחזית|השפעה קדימה|מבט קדימה)\s*[:\-]*", cleaned, flags=re.IGNORECASE
@@ -357,7 +356,6 @@ def format_text_with_conclusion(text, prefix_num=None):
         else:
             conclusion = ""
 
-    # אם אין עדיין שורה נוספת אבל יש מספיק משפטים או שאנחנו רוצים להבטיח מבנה עשיר
     if not extra_line and conclusion:
         extra_line = "השלכה למשקיע: מעקב אחר רמות התמיכה והתנודתיות בסקטור זה חיוני לקבלת החלטות מושכלות בטווח הקצר."
 
@@ -1395,7 +1393,7 @@ if __name__ == "__main__":
         ):
             us_news_text = (
                 f"{us_market_news} (מקור: Google News RSS)<br>לסיכום: השווקים"
-                " הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט.<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>מעקב אחר תשואות האג"ח ל-10 שנים ימשיך להוות מצפן מרכזי לסנטימנט המשקיעים."
+                " הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט.<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>מעקב אחר תשואות אגרות החוב ל-10 שנים ימשיך להוות מצפן מרכזי לסנטימנט המשקיעים."
             )
 
         il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
