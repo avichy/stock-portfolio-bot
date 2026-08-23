@@ -7,6 +7,7 @@ import traceback
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import base64
 from bs4 import BeautifulSoup
 import feedparser
 from groq import Groq
@@ -318,6 +319,14 @@ def format_pct_colored(val):
     return str(val)
 
 
+def replace_dollar_word(text):
+  if not isinstance(text, str):
+    return str(text)
+  # מחליף מופעים כמו "77,721.73 דולר" ל-"77,721.73$"
+  text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"\1$", text, flags=re.IGNORECASE)
+  return text
+
+
 def format_numbers_in_text(text):
   def replace_num(match):
     num_str = match.group(0)
@@ -359,6 +368,7 @@ def format_text_with_conclusion(text, prefix_num=None):
     text = str(text)
 
   text = text.strip()
+  text = replace_dollar_word(text)
   text = text.replace("\\n", "<br>").replace("\n", "<br>")
 
   if text.startswith("[") and text.endswith("]"):
@@ -472,6 +482,7 @@ def format_news_description(text):
     text = str(text)
 
   text = text.strip()
+  text = replace_dollar_word(text)
   text = text.replace("\\n", "<br>").replace("\n", "<br>")
   source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
   source_str = source_match.group(1) if source_match else ""
@@ -728,11 +739,13 @@ def fetch_yahoo_direct(ticker):
       elif isinstance(pm_obj, (int, float)):
         pre_market_price = float(pm_obj)
   except Exception as e:
-    print(f"Yahoo quoteSummary target/pre-market fetch error for {clean_ticker}: {e}")
+    print(
+        f"Yahoo quoteSummary target/pre-market fetch error for {clean_ticker}:"
+        f" {e}"
+    )
 
-  # תיקון: אם אין נתוני טרום פתיחה אמיתיים (למשל כשהשוק סגור), נשאיר זאת על 0.0 במקום להעתיק את המחיר הנוכחי
   if not pre_market_price or pre_market_price <= 0:
-    pre_market_price = 0.0
+    pre_market_price = current_price
 
   if current_price and current_price > 0:
     return {
@@ -757,121 +770,121 @@ def fetch_market_data(tickers):
               "price": 3.65,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 3.65,
           },
           "^GSPC": {
               "price": 5500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 5500.0,
           },
           "^NDX": {
               "price": 19500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 19500.0,
           },
           "^DJI": {
               "price": 41000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 41000.0,
           },
           "^VIX": {
               "price": 15.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 15.0,
           },
           "DX-Y.NYB": {
               "price": 103.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 103.0,
           },
           "CL=F": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 75.0,
           },
           "GC=F": {
               "price": 2400.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 2400.0,
           },
           "BTC-USD": {
               "price": 60000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 60000.0,
           },
           "XLK": {
               "price": 220.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 220.0,
           },
           "XLF": {
               "price": 45.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 45.0,
           },
           "XLV": {
               "price": 140.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 140.0,
           },
           "XLY": {
               "price": 180.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 180.0,
           },
           "XLP": {
               "price": 80.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 80.0,
           },
           "XLE": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 90.0,
           },
           "XLI": {
               "price": 130.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 130.0,
           },
           "XLB": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 90.0,
           },
           "XLC": {
               "price": 95.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 95.0,
           },
           "XLU": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 75.0,
           },
           "XLRE": {
               "price": 40.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 40.0,
           },
       }
       market_data[ticker] = defaults.get(
@@ -880,7 +893,7 @@ def fetch_market_data(tickers):
               "price": 100.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": 0.0,
+              "pre_market": 100.0,
           },
       )
   return market_data
@@ -928,7 +941,13 @@ def fetch_ai_insights_split(
 
       prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
-עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית. אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
+עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, תוך שימוש במונחים פיננסיים מקצועיים וזורמים.
+אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
+
+🚨 דגשים קריטיים:
+- הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
+- בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש תמיד בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+
 Output a valid JSON object ONLY.
 
 🚨 STRICT STRUCTURE GUIDELINES FOR EACH FIELD:
@@ -995,11 +1014,13 @@ Return a valid JSON object with exactly these 9 keys:
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION & MANDATORY SOURCE ASSIGNMENT:
+🚨 STRICT RULES & FORMATTING:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
-2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
-3. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-4. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
+2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
+3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
+5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
+6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1058,9 +1079,11 @@ Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-3. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
-4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
+2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
+3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
+6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1268,32 +1291,29 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
           or "עדכון שוטף וניתוח טכני של תנועת המחיר."
       )
       news = re.sub(r"^סיכום הכתבה:\s*", "", news)
+      news = replace_dollar_word(news)
       news = force_source_on_newline(news)
       why_invest = (
           s.get("why_invest")
           or s.get("investment_reason")
           or "פוטנציאל תשואה חיובי בהתאם לנתונים הפונדמנטליים."
       )
+      why_invest = replace_dollar_word(why_invest)
       why_invest = force_source_on_newline(why_invest)
     else:
       continue
 
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
-
-    # טיפול בהצגת טרום-פתיחה במידה והשוק סגור
-    pre_market_val = data.get("pre_market", 0)
-    if pre_market_val and float(pre_market_val) > 0:
-      pre_market_str = f"${format_num(pre_market_val)}"
-    else:
-      pre_market_str = "השוק סגור / אין נתון טרום-פתיחה"
+    pre_market = format_num(data.get("pre_market", 0))
 
     raw_target = data.get("target", 0)
     target_html = ""
     if raw_target and float(raw_target) > 0:
       target_val = f"${format_num(raw_target)}"
       target_html = (
-          f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>'
+          f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong>'
+          f" {target_val}</div>"
       )
 
     change_val = data.get("change", 0.0)
@@ -1316,7 +1336,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
                 <div style="text-align: right;"><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> {pre_market_str}</div>
+                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> ${pre_market}</div>
                 {target_html}
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
@@ -1588,9 +1608,7 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         fetched_target = fetched_price_data.get("target") or 0.0
-        
-        pre_p = fetched_price_data.get("pre_market", 0.0)
-        pre_str = f"${format_num(pre_p)}" if pre_p and float(pre_p) > 0 else "השוק סגור"
+        pre_p = fetched_price_data.get("pre_market") or curr_p
 
         ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
         sign = "+" if ret > 0 else ""
@@ -1611,7 +1629,7 @@ if __name__ == "__main__":
             "shares": shares_count,
             "buyPrice": format_num(buy_p),
             "current": f"${format_num(curr_p)}",
-            "pre": pre_str,
+            "pre": f"${format_num(pre_p)}",
             "target": target_str,
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
