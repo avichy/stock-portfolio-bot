@@ -154,7 +154,7 @@ def fetch_bizportal_news():
     news_items = []
     seen_titles = set()
 
-    # מילים פסולות כדי לוודא שאינו אוסף חדשות אמריקאיות/בינלאומיות או תפריטי מערכת
+    # מילים פסולות לסינון מוחלט של חדשות חוץ ומערכת
     forbidden_words = [
         "התחבר",
         "הירשם",
@@ -336,7 +336,7 @@ def format_ai_text(text, force_conclusion=False):
 
   formatted_content = force_source_on_newline(formatted_content)
 
-  # תיקון קריטי: שימוש ב-div במקום span כדי לא לשבור את ה-DOM והטאבים בדפדפן
+  # מעטפת div נקייה ששומרת לחלוטין על מבנה ה-DOM והטאבים
   return (
       f'<div class="text-sm text-gray-200 mt-1 mb-3 leading-relaxed"'
       f' dir="rtl" style="text-align: right;">{formatted_content}</div>'
@@ -856,9 +856,7 @@ if __name__ == "__main__":
           "{{MARKET_NEWS}}", market_news_html
       )
 
-      # הגדרת המפתחות עבור שלב 1, 3, 6 ו-7 שבהם תהיה שורת סיכום נפרדת
       force_conclusion_keys = {
-          # שלב 1 (מאקרו)
           "US_MARKET_NEWS",
           "IL_MARKET_NEWS",
           "SP500_ANALYSIS",
@@ -870,17 +868,14 @@ if __name__ == "__main__":
           "OIL_EXPLANATION",
           "GOLD_EXPLANATION",
           "BTC_EXPLANATION",
-          # שלב 3 (זרימים)
           "FLOW_ANALYSIS",
           "SECTOR_FLOWS",
-          # שלב 6 (סנטימנט, אנליסטים וקטליסטים)
           "COMMUNITY_SENTIMENT",
           "ANALYST_POINT_1",
           "ANALYST_POINT_2",
           "CATALYST_EARNINGS",
           "CATALYST_MONETARY",
           "CATALYST_HARDWARE",
-          # שלב 7 (סיכון והמלצות פעולה)
           "RISK_MANAGEMENT_TEXT",
           "ACTION_RECOMMENDATIONS_TEXT",
       }
