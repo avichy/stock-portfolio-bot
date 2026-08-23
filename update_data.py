@@ -724,7 +724,6 @@ def fetch_yahoo_direct(ticker):
       sum_json = resp_sum.json()
       fin_result = sum_json.get("quoteSummary", {}).get("result", [{}])[0]
 
-      # Target Mean Price from financialData
       financial_data = fin_result.get("financialData", {})
       target_obj = financial_data.get("targetMeanPrice", {})
       if isinstance(target_obj, dict):
@@ -732,7 +731,6 @@ def fetch_yahoo_direct(ticker):
       elif isinstance(target_obj, (int, float)):
         target_mean = float(target_obj)
 
-      # Fallback to defaultKeyStatistics if target_mean is missing
       if not target_mean or target_mean <= 0.0:
         default_stats = fin_result.get("defaultKeyStatistics", {})
         target_obj_2 = default_stats.get("targetMeanPrice", {})
@@ -741,7 +739,6 @@ def fetch_yahoo_direct(ticker):
         elif isinstance(target_obj_2, (int, float)):
           target_mean = float(target_obj_2)
 
-      # Pre-market Price
       price_module = fin_result.get("price", {})
       pm_obj = price_module.get("preMarketPrice", {})
       if isinstance(pm_obj, dict):
@@ -1626,7 +1623,6 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        # עדכון יעד אנליסטים ממוצע גם לשלב 5 (עם תמיכה בברירת מחדל אם ריק)
         target_str = (
             f"${format_num(fetched_target)}"
             if fetched_target and float(fetched_target) > 0
