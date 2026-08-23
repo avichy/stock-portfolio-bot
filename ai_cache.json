@@ -1,37 +1,41 @@
 {
     "long_term_stocks": [
-        "Apple",
-        "Alibaba",
-        "Salesforce",
-        "Marvel",
-        "Google"
+        "Alibaba (BABA)",
+        "Salesforce (CRM)",
+        "Apple (AAPL)",
+        "Google (GOOGL)",
+        "Disney (DIS)"
     ],
     "swing_stocks": [
-        "Bitcoin",
+        "Bitcoin (BTC)",
         "XRP",
-        "Cardano",
-        "Korean retail stocks with coupon-driven rallies"
+        "Cardano (ADA)",
+        "Korean retail equities"
     ],
-    "market_news": "Global markets show mixed signals: Bitcoin spikes above $76K, AI-driven upgrades for Apple, Alibaba seeks $10B for AI, Korean retail traders chase deep‑discount coupons, and US plans new sanctions on Iran.",
-    "CATALYST_EARNINGS": "Salesforce’s upcoming quarter report (implied by acquisition news) could act as an earnings catalyst.",
-    "CATALYST_MONETARY": "Potential monetary impact from US sanctions on Iran and upcoming fuel price adjustments.",
-    "CATALYST_HARDWARE": "Apple’s foldable iPhone strategy serves as a hardware catalyst for tech stocks.",
-    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, monitor overbought crypto signals, and watch for volatility spikes from geopolitical news.",
-    "ACTION_RECOMMENDATIONS_TEXT": "Consider scaling into AI‑focused equities, limit crypto exposure pending correction, and stay alert to fuel‑price driven inflation pressures.",
-    "ai_updated_at": "23.08.2026 | 10:40",
-    "SP500_ANALYSIS": "No direct S&P 500 headline, but AI upgrades and earnings activity suggest sector‑specific strength while broader market sentiment remains cautious.",
-    "NASDAQ_ANALYSIS": "Tech focus evident with Apple AI upgrade and Alibaba AI funding, indicating potential upside for Nasdaq‑heavy portfolios.",
-    "DOW_ANALYSIS": "Absence of Dow‑specific news; overall market tone appears mixed, with volatility from crypto moves and geopolitical headlines.",
-    "VIX_ANALYSIS": "Heightened uncertainty hinted by crypto overbought conditions and geopolitical tension (Iran sanctions), implying possible VIX elevation.",
-    "DXY_ANALYSIS": "No explicit dollar index data; however, US sanctions and gasoline pricing could influence USD strength indirectly.",
-    "OIL_EXPLANATION": "US plans to advance winter gasoline at $4.11 per gallon suggest higher fuel costs that could pressure inflation and consumer spending.",
-    "GOLD_EXPLANATION": "No gold‑related headlines; cannot assess current gold market dynamics.",
-    "BTC_EXPLANATION": "Bitcoin broke $76K with an overbought RSI, indicating strong momentum but also potential short‑term correction risk.",
+    "market_news": "US markets show strong AI and crypto activity while Israeli headlines focus on corporate deals, oil pricing and telecom trends.",
+    "CATALYST_EARNINGS": "Upcoming earnings reports for Alibaba and Salesforce could drive short‑term volatility.",
+    "CATALYST_MONETARY": "US plans to announce new sanctions on Iran represent a monetary‑policy‑related risk factor.",
+    "CATALYST_HARDWARE": "Apple's foldable iPhone strategy serves as a hardware catalyst for the broader tech sector.",
+    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, use stop‑loss orders on high‑volatility assets, and monitor macro‑economic headlines for sudden shifts.",
+    "ACTION_RECOMMENDATIONS_TEXT": "Consider overweighting AI‑focused equities (e.g., Alibaba, Apple) for the medium term, keep a modest position in Bitcoin with tight risk controls, and stay alert to oil price movements due to the $4.11 gasoline forecast.",
+    "ai_updated_at": "23.08.2026 | 10:41",
+    "SP500_ANALYSIS": "Tech‑heavy news (AI spending, Apple foldable upgrade) suggests upside bias for the S&P 500, though broader market caution from geopolitical tension remains.",
+    "NASDAQ_ANALYSIS": "NASDAQ likely benefits from AI and semiconductor themes highlighted in US headlines, supporting a bullish short‑term outlook.",
+    "DOW_ANALYSIS": "Dow Jones may see limited impact; traditional industrials are not directly referenced in the current news flow.",
+    "VIX_ANALYSIS": "VIX sentiment appears elevated due to mixed signals: crypto rally, equity routs, and geopolitical sanctions.",
+    "DXY_ANALYSIS": "No specific dollar index data; however, US sanctions on Iran could introduce volatility to the DXY.",
+    "OIL_EXPLANATION": "US plans to pre‑position winter gasoline at $4.11 per gallon for the next two weeks, indicating higher near‑term fuel costs.",
+    "GOLD_EXPLANATION": "",
+    "BTC_EXPLANATION": "Bitcoin surged past $76,000 with an overbought RSI, indicating strong momentum but potential short‑term correction risk.",
     "US_MARKET_NEWS": [
         "Bitcoin surges past $76K with overbought RSI: Live levels",
         "Alibaba plans $10 billion Hong Kong share placement to fund AI spending",
+        "Korean retail traders chase 40% coupons after historic stock rout - report",
         "5 big analyst AI moves: Apple upgraded on foldable iPhone push, new AI strategy",
         "Trump disclosure shows more than 1,000 securities trades in June - report",
+        "Robots can outrun humans, but can they plug in a cable?",
+        "XRP Falls 11% In Bearish Trade",
+        "Cardano Falls 10% In Bearish Trade",
         "Iran condemns US plans to announce new sanctions",
         "Germany’s Merz to press cabinet for faster pro-growth reforms"
     ],
@@ -45,8 +49,8 @@
         "תומר מזון: סמנכ\"לית הכספים המיועדת ויתרה על התפקיד על רקע הטיפול במלאי",
         "איך מנכ\"ל שאומר שלא יגייס - מגייס שבוע אחר כך?"
     ],
-    "COMMUNITY_SENTIMENT": "Retail enthusiasm in Korea (40% coupons) contrasts with bearish crypto moves (XRP, Cardano), reflecting divergent risk appetites across regions.",
-    "ANALYST_POINT_1": "AI investments are a key driver, highlighted by Alibaba’s $10B AI fund and Apple’s foldable iPhone AI push.",
-    "ANALYST_POINT_2": "Geopolitical developments (Iran sanctions) and commodity pricing (US gasoline) may introduce macro‑level volatility.",
-    "USD_ILS_EXPLANATION": "No direct USD/ILS rate information provided; any impact would stem from broader US economic moves such as fuel pricing and sanctions."
+    "COMMUNITY_SENTIMENT": "Crypto community appears bullish (BTC surge), while equity traders show caution (Korean retail coupon chase after rout).",
+    "ANALYST_POINT_1": "Alibaba's $10 billion share placement to fund AI underscores long‑term growth potential in Chinese technology.",
+    "ANALYST_POINT_2": "Apple's upgrade on a foldable iPhone push highlights hardware innovation as a catalyst for tech stocks.",
+    "USD_ILS_EXPLANATION": "No direct USD/ILS rate information is provided in the source material."
 }
