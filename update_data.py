@@ -275,6 +275,9 @@ def format_text_with_conclusion(text, prefix_num=None):
         text = str(text)
 
     text = text.strip()
+    # המרת תווי \n גולמיים לתגיות HTML תקינות
+    text = text.replace("\\n", "<br>").replace("\n", "<br>")
+
     if text.startswith("[") and text.endswith("]"):
         try:
             parsed_list = json.loads(text)
@@ -309,15 +312,6 @@ def format_text_with_conclusion(text, prefix_num=None):
 
     explanation = cleaned
     conclusion = ""
-    extra_line = ""
-
-    if "תחזית:" in cleaned or "השפעה קדימה:" in cleaned or "מבט קדימה:" in cleaned:
-        parts = re.split(
-            r"(?:תחזית|השפעה קדימה|מבט קדימה)\s*[:\-]*", cleaned, flags=re.IGNORECASE
-        )
-        cleaned = parts[0].strip()
-        if len(parts) > 1:
-            extra_line = parts[1].strip()
 
     if "לסיכום" in cleaned:
         parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
@@ -328,19 +322,14 @@ def format_text_with_conclusion(text, prefix_num=None):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
-    explanation = re.sub(r"\s*\n+\s*", " ", explanation).strip()
-    conclusion = re.sub(r"\s*\n+\s*", " ", conclusion).strip()
-    extra_line = re.sub(r"\s*\n+\s*", " ", extra_line).strip()
+    explanation = re.sub(r"\s*<br>\s*", "<br>", explanation).strip()
+    conclusion = re.sub(r"\s*<br>\s*", "<br>", conclusion).strip()
 
     explanation = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", explanation)
-    explanation = re.sub(r"מקור:\s*.*?(?=<|$)", "", explanation)
     conclusion = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", conclusion)
-    conclusion = re.sub(r"מקור:\s*.*?(?=<|$)", "", conclusion)
-    extra_line = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", extra_line)
 
     explanation = re.sub(r"(^|<br>)\s*;\s*", r"\1", explanation)
     conclusion = re.sub(r"(^|<br>)\s*;\s*", r"\1", conclusion)
-    extra_line = re.sub(r"(^|<br>)\s*;\s*", r"\1", extra_line)
 
     sentences = [
         s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()
@@ -356,9 +345,6 @@ def format_text_with_conclusion(text, prefix_num=None):
         else:
             conclusion = ""
 
-    if not extra_line and conclusion:
-        extra_line = "השלכה למשקיע: מעקב אחר רמות התמיכה והתנודתיות בסקטור זה חיוני לקבלת החלטות מושכלות בטווח הקצר."
-
     explanation = re.sub(
         r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
     ).strip()
@@ -367,11 +353,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     ).strip()
 
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
-    extra_line = re.sub(r"\(מקור\s*:[^)]+\)", "", extra_line).strip()
 
     explanation = re.sub(r"\s+(\d+\.\s+)", r"<br>\1", explanation)
     conclusion = re.sub(r"\s+(\d+\.\s+)", r"<br>\1", conclusion)
-    extra_line = re.sub(r"\s+(\d+\.\s+)", r"<br>\1", extra_line)
 
     if prefix_num is not None:
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
@@ -382,13 +366,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     if source_str:
         explanation = explanation.strip() + " " + source_str
 
-    if conclusion and extra_line:
+    if conclusion:
         formatted_content = (
-            f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>{extra_line}"
-        )
-    elif conclusion:
-        formatted_content = (
-            f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+            f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
         )
     else:
         formatted_content = explanation
@@ -409,6 +389,7 @@ def format_news_description(text):
         text = str(text)
 
     text = text.strip()
+    text = text.replace("\\n", "<br>").replace("\n", "<br>")
     source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
     source_str = source_match.group(1) if source_match else ""
     if source_str:
@@ -443,11 +424,11 @@ def format_phase1_text(text):
 
 def format_analyst_text(text):
     if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-        text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים. מבט קדימה והשפעה אופרטיבית: מעקב ממושך אחר פריצות רמות מפתח יעניק אינדיקציה ברורה לכיוון המסחר."
+        text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים."
     if "לסיכום" not in str(text):
         text = (
             str(text).strip()
-            + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים. מבט קדימה והשפעה אופרטיבית: ניהול סיכונים קפדני הוא מפתח להצלחה במסחר הנוכחי."
+            + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
         )
     return format_text_with_conclusion(text, prefix_num=None)
 
@@ -854,7 +835,7 @@ def fetch_ai_insights_split(
     if not isinstance(combined_result, dict):
         combined_result = {}
 
-    # --- PART 1: Indices & Macro Explanations (Deep, Non-Generic) ---
+    # --- PART 1: Indices & Macro Explanations ---
     print(
         "🔄 Starting Groq AI Part 1 (Indices & Macro Explanations - Deep &"
         " Professional)..."
@@ -872,14 +853,14 @@ def fetch_ai_insights_split(
 
             prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
-עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית. אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות כגון חזרה יבשה על המספרים. עליך לנתח את המשמעויות הרוחביות, סנטימנט מוסדי, השפעות סקטוריאליות ומבנה השוק.
+עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית. אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
 Output a valid JSON object ONLY.
 
 🚨 STRICT STRUCTURE GUIDELINES FOR EACH FIELD:
 Every single field below MUST contain:
 1. הסבר מקצועי מעמיק ומפורט.
 2. שורת סיכום המתחילה במפורש במילה "לסיכום:" ולאחריה תובענה חד-משמעית.
-3. שורה נוספת מתחת לסיכום המתחילה במפורש ב-"תחזית והשפעה אופרטיבית:" הכוללת מבט קדימה או השפעה מעשית למשקיע.
+(אסור בשום אופן לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
 
 Today is {day_name}, Date: {date_str}.
 
@@ -947,9 +928,9 @@ Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION & MANDATORY SOURCE ASSIGNMENT:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion followed by an operational outlook line.
+2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion. (אסור לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
 3. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-4. **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Prioritize geopolitical, macroeconomic, and TASE developments. Must explicitly end with `(מקור: Bizportal)`.
+4. **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1011,15 +992,15 @@ Return a valid JSON object with exactly these 5 keys:
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
 Output a valid JSON object ONLY.
 
-🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
+🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-3. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
-   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines from https://il.investing.com/ provided below. Each item must accurately include its original title, link, and a clean professional summary **WITHOUT any conclusion or "לסיכום"**.
+3. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a newline and a separate summary line starting with "לסיכום:". (אסור בשופן לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
+4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc` WITHOUT any conclusion or "לסיכום".
 
 Today is {day_name}, Date: {date_str}.
 
---- Investing.com Headlines (https://il.investing.com/) ---
+--- Investing.com Headlines ---
 {investing_news}
 
 --- Israeli Market Headlines (Bizportal) ---
@@ -1393,7 +1374,7 @@ if __name__ == "__main__":
         ):
             us_news_text = (
                 f"{us_market_news} (מקור: Google News RSS)<br>לסיכום: השווקים"
-                " הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט.<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>מעקב אחר תשואות אגרות החוב ל-10 שנים ימשיך להוות מצפן מרכזי לסנטימנט המשקיעים."
+                " הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
             )
 
         il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
@@ -1409,13 +1390,13 @@ if __name__ == "__main__":
                 ]
                 il_news_text = (
                     "<br>".join(il_lines)
-                    + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו.<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>התנודתיות בשקל מול הדולר משפיעה ישירות על רווחיות החברות הדואליות בבורסה בתל אביב."
+                    + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו."
                 )
             else:
                 il_news_text = (
                     "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור:"
                     " Bizportal)<br>לסיכום: הבורסה בתל אביב מתנהלת בהתאם למצב"
-                    " הביטחוני והכלכלי.<br><strong>מבט קדימה והשפעה אופרטיבית:</strong><br>מומלץ לשמור על רמת נזילות גבוהה בתקופות של אי-ודאות מקומית."
+                    " הביטחוני והכלכלי."
                 )
 
         ai_insights["US_MARKET_NEWS"] = us_news_text
