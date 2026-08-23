@@ -1,26 +1,67 @@
 {
-    "long_term_stocks": "Apple (AI and foldable iPhone push), Alibaba (AI‑funded expansion), Google (potential Marvel acquisition), Salesforce (strategic buy‑back) – all indicated by multi‑billion‑dollar moves and long‑term tech trends.",
-    "swing_stocks": "USD versus emerging market currencies (per BCA), Bitcoin (momentum above $76K), oil‑related gasoline pricing ($4.11/gal) and any short‑term fallout from US debt‑risk commentary.",
-    "market_news": "US headlines focus on geopolitical tension, USD outlook tied to Treasury yields and Fed credibility, AI-driven tech upgrades and a Bitcoin rally, while Israeli headlines highlight strong equity performance, AI funding, major M&A activity and a warning on US debt risk.",
-    "CATALYST_EARNINGS": "Upcoming earnings from Salesforce (post‑acquisition integration) and other AI‑focused firms could validate current price action.",
-    "CATALYST_MONETARY": "Fed policy credibility and Treasury yield trajectory will drive USD strength and broader market risk appetite.",
-    "CATALYST_HARDWARE": "Apple’s foldable iPhone roadmap and potential Marvel‑Google deal represent hardware‑level innovation triggers.",
-    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, limit position size in high‑volatility assets (BTC, USD short), and use stop‑losses aligned with recent support levels.",
-    "ACTION_RECOMMENDATIONS_TEXT": "Consider overweighting AI‑centric tech stocks for the long term, take selective short positions on USD versus resilient currencies, and keep a modest tactical allocation to Bitcoin while monitoring RSI extremes.",
-    "ai_updated_at": "23.08.2026 | 12:30",
-    "SP500_ANALYSIS": "Mixed signals – AI upgrades support growth stocks, but Fed credibility doubts and debt‑risk warnings could pressure valuation multiples.",
-    "NASDAQ_ANALYSIS": "Tech‑heavy bias reinforced by Apple and Alibaba AI news; short‑term volatility possible from Bitcoin rally and Fed policy uncertainty.",
-    "DOW_ANALYSIS": "Traditional industrials may feel headwinds from geopolitical tension (Iran‑Pakistan) and potential sanctions‑related supply chain disruptions.",
-    "VIX_ANALYSIS": "Implied volatility likely elevated given divergent forces: bullish crypto momentum versus bearish debt‑risk commentary and currency concerns.",
-    "DXY_ANALYSIS": "BCA recommendation to sell USD suggests weakening DXY amid doubts about Treasury yields and Fed policy credibility; USD outlook tied to UST yields and policy consistency.",
-    "OIL_EXPLANATION": "US winter gasoline price set at $4.11 per gallon signals higher crude demand and potential upward pressure on oil prices, which may affect transportation and consumer cost indices.",
+    "long_term_stocks": [
+        "Apple (AAPL)",
+        "Alibaba (BABA)",
+        "Bitcoin (BTC)"
+    ],
+    "swing_stocks": [
+        "Apple (post‑AI upgrade news)",
+        "Alibaba (share placement announcement)"
+    ],
+    "market_news": {
+        "US": [
+            "Iran says Pakistan’s army chief to visit Tehran on Monday",
+            "Why does the USD outlook depend on UST and Fed policy credibility?",
+            "Could Canada fully supply the U.S. with aluminium?",
+            "ECB chief Lagarde ’ready to serve’ WEF, Swiss newspaper reports",
+            "Sell U.S. dollar versus these currencies, BCA says",
+            "Iran warns neighbours against joining U.S. sanctions as Hormuz stays closed",
+            "5 big analyst AI moves: Apple upgraded on foldable iPhone push, new AI strategy",
+            "Alibaba plans record $10.2 billion Hong Kong share sale to fund AI",
+            "Bitcoin surges past $76K with overbought RSI: Live levels",
+            "Alibaba plans $10 billion Hong Kong share placement to fund AI spending"
+        ],
+        "IL": [
+            "מנכ״ל אזורים: ״לרוכשים לוקח היום הרבה יותר זמן לסגור עסקה״",
+            "המניות חוגגות, האג״ח מזהירות - איזה שוק קורא נכון את הכלכלה?",
+            "פרסום ראשוןתביעה: YBOX מפרה הסכם ענק לקומבינציה בתל אביב",
+            "ריי דליו מזהיר: משבר החוב האמריקאי עלול להגיע בתוך שלוש שנים",
+            "רפי עמית מקבל בונוס על הנפקת אקסס - מה צפוי להיות שוויה?",
+            "המין האנושי איבד את הבכורה: רובוט רץ 100 מטר ב-9.39 שניות",
+            "סופרגז פאוור: ה-EBITDA עלה ב-66% ל-14.7 מיליון שקל",
+            "ה-eSIM מתחיל לנגוס בהכנסות הנדידה: כך משתנה שוק התקשורת של התיירים"
+        ]
+    },
+    "CATALYST_EARNINGS": "Alibaba’s upcoming share placement to fund AI spending could boost earnings visibility if the capital is deployed efficiently.",
+    "CATALYST_MONETARY": "Fed policy credibility and Treasury yield dynamics are the key monetary catalysts influencing USD strength and equity valuations.",
+    "CATALYST_HARDWARE": "Apple’s foldable iPhone push and new AI strategy act as a hardware‑driven catalyst for the broader tech sector.",
+    "RISK_MANAGEMENT_TEXT": "Maintain diversified exposure, limit position size in high‑volatility assets like Bitcoin, and use stop‑loss orders to protect against sudden macro‑driven moves. Monitor Fed statements and Treasury yield curves for early warning signals.",
+    "ACTION_RECOMMENDATIONS_TEXT": "Consider adding Apple and Alibaba on a swing‑trade basis, keep a modest long‑term allocation to Bitcoin for diversification, and reduce USD exposure in favor of ILS or other stable currencies pending further Fed guidance.",
+    "ai_updated_at": "23.08.2026 | 12:40",
+    "SP500_ANALYSIS": "The AI‑related upgrade of Apple and the broader focus on technology suggest a modest upside bias for the S&P 500, but the lingering concerns about U.S. debt sustainability (cited by Ray Dalio) add a counterweight.",
+    "NASDAQ_ANALYSIS": "NASDAQ‑heavy exposure to AI and semiconductor themes is reinforced by the Apple and Alibaba headlines, indicating potential short‑term strength, especially if earnings guidance remains positive.",
+    "DOW_ANALYSIS": "Industrial and materials exposure in the Dow may feel pressure from the broader macro‑uncertainty around U.S. Treasury yields and Fed credibility, as highlighted in the USD outlook piece.",
+    "VIX_ANALYSIS": "Mentions of overbought RSI on Bitcoin and geopolitical tension (Iran‑Pakistan visit, Hormuz closure) point to elevated volatility expectations, likely keeping the VIX modestly elevated.",
+    "DXY_ANALYSIS": "The headline questioning USD outlook tied to Treasury yields and Fed credibility, plus BCA’s recommendation to sell the dollar, signals a bearish bias for the DXY in the near term.",
+    "OIL_EXPLANATION": "",
     "GOLD_EXPLANATION": "",
-    "BTC_EXPLANATION": "Bitcoin breaking $76 K with an overbought RSI indicates strong short‑term momentum but also heightened risk of a rapid correction; crypto exposure should be sized cautiously.",
-    "US_MARKET_NEWS": "Iran‑Pakistan diplomatic move, US sanctions pressure on Hormuz, ECB chief comments, a BCA call to sell USD versus select currencies, concerns about US debt sustainability, and a Bitcoin surge past $76K; AI‑related upgrades for Apple and Alibaba’s $10.2 B Hong Kong share placement signal tech sector momentum.",
-    "IL_MARKET_NEWS": "Israeli market sees equities rally and bond caution, Salesforce’s $27 B share purchase of Salesforce, Marvel’s $12.2 B option to Google, US winter gasoline price set at $4.11 per gallon, YBOX legal issue, Ray Dalio warns of US debt crisis within three years, and a robotics breakthrough.",
-    "COMMUNITY_SENTIMENT": "Optimism around AI‑driven tech upgrades and large‑scale M&A coexists with caution over US debt sustainability, currency volatility, and geopolitical friction.",
-    "ANALYST_POINT_1": "AI and cloud investments (Apple, Alibaba, Google) remain primary growth catalysts for the next 12‑18 months.",
-    "ANALYST_POINT_2": "US fiscal and monetary uncertainty (Fed credibility, debt risk) is the dominant near‑term risk to equity valuations.",
-    "USD_ILS_EXPLANATION": "A weaker USD (per DXY) could lift ILS against the dollar, benefiting Israeli import‑dependent sectors but pressuring exporters; current Israeli market sentiment remains bullish on equities.",
+    "BTC_EXPLANATION": "Bitcoin’s surge past $76 K, driven by an overbought RSI, reflects strong speculative demand but also raises the risk of a short‑term correction if momentum fades.",
+    "US_MARKET_NEWS": [
+        "Why does the USD outlook depend on UST and Fed policy credibility?",
+        "Sell U.S. dollar versus these currencies, BCA says",
+        "5 big analyst AI moves: Apple upgraded on foldable iPhone push, new AI strategy",
+        "Alibaba plans record $10.2 billion Hong Kong share sale to fund AI",
+        "Bitcoin surges past $76K with overbought RSI: Live levels"
+    ],
+    "IL_MARKET_NEWS": [
+        "המניות חוגגות, האג״ח מזהירות - איזה שוק קורא נכון את הכלכלה?",
+        "ריי דליו מזהיר: משבר החוב האמריקאי עלול להגיע בתוך שלוש שנים",
+        "סופרגז פאוור: ה-EBITDA עלה ב-66% ל-14.7 מיליון שקל",
+        "ה-eSIM מתחיל לנגוס בהכנסות הנדידה: כך משתנה שוק התקשורת של התיירים"
+    ],
+    "COMMUNITY_SENTIMENT": "Overall sentiment appears cautiously optimistic on tech (Apple, Alibaba) but wary of macro‑risk (U.S. debt, Fed credibility, geopolitical tensions). Israeli market commentary shows a mix of bullish equity sentiment and caution on bond markets.",
+    "ANALYST_POINT_1": "Tech AI upgrades are the primary catalyst for upside in both U.S. and Israeli equity markets.",
+    "ANALYST_POINT_2": "Macro‑risk from U.S. debt sustainability and Fed policy credibility remains the dominant downside factor.",
+    "USD_ILS_EXPLANATION": "BCA’s call to sell the U.S. dollar against select currencies suggests that relative strength may shift toward the shekel, especially if Fed policy credibility weakens and Treasury yields rise, making the USD less attractive to investors.",
     "DXY_EXPLANATION": "The DXY measures the USD against a basket of major currencies; a sell signal indicates expectations of relative USD depreciation when Treasury yields rise without clear Fed guidance."
 }
