@@ -119,7 +119,7 @@ def fetch_us_market_news():
 
 
 def get_filtered_us_news(headlines):
-    """סינון חכם לחדשות ארה"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
+    """סינון חכם לחדשות ארה\"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
     us_market_drivers = [
         "Fed",
         "הפד",
@@ -163,7 +163,7 @@ def get_filtered_us_news(headlines):
 
 
 def get_filtered_israel_news(headlines):
-    """סינון חכם לחדשות ישראל - השארת חדשות כלכליות וגיאופוליטיות מקומיות בלבד"""
+    """סינון מחמיר לחדשות ישראל - מניעת זליגה לחדשות חוץ ודגש על הכלכלה המקומית בלבד"""
     local_mandatory = [
         "ישראל",
         "תל אביב",
@@ -177,63 +177,39 @@ def get_filtered_israel_news(headlines):
         "דיסקונט",
         "פועלים",
         "לאומי",
+        "מזרחי",
         "אלביט",
         "טבע",
         "נייס",
         "קמטק",
-    ]
-
-    geopolitical_keywords = [
-        "איראן",
-        "חיזבאללה",
-        "לבנון",
-        "חמאס",
-        "עזה",
-        "צבא",
-        'צה"ל',
-        "ביטחוני",
-        "מתיחות",
-        "הסלמה",
-        "תקיפה",
-        "מלחמה",
-        "הפסקת אש",
-        "הסכם",
-        "פיקוד העורף",
-        "טילים",
-        "יירוט",
-        "מדיני",
-    ]
-
-    foreign_markers = [
-        "הפד",
-        "פאוול",
-        "וול סטריט",
-        "נאסדק",
-        "ספמי",
-        "S&P",
-        'ארה"ב',
+        "אינפלציה בישראל",
     ]
 
     filtered = []
     for h in headlines:
         title = h.get("title", "")
-        is_geopolitical = any(g in title for g in geopolitical_keywords)
-
-        if "ריבית" in title and not any(
-            l in title for l in ["ישראל", "בנק ישראל", "שקל", "המקומית"]
-        ):
+        # פסילה מוחלטת של כותרות שמתרכזות בוול סטריט, הפד או חברות זרות ללא הקשר מקומי מובהק
+        if any(
+            f in title for f in ["וול סטריט", "הפד", "פאוול", "נאסדק", "S&P"]
+        ) and not any(l in title for l in ["ישראל", "תל אביב", 'ת"א', "הבורסה"]):
             continue
 
-        has_local = any(l in title for l in local_mandatory) or is_geopolitical
-        has_foreign = any(f in title for f in foreign_markers)
-
-        if has_foreign and not has_local:
-            continue
-
-        if has_local or not has_foreign:
+        if any(l in title for l in local_mandatory):
             filtered.append(h)
 
-    return filtered[:3] if filtered else headlines[:3]
+    # אם נמצאו חדשות מקומיות מובהקות, נחזיר אותן. אחרת נסנן את הלא רלוונטיות לחלוטין.
+    return (
+        filtered[:3]
+        if filtered
+        else [
+            h
+            for h in headlines
+            if not any(
+                x in h.get("title", "")
+                for x in ["וול סטריט", "הפד", "וולסטריט"]
+            )
+        ][:3]
+    )
 
 
 def fetch_investing_news():
@@ -487,9 +463,9 @@ def format_text_with_conclusion(text, prefix_num=None):
         explanation = explanation.strip() + " " + source_str
 
     if conclusion:
-        # תיקון הרווח הריקה המיותרת ל-<br> יחיד
+        # תיקון קריטי: שילוב "לסיכום:" באותה שורה אחרי רווח בודד ללא שורה ריקה מיותרת
         formatted_content = (
-            f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+            f"{explanation}<br><strong>לסיכום:</strong> {conclusion}"
         )
     else:
         formatted_content = explanation
@@ -966,7 +942,6 @@ Output a valid JSON object ONLY.
 Every single field below MUST contain:
 1. הסבר מקצועי מעמיק ומפורט.
 2. שורת סיכום המתחילה במפורש במילה "לסיכום:" ולאחריה תובענה חד-משמעית.
-(אסור בשום אופן לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1029,14 +1004,14 @@ Return a valid JSON object with exactly these 9 keys:
             )
 
             prompt2 = f"""
-אתה אנליסט שווקים בכיר בוול סטריט. עליך לספק ניתוחים מקצועיים ומעמיקים.
+אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION & MANDATORY SOURCE ASSIGNMENT:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
-2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion. (אסור לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
+2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
 3. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-4. **IL_MARKET_NEWS**: MUST use **ONLY** the Israeli Market Headlines from Bizportal provided below. Must explicitly end with `(מקור: Bizportal)`.
+4. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1101,8 +1076,8 @@ Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-3. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a newline and a separate summary line starting with "לסיכום:". (אסור בשופן לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
-4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל **סיכום מקיף, מעמיק ומלא של הכתבה** כך שקורא יוכל להבין היטב את כל הרעיון המרכזי והפרטים החשובים מבלי להיכנס לקישור (ללא ציון המילה "לסיכום" בשדה זה).
+3. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
+4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1443,7 +1418,7 @@ if __name__ == "__main__":
         is_ai_time = is_manual or is_scheduled_ai_time
         is_yahoo_only = not is_ai_time
 
-        # --- שליפת חדשות וסינון חכם ---
+        # --- שליפת חדשות וסינון מחמיר ---
         us_news_raw = fetch_us_market_news()
         safe_us_headlines = get_filtered_us_news(us_news_raw)
         us_market_news_text = (
@@ -1532,13 +1507,13 @@ if __name__ == "__main__":
                 ]
                 il_news_text = (
                     "<br>".join(il_lines)
-                    + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו."
+                    + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות כלכליות מקומיות."
                 )
             else:
                 il_news_text = (
                     "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור:"
                     " Bizportal)<br>לסיכום: הבורסה בתל אביב מתנהלת בהתאם למצב"
-                    " הביטחוני והכלכלי."
+                    " הכלכלי המקומי."
                 )
 
         ai_insights["US_MARKET_NEWS"] = us_news_text
