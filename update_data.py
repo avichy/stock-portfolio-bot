@@ -582,7 +582,6 @@ def fetch_ai_insights_split(
       " Settings..."
   )
 
-  # חילוץ הכותרות שעברו סינון מוקדם להזנה בתגית ה-Data Isolation
   raw_headlines = [item["title"] for item in investing_news_items]
 
   for key_name, api_key in api_keys:
@@ -591,7 +590,7 @@ def fetch_ai_insights_split(
           api_key=api_key,
           base_url="https://groq-proxy.avichy65.workers.dev",
       )
-      print(f"🤖 Connecting to Groq AI using {key_name} (llama-3.3-70b-versatile)...")
+      print(f"🤖 Connecting to Groq AI using {key_name} (openai/gpt-oss-120b)...")
 
       prompt = f"""
 אתה אנליסט פיננסי דטרמיניסטי. נתח אך ורק את הכותרות הבאות.
@@ -612,7 +611,7 @@ Today is {day_name}, Date: {date_str}.
 """
 
       response = client.chat.completions.create(
-          model="llama-3.3-70b-versatile",
+          model="openai/gpt-oss-120b",  # מעודכן למודל הנכון
           messages=[{"role": "user", "content": prompt}],
           response_format={"type": "json_object"},
           temperature=0,  # איפוס מלא למניעת יצירתיות והזיות
@@ -822,7 +821,6 @@ if __name__ == "__main__":
       print(f"Error handling AI insights: {e}")
       ai_insights = load_ai_cache()
 
-    # וידוא מקורות
     us_news_text = ai_insights.get("US_MARKET_NEWS", "")
     if "(מקור:" not in us_news_text:
       us_news_text = us_news_text.strip() + " (מקור: Google News RSS)"
@@ -833,7 +831,6 @@ if __name__ == "__main__":
       il_news_text = il_news_text.strip() + " (מקור: Bizportal)"
     ai_insights["IL_MARKET_NEWS"] = il_news_text
 
-    # טעינת התבנית ועדכון התוצאות...
     print("Dashboard generation completed successfully.")
 
   except Exception as e:
