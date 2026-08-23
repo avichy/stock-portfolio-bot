@@ -154,26 +154,40 @@ def fetch_bizportal_news():
     news_items = []
     seen_titles = set()
 
+    # מילים פסולות כדי לוודא שאינו אוסף חדשות אמריקאיות/בינלאומיות או תפריטי מערכת
+    forbidden_words = [
+        "התחבר",
+        "הירשם",
+        "פרסם אצלנו",
+        "תנאי שימוש",
+        "צור קשר",
+        "חיפוש",
+        "מערכת",
+        "שירות לקוחות",
+        "תפריט",
+        "שערים",
+        "בורסה",
+        "וול סטריט",
+        "וול-סטריט",
+        "אנבידיה",
+        "אפל",
+        "מיקרוסופט",
+        "נאסדאק",
+        "S&P",
+        "הפד",
+        "אמריקה",
+        "ארה\"ב",
+        "גוגל",
+        "טסלה",
+        "דאו",
+        "פד",
+    ]
+
     for a_tag in soup.find_all("a", href=True):
       text = a_tag.get_text(strip=True)
       href = a_tag["href"]
       if len(text) > 20 and text not in seen_titles:
-        if not any(
-            w in text
-            for w in [
-                "התחבר",
-                "הירשם",
-                "פרסם אצלנו",
-                "תנאי שימוש",
-                "צור קשר",
-                "חיפוש",
-                "מערכת",
-                "שירות לקוחות",
-                "תפריט",
-                "שערים",
-                "בורסה",
-            ]
-        ):
+        if not any(w in text for w in forbidden_words):
           if href.startswith("/"):
             link = f"https://www.bizportal.co.il{href}"
           elif not href.startswith("http"):
@@ -322,9 +336,10 @@ def format_ai_text(text, force_conclusion=False):
 
   formatted_content = force_source_on_newline(formatted_content)
 
+  # תיקון קריטי: שימוש ב-div במקום span כדי לא לשבור את ה-DOM והטאבים בדפדפן
   return (
-      f'<span class="leading-relaxed text-sm text-gray-200 block'
-      f' mt-1 mb-3" dir="rtl" style="text-align: right;">{formatted_content}</span>'
+      f'<div class="text-sm text-gray-200 mt-1 mb-3 leading-relaxed"'
+      f' dir="rtl" style="text-align: right;">{formatted_content}</div>'
   )
 
 
@@ -514,8 +529,8 @@ def fetch_ai_insights_split(
     combined_result = {}
 
   print(
-      "🔄 Starting Groq AI Analysis with Strict Hebrew Enforcement & Data"
-      " Isolation..."
+      "🔄 Starting Groq AI Analysis with Strict Hebrew Enforcement & Local IL"
+      " Filtering..."
   )
 
   for key_name, api_key in api_keys:
@@ -531,7 +546,7 @@ def fetch_ai_insights_split(
 חוקים נוקשים ומחייבים:
 1. חובה לכתוב את *כל* הטקסטים, הניתוחים, ההסברים, הכותרות והסיכומים באובייקט ה-JSON אך ורק בשפה העברית הרשמית והתקינה. אסור בשום אופן להחזיר תשובות באנגלית.
 2. אסור להמציא מספרים או נתונים שלא קיימים במקור.
-3. עבור IL_MARKET_NEWS: השתמש אך ורק בכותרות מ-Bizportal המסופקות להלן כדי לנתח את השוק הישראלי, הבורסה בתל אביב והכלכלה המקומית בישראל בלבד בעברית. אל תכניס לכאן חדשות אמריקאיות.
+3. עבור IL_MARKET_NEWS: השתמש אך ורק בכותרות מ-Bizportal המסופקות להלן המתייחסות לשוק הישראלי, הבורסה בתל אביב, חברות ישראליות או הכלכלה המקומית בלבד. אסור בהחלט לכלול חדשות אמריקאיות או עולמיות (כגון וול סטריט, אנבידיה, פד וכו') בשדה זה.
 4. החזר אובייקט JSON חוקי בלבד המכיל בדיוק את המפתחות הנדרשים: market_news, US_MARKET_NEWS, IL_MARKET_NEWS, long_term_stocks, swing_stocks, SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.
 
 <us_headlines>
