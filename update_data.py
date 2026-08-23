@@ -92,7 +92,10 @@ def fetch_us_market_news():
     """שליפת חדשות שוק אמריקאי בזמן אמת מ-Google News RSS (עוקף חסימות Cloudflare)"""
     try:
         query = "Wall Street stock market S&P 500 Nasdaq economy breaking news"
-        url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+        # 🛠️ תיקון: קידוד נכון של המחרוזת למניעת שגיאת control characters ב-URL
+        encoded_query = urllib.parse.quote_plus(query)
+        url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
+        
         feed = feedparser.parse(url)
         news_items = []
 
@@ -800,7 +803,7 @@ def fetch_ai_insights_split(
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 1 using {key_name} (llama-3.3-70b-versatile)...")
+            print(f"🤖 Connecting to Groq AI Part 1 using {key_name} (llama-3.1-70b-versatile)...")
 
             prompt1 = f"""
 אתה אנליסט פיננסי ומאקרו-כלכלי בכיר. עליך לספק ניתוחים מקצועיים, מעמיקים, מנומקים ומפורטים היטב בעברית. אסור לתת תשובות קצרות או שבלוניות.
@@ -831,7 +834,7 @@ Return a valid JSON object with exactly these 9 keys:
 """
 
             response1 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-70b-versatile",
                 messages=[{"role": "user", "content": prompt1}],
                 response_format={"type": "json_object"},
                 temperature=0.3,
@@ -861,7 +864,7 @@ Return a valid JSON object with exactly these 9 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 2 using {key_name} (llama-3.3-70b-versatile)...")
+            print(f"🤖 Connecting to Groq AI Part 2 using {key_name} (llama-3.1-70b-versatile)...")
 
             prompt2 = f"""
 אתה אנליסט שווקים בכיר בוול סטריט. עליך לספק ניתוחים מקצועיים ומעמיקים.
@@ -894,7 +897,7 @@ Return a valid JSON object with exactly these 5 keys:
 """
 
             response2 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-70b-versatile",
                 messages=[{"role": "user", "content": prompt2}],
                 response_format={"type": "json_object"},
                 temperature=0.3,
@@ -924,7 +927,7 @@ Return a valid JSON object with exactly these 5 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 3 using {key_name} (llama-3.3-70b-versatile)...")
+            print(f"🤖 Connecting to Groq AI Part 3 using {key_name} (llama-3.1-70b-versatile)...")
 
             prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
@@ -960,7 +963,7 @@ Return a valid JSON object with exactly these 8 keys:
 """
 
             response3 = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-70b-versatile",
                 messages=[{"role": "user", "content": prompt3}],
                 response_format={"type": "json_object"},
                 temperature=0.3,
