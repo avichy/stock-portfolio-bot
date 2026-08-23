@@ -275,7 +275,6 @@ def format_text_with_conclusion(text, prefix_num=None):
         text = str(text)
 
     text = text.strip()
-    # המרת תווי \n גולמיים לתגיות HTML תקינות
     text = text.replace("\\n", "<br>").replace("\n", "<br>")
 
     if text.startswith("[") and text.endswith("]"):
@@ -996,7 +995,7 @@ Output a valid JSON object ONLY.
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
 3. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a newline and a separate summary line starting with "לסיכום:". (אסור בשופן לכלול את הביטוי "מבט קדימה והשפעה אופרטיבית").
-4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc` WITHOUT any conclusion or "לסיכום".
+4. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל **סיכום מקיף, מעמיק ומלא של הכתבה** כך שקורא יוכל להבין היטב את כל הרעיון המרכזי והפרטים החשובים מבלי להיכנס לקישור (ללא ציון המילה "לסיכום" בשדה זה).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1306,7 +1305,7 @@ def build_market_news_html(market_news_list):
         card_html = f"""
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">{p_title}</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה: <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
+            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="{p_link}" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">{p_link}</a></p>
             <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br>{formatted_desc}</p>
         </div>
         """
