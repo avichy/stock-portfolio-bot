@@ -1,17 +1,17 @@
-import base64
-from datetime import datetime
-import json
 import os
+import json
+import base64
 import re
 import time
 import traceback
-import urllib.parse
 import urllib.request
+import urllib.parse
 import xml.etree.ElementTree as ET
-import feedparser
+from datetime import datetime
 import pytz
 import requests
 from bs4 import BeautifulSoup
+import feedparser
 from groq import Groq
 
 AI_CACHE_FILE = "ai_cache.json"
@@ -67,7 +67,9 @@ def load_portfolio_buys():
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 file_data = response.json()
-                content = base64.b64decode(file_data["content"]).decode("utf-8")
+                content = base64.b64decode(file_data["content"]).decode(
+                    "utf-8"
+                )
                 parsed = json.loads(content)
                 if isinstance(parsed, dict):
                     return parsed
@@ -94,7 +96,7 @@ def fetch_us_market_news():
         query = "Wall Street stock market S&P 500 Nasdaq economy breaking news"
         encoded_query = urllib.parse.quote_plus(query)
         url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
-        
+
         feed = feedparser.parse(url)
         news_items = []
 
@@ -114,12 +116,12 @@ def fetch_us_market_news():
 
 
 def fetch_investing_news():
-    """שליפת חדשות פיננסיות וגיאופוליטיות עבור שלב 8 מ-https://il.investing.com/ דרך פידי ה-RSS שלהם"""
+    """שליפת חדשות פיננסיות וגיאופוליטיות מ-Investing.com דרך פידי ה-RSS שלהם"""
     try:
         rss_urls = [
             "https://il.investing.com/rss/news.rss",
             "https://www.investing.com/rss/news.rss",
-            "https://www.investing.com/rss/stock_market.rss"
+            "https://www.investing.com/rss/stock_market.rss",
         ]
         news_items = []
         seen_titles = set()
@@ -128,11 +130,15 @@ def fetch_investing_news():
             feed = feedparser.parse(url)
             for entry in feed.entries[:10]:
                 title = entry.get("title", "")
-                summary = entry.get("summary", "") or entry.get("description", "")
+                summary = entry.get("summary", "") or entry.get(
+                    "description", ""
+                )
                 link = entry.get("link", "https://il.investing.com/")
                 if title and title not in seen_titles:
                     seen_titles.add(title)
-                    news_items.append(f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}")
+                    news_items.append(
+                        f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}"
+                    )
 
         return (
             "\n".join(news_items[:12])
@@ -147,37 +153,53 @@ def fetch_investing_news():
 def fetch_bizportal_news():
     url = "https://www.bizportal.co.il/"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            " (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+        ),
+        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7",
     }
     try:
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code != 200:
             return []
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
+
+        soup = BeautifulSoup(response.text, "html.parser")
         news_items = []
         seen_titles = set()
-        
-        for a_tag in soup.find_all('a', href=True):
+
+        for a_tag in soup.find_all("a", href=True):
             text = a_tag.get_text(strip=True)
-            href = a_tag['href']
+            href = a_tag["href"]
             if len(text) > 25 and text not in seen_titles:
-                if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש", "מערכת", "שירות לקוחות", "תפריט"]):
-                    if href.startswith('/'):
+                if not any(
+                    w in text
+                    for w in [
+                        "התחבר",
+                        "הירשם",
+                        "פרסם אצלנו",
+                        "תנאי שימוש",
+                        "צור קשר",
+                        "חיפוש",
+                        "מערכת",
+                        "שירות לקוחות",
+                        "תפריט",
+                    ]
+                ):
+                    if href.startswith("/"):
                         link = f"https://www.bizportal.co.il{href}"
-                    elif not href.startswith('http'):
+                    elif not href.startswith("http"):
                         link = f"https://www.bizportal.co.il/{href}"
                     else:
                         link = href
-                        
+
                     seen_titles.add(text)
-                    news_items.append({
-                        "title": text,
-                        "link": link,
-                        "source": "Bizportal"
-                    })
+                    news_items.append(
+                        {"title": text, "link": link, "source": "Bizportal"}
+                    )
         return news_items[:15]
     except Exception as e:
         print(f"Warning: Error fetching Bizportal: {e}")
@@ -247,7 +269,6 @@ def force_source_on_newline(text):
 
 
 def format_text_with_conclusion(text, prefix_num=None):
-    """משמש רק לשלבים 1, 3, 6, 7 שבהם נדרש סיכום תקני ומסודר"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -298,13 +319,13 @@ def format_text_with_conclusion(text, prefix_num=None):
                 r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
             ).strip()
 
-    explanation = re.sub(r'\s*\n+\s*', ' ', explanation).strip()
-    conclusion = re.sub(r'\s*\n+\s*', ' ', conclusion).strip()
-    
-    explanation = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', explanation)
-    explanation = re.sub(r'מקור:\s*.*?(?=<|$)', '', explanation)
-    conclusion = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', conclusion)
-    conclusion = re.sub(r'מקור:\s*.*?(?=<|$)', '', conclusion)
+    explanation = re.sub(r"\s*\n+\s*", " ", explanation).strip()
+    conclusion = re.sub(r"\s*\n+\s*", " ", conclusion).strip()
+
+    explanation = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", explanation)
+    explanation = re.sub(r"מקור:\s*.*?(?=<|$)", "", explanation)
+    conclusion = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", conclusion)
+    conclusion = re.sub(r"מקור:\s*.*?(?=<|$)", "", conclusion)
 
     explanation = re.sub(r"(^|<br>)\s*;\s*", r"\1", explanation)
     conclusion = re.sub(r"(^|<br>)\s*;\s*", r"\1", conclusion)
@@ -329,8 +350,8 @@ def format_text_with_conclusion(text, prefix_num=None):
 
     conclusion = re.sub(r"\(מקור\s*:[^)]+\)", "", conclusion).strip()
 
-    explanation = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', explanation)
-    conclusion = re.sub(r'\s+(\d+\.\s+)', r'<br>\1', conclusion)
+    explanation = re.sub(r"\s+(\d+\.\s+)", r"<br>\1", explanation)
+    conclusion = re.sub(r"\s+(\d+\.\s+)", r"<br>\1", conclusion)
 
     if prefix_num is not None:
         explanation = re.sub(r"^\d+[\.\)]\s*", "", explanation).strip()
@@ -342,7 +363,9 @@ def format_text_with_conclusion(text, prefix_num=None):
         explanation = explanation.strip() + " " + source_str
 
     if conclusion:
-        formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+        formatted_content = (
+            f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+        )
     else:
         formatted_content = explanation
 
@@ -355,25 +378,7 @@ def format_text_with_conclusion(text, prefix_num=None):
     )
 
 
-def format_simple_text(text):
-    """משמש לכל שאר השלבים שבהם אין צורך במבנה 'לסיכום'"""
-    if isinstance(text, list):
-        text = " ".join(str(item) for item in text)
-    elif not isinstance(text, str):
-        text = str(text)
-
-    text = text.strip()
-    text = format_numbers_in_text(text)
-    text = force_source_on_newline(text)
-
-    return (
-        f'<span class="leading-relaxed text-sm text-gray-200 block'
-        f' mt-1 mb-3">{text}</span>'
-    )
-
-
 def format_news_description(text):
-    """עיצוב מדויק לשלב 8: ללא סיכום, רק טקסט נקי תחת 'סיכום הכתבה:'"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
@@ -385,8 +390,20 @@ def format_news_description(text):
     if source_str:
         text = text.replace(source_str, "").strip()
 
-    cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
-    cleaned = re.sub(r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE).strip()
+    cleaned = (
+        text.replace("{", "")
+        .replace("}", "")
+        .replace("[", "")
+        .replace("]", "")
+        .replace('"', "")
+        .replace("'", "")
+    )
+    cleaned = re.sub(
+        r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
     cleaned = re.sub(r"לסיכום.*$", "", cleaned, flags=re.IGNORECASE).strip()
 
     cleaned = format_numbers_in_text(cleaned)
@@ -404,7 +421,10 @@ def format_analyst_text(text):
     if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
         text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים."
     if "לסיכום" not in str(text):
-        text = str(text).strip() + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
+        text = (
+            str(text).strip()
+            + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
+        )
     return format_text_with_conclusion(text, prefix_num=None)
 
 
@@ -425,7 +445,7 @@ LT_STOCKS_META = [
     {
         "ticker": "JPM",
         "name": "JPMorgan Chase & Co.",
-        "desc": "בנקאות מסחרית והשקעות מובילה בארה\"ב ובעולם (סקטור הפיננסים).",
+        "desc": 'בנקאות מסחרית והשקעות מובילה בארה"ב ובעולם (סקטור הפיננסים).',
         "news": "תוצאות חזקות וניהול סיכונים קפדני תחת סביבת ריבית משתנה, עוגן חזק בתיק.",
         "why_invest": "ניהול פיננסי מעולה ומאזן חסון המייצרים תשואות עקביות בכל מצב שוק.",
     },
@@ -499,7 +519,7 @@ SW_STOCKS_META = [
         "ticker": "AMD",
         "name": "Advanced Micro Devices",
         "desc": "פיתוח מעבדים, שבבים וכרטיסים גרפיים לשוק הטכנולוגיה.",
-        "news": "תנועות מחיר חדות סביב השקות מוצרים ודו\"חות רבעוניים בסקטור השבבים.",
+        "news": 'תנועות מחיר חדות סביב השקות מוצרים ודו"חות רבעוניים בסקטור השבבים.',
         "why_invest": "חשיפה ישירה לשוק השבבים וה-AI המייצרת מומנטום מסחר אטרקטיבי.",
     },
     {
@@ -786,7 +806,9 @@ def fetch_ai_insights_split(
         cached = load_ai_cache()
         return cached if cached else {}
 
-    safe_bizportal_headlines = bizportal_headlines[:8] if bizportal_headlines else []
+    safe_bizportal_headlines = (
+        bizportal_headlines[:8] if bizportal_headlines else []
+    )
 
     market_summary = {
         t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
@@ -795,7 +817,10 @@ def fetch_ai_insights_split(
 
     biz_formatted = (
         "\n".join(
-            [f"- Title: {h['title']} | Source: {h.get('source', 'Bizportal')} | Link: {h['link']}" for h in safe_bizportal_headlines]
+            [
+                f"- Title: {h['title']} | Source: {h.get('source', 'Bizportal')} | Link: {h['link']}"
+                for h in safe_bizportal_headlines
+            ]
         )
         if safe_bizportal_headlines
         else "No Israeli headlines."
@@ -805,7 +830,7 @@ def fetch_ai_insights_split(
     if not isinstance(combined_result, dict):
         combined_result = {}
 
-    # --- PART 1: Indices & Macro Explanations (שלב 1 - כולל סיכום) ---
+    # --- PART 1: Indices & Macro Explanations ---
     print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
     for key_name, api_key in api_keys:
         try:
@@ -813,7 +838,10 @@ def fetch_ai_insights_split(
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 1 using {key_name} (openai/gpt-oss-120b)...")
+            print(
+                f"🤖 Connecting to Groq AI Part 1 using {key_name}"
+                " (openai/gpt-oss-120b)..."
+            )
 
             prompt1 = f"""
 אתה אנליסט פיננסי ומאקרו-כלכלי בכיר. עליך לספק ניתוחים מקצועיים, מעמיקים, מנומקים ומפורטים היטב בעברית.
@@ -858,7 +886,11 @@ Return a valid JSON object with exactly these 9 keys:
             break
         except Exception as e:
             print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+            if (
+                "429" in str(e)
+                or "rate_limit_exceeded" in str(e)
+                or "413" in str(e)
+            ):
                 print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
@@ -866,7 +898,7 @@ Return a valid JSON object with exactly these 9 keys:
 
     time.sleep(3)
 
-    # --- PART 2: News, Sentiment & Analyst Points (שלב 6, שלב 7) ---
+    # --- PART 2: News, Sentiment & Analyst Points ---
     print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
     for key_name, api_key in api_keys:
         try:
@@ -874,7 +906,10 @@ Return a valid JSON object with exactly these 9 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 2 using {key_name} (openai/gpt-oss-120b)...")
+            print(
+                f"🤖 Connecting to Groq AI Part 2 using {key_name}"
+                " (openai/gpt-oss-120b)..."
+            )
 
             prompt2 = f"""
 אתה אנליסט שווקים בכיר בוול סטריט. עליך לספק ניתוחים מקצועיים ומעמיקים.
@@ -883,7 +918,7 @@ Output a valid JSON object ONLY.
 🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text in the analysis.
 2. NO FABRICATION: Do not invent news.
-3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי בשדות הסנטימנט והאנליסטים - שלב 6 ו-7): 
+3. MANDATORY CONCRETE CONCLUSION (חובה סיכום חד וקונקרטי בשדות הסנטימנט והאנליסטים): 
    - Every single analysis field MUST include a clear explanation followed explicitly by the word "לסיכום:" and a specific concluding sentence at the end.
 4. STRICT SOURCE SEPARATION & PRIORITIZATION (CRITICAL):
    - **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Focus strictly on Wall Street, US indices, US macro, and global trade. Must explicitly mention Google News / מקור: Google News RSS. **NEVER leave this empty.**
@@ -921,7 +956,11 @@ Return a valid JSON object with exactly these 5 keys:
             break
         except Exception as e:
             print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+            if (
+                "429" in str(e)
+                or "rate_limit_exceeded" in str(e)
+                or "413" in str(e)
+            ):
                 print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
@@ -929,7 +968,7 @@ Return a valid JSON object with exactly these 5 keys:
 
     time.sleep(3)
 
-    # --- PART 3: Stocks, Catalysts & Strategy (שלב 3 - דרימים / קטליסטים כולל סיכום, שלב 8 חדשות מניות מ-Investing) ---
+    # --- PART 3: Stocks, Catalysts & Strategy ---
     print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
     for key_name, api_key in api_keys:
         try:
@@ -937,7 +976,10 @@ Return a valid JSON object with exactly these 5 keys:
                 api_key=api_key,
                 base_url="https://groq-proxy.avichy65.workers.dev",
             )
-            print(f"🤖 Connecting to Groq AI Part 3 using {key_name} (openai/gpt-oss-120b)...")
+            print(
+                f"🤖 Connecting to Groq AI Part 3 using {key_name}"
+                " (openai/gpt-oss-120b)..."
+            )
 
             prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
@@ -946,10 +988,10 @@ Output a valid JSON object ONLY.
 🚨 STRICT ZERO-HALLUCINATION GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. ZERO-HALLUCINATION ON NEWS & STOCKS: Do not invent catalysts or corporate news.
-3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`. (No forced "לסיכום" in stock descriptions).
-4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE` - שלב 3): Write professional analytical paragraphs ending with a sharp "לסיכום:".
-5. `market_news` (שלב 8): Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
-   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines from https://il.investing.com/ provided below. **PRIORITY 1**: You MUST prioritize and extract news items related to **geopolitical events, global conflicts, security developments, and major macroeconomic shifts** that impact the markets, alongside general stock market news. Each item must accurately include its original title, link, and a clean professional summary **WITHOUT any conclusion or "לסיכום"**.
+3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with a sharp "לסיכום:".
+5. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
+   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines from https://il.investing.com/ provided below. Each item must accurately include its original title, link, and a clean professional summary **WITHOUT any conclusion or "לסיכום"**.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -988,7 +1030,11 @@ Return a valid JSON object with exactly these 8 keys:
             break
         except Exception as e:
             print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
-            if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
+            if (
+                "429" in str(e)
+                or "rate_limit_exceeded" in str(e)
+                or "413" in str(e)
+            ):
                 print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
                 time.sleep(60)
             else:
@@ -1029,8 +1075,19 @@ sector_tickers_map = {
 }
 
 forbidden_stock_tickers = set(sector_tickers_map.values()).union({
-    "^GSPC", "^NDX", "^DJI", "^VIX", "DX-Y.NYB", "CL=F", "GC=F", "BTC-USD", "USDILS=X", "SPY", "QQQ"
+    "^GSPC",
+    "^NDX",
+    "^DJI",
+    "^VIX",
+    "DX-Y.NYB",
+    "CL=F",
+    "GC=F",
+    "BTC-USD",
+    "USDILS=X",
+    "SPY",
+    "QQQ",
 })
+
 
 def clean_stocks_list(stocks_list, default_meta):
     if not isinstance(stocks_list, list) or not stocks_list:
@@ -1043,14 +1100,27 @@ def clean_stocks_list(stocks_list, default_meta):
                 cleaned.append({
                     "ticker": t,
                     "name": s.get("name") or s.get("company") or t,
-                    "desc": s.get("desc") or s.get("description") or f"חברה מובילה ({t}) הפועלת בשוק הגלובלי.",
-                    "news": s.get("news") or s.get("rationale") or "עדכון שוטף וניתוח טכני של תנועת המחיר.",
-                    "why_invest": s.get("why_invest") or s.get("investment_reason") or "פוטנציאל תשואה חיובי בהתאם לנתונים הפונדמנטליים."
+                    "desc": s.get("desc")
+                    or s.get("description")
+                    or f"חברה מובילה ({t}) הפועלת בשוק הגלובלי.",
+                    "news": s.get("news")
+                    or s.get("rationale")
+                    or "עדכון שוטף וניתוח טכני של תנועת המחיר.",
+                    "why_invest": s.get("why_invest")
+                    or s.get("investment_reason")
+                    or "פוטנציאל תשואה חיובי בהתאם לנתונים הפונדמנטליים.",
                 })
         elif isinstance(s, str):
             t = s.strip().upper()
             if t and t not in forbidden_stock_tickers:
-                matched = next((item for item in default_meta if item.get("ticker") == t), None)
+                matched = next(
+                    (
+                        item
+                        for item in default_meta
+                        if item.get("ticker") == t
+                    ),
+                    None,
+                )
                 if matched:
                     cleaned.append(matched)
                 else:
@@ -1059,13 +1129,18 @@ def clean_stocks_list(stocks_list, default_meta):
                         "name": t,
                         "desc": f"חברה מובילה ({t}) המרכזת עניין בשווקים.",
                         "news": "מעקב שוטף אחר התפתחות המסחר והמומנטום.",
-                        "why_invest": "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
+                        "why_invest": "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי.",
                     })
     return cleaned if len(cleaned) >= 3 else default_meta
 
+
 cached_ai_init = load_ai_cache()
-init_lt = clean_stocks_list(cached_ai_init.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
-init_sw = clean_stocks_list(cached_ai_init.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
+init_lt = clean_stocks_list(
+    cached_ai_init.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META
+)
+init_sw = clean_stocks_list(
+    cached_ai_init.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META
+)
 
 base_market_tickers = list(
     set(
@@ -1119,7 +1194,9 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             ).strip().upper()
             if not ticker or ticker in forbidden_stock_tickers:
                 continue
-            name = s.get("name") or s.get("company") or s.get("title") or ticker
+            name = (
+                s.get("name") or s.get("company") or s.get("title") or ticker
+            )
             desc = (
                 s.get("desc")
                 or s.get("description")
@@ -1189,7 +1266,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
 
 
 def build_market_news_html(market_news_list):
-    """שלב 8: כותרת, קישור מתחתיו, ותחתיו הכיתוב 'סיכום הכתבה:' וטקסט הסיכום (ללא לסיכום)"""
     if not isinstance(market_news_list, list) or not market_news_list:
         return (
             '<div class="text-gray-400 text-right" dir="rtl">אין חדשות שוק זמינות'
@@ -1286,16 +1362,38 @@ if __name__ == "__main__":
             ai_insights = {}
 
         us_news_text = ai_insights.get("US_MARKET_NEWS", "")
-        if not us_news_text or len(us_news_text.strip()) < 10 or "Google News" not in us_news_text:
-            us_news_text = f"{us_market_news} (מקור: Google News RSS)<br>לסיכום: השווקים הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
+        if (
+            not us_news_text
+            or len(us_news_text.strip()) < 10
+            or "Google News" not in us_news_text
+        ):
+            us_news_text = (
+                f"{us_market_news} (מקור: Google News RSS)<br>לסיכום: השווקים"
+                " הבינלאומיים מתמקדים בנתוני המאקרו והמומנטום בוול סטריט."
+            )
 
         il_news_text = ai_insights.get("IL_MARKET_NEWS", "")
-        if not il_news_text or len(il_news_text.strip()) < 10 or "Google News" in il_news_text:
+        if (
+            not il_news_text
+            or len(il_news_text.strip()) < 10
+            or "Google News" in il_news_text
+        ):
             if bizportal_headlines:
-                il_lines = [f"• {h['title']} (מקור: Bizportal)" for h in bizportal_headlines[:3]]
-                il_news_text = "<br>".join(il_lines) + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות ומדדי המאקרו."
+                il_lines = [
+                    f"• {h['title']} (מקור: Bizportal)"
+                    for h in bizportal_headlines[:3]
+                ]
+                il_news_text = (
+                    "<br>".join(il_lines)
+                    + "<br>לסיכום: השוק המקומי מושפע ישירות מהתפתחויות גיאופוליטיות"
+                    " ומדדי המאקרו."
+                )
             else:
-                il_news_text = "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור: Bizportal)<br>לסיכום: הבורסה בתל אביב מתנהלת בהתאם למצב הביטחוני והכלכלי."
+                il_news_text = (
+                    "אין עדכונים חדשותיים חדשים מ-Bizportal כרגע. (מקור:"
+                    " Bizportal)<br>לסיכום: הבורסה בתל אביב מתנהלת בהתאם למצב"
+                    " הביטחוני והכלכלי."
+                )
 
         ai_insights["US_MARKET_NEWS"] = us_news_text
         ai_insights["IL_MARKET_NEWS"] = il_news_text
@@ -1304,8 +1402,12 @@ if __name__ == "__main__":
         if not isinstance(market_news_data, list):
             market_news_data = []
 
-        new_lt = clean_stocks_list(ai_insights.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
-        new_sw = clean_stocks_list(ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
+        new_lt = clean_stocks_list(
+            ai_insights.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META
+        )
+        new_sw = clean_stocks_list(
+            ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META
+        )
 
         extra_tickers = []
         for s in new_lt + new_sw:
@@ -1415,7 +1517,11 @@ if __name__ == "__main__":
                     info.get("name") or fetched_price_data.get("name") or ticker
                 )
 
-                target_str = f"${format_num(fetched_target)}" if fetched_target > 0 else ""
+                target_str = (
+                    f"${format_num(fetched_target)}"
+                    if fetched_target > 0
+                    else ""
+                )
 
                 portfolio_js_list.append(
                     {
@@ -1499,7 +1605,8 @@ if __name__ == "__main__":
             "BTC_EXPLANATION": format_phase1_text(
                 ai_insights.get("BTC_EXPLANATION", "")
             ),
-            "US_MARKET_README": format_phase1_text(
+            # תיקון כאן: מפתח US_MARKET_NEWS תואם כעת בדיוק למה שמופיע בתבנית ה-HTML
+            "US_MARKET_NEWS": format_phase1_text(
                 ai_insights.get("US_MARKET_NEWS", "")
             ),
             "IL_MARKET_NEWS": format_phase1_text(
