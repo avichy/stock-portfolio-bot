@@ -14,6 +14,13 @@ from groq import Groq
 import pytz
 import requests
 
+# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)
+try:
+  import yfinance as yf
+except ImportError:
+  os.system("pip install yfinance")
+  import yfinance as yf
+
 AI_CACHE_FILE = "ai_cache.json"
 PORTFOLIO_FILE = "portfolio.json"
 TEMPLATE_FILE = "index.template.html"
@@ -677,90 +684,45 @@ SW_STOCKS_META = [
 
 
 def fetch_yahoo_direct(ticker):
+  """שליפת נתוני מניה מדויקים ומלאים באמצעות yfinance (עוקף חסימות API ישירות)"""
   clean_ticker = str(ticker).strip().upper()
-  headers = {
-      "User-Agent": (
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
-          " like Gecko) Chrome/120.0.0.0 Safari/537.36"
-      )
-  }
-
-  chart_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(clean_ticker)}?interval=1d&range=5d"
-  current_price = 0.0
-  prev_close = 0.0
   try:
-    resp = requests.get(chart_url, headers=headers, timeout=10)
-    if resp.status_code == 200:
-      res_json = resp.json()
-      result = res_json["chart"]["result"][0]
-      meta = result["meta"]
-      current_price = meta.get("regularMarketPrice") or meta.get(
-          "chartPreviousClose"
-      )
-      prev_close = meta.get("previousClose") or meta.get("chartPreviousClose")
+    t = yf.Ticker(clean_ticker)
+    
+    # שליפת נתונים מהירים (מחיר נוכחי וסגירה קודמת)
+    fi = t.fast_info
+    current_price = getattr(fi, 'last_price', None)
+    prev_close = getattr(fi, 'previous_close', None)
 
-      q = result["indicators"]["quote"][0]
-      closes = [c for c in q.get("closes", []) if c is not None]
-      if not current_price and closes:
-        current_price = closes[-1]
-      if not prev_close and len(closes) > 1:
-        prev_close = closes[-2]
-      elif not prev_close:
-        prev_close = current_price
+    # שליפת פרטים נוספים (יעד אנליסטים וטרום פתיחה) מתוך t.info
+    info = {}
+    try:
+      info = t.info
+    except Exception:
+      pass
+
+    if not current_price:
+      current_price = info.get("currentPrice") or info.get("regularMarketPrice") or info.get("previousClose", 0.0)
+    if not prev_close:
+      prev_close = info.get("previousClose") or current_price
+
+    if current_price and prev_close and prev_close > 0:
+      change = ((current_price - prev_close) / prev_close) * 100
+    else:
+      change = 0.0
+
+    target_mean = info.get("targetMeanPrice", 0.0) or 0.0
+    pre_market_price = info.get("preMarketPrice") or current_price
+
+    if current_price and current_price > 0:
+      return {
+          "price": round(float(current_price), 2),
+          "change": round(float(change), 2),
+          "target": float(target_mean) if target_mean else 0.0,
+          "pre_market": round(float(pre_market_price), 2),
+      }
   except Exception as e:
-    print(f"Direct Yahoo chart fetch error for {clean_ticker}: {e}")
-
-  if current_price and prev_close and prev_close > 0:
-    change = ((current_price - prev_close) / prev_close) * 100
-  else:
-    change = 0.0
-
-  target_mean = 0.0
-  pre_market_price = 0.0
-  summary_url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(clean_ticker)}?modules=price,financialData,defaultKeyStatistics"
-  try:
-    resp_sum = requests.get(summary_url, headers=headers, timeout=10)
-    if resp_sum.status_code == 200:
-      sum_json = resp_sum.json()
-      fin_result = sum_json.get("quoteSummary", {}).get("result", [{}])[0]
-
-      financial_data = fin_result.get("financialData", {})
-      target_obj = financial_data.get("targetMeanPrice", {})
-      if isinstance(target_obj, dict):
-        target_mean = target_obj.get("raw", 0.0)
-      elif isinstance(target_obj, (int, float)):
-        target_mean = float(target_obj)
-
-      if not target_mean or target_mean <= 0.0:
-        default_stats = fin_result.get("defaultKeyStatistics", {})
-        target_obj_2 = default_stats.get("targetMeanPrice", {})
-        if isinstance(target_obj_2, dict):
-          target_mean = target_obj_2.get("raw", 0.0)
-        elif isinstance(target_obj_2, (int, float)):
-          target_mean = float(target_obj_2)
-
-      price_module = fin_result.get("price", {})
-      pm_obj = price_module.get("preMarketPrice", {})
-      if isinstance(pm_obj, dict):
-        pre_market_price = pm_obj.get("raw", 0.0)
-      elif isinstance(pm_obj, (int, float)):
-        pre_market_price = float(pm_obj)
-  except Exception as e:
-    print(
-        f"Yahoo quoteSummary target/pre-market fetch error for {clean_ticker}:"
-        f" {e}"
-    )
-
-  if not pre_market_price or pre_market_price <= 0:
-    pre_market_price = current_price
-
-  if current_price and current_price > 0:
-    return {
-        "price": round(float(current_price), 2),
-        "change": round(float(change), 2),
-        "target": float(target_mean) if target_mean else 0.0,
-        "pre_market": round(float(pre_market_price), 2),
-    }
+    print(f"yfinance fetch error for {clean_ticker}: {e}")
 
   return None
 
