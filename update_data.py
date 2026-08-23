@@ -89,7 +89,7 @@ portfolio_buys = load_portfolio_buys()
 
 
 def fetch_us_market_news():
-    """שליפת חדשות שוק אמריקאי בזמן אמת מ-Google News RSS (עוקף חסימות Cloudflare)"""
+    """שליפת חדשות שוק אמריקאי עבור שלב 1 מ-Google News RSS"""
     try:
         query = "Wall Street stock market S&P 500 Nasdaq economy breaking news"
         encoded_query = urllib.parse.quote_plus(query)
@@ -113,6 +113,36 @@ def fetch_us_market_news():
         return "Failed to fetch US market news."
 
 
+def fetch_investing_news():
+    """שליפת חדשות פיננסיות וגיאופוליטיות עבור שלב 8 דרך פידי ה-RSS הרשמיים של Investing.com (עוקף חסימות)"""
+    try:
+        rss_urls = [
+            "https://www.investing.com/rss/news.rss",
+            "https://www.investing.com/rss/stock_market.rss"
+        ]
+        news_items = []
+        seen_titles = set()
+
+        for url in rss_urls:
+            feed = feedparser.parse(url)
+            for entry in feed.entries[:8]:
+                title = entry.get("title", "")
+                summary = entry.get("summary", "") or entry.get("description", "")
+                link = entry.get("link", "https://www.investing.com")
+                if title and title not in seen_titles:
+                    seen_titles.add(title)
+                    news_items.append(f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}")
+
+        return (
+            "\n".join(news_items[:12])
+            if news_items
+            else "No recent Investing.com news available."
+        )
+    except Exception as e:
+        print(f"Error fetching Investing news: {e}")
+        return "Failed to fetch Investing news."
+
+
 def fetch_bizportal_news():
     url = "https://www.bizportal.co.il/"
     headers = {
@@ -123,7 +153,6 @@ def fetch_bizportal_news():
     try:
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code != 200:
-            print(f"Failed to fetch Bizportal, status code: {response.status_code}")
             return []
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -152,35 +181,6 @@ def fetch_bizportal_news():
     except Exception as e:
         print(f"Warning: Error fetching Bizportal: {e}")
         return []
-
-
-def filter_hallucinations(text, headlines_list):
-    if not text or not isinstance(text, str):
-        return ""
-
-    headline_keywords = set()
-    for h in headlines_list:
-        title = h.get('title', '') if isinstance(h, dict) else str(h)
-        words = [w.strip(".,!?()[]{}<>:-") for w in title.split() if len(w.strip(".,!?()[]{}<>:-")) > 3]
-        headline_keywords.update(words)
-
-    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
-    valid_sentences = []
-
-    for sentence in sentences:
-        if any(k in sentence for k in ['לסיכום', 'מומלץ', 'תנודתיות', 'שוק', 'מגמה', 'מסחר', 'מדד', 'ישראל', 'תל אביב', 'בנק ישראל']):
-            valid_sentences.append(sentence)
-            continue
-
-        sentence_words = set(w.strip(".,!?()[]{}<>:-") for w in sentence.split() if len(w.strip(".,!?()[]{}<>:-")) > 3)
-        intersection = sentence_words.intersection(headline_keywords)
-        
-        if len(headline_keywords) == 0 or len(intersection) > 0 or "מקור:" in sentence:
-            valid_sentences.append(sentence)
-        else:
-            print(f"🛡️ Hallucination Filter: Omitted unverified sentence -> '{sentence[:40]}...'")
-
-    return " ".join(valid_sentences)
 
 
 def format_num(val, decimals=2):
@@ -340,7 +340,7 @@ def format_text_with_conclusion(text, prefix_num=None):
         explanation = explanation.strip() + " " + source_str
 
     if conclusion:
-        formatted_content = f"{explanation}<br><strong>לסיכום:</strong><br>{conclusion}"
+        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
     else:
         formatted_content = explanation
 
@@ -354,36 +354,51 @@ def format_text_with_conclusion(text, prefix_num=None):
 
 
 def format_news_description(text):
+    """עיצוב אחיד גם לתיאורי הכתבות בשלב 8 עם שורת רווח תקינה לפני הסיכום"""
     if isinstance(text, list):
         text = " ".join(str(item) for item in text)
     elif not isinstance(text, str):
         text = str(text)
 
-    cleaned = text.strip()
-    cleaned = (
-        cleaned.replace("{", "")
-        .replace("}", "")
-        .replace("[", "")
-        .replace("]", "")
-        .replace('"', "")
-        .replace("'", "")
-    )
+    text = text.strip()
+    source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
+    source_str = source_match.group(1) if source_match else ""
+    if source_str:
+        text = text.replace(source_str, "").strip()
 
-    cleaned = re.sub(
-        r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*",
-        "",
-        cleaned,
-        flags=re.IGNORECASE,
-    ).strip()
+    cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+    cleaned = re.sub(r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE).strip()
 
-    cleaned = re.sub(r'\s*\n+\s*', ' ', cleaned).strip()
-    cleaned = re.sub(r'\s*\(?מקור:[^\)]+\)?', '', cleaned)
-    cleaned = re.sub(r'מקור:\s*.*?(?=<|$)', '', cleaned)
+    explanation = cleaned
+    conclusion = ""
 
-    cleaned = format_numbers_in_text(cleaned)
-    cleaned = force_source_on_newline(cleaned)
+    if "לסיכום" in cleaned:
+        parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
+        explanation = parts[0].strip()
+        if len(parts) > 1:
+            conclusion = parts[1].strip()
 
-    return cleaned
+    explanation = re.sub(r'\s*\n+\s*', ' ', explanation).strip()
+    conclusion = re.sub(r'\s*\n+\s*', ' ', conclusion).strip()
+
+    if not conclusion:
+        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", explanation) if s.strip()]
+        if len(sentences) > 1:
+            conclusion = sentences[-1]
+            explanation = " ".join(sentences[:-1])
+
+    explanation = format_numbers_in_text(explanation)
+    conclusion = format_numbers_in_text(conclusion)
+
+    if source_str:
+        explanation = explanation.strip() + " " + source_str
+
+    if conclusion:
+        formatted_content = f"{explanation}<br><br><strong>לסיכום:</strong><br>{conclusion}"
+    else:
+        formatted_content = explanation
+
+    return force_source_on_newline(formatted_content)
 
 
 def format_phase1_text(text):
@@ -766,6 +781,7 @@ def fetch_ai_insights_split(
     date_str,
     day_name,
     us_market_news,
+    investing_news,
     bizportal_headlines,
     now_il_str,
 ):
@@ -805,7 +821,7 @@ def fetch_ai_insights_split(
             print(f"🤖 Connecting to Groq AI Part 1 using {key_name} (openai/gpt-oss-120b)...")
 
             prompt1 = f"""
-אתה אנליסט פיננסי ומאקרו-כלכלי בכיר. עליך לספק ניתוחים מקצועיים, מעמיקים, מנומקים ומפורטים היטב בעברית. אסור לתת תשובות קצרות או שבלוניות.
+אתה אנליסט פיננסי ומאקרו-כלכלי בכיר. עליך לספק ניתוחים מקצועיים, מעמיקים, מנומקים ומפורטים היטב בעברית.
 Output a valid JSON object ONLY.
 
 🚨 STRICT ZERO-HALLUCINATION & SOURCE SEPARATION GUIDELINES:
@@ -938,11 +954,12 @@ Output a valid JSON object ONLY.
 3. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
 4. PROFESSIONAL CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Write professional analytical paragraphs ending with a sharp, non-generic "לסיכום:".
 5. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`.
+   - **CRITICAL REQUIREMENT FOR `market_news`**: MUST use **ONLY** the Investing.com Headlines provided below. **PRIORITY 1**: You MUST prioritize and extract news items related to **geopolitical events, global conflicts, security developments, and major macroeconomic shifts** that impact the markets, alongside general stock market news. Each item must accurately include its original title, link, and a detailed summary ending with "לסיכום:".
 
 Today is {day_name}, Date: {date_str}.
 
---- US / Global Headlines (Google News RSS) ---
-{us_market_news}
+--- Investing.com Headlines (RSS) ---
+{investing_news}
 
 --- Israeli Market Headlines (Bizportal) ---
 {biz_formatted}
@@ -1191,7 +1208,7 @@ def build_market_news_html(market_news_list):
             item.get("news_link")
             or item.get("link")
             or item.get("url")
-            or "https://news.google.com"
+            or "https://www.investing.com"
         )
         p_title = (
             item.get("news_title")
@@ -1244,6 +1261,7 @@ if __name__ == "__main__":
         is_yahoo_only = not is_ai_time
 
         us_market_news = fetch_us_market_news()
+        investing_news = fetch_investing_news()
         bizportal_headlines = fetch_bizportal_news()
 
         try:
@@ -1257,6 +1275,7 @@ if __name__ == "__main__":
                     date_str,
                     day_name,
                     us_market_news,
+                    investing_news,
                     bizportal_headlines,
                     now_il_str,
                 )
