@@ -329,7 +329,6 @@ def format_pct_colored(val):
 def replace_dollar_word(text):
   if not isinstance(text, str):
     return str(text)
-  # החלפת מילת דולר בסימן דולר משמאל למספר ($X)
   text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"$\1", text, flags=re.IGNORECASE)
   return text
 
@@ -413,14 +412,16 @@ def format_text_with_conclusion(text, prefix_num=None):
   explanation = cleaned
   conclusion = ""
 
+  # פיצול מדויק לפי מילת המפתח "לסיכום" למניעת כפילויות
   if "לסיכום" in cleaned:
     parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
     explanation = parts[0].strip()
     if len(parts) > 1:
       conclusion = parts[1].strip()
-      conclusion = re.sub(
-          r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE
-      ).strip()
+
+  # הסרת מופעים נוספים של "לסיכום" אם נותרו בטקסט
+  explanation = re.sub(r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE).strip()
+  conclusion = re.sub(r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE).strip()
 
   explanation = re.sub(r"\s*<br>\s*", "<br>", explanation).strip()
   conclusion = re.sub(r"\s*<br>\s*", "<br>", conclusion).strip()
@@ -445,9 +446,6 @@ def format_text_with_conclusion(text, prefix_num=None):
     else:
       conclusion = "מומלץ לעקוב מקרוב אחר ההתפתחויות בשווקים."
 
-  explanation = re.sub(
-      r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
-  ).strip()
   conclusion = re.sub(
       r"^(|בנוסף|כמו כן|לפיכך|על כן|לכן)\s*[,:\-]*\s*", "", conclusion
   ).strip()
@@ -685,7 +683,6 @@ SW_STOCKS_META = [
 
 
 def fetch_yahoo_direct(ticker):
-  """שליפת נתוני מניה מדויקים ומלאים באמצעות yfinance (עוקף חסימות API ישירות)"""
   clean_ticker = str(ticker).strip().upper()
   try:
     t = yf.Ticker(clean_ticker)
