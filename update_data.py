@@ -14,7 +14,7 @@ from groq import Groq
 import pytz
 import requests
 
-# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)
+# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)[cite: 5]
 try:
   import yfinance as yf
 except ImportError:
@@ -875,7 +875,7 @@ def fetch_ai_insights_split(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
       prompt1 = f"""
-אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
+אתה אנליסט מאקרו-كلכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
 
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, עובדות, מחירים או תחזיות שאינו בטוח לגביהם או שאינם קיימים בנתוני השוק שסופקו. אם אינך יודע או אינך בטוח לגבי נתון כלשהו, אל תמציא אותו – כתוב במפורש שאין נתונים זמינים.
@@ -978,9 +978,8 @@ Return a valid JSON object with exactly these 5 keys:
 
   time.sleep(3)
 
-  # --- PART 3: Stocks, Catalysts, Portfolio News & Strategy ---
-  print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts, Portfolio News & Strategy)...")
-  portfolio_tickers = list(portfolio_stocks.keys())
+  # --- PART 3: Stocks, Catalysts & Strategy ---
+  print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
   for key_name, api_key in api_keys:
     try:
       client = Groq(
@@ -988,31 +987,26 @@ Return a valid JSON object with exactly these 5 keys:
       )
       prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב 4 (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
-הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק.
+הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים.
 
 Output a valid JSON object ONLY.
 
-1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
-   - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
-   - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
-3. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
-4. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
+1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`, וודא שאתה מציין את יעד האנליסטים הממוצע (Mean Analyst Target Price) בשדה המתאים או בתוך הטקסט היכן שרלוונטי (במיוחד בשלבים 4 ו-5). אם הנתון אינו זמין בוודאות, כתוב שאין יעד אנליסטים זמין ואל תמציא.
+2. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
+3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
---- Portfolio Tickers to Analyze ---
-{json.dumps(portfolio_tickers, ensure_ascii=False)}
-
---- News Sources for Reference ---
+--- Investing.com Headlines ---
 {investing_news}
-{us_market_news_text}
+
+--- Israeli Market Headlines ---
 {bizportal_headlines_text}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-Return a valid JSON object with exactly these 9 keys:
+Return a valid JSON object with exactly these 8 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
@@ -1021,7 +1015,6 @@ Return a valid JSON object with exactly these 9 keys:
 6. CATALYST_HARDWARE
 7. RISK_MANAGEMENT_TEXT
 8. ACTION_RECOMMENDATIONS_TEXT
-9. portfolio_news
 """
 
       response3 = client.chat.completions.create(
@@ -1221,6 +1214,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
+    # שליפת יעד אנליסטים ממוצע (הוחזר לשלב 4 תוך אי-המצאה)
     target_val = data.get("target", 0.0)
     if target_val and float(target_val) > 0:
       target_display = f"${format_num(target_val)}"
@@ -1238,6 +1232,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
+    # כרטיסיית המניה בשלב 4 (ללא טרום פתיחה, עם יעד אנליסטים ממוצע)
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1507,7 +1502,6 @@ if __name__ == "__main__":
     )
     news_html = build_market_news_html(ai_insights.get("market_news", []))
 
-    portfolio_ai_news = ai_insights.get("portfolio_news", {})
     portfolio_js_list = []
     for ticker, info in portfolio_buys.items():
       if not isinstance(info, dict):
@@ -1517,6 +1511,7 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         
+        # שליפת יעד אנליסטים ממוצע לתיק האישי (שלב 5)
         target_val = fetched_price_data.get("target", 0.0)
         if target_val and float(target_val) > 0:
           target_str = f"${format_num(target_val)}"
@@ -1532,26 +1527,17 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        # חדשות ה-AI ונקודה ירוקה/אדומה בהתאם לדרישתך
-        p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
-        p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
-        p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
-        dot_icon = "🟢" if p_sentiment == "green" else "🔴"
-
-        status_content = (
-            f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
-            f" display: inline-block;'>{sign}{ret:.2f}%</span><br>"
-            f"חדשות: {p_news_text} {dot_icon}"
-        )
-
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
             "shares": shares_count,
             "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
-            "target": target_str,
-            "status": status_content,
+            "target": target_str,  # הוחזר לשלב 5
+            "status": (
+                f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
+                f" display: inline-block;'>{sign}{ret:.2f}%</span>"
+            ),
             "note": "",
         })
       except Exception as ex:
