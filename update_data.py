@@ -329,7 +329,8 @@ def format_pct_colored(val):
 def replace_dollar_word(text):
   if not isinstance(text, str):
     return str(text)
-  text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"\1$", text, flags=re.IGNORECASE)
+  # החלפת מילת דולר בסימן דולר משמאל למספר ($X)
+  text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"$\1", text, flags=re.IGNORECASE)
   return text
 
 
@@ -442,7 +443,7 @@ def format_text_with_conclusion(text, prefix_num=None):
       conclusion = sentences[1]
       explanation = sentences[0]
     else:
-      conclusion = ""
+      conclusion = "מומלץ לעקוב מקרוב אחר ההתפתחויות בשווקים."
 
   explanation = re.sub(
       r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE
@@ -524,7 +525,7 @@ def format_phase1_text(text):
 
 def format_analyst_text(text):
   if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-    text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים. לסיכום: מומלץ להמתין לעדכונים נוספים בשווקים."
+    text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים."
   if "לסיכום" not in str(text):
     text = str(text).strip() + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
   return format_text_with_conclusion(text, prefix_num=None)
@@ -689,12 +690,10 @@ def fetch_yahoo_direct(ticker):
   try:
     t = yf.Ticker(clean_ticker)
     
-    # שליפת נתונים מהירים (מחיר נוכחי וסגירה קודמת)
     fi = t.fast_info
     current_price = getattr(fi, 'last_price', None)
     prev_close = getattr(fi, 'previous_close', None)
 
-    # שליפת פרטים נוספים (יעד אנליסטים וטרום פתיחה) מתוך t.info
     info = {}
     try:
       info = t.info
@@ -713,7 +712,6 @@ def fetch_yahoo_direct(ticker):
 
     target_mean = info.get("targetMeanPrice", 0.0) or 0.0
     
-    # טיפול מדויק בטרום פתיחה - אם אין נתון אמיתי מ-Yahoo, יוגדר כ"השוק סגור"
     pre_market_price = info.get("preMarketPrice")
     if pre_market_price and float(pre_market_price) > 0:
       pre_market_val = round(float(pre_market_price), 2)
@@ -921,7 +919,7 @@ def fetch_ai_insights_split(
 
 🚨 דגשים קריטיים:
 - הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
-- בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש תמיד בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+- בכל אזכור של סכום כספי בדולרים, השתמש תמיד בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
 
 Output a valid JSON object ONLY.
 
@@ -992,10 +990,10 @@ Output a valid JSON object ONLY.
 🚨 STRICT RULES & FORMATTING:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
-3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, השתמש בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
 4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
-5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
+5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. **Give absolute priority and special emphasis to relevant geopolitical news and events** (such as Middle East tensions, Iran, international conflicts or agreements) that affect the market sentiment today, followed by macro data. Must explicitly end with `(מקור: Google News RSS)`.
+6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation) **while giving high priority to relevant geopolitical developments affecting Israel's security and local markets**. ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless explicitly local. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1055,9 +1053,9 @@ Output a valid JSON object ONLY.
 🚨 STRICT GUIDELINES:
 1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
-3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
+3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, השתמש בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
 4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
+5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`) & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
 6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
 
 Today is {day_name}, Date: {date_str}.
@@ -1281,7 +1279,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
-    # טיפול נכון בהצגת טרום פתיחה (מספר או טקסט "השוק סגור") ללא סימן דולר מיותר
     raw_pre = data.get("pre_market", "השוק סגור")
     if isinstance(raw_pre, (int, float)) or (isinstance(raw_pre, str) and str(raw_pre).replace('.', '', 1).isdigit()):
       pre_market_display = f"${format_num(raw_pre)}"
@@ -1587,7 +1584,6 @@ if __name__ == "__main__":
         curr_p = fetched_price_data.get("price") or buy_p
         fetched_target = fetched_price_data.get("target") or 0.0
         
-        # טיפול מותאם לטרום פתיחה בתיק
         raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
         if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
           pre_str = f"${format_num(raw_pre_p)}"
@@ -1613,7 +1609,7 @@ if __name__ == "__main__":
             "name": company_name,
             "symbol": ticker,
             "shares": shares_count,
-            "buyPrice": format_num(buy_p),
+            "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
             "pre": pre_str,
             "target": target_str,
