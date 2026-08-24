@@ -14,7 +14,7 @@ from groq import Groq
 import pytz
 import requests
 
-# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)
+# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)[cite: 5]
 try:
   import yfinance as yf
 except ImportError:
@@ -424,7 +424,6 @@ def format_text_with_conclusion(text, prefix_num=None):
   explanation = re.sub(r"\s*<br>\s*", "<br>", explanation).strip()
   conclusion = re.sub(r"\s*<br>\s*", "<br>", conclusion).strip()
 
-  # הסרת רווחים/שבירות מיותרות בסוף הטקסט כדי למנוע שורת רווח ריקה לפני לסיכום
   explanation = re.sub(r"(<br\s*/?>)+$", "", explanation).strip()
   conclusion = re.sub(r"(<br\s*/?>)+$", "", conclusion).strip()
 
@@ -710,19 +709,12 @@ def fetch_yahoo_direct(ticker):
       change = 0.0
 
     target_mean = info.get("targetMeanPrice", 0.0) or 0.0
-    
-    pre_market_price = info.get("preMarketPrice")
-    if pre_market_price and float(pre_market_price) > 0:
-      pre_market_val = round(float(pre_market_price), 2)
-    else:
-      pre_market_val = "השוק סגור"
 
     if current_price and current_price > 0:
       return {
           "price": round(float(current_price), 2),
           "change": round(float(change), 2),
           "target": float(target_mean) if target_mean else 0.0,
-          "pre_market": pre_market_val,
       }
   except Exception as e:
     print(f"yfinance fetch error for {clean_ticker}: {e}")
@@ -742,121 +734,101 @@ def fetch_market_data(tickers):
               "price": 3.65,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "^GSPC": {
               "price": 5500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "^NDX": {
               "price": 19500.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "^DJI": {
               "price": 41000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "^VIX": {
               "price": 15.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "DX-Y.NYB": {
               "price": 103.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "CL=F": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "GC=F": {
               "price": 2400.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "BTC-USD": {
               "price": 60000.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLK": {
               "price": 220.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLF": {
               "price": 45.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLV": {
               "price": 140.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLY": {
               "price": 180.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLP": {
               "price": 80.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLE": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLI": {
               "price": 130.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLB": {
               "price": 90.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLC": {
               "price": 95.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLU": {
               "price": 75.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
           "XLRE": {
               "price": 40.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
       }
       market_data[ticker] = defaults.get(
@@ -865,7 +837,6 @@ def fetch_market_data(tickers):
               "price": 100.0,
               "change": 0.0,
               "target": 0.0,
-              "pre_market": "השוק סגור",
           },
       )
   return market_data
@@ -888,7 +859,7 @@ def fetch_ai_insights_split(
     return cached if cached else {}
 
   market_summary = {
-      t: f"Price: {d.get('price')}, Change: {d.get('change')}%"
+      t: f"Price: {d.get('price')}, Change: {d.get('change')}%, Analyst Target: {d.get('target', 0)}"
       for t, d in market_data.items()
   }
 
@@ -904,8 +875,10 @@ def fetch_ai_insights_split(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
       prompt1 = f"""
-אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
+אתה אנליסט מאקרו-كلכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
+
+הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, עובדות, מחירים או תחזיות שאינו בטוח לגביהם או שאינם קיימים בנתוני השוק שסופקו. אם אינך יודע או אינך בטוח לגבי נתון כלשהו, אל תמציא אותו – כתוב במפורש שאין נתונים זמינים.
 
 Output a valid JSON object ONLY.
 Every single field below MUST contain:
@@ -958,12 +931,15 @@ Return a valid JSON object with exactly these 9 keys:
       )
       prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
+הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, תחזיות או הערכות אנליסטים אם אינך בטוח או שאין נתון מבוסס. אם נתון אינו ידוע, ציין זאת בפירוש ואל תמציא מספרים או עובדות.
+
 Output a valid JSON object ONLY.
 
 1. LANGUAGE: Hebrew ONLY.
 2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
 3. US_MARKET_NEWS: MUST use Google News RSS and explicitly end with `(מקור: Google News RSS)`.
 4. IL_MARKET_NEWS: MUST focus on domestic Israeli economy and explicitly end with `(מקור: Bizportal)`.
+5. ANALYST_POINT_1 / ANALYST_POINT_2: כלול את יעד האנליסטים הממוצע רק אם הוא מבוסס וידוע בוודאות. אם אינו בטוח או חסר, ציין שאין נתון אנליסטים מהימן ואל תמציא.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1010,10 +986,12 @@ Return a valid JSON object with exactly these 5 keys:
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
       prompt3 = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב 4 (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
+הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים.
+
 Output a valid JSON object ONLY.
 
-1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`, וודא שאתה מציין את יעד האנליסטים הממוצע (Mean Analyst Target Price) בשדה המתאים או בתוך הטקסט היכן שרלוונטי (במיוחד בשלבים 4 ו-5). אם הנתון אינו זמין בוודאות, כתוב שאין יעד אנליסטים זמין ואל תמציא.
 2. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
 3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
@@ -1236,11 +1214,12 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
-    raw_pre = data.get("pre_market", "השוק סגור")
-    if isinstance(raw_pre, (int, float)) or (isinstance(raw_pre, str) and str(raw_pre).replace('.', '', 1).isdigit()):
-      pre_market_display = f"${format_num(raw_pre)}"
+    # שליפת יעד אנליסטים ממוצע (הוחזר לשלב 4 תוך אי-המצאה)
+    target_val = data.get("target", 0.0)
+    if target_val and float(target_val) > 0:
+      target_display = f"${format_num(target_val)}"
     else:
-      pre_market_display = str(raw_pre)
+      target_display = "אין נתון זמין"
 
     change_val = data.get("change", 0.0)
     sign = "+" if change_val > 0 else ""
@@ -1253,7 +1232,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
-    # השורה "יעד אנליסטים ממוצע" הוסרה לחלוטין לפי בקשתך
+    # כרטיסיית המניה בשלב 4 (ללא טרום פתיחה, עם יעד אנליסטים ממוצע)
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1262,7 +1241,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
                 <div style="text-align: right;"><strong>מחיר נוכחי:</strong> ${price}</div>
-                <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> {pre_market_display}</div>
+                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_display}</div>
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
                 <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> {news}</div>
@@ -1532,11 +1511,12 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         
-        raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
-        if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
-          pre_str = f"${format_num(raw_pre_p)}"
+        # שליפת יעד אנליסטים ממוצע לתיק האישי (שלב 5)
+        target_val = fetched_price_data.get("target", 0.0)
+        if target_val and float(target_val) > 0:
+          target_str = f"${format_num(target_val)}"
         else:
-          pre_str = str(raw_pre_p)
+          target_str = "אין נתון זמין"
 
         ret = ((curr_p - buy_p) / buy_p) * 100 if buy_p > 0 else 0.0
         sign = "+" if ret > 0 else ""
@@ -1547,15 +1527,13 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        # שורת יעד האנליסטים הוסרה לחלוטין גם משלב 5 (התיק האישי)
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
             "shares": shares_count,
             "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
-            "pre": pre_str,
-            "target": "", 
+            "target": target_str,  # הוחזר לשלב 5
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
                 f" display: inline-block;'>{sign}{ret:.2f}%</span>"
