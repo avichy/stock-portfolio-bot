@@ -126,7 +126,7 @@ def fetch_us_market_news():
 
 
 def get_filtered_us_news(headlines):
-  """סינון חכם לחדשות ארה״ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
+  """סינון חכם לחדשות ארה\"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
   us_market_drivers = [
       "Fed",
       "הפד",
@@ -978,8 +978,8 @@ Return a valid JSON object with exactly these 5 keys:
 
   time.sleep(3)
 
-  # --- PART 3: Stocks (Long-Term, Swing), Market News & Portfolio News ---
-  print("🔄 Starting Groq AI Part 3 (Stocks, Market News & Portfolio News)...")
+  # --- PART 3: Stocks, Catalysts, Portfolio News & Strategy ---
+  print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts, Portfolio News & Strategy)...")
   portfolio_tickers = list(portfolio_stocks.keys())
   for key_name, api_key in api_keys:
     try:
@@ -987,7 +987,7 @@ Return a valid JSON object with exactly these 5 keys:
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
       prompt3 = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב 4 (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
 הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק.
 
 Output a valid JSON object ONLY.
@@ -996,7 +996,8 @@ Output a valid JSON object ONLY.
 2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
    - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
    - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
-3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
+3. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
+4. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1011,11 +1012,16 @@ Today is {day_name}, Date: {date_str}.
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-Return a valid JSON object with exactly these 4 keys:
+Return a valid JSON object with exactly these 9 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
-4. portfolio_news
+4. CATALYST_EARNINGS
+5. CATALYST_MONETARY
+6. CATALYST_HARDWARE
+7. RISK_MANAGEMENT_TEXT
+8. ACTION_RECOMMENDATIONS_TEXT
+9. portfolio_news
 """
 
       response3 = client.chat.completions.create(
@@ -1032,55 +1038,6 @@ Return a valid JSON object with exactly these 4 keys:
       break
     except Exception as e:
       print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e):
-        time.sleep(60)
-      else:
-        time.sleep(5)
-
-  time.sleep(3)
-
-  # --- PART 4: Catalysts, Risk Management & Action Recommendations ---
-  print("🔄 Starting Groq AI Part 4 (Catalysts, Risk Management & Action Recommendations)...")
-  for key_name, api_key in api_keys:
-    try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      prompt4 = f"""
-אתה אסטרטג שווקים ומנהל סיכונים בכיר. עליך לספק ניתוחים מקצועיים ומפורטים בעברית תקנית.
-הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט להמציא נתונים או תחזיות.
-
-Output a valid JSON object ONLY.
-
-1. MANDATORY CONCRETE CONCLUSION: Each field must contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
-
-Today is {day_name}, Date: {date_str}.
-
-Current Market Data:
-{json.dumps(market_summary, ensure_ascii=False)}
-
-Return a valid JSON object with exactly these 5 keys:
-1. CATALYST_EARNINGS
-2. CATALYST_MONETARY
-3. CATALYST_HARDWARE
-4. RISK_MANAGEMENT_TEXT
-5. ACTION_RECOMMENDATIONS_TEXT
-"""
-
-      response4 = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt4}],
-          response_format={"type": "json_object"},
-          temperature=0.3,
-          max_tokens=4000,
-      )
-
-      raw_text4 = response4.choices[0].message.content.strip()
-      parsed4 = json.loads(raw_text4)
-      combined_result.update(parsed4)
-      break
-    except Exception as e:
-      print(f"⚠️ Part 4 attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
@@ -1575,22 +1532,16 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        # חדשות ה-AI ובדיקה האם יש חדשות אמיתיות או שאין חדשות
+        # חדשות ה-AI ונקודה ירוקה/אדומה בהתאם לדרישתך
         p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
         p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
-        
-        # אם אין חדשות, לא מציגים נקודה (🟢/🔴) כלל
-        if not p_news_text or "אין חדשות" in p_news_text or "אין נתונים" in p_news_text:
-            news_content_str = p_news_text
-        else:
-            p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
-            dot_icon = "🟢" if p_sentiment == "green" else "🔴"
-            news_content_str = f"{p_news_text} {dot_icon}"
+        p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
+        dot_icon = "🟢" if p_sentiment == "green" else "🔴"
 
         status_content = (
             f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
             f" display: inline-block;'>{sign}{ret:.2f}%</span><br>"
-            f"חדשות: {news_content_str}"
+            f"חדשות: {p_news_text} {dot_icon}"
         )
 
         portfolio_js_list.append({
