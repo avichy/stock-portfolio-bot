@@ -689,10 +689,12 @@ def fetch_yahoo_direct(ticker):
   try:
     t = yf.Ticker(clean_ticker)
     
+    # שליפת נתונים מהירים (מחיר נוכחי וסגירה קודמת)
     fi = t.fast_info
     current_price = getattr(fi, 'last_price', None)
     prev_close = getattr(fi, 'previous_close', None)
 
+    # שליפת פרטים נוספים (יעד אנליסטים וטרום פתיחה) מתוך t.info
     info = {}
     try:
       info = t.info
@@ -711,6 +713,7 @@ def fetch_yahoo_direct(ticker):
 
     target_mean = info.get("targetMeanPrice", 0.0) or 0.0
     
+    # טיפול מדויק בטרום פתיחה - אם אין נתון אמיתי מ-Yahoo, יוגדר כ"השוק סגור"
     pre_market_price = info.get("preMarketPrice")
     if pre_market_price and float(pre_market_price) > 0:
       pre_market_val = round(float(pre_market_price), 2)
@@ -917,9 +920,9 @@ def fetch_ai_insights_split(
 אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
 
 🚨 דגשים קריטיים:
+- שפה: חובה לכתוב אך ורק בעברית, פרט לשמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם ללא תרגום או תעתוק.
 - הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
 - בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש תמיד בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
-- **Always keep all company names, brand names, and stock tickers strictly in English, even when writing in other languages (שמור על שמות החברות, המותגים וסימולי המניות באנגלית בלבד).**
 
 Output a valid JSON object ONLY.
 
@@ -988,13 +991,12 @@ Return a valid JSON object with exactly these 9 keys:
 Output a valid JSON object ONLY.
 
 🚨 STRICT RULES & FORMATTING:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), except for company names, brand names, and stock tickers.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), למעט שמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם מבלי לתרגם או לתעתק אותם לעברית.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
-5. **ENGLISH ENFORCEMENT**: Always keep all company names, brand names, and stock tickers strictly in English, even when writing in other languages (שמור על שמות החברות, המותגים וסימולי המניות באנגלית בלבד).
-6. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
-7. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
+5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. Must explicitly end with `(מקור: Google News RSS)`.
+6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation). ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless they are explicitly local Israeli events. Must explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1052,13 +1054,12 @@ Return a valid JSON object with exactly these 5 keys:
 Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), except for company names, brand names, and stock tickers.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), למעט שמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם מבלי לתרגם או לתעתק אותם לעברית.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
-4. **ENGLISH ENFORCEMENT**: Always keep all company names, brand names, and stock tickers strictly in English, even when writing in other languages (שמור על שמות החברות, המותגים וסימולי המניות באנגלית בלבד).
-5. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`. Ensure names and tickers remain in English.
-6. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
-7. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
+4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`): Each Catalyst MUST contain main descriptive text followed by a separate summary line starting with "לסיכום:".
+6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
 
 Today is {day_name}, Date: {date_str}.
 
