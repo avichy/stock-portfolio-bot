@@ -412,19 +412,21 @@ def format_text_with_conclusion(text, prefix_num=None):
   explanation = cleaned
   conclusion = ""
 
-  # פיצול מדויק לפי מילת המפתח "לסיכום" למניעת כפילויות
   if "לסיכום" in cleaned:
     parts = re.split(r"לסיכום\s*[:\-]*", cleaned, flags=re.IGNORECASE)
     explanation = parts[0].strip()
     if len(parts) > 1:
       conclusion = parts[1].strip()
 
-  # הסרת מופעים נוספים של "לסיכום" אם נותרו בטקסט
   explanation = re.sub(r"לסיכום\s*[:\-]*", "", explanation, flags=re.IGNORECASE).strip()
   conclusion = re.sub(r"לסיכום\s*[:\-]*", "", conclusion, flags=re.IGNORECASE).strip()
 
   explanation = re.sub(r"\s*<br>\s*", "<br>", explanation).strip()
   conclusion = re.sub(r"\s*<br>\s*", "<br>", conclusion).strip()
+
+  # הסרת רווחים/שבירות מיותרות בסוף הטקסט כדי למנוע שורת רווח ריקה לפני לסיכום
+  explanation = re.sub(r"(<br\s*/?>)+$", "", explanation).strip()
+  conclusion = re.sub(r"(<br\s*/?>)+$", "", conclusion).strip()
 
   explanation = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", explanation)
   conclusion = re.sub(r"\s*\(?מקור:[^\)]+\)?", "", conclusion)
@@ -895,38 +897,22 @@ def fetch_ai_insights_split(
     combined_result = {}
 
   # --- PART 1: Indices & Macro Explanations ---
-  print(
-      "🔄 Starting Groq AI Part 1 (Indices & Macro Explanations - Deep &"
-      " Professional)..."
-  )
+  print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
   for key_name, api_key in api_keys:
     try:
       client = Groq(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
-      print(
-          f"🤖 Connecting to Groq AI Part 1 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
-
       prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
-עליך לספק ניתוחים עמוקים, מעשירים ומקצועיים ברמה הגבוהה ביותר בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, תוך שימוש במונחים פיננסיים מקצועיים וזורמים.
-אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
-
-🚨 דגשים קריטיים:
-- הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
-- בכל אזכור של סכום כספי בדולרים, השתמש תמיד בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
+עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
 
 Output a valid JSON object ONLY.
-
-🚨 STRICT STRUCTURE GUIDELINES FOR EACH FIELD:
 Every single field below MUST contain:
 1. הסבר מקצועי מעמיק ומפורט.
 2. שורת סיכום המתחילה במפורש במילה "לסיכום:" ולאחריה תובענה חד-משמעית.
 
 Today is {day_name}, Date: {date_str}.
-
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
@@ -953,12 +939,10 @@ Return a valid JSON object with exactly these 9 keys:
       raw_text1 = response1.choices[0].message.content.strip()
       parsed1 = json.loads(raw_text1)
       combined_result.update(parsed1)
-      print("Successfully parsed Part 1 JSON using key:", key_name)
       break
     except Exception as e:
       print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
         time.sleep(5)
@@ -966,38 +950,27 @@ Return a valid JSON object with exactly these 9 keys:
   time.sleep(3)
 
   # --- PART 2: News, Sentiment & Analyst Points with Sources ---
-  print(
-      "🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points with"
-      " Sources)..."
-  )
+  print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
   for key_name, api_key in api_keys:
     try:
       client = Groq(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
-      print(
-          f"🤖 Connecting to Groq AI Part 2 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
-
       prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 Output a valid JSON object ONLY.
 
-🚨 STRICT RULES & FORMATTING:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
-2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
-3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, השתמש בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
-4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
-5. **US_MARKET_NEWS**: MUST use **ONLY** the US / Global Headlines from Google News provided below. **Give absolute priority and special emphasis to relevant geopolitical news and events** (such as Middle East tensions, Iran, international conflicts or agreements) that affect the market sentiment today, followed by macro data. Must explicitly end with `(מקור: Google News RSS)`.
-6. **IL_MARKET_NEWS**: MUST focus **STRICTLY AND EXCLUSIVELY** on domestic Israeli economy (Bank of Israel, local CPI, Israeli banks, local regulation) **while giving high priority to relevant geopolitical developments affecting Israel's security and local markets**. ABSOLUTELY EXCLUDE US tech companies or Wall Street general news unless explicitly local. Must explicitly end with `(מקור: Bizportal)`.
+1. LANGUAGE: Hebrew ONLY.
+2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
+3. US_MARKET_NEWS: MUST use Google News RSS and explicitly end with `(מקור: Google News RSS)`.
+4. IL_MARKET_NEWS: MUST focus on domestic Israeli economy and explicitly end with `(מקור: Bizportal)`.
 
 Today is {day_name}, Date: {date_str}.
 
---- US / Global Headlines (Google News RSS) ---
+--- US / Global Headlines ---
 {us_market_news_text}
 
---- Israeli Market Headlines (Bizportal) ---
+--- Israeli Market Headlines ---
 {bizportal_headlines_text}
 
 Return a valid JSON object with exactly these 5 keys:
@@ -1019,12 +992,10 @@ Return a valid JSON object with exactly these 5 keys:
       raw_text2 = response2.choices[0].message.content.strip()
       parsed2 = json.loads(raw_text2)
       combined_result.update(parsed2)
-      print("Successfully parsed Part 2 JSON using key:", key_name)
       break
     except Exception as e:
       print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
         time.sleep(5)
@@ -1038,29 +1009,20 @@ Return a valid JSON object with exactly these 5 keys:
       client = Groq(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
-      print(
-          f"🤖 Connecting to Groq AI Part 3 using {key_name}"
-          " (openai/gpt-oss-120b)..."
-      )
-
       prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית.
 Output a valid JSON object ONLY.
 
-🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
-2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
-3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, השתמש בסימן הדולר משמאל למספר (לדוגמה: $77,721.73$).
-4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-5. CATALYSTS (`CATALYST_EARNINGS`, `CATALYST_MONETARY`, `CATALYST_HARDWARE`) & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
-6. `market_news`: Array of items. Each item MUST be an object containing: `news_title`, `news_link`, and `news_desc`. שדה `news_desc` חייב להכיל סיכום מקיף של הכתבה (ללא ציון המילה "לסיכום").
+1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+2. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
+3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
 --- Investing.com Headlines ---
 {investing_news}
 
---- Israeli Market Headlines (Bizportal) ---
+--- Israeli Market Headlines ---
 {bizportal_headlines_text}
 
 Current Market Data:
@@ -1088,12 +1050,10 @@ Return a valid JSON object with exactly these 8 keys:
       raw_text3 = response3.choices[0].message.content.strip()
       parsed3 = json.loads(raw_text3)
       combined_result.update(parsed3)
-      print("Successfully parsed Part 3 JSON using key:", key_name)
       break
     except Exception as e:
       print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e) or "413" in str(e):
-        print(f"⏳ Rate limit / Size limit hit. Waiting 60 seconds...")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
         time.sleep(5)
@@ -1282,15 +1242,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     else:
       pre_market_display = str(raw_pre)
 
-    raw_target = data.get("target", 0)
-    if raw_target and float(raw_target) > 0:
-      target_val = f"${format_num(raw_target)}"
-      target_html = f'<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_val}</div>'
-    else:
-      target_html = '<div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> לא זמין</div>'
-
     change_val = data.get("change", 0.0)
-
     sign = "+" if change_val > 0 else ""
     color = "#2ecc71" if change_val >= 0 else "#e74c3c"
     change_str = (
@@ -1301,6 +1253,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
+    # השורה "יעד אנליסטים ממוצע" הוסרה לחלוטין לפי בקשתך
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1310,7 +1263,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
                 <div style="text-align: right;"><strong>מחיר נוכחי:</strong> ${price}</div>
                 <div style="text-align: right;"><strong>מחיר טרום פתיחה:</strong> {pre_market_display}</div>
-                {target_html}
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
                 <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> {news}</div>
@@ -1579,7 +1531,6 @@ if __name__ == "__main__":
         buy_p = float(info.get("buy") or info.get("buyPrice") or 0.0)
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
-        fetched_target = fetched_price_data.get("target") or 0.0
         
         raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
         if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
@@ -1596,12 +1547,7 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        target_str = (
-            f"${format_num(fetched_target)}"
-            if fetched_target and float(fetched_target) > 0
-            else "לא זמין"
-        )
-
+        # שורת יעד האנליסטים הוסרה לחלוטין גם משלב 5 (התיק האישי)
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
@@ -1609,7 +1555,7 @@ if __name__ == "__main__":
             "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
             "pre": pre_str,
-            "target": target_str,
+            "target": "", 
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
                 f" display: inline-block;'>{sign}{ret:.2f}%</span>"
