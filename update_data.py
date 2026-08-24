@@ -920,7 +920,6 @@ def fetch_ai_insights_split(
 אסור בתכלית הד่วน לתת תשובות גנריות או שטחיות.
 
 🚨 דגשים קריטיים:
-- שפה: חובה לכתוב אך ורק בעברית, פרט לשמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם ללא תרגום או תעתוק.
 - הקפד על עברית תקנית לחלוטין, ללא תקלדות או שגיאות כתיב.
 - בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש תמיד בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 
@@ -991,7 +990,7 @@ Return a valid JSON object with exactly these 9 keys:
 Output a valid JSON object ONLY.
 
 🚨 STRICT RULES & FORMATTING:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), למעט שמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם מבלי לתרגם או לתעתק אותם לעברית.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). No English text.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 4. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
@@ -1054,7 +1053,7 @@ Return a valid JSON object with exactly these 5 keys:
 Output a valid JSON object ONLY.
 
 🚨 STRICT GUIDELINES:
-1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד), למעט שמות חברות וסימולי טיקר (Tickers) (לדוגמה: AMD, NVDA, TQQQ וכדומה) שחייבים להישאר באנגלית המקורית שלהם מבלי לתרגם או לתעתק אותם לעברית.
+1. LANGUAGE: Hebrew ONLY (עברית מלאה בלבד). Absolutely NO English text.
 2. SPELLING & GRAMMAR: הקפד על עברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות, ועל מונחים פיננסיים מקצועיים וזורמים.
 3. CURRENCY FORMAT: בכל אזכור של סכום כספי בדולרים, אל תכתוב את המילה "דולר", אלא השתמש בסימן הדולר ($) בצמוד למספר (לדוגמה: 77,721.73$).
 4. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): MUST be a JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
@@ -1282,6 +1281,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
+    # טיפול נכון בהצגת טרום פתיחה (מספר או טקסט "השוק סגור") ללא סימן דולר מיותר
     raw_pre = data.get("pre_market", "השוק סגור")
     if isinstance(raw_pre, (int, float)) or (isinstance(raw_pre, str) and str(raw_pre).replace('.', '', 1).isdigit()):
       pre_market_display = f"${format_num(raw_pre)}"
@@ -1587,6 +1587,7 @@ if __name__ == "__main__":
         curr_p = fetched_price_data.get("price") or buy_p
         fetched_target = fetched_price_data.get("target") or 0.0
         
+        # טיפול מותאם לטרום פתיחה בתיק
         raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
         if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
           pre_str = f"${format_num(raw_pre_p)}"
