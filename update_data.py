@@ -14,7 +14,7 @@ from groq import Groq
 import pytz
 import requests
 
-# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)[cite: 5]
+# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)
 try:
   import yfinance as yf
 except ImportError:
@@ -45,6 +45,43 @@ def get_all_groq_keys():
     if api_key:
       valid_keys.append((key_name, api_key))
   return valid_keys
+
+
+def call_groq_with_keys(api_keys, prompt, max_tokens=4000, temperature=0.3):
+  """מבצע קריאה ל-Groq עם מעבר אוטומטי בין מפתחות במקרה של הגבלה/שגיאה והשהיות למניעת נפילות"""
+  if not api_keys:
+    return None
+  
+  for idx, (key_name, api_key) in enumerate(api_keys):
+    try:
+      print(f"🔄 מנסה לבצע קריאה ל-Groq באמצעות מפתח: {key_name}")
+      client = Groq(
+          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+      )
+      response = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt}],
+          response_format={"type": "json_object"},
+          temperature=temperature,
+          max_tokens=max_tokens,
+      )
+      # השהייה קלה לאחר הצלחה כדי לשמור על קצב תקין מול השרת
+      time.sleep(5)
+      return response.choices[0].message.content.strip()
+    except Exception as e:
+      err_str = str(e)
+      print(f"⚠️ שגיאה בשימוש במפתח {key_name}: {e}")
+      
+      # זיהוי חריגת מכסה (Rate Limit / 429 / Quota)
+      if "429" in err_str or "rate_limit_exceeded" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
+        print(ف"⏳ המכסה או קצב הבקשות מוצו עבור {key_name}. ממתין 15 שניות ועובר למפתח הבא...")
+        time.sleep(15)
+      else:
+        print(f"⏳ ממתין 5 שניות ומנסה את המפתח הבא...")
+        time.sleep(5)
+        
+  print("❌ כל מפתחות ה-Groq נכשלו או מיצו את המכסה שלהם.")
+  return None
 
 
 def load_ai_cache():
@@ -126,7 +163,7 @@ def fetch_us_market_news():
 
 
 def get_filtered_us_news(headlines):
-  """סינון חכם לחדשות ארה\"ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
+  """סינון חכם לחדשות ארה״ב - מתן עדיפות למאקרו, פד, גיאופוליטיקה ואירועי שוק"""
   us_market_drivers = [
       "Fed",
       "הפד",
@@ -869,13 +906,8 @@ def fetch_ai_insights_split(
 
   # --- PART 1: Indices & Macro Explanations ---
   print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
-  for key_name, api_key in api_keys:
-    try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      prompt1 = f"""
-אתה אנליסט מאקרו-كلכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
+  prompt1 = f"""
+אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
 
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, עובדות, מחירים או תחזיות שאינו בטוח לגביהם או שאינם קיימים בנתוני השוק שסופקו. אם אינך יודע או אינך בטוח לגבי נתון כלשהו, אל תמציא אותו – כתוב במפורש שאין נתונים זמינים.
@@ -901,35 +933,19 @@ Return a valid JSON object with exactly these 9 keys:
 9. BTC_EXPLANATION
 """
 
-      response1 = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt1}],
-          response_format={"type": "json_object"},
-          temperature=0.3,
-          max_tokens=4000,
-      )
-
-      raw_text1 = response1.choices[0].message.content.strip()
+  raw_text1 = call_groq_with_keys(api_keys, prompt1)
+  if raw_text1:
+    try:
       parsed1 = json.loads(raw_text1)
       combined_result.update(parsed1)
-      break
     except Exception as e:
-      print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e):
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"Error parsing Part 1 JSON: {e}")
 
-  time.sleep(3)
+  time.sleep(5)
 
   # --- PART 2: News, Sentiment & Analyst Points with Sources ---
   print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
-  for key_name, api_key in api_keys:
-    try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      prompt2 = f"""
+  prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, תחזיות או הערכות אנליסטים אם אינך בטוח או שאין נתון מבוסס. אם נתון אינו ידוע, ציין זאת בפירוש ואל תמציא מספרים או עובדות.
 
@@ -957,84 +973,91 @@ Return a valid JSON object with exactly these 5 keys:
 5. ANALYST_POINT_2
 """
 
-      response2 = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt2}],
-          response_format={"type": "json_object"},
-          temperature=0.3,
-          max_tokens=4000,
-      )
-
-      raw_text2 = response2.choices[0].message.content.strip()
+  raw_text2 = call_groq_with_keys(api_keys, prompt2)
+  if raw_text2:
+    try:
       parsed2 = json.loads(raw_text2)
       combined_result.update(parsed2)
-      break
     except Exception as e:
-      print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e):
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"Error parsing Part 2 JSON: {e}")
 
-  time.sleep(3)
+  time.sleep(5)
 
-  # --- PART 3: Stocks, Catalysts & Strategy ---
-  print("🔄 Starting Groq AI Part 3 (Stocks, Catalysts & Strategy)...")
-  for key_name, api_key in api_keys:
-    try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      prompt3 = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב 4 (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
-הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים.
+  # --- PART 3: Stocks (Long-Term, Swing), Market News & Portfolio News ---
+  print("🔄 Starting Groq AI Part 3 (Stocks, Market News & Portfolio News)...")
+  portfolio_tickers = list(portfolio_stocks.keys())
+  prompt3 = f"""
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
+הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק.
 
 Output a valid JSON object ONLY.
 
-1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`, וודא שאתה מציין את יעד האנליסטים הממוצע (Mean Analyst Target Price) בשדה המתאים או בתוך הטקסט היכן שרלוונטי (במיוחד בשלבים 4 ו-5). אם הנתון אינו זמין בוודאות, כתוב שאין יעד אנליסטים זמין ואל תמציא.
-2. CATALYSTS & ALL TEXT FIELDS: Each field MUST contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
+1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
+   - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
+   - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
 3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
---- Investing.com Headlines ---
-{investing_news}
+--- Portfolio Tickers to Analyze ---
+{json.dumps(portfolio_tickers, ensure_ascii=False)}
 
---- Israeli Market Headlines ---
+--- News Sources for Reference ---
+{investing_news}
+{us_market_news_text}
 {bizportal_headlines_text}
 
 Current Market Data:
 {json.dumps(market_summary, ensure_ascii=False)}
 
-Return a valid JSON object with exactly these 8 keys:
+Return a valid JSON object with exactly these 4 keys:
 1. long_term_stocks
 2. swing_stocks
 3. market_news
-4. CATALYST_EARNINGS
-5. CATALYST_MONETARY
-6. CATALYST_HARDWARE
-7. RISK_MANAGEMENT_TEXT
-8. ACTION_RECOMMENDATIONS_TEXT
+4. portfolio_news
 """
 
-      response3 = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt3}],
-          response_format={"type": "json_object"},
-          temperature=0.3,
-          max_tokens=4000,
-      )
-
-      raw_text3 = response3.choices[0].message.content.strip()
+  raw_text3 = call_groq_with_keys(api_keys, prompt3)
+  if raw_text3:
+    try:
       parsed3 = json.loads(raw_text3)
       combined_result.update(parsed3)
-      break
     except Exception as e:
-      print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e):
-        time.sleep(60)
-      else:
-        time.sleep(5)
+      print(f"Error parsing Part 3 JSON: {e}")
+
+  time.sleep(5)
+
+  # --- PART 4: Catalysts, Risk Management & Action Recommendations ---
+  print("🔄 Starting Groq AI Part 4 (Catalysts, Risk Management & Action Recommendations)...")
+  prompt4 = f"""
+אתה אסטרטג שווקים ומנהל סיכונים בכיר. עליך לספק ניתוחים מקצועיים ומפורטים בעברית תקנית.
+הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט להמציא נתונים או תחזיות.
+
+Output a valid JSON object ONLY.
+
+1. MANDATORY CONCRETE CONCLUSION: Each field must contain a detailed explanation followed by a mandatory separate summary line starting with "לסיכום:".
+
+Today is {day_name}, Date: {date_str}.
+
+Current Market Data:
+{json.dumps(market_summary, ensure_ascii=False)}
+
+Return a valid JSON object with exactly these 5 keys:
+1. CATALYST_EARNINGS
+2. CATALYST_MONETARY
+3. CATALYST_HARDWARE
+4. RISK_MANAGEMENT_TEXT
+5. ACTION_RECOMMENDATIONS_TEXT
+"""
+
+  raw_text4 = call_groq_with_keys(api_keys, prompt4)
+  if raw_text4:
+    try:
+      parsed4 = json.loads(raw_text4)
+      combined_result.update(parsed4)
+    except Exception as e:
+      print(f"Error parsing Part 4 JSON: {e}")
 
   combined_result["ai_updated_at"] = now_il_str
   return combined_result
@@ -1214,7 +1237,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
-    # שליפת יעד אנליסטים ממוצע (הוחזר לשלב 4 תוך אי-המצאה)
     target_val = data.get("target", 0.0)
     if target_val and float(target_val) > 0:
       target_display = f"${format_num(target_val)}"
@@ -1232,7 +1254,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
-    # כרטיסיית המניה בשלב 4 (ללא טרום פתיחה, עם יעד אנליסטים ממוצע)
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1502,6 +1523,7 @@ if __name__ == "__main__":
     )
     news_html = build_market_news_html(ai_insights.get("market_news", []))
 
+    portfolio_ai_news = ai_insights.get("portfolio_news", {})
     portfolio_js_list = []
     for ticker, info in portfolio_buys.items():
       if not isinstance(info, dict):
@@ -1511,7 +1533,6 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         
-        # שליפת יעד אנליסטים ממוצע לתיק האישי (שלב 5)
         target_val = fetched_price_data.get("target", 0.0)
         if target_val and float(target_val) > 0:
           target_str = f"${format_num(target_val)}"
@@ -1527,17 +1548,30 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
+        p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
+        p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
+        
+        if not p_news_text or "אין חדשות" in p_news_text or "אין נתונים" in p_news_text:
+            news_content_str = p_news_text
+        else:
+            p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
+            dot_icon = "🟢" if p_sentiment == "green" else "🔴"
+            news_content_str = f"{p_news_text} {dot_icon}"
+
+        status_content = (
+            f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
+            f" display: inline-block;'>{sign}{ret:.2f}%</span><br>"
+            f"חדשות: {news_content_str}"
+        )
+
         portfolio_js_list.append({
             "name": company_name,
             "symbol": ticker,
             "shares": shares_count,
             "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
-            "target": target_str,  # הוחזר לשלב 5
-            "status": (
-                f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
-                f" display: inline-block;'>{sign}{ret:.2f}%</span>"
-            ),
+            "target": target_str,
+            "status": status_content,
             "note": "",
         })
       except Exception as ex:
