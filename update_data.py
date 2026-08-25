@@ -1022,70 +1022,25 @@ Return a valid JSON object with exactly these 5 keys:
 
   time.sleep(3)
 
-  # --- PART 4A: Stocks (Long-Term, Swing) ---
-  print("🔄 Starting Groq AI Part 4A (Long-Term & Swing Stocks)...")
-  for key_name, api_key in api_keys:
-    try:
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      prompt4a = f"""
-אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס).
-הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד או נתונים שאינם ודאיים.
-
-Output a valid JSON object ONLY.
-
-1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-
-Today is {day_name}, Date: {date_str}.
-
-Current Market Data:
-{json.dumps(market_summary, ensure_ascii=False)}
-
-Return a valid JSON object with exactly these 2 keys:
-1. long_term_stocks
-2. swing_stocks
-"""
-
-      response4a = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt4a}],
-          response_format={"type": "json_object"},
-          temperature=0.3,
-          max_tokens=4000,
-      )
-
-      raw_text4a = response4a.choices[0].message.content.strip()
-      parsed4a = json.loads(raw_text4a)
-      combined_result.update(parsed4a)
-      break
-    except Exception as e:
-      print(f"⚠️ Part 4A attempt failed with {key_name}: {e}")
-      if "429" in str(e) or "rate_limit_exceeded" in str(e):
-        time.sleep(60)
-      else:
-        time.sleep(5)
-
-  time.sleep(3)
-
-  # --- PART 4B: Market News & Portfolio News ---
-  print("🔄 Starting Groq AI Part 4B (Market News & Portfolio News)...")
+  # --- PART 4: Stocks (Long-Term, Swing), Market News & Portfolio News ---
+  print("🔄 Starting Groq AI Part 4 (Stocks, Market News & Portfolio News)...")
   portfolio_tickers = list(portfolio_stocks.keys())
   for key_name, api_key in api_keys:
     try:
       client = Groq(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
-      prompt4b = f"""
-אתה אנליסט בכיר. עליך לספק ניתוחי חדשות מעמיקים בעברית למניות התיק האישי ולשוק.
-הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא חדשות שאינן במקורות.
+      prompt4 = f"""
+אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס).
+הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים.
 
 Output a valid JSON object ONLY.
 
-1. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
+1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
+2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
    - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד.
    - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות או `"red"` אם שליליות.
-2. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
+3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1097,25 +1052,30 @@ Today is {day_name}, Date: {date_str}.
 {us_market_news_text}
 {bizportal_headlines_text}
 
-Return a valid JSON object with exactly these 2 keys:
-1. market_news
-2. portfolio_news
+Current Market Data:
+{json.dumps(market_summary, ensure_ascii=False)}
+
+Return a valid JSON object with exactly these 4 keys:
+1. long_term_stocks
+2. swing_stocks
+3. market_news
+4. portfolio_news
 """
 
-      response4b = client.chat.completions.create(
+      response4 = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt4b}],
+          messages=[{"role": "user", "content": prompt4}],
           response_format={"type": "json_object"},
           temperature=0.3,
           max_tokens=4000,
       )
 
-      raw_text4b = response4b.choices[0].message.content.strip()
-      parsed4b = json.loads(raw_text4b)
-      combined_result.update(parsed4b)
+      raw_text4 = response4.choices[0].message.content.strip()
+      parsed4 = json.loads(raw_text4)
+      combined_result.update(parsed4)
       break
     except Exception as e:
-      print(f"⚠️ Part 4B attempt failed with {key_name}: {e}")
+      print(f"⚠️ Part 4 attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
