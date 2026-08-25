@@ -47,43 +47,6 @@ def get_all_groq_keys():
   return valid_keys
 
 
-def call_groq_with_keys(api_keys, prompt, max_tokens=4000, temperature=0.3):
-  """מבצע קריאה ל-Groq עם מעבר אוטומטי בין מפתחות במקרה של הגבלה/שגיאה והשהיות למניעת נפילות"""
-  if not api_keys:
-    return None
-  
-  for idx, (key_name, api_key) in enumerate(api_keys):
-    try:
-      print(f"🔄 מנסה לבצע קריאה ל-Groq באמצעות מפתח: {key_name}")
-      client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
-      )
-      response = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt}],
-          response_format={"type": "json_object"},
-          temperature=temperature,
-          max_tokens=max_tokens,
-      )
-      # השהייה קלה לאחר הצלחה כדי לשמור על קצב תקין מול השרת
-      time.sleep(5)
-      return response.choices[0].message.content.strip()
-    except Exception as e:
-      err_str = str(e)
-      print(f"⚠️ שגיאה בשימוש במפתח {key_name}: {e}")
-      
-      # זיהוי חריגת מכסה (Rate Limit / 429 / Quota)
-      if "429" in err_str or "rate_limit_exceeded" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
-        print(ف"⏳ המכסה או קצב הבקשות מוצו עבור {key_name}. ממתין 15 שניות ועובר למפתח הבא...")
-        time.sleep(15)
-      else:
-        print(f"⏳ ממתין 5 שניות ומנסה את המפתח הבא...")
-        time.sleep(5)
-        
-  print("❌ כל מפתחות ה-Groq נכשלו או מיצו את המכסה שלהם.")
-  return None
-
-
 def load_ai_cache():
   if os.path.exists(AI_CACHE_FILE):
     try:
@@ -906,7 +869,12 @@ def fetch_ai_insights_split(
 
   # --- PART 1: Indices & Macro Explanations ---
   print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
-  prompt1 = f"""
+  for key_name, api_key in api_keys:
+    try:
+      client = Groq(
+          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+      )
+      prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
 
@@ -933,19 +901,35 @@ Return a valid JSON object with exactly these 9 keys:
 9. BTC_EXPLANATION
 """
 
-  raw_text1 = call_groq_with_keys(api_keys, prompt1)
-  if raw_text1:
-    try:
+      response1 = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt1}],
+          response_format={"type": "json_object"},
+          temperature=0.3,
+          max_tokens=4000,
+      )
+
+      raw_text1 = response1.choices[0].message.content.strip()
       parsed1 = json.loads(raw_text1)
       combined_result.update(parsed1)
+      break
     except Exception as e:
-      print(f"Error parsing Part 1 JSON: {e}")
+      print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
+        time.sleep(60)
+      else:
+        time.sleep(5)
 
-  time.sleep(5)
+  time.sleep(3)
 
   # --- PART 2: News, Sentiment & Analyst Points with Sources ---
   print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
-  prompt2 = f"""
+  for key_name, api_key in api_keys:
+    try:
+      client = Groq(
+          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+      )
+      prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, תחזיות או הערכות אנליסטים אם אינך בטוח או שאין נתון מבוסס. אם נתון אינו ידוע, ציין זאת בפירוש ואל תמציא מספרים או עובדות.
 
@@ -973,20 +957,36 @@ Return a valid JSON object with exactly these 5 keys:
 5. ANALYST_POINT_2
 """
 
-  raw_text2 = call_groq_with_keys(api_keys, prompt2)
-  if raw_text2:
-    try:
+      response2 = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt2}],
+          response_format={"type": "json_object"},
+          temperature=0.3,
+          max_tokens=4000,
+      )
+
+      raw_text2 = response2.choices[0].message.content.strip()
       parsed2 = json.loads(raw_text2)
       combined_result.update(parsed2)
+      break
     except Exception as e:
-      print(f"Error parsing Part 2 JSON: {e}")
+      print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
+        time.sleep(60)
+      else:
+        time.sleep(5)
 
-  time.sleep(5)
+  time.sleep(3)
 
   # --- PART 3: Stocks (Long-Term, Swing), Market News & Portfolio News ---
   print("🔄 Starting Groq AI Part 3 (Stocks, Market News & Portfolio News)...")
   portfolio_tickers = list(portfolio_stocks.keys())
-  prompt3 = f"""
+  for key_name, api_key in api_keys:
+    try:
+      client = Groq(
+          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+      )
+      prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
 הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק.
 
@@ -1018,19 +1018,35 @@ Return a valid JSON object with exactly these 4 keys:
 4. portfolio_news
 """
 
-  raw_text3 = call_groq_with_keys(api_keys, prompt3)
-  if raw_text3:
-    try:
+      response3 = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt3}],
+          response_format={"type": "json_object"},
+          temperature=0.3,
+          max_tokens=4000,
+      )
+
+      raw_text3 = response3.choices[0].message.content.strip()
       parsed3 = json.loads(raw_text3)
       combined_result.update(parsed3)
+      break
     except Exception as e:
-      print(f"Error parsing Part 3 JSON: {e}")
+      print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
+        time.sleep(60)
+      else:
+        time.sleep(5)
 
-  time.sleep(5)
+  time.sleep(3)
 
   # --- PART 4: Catalysts, Risk Management & Action Recommendations ---
   print("🔄 Starting Groq AI Part 4 (Catalysts, Risk Management & Action Recommendations)...")
-  prompt4 = f"""
+  for key_name, api_key in api_keys:
+    try:
+      client = Groq(
+          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+      )
+      prompt4 = f"""
 אתה אסטרטג שווקים ומנהל סיכונים בכיר. עליך לספק ניתוחים מקצועיים ומפורטים בעברית תקנית.
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט להמציא נתונים או תחזיות.
 
@@ -1051,13 +1067,24 @@ Return a valid JSON object with exactly these 5 keys:
 5. ACTION_RECOMMENDATIONS_TEXT
 """
 
-  raw_text4 = call_groq_with_keys(api_keys, prompt4)
-  if raw_text4:
-    try:
+      response4 = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt4}],
+          response_format={"type": "json_object"},
+          temperature=0.3,
+          max_tokens=4000,
+      )
+
+      raw_text4 = response4.choices[0].message.content.strip()
       parsed4 = json.loads(raw_text4)
       combined_result.update(parsed4)
+      break
     except Exception as e:
-      print(f"Error parsing Part 4 JSON: {e}")
+      print(f"⚠️ Part 4 attempt failed with {key_name}: {e}")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
+        time.sleep(60)
+      else:
+        time.sleep(5)
 
   combined_result["ai_updated_at"] = now_il_str
   return combined_result
