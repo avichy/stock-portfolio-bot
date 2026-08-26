@@ -39,6 +39,17 @@ def clean_text(text):
   return text
 
 
+def parse_json_safely(raw_text):
+  if not raw_text:
+    return {}
+  text = raw_text.strip()
+  if text.startswith("```"):
+    text = re.sub(r"^```(?:json)?\s*", "", text)
+    text = re.sub(r"\s*```$", "", text)
+    text = text.strip()
+  return json.loads(text)
+
+
 def get_all_groq_keys():
   keys_env = [
       "GROQ_API_KEY",
@@ -849,7 +860,7 @@ Return a valid JSON object with exactly these 9 keys:
       )
 
       raw_text1 = response1.choices[0].message.content.strip()
-      parsed1 = json.loads(raw_text1)
+      parsed1 = parse_json_safely(raw_text1)
       cleaned_parsed1 = {k: clean_text(v) if isinstance(v, str) else v for k, v in parsed1.items()}
       combined_result.update(cleaned_parsed1)
       break
@@ -905,7 +916,7 @@ Return a valid JSON object with exactly these 5 keys:
       )
 
       raw_text2 = response2.choices[0].message.content.strip()
-      parsed2 = json.loads(raw_text2)
+      parsed2 = parse_json_safely(raw_text2)
       cleaned_parsed2 = {k: clean_text(v) if isinstance(v, str) else v for k, v in parsed2.items()}
       combined_result.update(cleaned_parsed2)
       break
@@ -965,7 +976,7 @@ Return a valid JSON object with exactly these 8 keys:
       )
 
       raw_text3 = response3.choices[0].message.content.strip()
-      parsed3 = json.loads(raw_text3)
+      parsed3 = parse_json_safely(raw_text3)
       cleaned_parsed3 = {}
       for k, v in parsed3.items():
         if isinstance(v, str):
@@ -1081,7 +1092,7 @@ def clean_stocks_list(stocks_list, default_meta):
               "news": "מעקב שוטף אחר התפתחות המסחר והמומנטום.",
               "why_invest": "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי.",
           })
-  return cleaned if len(cleaned) >= 3 else default_meta
+  return cleaned if cleaned else default_meta
 
 
 cached_ai_init = load_ai_cache()
