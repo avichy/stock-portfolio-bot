@@ -92,7 +92,7 @@ def save_ai_cache(data):
 def load_portfolio_buys():
   if GITHUB_TOKEN and GITHUB_REPO:
     try:
-      url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
+      url = f"[https://api.github.com/repos/](https://api.github.com/repos/){GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
       headers = {"Authorization": f"token {GITHUB_TOKEN}"}
       response = requests.get(url, headers=headers)
       if response.status_code == 200:
@@ -124,7 +124,7 @@ def fetch_us_market_news():
         "Wall Street stock market S&P 500 Nasdaq economy breaking news Fed geopolitical"
     )
     encoded_query = urllib.parse.quote_plus(query)
-    url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
+    url = f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){encoded_query}&hl=en-US&gl=US&ceid=US:en"
 
     feed = feedparser.parse(url)
     news_items = []
@@ -132,7 +132,7 @@ def fetch_us_market_news():
     for entry in feed.entries[:10]:
       title = clean_text(entry.get("title", ""))
       summary = clean_text(entry.get("summary", ""))
-      link = entry.get("link", "https://news.google.com")
+      link = entry.get("link", "[https://news.google.com](https://news.google.com)")
       if title:
         news_items.append({
             "title": title,
@@ -238,9 +238,9 @@ def get_filtered_israel_news(headlines):
 def fetch_investing_news():
   try:
     rss_urls = [
-        "https://il.investing.com/rss/news.rss",
-        "https://www.investing.com/rss/news.rss",
-        "https://www.investing.com/rss/stock_market.rss",
+        "[https://il.investing.com/rss/news.rss](https://il.investing.com/rss/news.rss)",
+        "[https://www.investing.com/rss/news.rss](https://www.investing.com/rss/news.rss)",
+        "[https://www.investing.com/rss/stock_market.rss](https://www.investing.com/rss/stock_market.rss)",
     ]
     news_items = []
     seen_titles = set()
@@ -250,7 +250,7 @@ def fetch_investing_news():
       for entry in feed.entries[:10]:
         title = clean_text(entry.get("title", ""))
         summary = clean_text(entry.get("summary", "") or entry.get("description", ""))
-        link = entry.get("link", "https://il.investing.com/")
+        link = entry.get("link", "[https://il.investing.com/](https://il.investing.com/)")
         if title and title not in seen_titles:
           seen_titles.add(title)
           news_items.append(
@@ -268,7 +268,7 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-  url = "https://www.bizportal.co.il/"
+  url = "[https://www.bizportal.co.il/](https://www.bizportal.co.il/)"
   headers = {
       "User-Agent": (
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
@@ -307,9 +307,9 @@ def fetch_bizportal_news():
             ]
         ):
           if href.startswith("/"):
-            link = f"https://www.bizportal.co.il{href}"
+            link = f"[https://www.bizportal.co.il](https://www.bizportal.co.il){href}"
           elif not href.startswith("http"):
-            link = f"https://www.bizportal.co.il/{href}"
+            link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
           else:
             link = href
 
@@ -554,7 +554,7 @@ def format_analyst_text(text):
 def get_stock_logo_url(ticker):
   clean_ticker = str(ticker).strip().upper()
   parqet_ticker = clean_ticker.replace("-", ".")
-  return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
+  return f"[https://assets.parqet.com/logos/symbol/](https://assets.parqet.com/logos/symbol/){parqet_ticker}"
 
 
 LT_STOCKS_META = [
@@ -825,7 +825,7 @@ def fetch_ai_insights_split(
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       prompt1 = f"""
 {SYSTEM_PROMPT}
@@ -873,14 +873,14 @@ Return a valid JSON object with exactly these 9 keys:
 
   time.sleep(3)
 
-  # --- PART 2: News, Sentiment & Analyst Points with Sources ---
-  print("🔄 Starting Groq AI Part 2 (News, Sentiment & Analyst Points)...")
+  # --- PART 2A: News (US & IL) ---
+  print("🔄 Starting Groq AI Part 2A (US & IL News)...")
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
-      prompt2 = f"""
+      prompt2a = f"""
 {SYSTEM_PROMPT}
 
 Output a valid JSON object ONLY.
@@ -889,7 +889,6 @@ Output a valid JSON object ONLY.
 2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
 3. US_MARKET_NEWS: MUST use Google News RSS and explicitly end with `(מקור: Google News RSS)`. Do NOT include raw URLs in the AI body text here; provide professional summaries of the news.
 4. IL_MARKET_NEWS: MUST focus on domestic Israeli economy and explicitly end with `(מקור: Bizportal)`.
-5. ANALYST_POINT_1 / ANALYST_POINT_2: כלול את יעד האנליסטים הממוצע רק אם הוא מבוסס וידוע בוודאות. אם אינו בטוח או חסר, ציין שאין נתון אנליסטים מהימן ואל תמציא.
 
 Today is {day_name}, Date: {date_str}.
 
@@ -899,29 +898,72 @@ Today is {day_name}, Date: {date_str}.
 --- Israeli Market Headlines ---
 {bizportal_headlines_text}
 
-Return a valid JSON object with exactly these 5 keys:
+Return a valid JSON object with exactly these 2 keys:
 1. US_MARKET_NEWS
 2. IL_MARKET_NEWS
-3. COMMUNITY_SENTIMENT
-4. ANALYST_POINT_1
-5. ANALYST_POINT_2
 """
 
-      response2 = client.chat.completions.create(
+      response2a = client.chat.completions.create(
           model="openai/gpt-oss-120b",
-          messages=[{"role": "user", "content": prompt2}],
+          messages=[{"role": "user", "content": prompt2a}],
           response_format={"type": "json_object"},
           temperature=0.3,
           max_tokens=4000,
       )
 
-      raw_text2 = response2.choices[0].message.content.strip()
-      parsed2 = parse_json_safely(raw_text2)
-      cleaned_parsed2 = {k: clean_text(v) if isinstance(v, str) else v for k, v in parsed2.items()}
-      combined_result.update(cleaned_parsed2)
+      raw_text2a = response2a.choices[0].message.content.strip()
+      parsed2a = parse_json_safely(raw_text2a)
+      cleaned_parsed2a = {k: clean_text(v) if isinstance(v, str) else v for k, v in parsed2a.items()}
+      combined_result.update(cleaned_parsed2a)
       break
     except Exception as e:
-      print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
+      print(f"⚠️ Part 2A attempt failed with {key_name}: {e}")
+      if "429" in str(e) or "rate_limit_exceeded" in str(e):
+        time.sleep(60)
+      else:
+        time.sleep(5)
+
+  time.sleep(3)
+
+  # --- PART 2B: Sentiment & Analyst Points ---
+  print("🔄 Starting Groq AI Part 2B (Sentiment & Analyst Points)...")
+  for key_name, api_key in api_keys:
+    try:
+      client = Groq(
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
+      )
+      prompt2b = f"""
+{SYSTEM_PROMPT}
+
+Output a valid JSON object ONLY.
+
+1. LANGUAGE: Hebrew ONLY.
+2. MANDATORY CONCRETE CONCLUSION: Every field must include "לסיכום:" and an operational conclusion.
+3. ANALYST_POINT_1 / ANALYST_POINT_2: כלול את יעד האנליסטים הממוצע רק אם הוא מבוסס וידוע בוודאות. אם אינו בטוח או חסר, ציין שאין נתון אנליסטים מהימן ואל תמציא.
+
+Today is {day_name}, Date: {date_str}.
+
+Return a valid JSON object with exactly these 3 keys:
+1. COMMUNITY_SENTIMENT
+2. ANALYST_POINT_1
+3. ANALYST_POINT_2
+"""
+
+      response2b = client.chat.completions.create(
+          model="openai/gpt-oss-120b",
+          messages=[{"role": "user", "content": prompt2b}],
+          response_format={"type": "json_object"},
+          temperature=0.3,
+          max_tokens=4000,
+      )
+
+      raw_text2b = response2b.choices[0].message.content.strip()
+      parsed2b = parse_json_safely(raw_text2b)
+      cleaned_parsed2b = {k: clean_text(v) if isinstance(v, str) else v for k, v in parsed2b.items()}
+      combined_result.update(cleaned_parsed2b)
+      break
+    except Exception as e:
+      print(f"⚠️ Part 2B attempt failed with {key_name}: {e}")
       if "429" in str(e) or "rate_limit_exceeded" in str(e):
         time.sleep(60)
       else:
@@ -934,7 +976,7 @@ Return a valid JSON object with exactly these 5 keys:
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       prompt3 = f"""
 {SYSTEM_PROMPT}
@@ -1204,7 +1246,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='[https://s3-symbol-logo.tradingview.com/](https://s3-symbol-logo.tradingview.com/){clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white" style="text-align: right;">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
@@ -1236,7 +1278,7 @@ def build_market_news_html(market_news_list):
         item.get("news_link")
         or item.get("link")
         or item.get("url")
-        or "https://il.investing.com/"
+        or "[https://il.investing.com/](https://il.investing.com/)"
     )
     p_title = clean_text(
         item.get("news_title")
