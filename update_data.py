@@ -27,6 +27,10 @@ OUTPUT_FILE = "index.html"
 
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
+if GITHUB_REPO:
+  GITHUB_REPO = GITHUB_REPO.replace("https://github.com/", "").replace("http://github.com/", "").strip("/")
+  if GITHUB_REPO.endswith(".git"):
+    GITHUB_REPO = GITHUB_REPO[:-4]
 
 
 def clean_text(text):
@@ -306,12 +310,12 @@ def fetch_bizportal_news():
                 "תפריט",
             ]
         ):
-          if href.startswith("/"):
-            link = f"[https://www.bizportal.co.il](https://www.bizportal.co.il){href}"
-          elif not href.startswith("http"):
-            link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
-          else:
+          if href.startswith("http"):
             link = href
+          elif href.startswith("/"):
+            link = f"[https://www.bizportal.co.il](https://www.bizportal.co.il){href}"
+          else:
+            link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
 
           seen_titles.add(text)
           news_items.append({"title": text, "link": link, "source": "Bizportal"})
@@ -1192,7 +1196,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
       news = "מעקב שוטף אחר התפתחות המסחר והמומנטום."
       why_invest = "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
     elif isinstance(s, dict):
-      # FIXED: Removed 'or s.get("name")' so company names are never mistakenly used as stock symbols/tickers
       ticker = clean_text(str(
           s.get("ticker") or s.get("symbol") or ""
       )).strip().upper()
@@ -1628,7 +1631,7 @@ if __name__ == "__main__":
             ai_insights.get("CATALYST_HARDWARE", "")
         ),
         "COMMUNITY_SENTIMENT": format_phase1_text(
-            ai_insights.get("COMMUNITY_SENTIMENT", "")
+            ai_insights.get("COMMUNITY_SERVICES_SENTIMENT" if "COMMUNITY_SERVICES_SENTIMENT" in ai_insights else "COMMUNITY_SENTIMENT", "")
         ),
         "ANALYST_POINT_1": formatted_analyst_1,
         "ANALYST_POINT_2": formatted_analyst_2,
