@@ -25,7 +25,6 @@ PORTFOLIO_FILE = "portfolio.json"
 TEMPLATE_FILE = "index.template.html"
 OUTPUT_FILE = "index.html"
 
-# יצירת קבצי ברירת מחדל במידה והם חסרים כדי למנוע קריסת FileNotFoundError
 if not os.path.exists(TEMPLATE_FILE):
   with open(TEMPLATE_FILE, "w", encoding="utf-8") as f:
     f.write("""<!DOCTYPE html>
@@ -60,7 +59,8 @@ def clean_text(text):
     return ""
   if not isinstance(text, str):
     text = str(text)
-  text = text.replace(r'\\', '').replace('\\', '')
+  # ניקוי בטוח של סלאשים מיותרים רק כשהם שוברים את הטקסט, בלי לפגוע במבנה הכללי
+  text = re.sub(r'\\+(?=["\']|$)', '', text)
   text = re.sub(r'בארה["\\]ב', 'בארה"ב', text)
   return text
 
@@ -387,60 +387,6 @@ def format_text_with_conclusion(text, prefix_num=None):
   formatted_content = format_numbers_in_text(formatted_content)
   formatted_content = force_source_on_newline(formatted_content)
   return f'<span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">{formatted_content}</span>'
-
-
-def format_news_description(text):
-  text = clean_text(text)
-  if isinstance(text, list):
-    text = " ".join(str(item) for item in text)
-  elif not isinstance(text, str):
-    text = str(text)
-
-  text = text.strip()
-  text = replace_dollar_word(text)
-  text = text.replace("\\n", "<br>").replace("\n", "<br>")
-  source_match = re.search(r"(\(מקור\s*:[^)]+\))", text, re.IGNORECASE)
-  source_str = source_match.group(1) if source_match else ""
-  if source_str:
-    text = text.replace(source_str, "").strip()
-
-  cleaned = text.replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace('"', "").replace("'", "")
-  cleaned = re.sub(r"^(?:סיכום הכתבה:?|לסיכום:?)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE).strip()
-  cleaned = re.sub(r"לסיכום.*$", "", cleaned, flags=re.IGNORECASE).strip()
-  cleaned = format_numbers_in_text(cleaned)
-  if source_str:
-    cleaned = cleaned.strip() + " " + source_str
-  return force_source_on_newline(cleaned)
-
-
-def format_phase1_text(text):
-  return format_text_with_conclusion(text)
-
-
-def format_analyst_text(text):
-  text = clean_text(text)
-  if not text or not str(text).strip() or str(text).strip() in ["''", '""']:
-    text = "אין נתונים עדכניים זמינים כרגע מסקירת האנליסטים."
-  if "לסיכום" not in str(text):
-    text = str(text).strip() + " לסיכום: מומלץ לעקוב אחר התפתחות המגמות בשווקים."
-  return format_text_with_conclusion(text, prefix_num=None)
-
-
-def get_stock_logo_url(ticker):
-  clean_ticker = str(ticker).strip().upper()
-  parqet_ticker = clean_ticker.replace("-", ".")
-  return f"[https://assets.parqet.com/logos/symbol/](https://assets.parqet.com/logos/symbol/){parqet_ticker}"
-
-
-LT_STOCKS_META = [
-    {"ticker": "MSFT", "name": "Microsoft Corporation", "desc": "ענן Azure, תוכנה, פתרונות AI.", "news": "התרחבות בענן ובבינה מלאכותית.", "why_invest": "מובילה גלובלית עם תזרים אדיר."},
-    {"ticker": "JPM", "name": "JPMorgan Chase & Co.", "desc": "בנקאות מסחרית והשקעות.", "news": "תוצאות חזקות וניהול סיכונים קפדני.", "why_invest": "מאזן חסון ותשואות עקביות."},
-]
-
-SW_STOCKS_META = [
-    {"ticker": "TSLA", "name": "Tesla, Inc.", "desc": "רכבים חשמליים ואנרגיה.", "news": "תנודתיות גבוהה למסחר סווינג.", "why_invest": "פוטנציאל רווח מהיר לסוחרים."},
-    {"ticker": "AMD", "name": "Advanced Micro Devices", "desc": "פיתוח מעבדים ושבבים.", "news": "תנועות מחיר סביב השקות AI.", "why_invest": "מומנטום שוק חזק."},
-]
 
 
 def fetch_yahoo_direct(ticker):
