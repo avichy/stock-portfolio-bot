@@ -25,6 +25,16 @@ PORTFOLIO_FILE = "portfolio.json"
 TEMPLATE_FILE = "index.template.html"
 OUTPUT_FILE = "index.html"
 
+def clean_url(url_str):
+  if not url_str:
+    return ""
+  # ניקוי אוטומטי של סוגרי מרקדאון אם נוצרו בהעתקה
+  match = re.search(r'\((https?://[^)]+)\)', url_str)
+  if match:
+    return match.group(1)
+  cleaned = re.sub(r'[\[\]\(\)]', '', url_str)
+  return cleaned.strip()
+
 # הגדרת ברירת מחדל למניות למניעת שגיאות NameError
 LT_STOCKS_META = [
     {
@@ -77,8 +87,7 @@ if not os.path.exists(PORTFOLIO_FILE):
 GITHUB_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 if GITHUB_REPO:
-  # ניקוי יסודי של סימני מרקדאון או כתובות מיותרות מהמשתנה
-  GITHUB_REPO = re.sub(r"[\[\]\(\)]", "", GITHUB_REPO)
+  GITHUB_REPO = clean_url(GITHUB_REPO)
   GITHUB_REPO = GITHUB_REPO.replace("https://github.com/", "").replace("http://github.com/", "").strip("/")
   if GITHUB_REPO.endswith(".git"):
     GITHUB_REPO = GITHUB_REPO[:-4]
@@ -154,7 +163,7 @@ def save_ai_cache(data):
 def load_portfolio_buys():
   if GITHUB_TOKEN and GITHUB_REPO:
     try:
-      url = f"[https://api.github.com/repos/](https://api.github.com/repos/){GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
+      url = clean_url(f"[https://api.github.com/repos/](https://api.github.com/repos/){GITHUB_REPO}/contents/{PORTFOLIO_FILE}")
       headers = {"Authorization": f"token {GITHUB_TOKEN}"}
       response = requests.get(url, headers=headers)
       if response.status_code == 200:
@@ -184,7 +193,7 @@ def fetch_us_market_news():
   try:
     query = "Wall Street stock market S&P 500 Nasdaq economy breaking news Fed geopolitical"
     encoded_query = urllib.parse.quote_plus(query)
-    url = f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){encoded_query}&hl=en-US&gl=US&ceid=US:en"
+    url = clean_url(f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){encoded_query}&hl=en-US&gl=US&ceid=US:en")
 
     feed = feedparser.parse(url)
     news_items = []
@@ -192,7 +201,7 @@ def fetch_us_market_news():
     for entry in feed.entries[:10]:
       title = clean_text(entry.get("title", ""))
       summary = clean_text(entry.get("summary", ""))
-      link = entry.get("link", "[https://news.google.com](https://news.google.com)")
+      link = clean_url(entry.get("link", "[https://news.google.com](https://news.google.com)"))
       if title:
         news_items.append({
             "title": title,
@@ -249,11 +258,11 @@ def fetch_investing_news():
     seen_titles = set()
 
     for url in rss_urls:
-      feed = feedparser.parse(url)
+      feed = feedparser.parse(clean_url(url))
       for entry in feed.entries[:10]:
         title = clean_text(entry.get("title", ""))
         summary = clean_text(entry.get("summary", "") or entry.get("description", ""))
-        link = entry.get("link", "[https://il.investing.com/](https://il.investing.com/)")
+        link = clean_url(entry.get("link", "[https://il.investing.com/](https://il.investing.com/)"))
         if title and title not in seen_titles:
           seen_titles.add(title)
           news_items.append(f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}")
@@ -265,7 +274,7 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-  url = "[https://www.bizportal.co.il/](https://www.bizportal.co.il/)"
+  url = clean_url("[https://www.bizportal.co.il/](https://www.bizportal.co.il/)")
   headers = {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -282,7 +291,7 @@ def fetch_bizportal_news():
 
     for a_tag in soup.find_all("a", href=True):
       text = clean_text(a_tag.get_text(strip=True))
-      href = a_tag["href"]
+      href = clean_url(a_tag["href"])
       if len(text) > 25 and text not in seen_titles:
         if not any(w in text for w in ["התחבר", "הירשם", "פרסם אצלנו", "תנאי שימוש", "צור קשר", "חיפוש", "מערכת", "שירות לקוחות", "תפריט"]):
           if href.startswith("http"):
@@ -293,7 +302,7 @@ def fetch_bizportal_news():
             link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
 
           seen_titles.add(text)
-          news_items.append({"title": text, "link": link, "source": "Bizportal"})
+          news_items.append({"title": text, "link": clean_url(link), "source": "Bizportal"})
     return news_items[:15]
   except Exception as e:
     print(f"Warning: Error fetching Bizportal: {e}")
@@ -393,8 +402,10 @@ def fetch_ai_insights_split(market_data, portfolio_stocks, date_str, day_name, u
   SYSTEM_PROMPT = "אתה אנליסט פיננסי בכיר. כתוב בעברית מקצועית בלבד והחזר אך ורק מבנה JSON תקין."
 
   for key_name, api_key in api_keys:
-    # נסיון ראשון דרך הפרוקסי, אם נכשל עובר ישירות ל-Groq הרשמי
-    base_urls = ["[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)", "[https://api.groq.com/openai/v1](https://api.groq.com/openai/v1)"]
+    base_urls = [
+        clean_url("[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"),
+        clean_url("[https://api.groq.com/openai/v1](https://api.groq.com/openai/v1)")
+    ]
     
     success = False
     for b_url in base_urls:
