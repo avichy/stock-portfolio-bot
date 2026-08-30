@@ -28,14 +28,12 @@ OUTPUT_FILE = "index.html"
 def clean_url(url_str):
   if not url_str:
     return ""
-  # ניקוי אוטומטי של סוגרי מרקדאון אם נוצרו בהעתקה
   match = re.search(r'\((https?://[^)]+)\)', url_str)
   if match:
     return match.group(1)
   cleaned = re.sub(r'[\[\]\(\)]', '', url_str)
   return cleaned.strip()
 
-# הגדרת ברירת מחדל למניות למניעת שגיאות NameError
 LT_STOCKS_META = [
     {
         "ticker": "AAPL",
@@ -43,13 +41,6 @@ LT_STOCKS_META = [
         "desc": "חברת טכנולוגיה מובילה.",
         "news": "מעקב שוטף אחרי מוצרי החברה.",
         "why_invest": "יציבות עסקית ותזרים מזומנים חזק."
-    },
-    {
-        "ticker": "MSFT",
-        "name": "Microsoft",
-        "desc": "מובילת ענן ותוכנה עולמית.",
-        "news": "התרחבות בתחומי ענן ובינה מלאכותית.",
-        "why_invest": "מובילות טכנולוגית לטווח ארוך."
     }
 ]
 
@@ -68,16 +59,7 @@ if not os.path.exists(TEMPLATE_FILE):
     f.write("""<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head><meta charset="UTF-8"><title>לוח בקרה פיננסי</title></head>
-<body class="bg-gray-900 text-white p-6">
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-cyan-400 mb-4">לוח בקרה פיננסי</h1>
-        <div>עודכן לאחרונה: {{LAST_UPDATED}}</div>
-        <div>{{SP500_PRICE}} | {{SP500_PCT}}</div>
-        <div>{{LONG_TERM_STOCKS_SECTION}}</div>
-        <div>{{SWING_STOCKS_SECTION}}</div>
-        <div>{{PORTFOLIO_NEWS_SECTION}}</div>
-    </div>
-</body>
+<body>בדוק את קובץ ה-Template שלך</body>
 </html>""")
 
 if not os.path.exists(PORTFOLIO_FILE):
@@ -92,14 +74,12 @@ if GITHUB_REPO:
   if GITHUB_REPO.endswith(".git"):
     GITHUB_REPO = GITHUB_REPO[:-4]
 
-
 def clean_text(text):
   if not text:
     return ""
   if not isinstance(text, str):
     text = str(text)
   return text
-
 
 def parse_json_safely(raw_text):
   if not raw_text:
@@ -120,7 +100,6 @@ def parse_json_safely(raw_text):
         pass
     return {}
 
-
 def get_all_groq_keys():
   keys_env = [
       "GROQ_API_KEY",
@@ -137,7 +116,6 @@ def get_all_groq_keys():
       valid_keys.append((key_name, api_key))
   return valid_keys
 
-
 def load_ai_cache():
   if os.path.exists(AI_CACHE_FILE):
     try:
@@ -150,7 +128,6 @@ def load_ai_cache():
       print(f"Warning: Error loading AI cache: {e}")
   return {}
 
-
 def save_ai_cache(data):
   try:
     with open(AI_CACHE_FILE, "w", encoding="utf-8") as f:
@@ -158,7 +135,6 @@ def save_ai_cache(data):
     print("Successfully saved AI cache.")
   except Exception as e:
     print(f"Warning: Error saving AI cache: {e}")
-
 
 def load_portfolio_buys():
   if GITHUB_TOKEN and GITHUB_REPO:
@@ -185,36 +161,25 @@ def load_portfolio_buys():
       print(f"Warning: Error loading local portfolio.json: {e}")
   return {}
 
-
 portfolio_buys = load_portfolio_buys()
-
 
 def fetch_us_market_news():
   try:
     query = "Wall Street stock market S&P 500 Nasdaq economy breaking news Fed geopolitical"
     encoded_query = urllib.parse.quote_plus(query)
     url = clean_url(f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){encoded_query}&hl=en-US&gl=US&ceid=US:en")
-
     feed = feedparser.parse(url)
     news_items = []
-
     for entry in feed.entries[:10]:
       title = clean_text(entry.get("title", ""))
       summary = clean_text(entry.get("summary", ""))
       link = clean_url(entry.get("link", "[https://news.google.com](https://news.google.com)"))
       if title:
-        news_items.append({
-            "title": title,
-            "summary": summary,
-            "link": link,
-            "source": "Google News RSS",
-        })
-
+        news_items.append({"title": title, "summary": summary, "link": link, "source": "Google News RSS"})
     return news_items
   except Exception as e:
     print(f"Error fetching US news: {e}")
     return []
-
 
 def get_filtered_us_news(headlines):
   us_market_drivers = [
@@ -229,7 +194,6 @@ def get_filtered_us_news(headlines):
     if any(driver.lower() in title.lower() for driver in us_market_drivers):
       filtered.append(h)
   return filtered[:3] if filtered else headlines[:3]
-
 
 def get_filtered_israel_news(headlines):
   local_mandatory = [
@@ -246,7 +210,6 @@ def get_filtered_israel_news(headlines):
       filtered.append(h)
   return filtered[:3] if filtered else [h for h in headlines if not any(x in h.get("title", "") for x in ["וול סטריט", "הפד", "וולסטריט"])][:3]
 
-
 def fetch_investing_news():
   try:
     rss_urls = [
@@ -256,7 +219,6 @@ def fetch_investing_news():
     ]
     news_items = []
     seen_titles = set()
-
     for url in rss_urls:
       feed = feedparser.parse(clean_url(url))
       for entry in feed.entries[:10]:
@@ -266,12 +228,10 @@ def fetch_investing_news():
         if title and title not in seen_titles:
           seen_titles.add(title)
           news_items.append(f"- כותרת: {title}\n  קישור: {link}\n  תיאור: {summary}")
-
     return "\n".join(news_items[:12]) if news_items else "No recent Investing.com news available."
   except Exception as e:
     print(f"Error fetching Investing news: {e}")
     return "Failed to fetch Investing news."
-
 
 def fetch_bizportal_news():
   url = clean_url("[https://www.bizportal.co.il/](https://www.bizportal.co.il/)")
@@ -284,11 +244,9 @@ def fetch_bizportal_news():
     response = requests.get(url, headers=headers, timeout=10)
     if response.status_code != 200:
       return []
-
     soup = BeautifulSoup(response.text, "html.parser")
     news_items = []
     seen_titles = set()
-
     for a_tag in soup.find_all("a", href=True):
       text = clean_text(a_tag.get_text(strip=True))
       href = clean_url(a_tag["href"])
@@ -300,14 +258,12 @@ def fetch_bizportal_news():
             link = f"[https://www.bizportal.co.il](https://www.bizportal.co.il){href}"
           else:
             link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
-
           seen_titles.add(text)
           news_items.append({"title": text, "link": clean_url(link), "source": "Bizportal"})
     return news_items[:15]
   except Exception as e:
     print(f"Warning: Error fetching Bizportal: {e}")
     return []
-
 
 def format_num(val, decimals=2):
   try:
@@ -318,16 +274,13 @@ def format_num(val, decimals=2):
   except (ValueError, TypeError):
     return str(val)
 
-
 def format_pct_colored(val):
   try:
     num = float(val)
     sign = "+" if num > 0 else ""
-    color = "#2ecc71" if num >= 0 else "#e74c3c"
-    return f'<span dir="ltr" style="color: {color}; font-weight: bold; display: inline-block;">{sign}{num:.2f}%</span>'
+    return f"{sign}{num:.2f}%"
   except (ValueError, TypeError):
     return str(val)
-
 
 def fetch_yahoo_direct(ticker):
   clean_ticker = str(ticker).strip().upper()
@@ -343,13 +296,11 @@ def fetch_yahoo_direct(ticker):
       prev_close = t.fast_info.get('previousClose')
     except Exception:
       pass
-
     info = {}
     try:
       info = t.info
     except Exception:
       pass
-
     if not current_price:
       current_price = info.get("currentPrice") or info.get("regularMarketPrice") or info.get("previousClose", 0.0)
     if not prev_close:
@@ -359,9 +310,7 @@ def fetch_yahoo_direct(ticker):
       change = ((current_price - prev_close) / prev_close) * 100
     else:
       change = 0.0
-
     target_mean = info.get("targetMeanPrice", 0.0) or 0.0
-
     if current_price and current_price > 0:
       return {
           "price": round(float(current_price), 2),
@@ -372,7 +321,6 @@ def fetch_yahoo_direct(ticker):
     print(f"yfinance fetch error for {clean_ticker}: {e}")
   return None
 
-
 def fetch_market_data(tickers):
   market_data = {}
   for ticker in tickers:
@@ -382,7 +330,6 @@ def fetch_market_data(tickers):
     else:
       market_data[ticker] = {"price": 100.0, "change": 0.0, "target": 0.0}
   return market_data
-
 
 def fetch_ai_insights_split(market_data, portfolio_stocks, date_str, day_name, us_market_news_text, investing_news, bizportal_headlines_text, now_il_str):
   api_keys = get_all_groq_keys()
@@ -406,7 +353,6 @@ def fetch_ai_insights_split(market_data, portfolio_stocks, date_str, day_name, u
         clean_url("[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"),
         clean_url("[https://api.groq.com/openai/v1](https://api.groq.com/openai/v1)")
     ]
-    
     success = False
     for b_url in base_urls:
       try:
@@ -434,14 +380,12 @@ SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_I
       except Exception as e:
         print(f"⚠️ Groq attempt failed with {key_name} on {b_url}: {e}")
         continue
-      
     if success:
       break
     time.sleep(2)
 
   combined_result["ai_updated_at"] = now_il_str
   return combined_result
-
 
 israel_tz = pytz.timezone("Asia/Jerusalem")
 now_il = datetime.now(israel_tz)
@@ -479,7 +423,6 @@ def clean_stocks_list(stocks_list, default_meta):
         })
   return cleaned if cleaned else default_meta
 
-
 if __name__ == "__main__":
   try:
     print("Fetching initial market data...")
@@ -502,20 +445,69 @@ if __name__ == "__main__":
     if ai_insights and isinstance(ai_insights, dict):
       save_ai_cache(ai_insights)
 
-    new_lt = clean_stocks_list(ai_insights.get("long_term_stocks", LT_STOCKS_META), LT_STOCKS_META)
-    new_sw = clean_stocks_list(ai_insights.get("swing_stocks", SW_STOCKS_META), SW_STOCKS_META)
-
     with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
       content = f.read()
 
+    # מיפוי מלא של כל ערכי השווקים וה-AI לתוך תבנית ה-HTML
     replacements = {
+        "DAY_NAME": day_name,
         "LAST_UPDATED": now_il_str,
+        "AI_LAST_UPDATED": ai_insights.get("ai_updated_at", now_il_str),
+        
+        # S&P 500
         "SP500_PRICE": format_num(base_market_data.get("^GSPC", {}).get("price", 0)),
         "SP500_PCT": format_pct_colored(base_market_data.get("^GSPC", {}).get("change", 0)),
-        "LONG_TERM_STOCKS_SECTION": "<div>קבוצת מניות ארוכות טווח מעודכנות</div>",
-        "SWING_STOCKS_SECTION": "<div>קבוצת מניות סווינג מעודכנות</div>",
-        "PORTFOLIO_NEWS_SECTION": "<div>חדשות שוק מעודכנות</div>",
+        "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", ""),
+
+        # NASDAQ
+        "NASDAQ_PRICE": format_num(base_market_data.get("^NDX", {}).get("price", 0)),
+        "NASDAQ_PCT": format_pct_colored(base_market_data.get("^NDX", {}).get("change", 0)),
+        "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", ""),
+
+        # DOW JONES
+        "DOW_PRICE": format_num(base_market_data.get("^DJI", {}).get("price", 0)),
+        "DOW_PCT": format_pct_colored(base_market_data.get("^DJI", {}).get("change", 0)),
+        "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", ""),
+
+        # VIX
+        "VIX_PRICE": format_num(base_market_data.get("^VIX", {}).get("price", 0)),
+        "VIX_PCT": format_pct_colored(base_market_data.get("^VIX", {}).get("change", 0)),
+        "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", ""),
+
+        # DXY
+        "DXY_PRICE": format_num(base_market_data.get("DX-Y.NYB", {}).get("price", 0)),
+        "DXY_PCT": format_pct_colored(base_market_data.get("DX-Y.NYB", {}).get("change", 0)),
+        "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", ""),
+
+        # USD/ILS
+        "USD_ILS": format_num(base_market_data.get("USDILS=X", {}).get("price", 0)),
+        "USD_ILS_CHANGE": format_pct_colored(base_market_data.get("USDILS=X", {}).get("change", 0)),
+        "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", ""),
+
+        # OIL
+        "OIL_PRICE": format_num(base_market_data.get("CL=F", {}).get("price", 0)),
+        "OIL_CHANGE": format_pct_colored(base_market_data.get("CL=F", {}).get("change", 0)),
+        "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", ""),
+
+        # GOLD
+        "GOLD_PRICE": format_num(base_market_data.get("GC=F", {}).get("price", 0)),
+        "GOLD_CHANGE": format_pct_colored(base_market_data.get("GC=F", {}).get("change", 0)),
+        "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", ""),
+
+        # BITCOIN
+        "BTC_PRICE": format_num(base_market_data.get("BTC-USD", {}).get("price", 0)),
+        "BTC_CHANGE": format_pct_colored(base_market_data.get("BTC-USD", {}).get("change", 0)),
+        "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", ""),
+
+        # NEWS
+        "US_MARKET_NEWS": ai_insights.get("US_MARKET_NEWS", us_market_news_text),
+        "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_NEWS", bizportal_headlines_text),
     }
+
+    # הוספת כל שאר המפתחות מה-AI אוטומטית למקרה שיש עוד
+    for k, v in ai_insights.items():
+      if k not in replacements and isinstance(v, str):
+        replacements[k] = v
 
     for k, v in replacements.items():
       content = content.replace("{{" + k + "}}", str(v))
