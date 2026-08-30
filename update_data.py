@@ -66,10 +66,20 @@ def save_ai_cache(data):
     print(f"Warning: Error saving AI cache: {e}")
 
 
+def clean_json_string(raw_text):
+  """ניקוי עטיפות Markdown מתשובות ה-AI לפני פענוח JSON"""
+  if not isinstance(raw_text, str):
+    return str(raw_text)
+  raw_text = re.sub(r"^```json\s*", "", raw_text, flags=re.IGNORECASE)
+  raw_text = re.sub(r"^```\s*", "", raw_text, flags=re.IGNORECASE)
+  raw_text = re.sub(r"\s*```$", "", raw_text)
+  return raw_text.strip()
+
+
 def load_portfolio_buys():
   if GITHUB_TOKEN and GITHUB_REPO:
     try:
-      url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
+      url = f"[https://api.github.com/repos/](https://api.github.com/repos/){GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
       headers = {"Authorization": f"token {GITHUB_TOKEN}"}
       response = requests.get(url, headers=headers)
       if response.status_code == 200:
@@ -103,7 +113,7 @@ def fetch_us_market_news():
         "Wall Street stock market S&P 500 Nasdaq economy breaking news Fed"
     )
     encoded_query = urllib.parse.quote_plus(query)
-    url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
+    url = f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){encoded_query}&hl=en-US&gl=US&ceid=US:en"
 
     feed = feedparser.parse(url)
     news_items = []
@@ -111,7 +121,7 @@ def fetch_us_market_news():
     for entry in feed.entries[:10]:
       title = entry.get("title", "")
       summary = entry.get("summary", "")
-      link = entry.get("link", "https://news.google.com")
+      link = entry.get("link", "[https://news.google.com](https://news.google.com)")
       if title:
         news_items.append({
             "title": title,
@@ -221,9 +231,9 @@ def fetch_investing_news():
   """שליפת חדשות פיננסיות וגיאופוליטיות מ-Investing.com דרך פידי ה-RSS שלהם"""
   try:
     rss_urls = [
-        "https://il.investing.com/rss/news.rss",
-        "https://www.investing.com/rss/news.rss",
-        "https://www.investing.com/rss/stock_market.rss",
+        "[https://il.investing.com/rss/news.rss](https://il.investing.com/rss/news.rss)",
+        "[https://www.investing.com/rss/news.rss](https://www.investing.com/rss/news.rss)",
+        "[https://www.investing.com/rss/stock_market.rss](https://www.investing.com/rss/stock_market.rss)",
     ]
     news_items = []
     seen_titles = set()
@@ -233,7 +243,7 @@ def fetch_investing_news():
       for entry in feed.entries[:10]:
         title = entry.get("title", "")
         summary = entry.get("summary", "") or entry.get("description", "")
-        link = entry.get("link", "https://il.investing.com/")
+        link = entry.get("link", "[https://il.investing.com/](https://il.investing.com/)")
         if title and title not in seen_titles:
           seen_titles.add(title)
           news_items.append(
@@ -251,7 +261,7 @@ def fetch_investing_news():
 
 
 def fetch_bizportal_news():
-  url = "https://www.bizportal.co.il/"
+  url = "[https://www.bizportal.co.il/](https://www.bizportal.co.il/)"
   headers = {
       "User-Agent": (
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
@@ -290,9 +300,9 @@ def fetch_bizportal_news():
             ]
         ):
           if href.startswith("/"):
-            link = f"https://www.bizportal.co.il{href}"
+            link = f"[https://www.bizportal.co.il](https://www.bizportal.co.il){href}"
           elif not href.startswith("http"):
-            link = f"https://www.bizportal.co.il/{href}"
+            link = f"[https://www.bizportal.co.il/](https://www.bizportal.co.il/){href}"
           else:
             link = href
 
@@ -537,7 +547,7 @@ def format_analyst_text(text):
 def get_stock_logo_url(ticker):
   clean_ticker = str(ticker).strip().upper()
   parqet_ticker = clean_ticker.replace("-", ".")
-  return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
+  return f"[https://assets.parqet.com/logos/symbol/](https://assets.parqet.com/logos/symbol/){parqet_ticker}"
 
 
 LT_STOCKS_META = [
@@ -876,7 +886,7 @@ def fetch_ai_insights_split(
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       prompt1 = f"""
 אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
@@ -914,7 +924,7 @@ Return a valid JSON object with exactly these 9 keys:
       )
 
       raw_text1 = response1.choices[0].message.content.strip()
-      parsed1 = json.loads(raw_text1)
+      parsed1 = json.loads(clean_json_string(raw_text1))
       combined_result.update(parsed1)
       break
     except Exception as e:
@@ -931,7 +941,7 @@ Return a valid JSON object with exactly these 9 keys:
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       prompt2 = f"""
 אתה אנליסט שווקים בכיר. עליך לספק ניתוחים מקצועיים ומעמיקים.
@@ -970,7 +980,7 @@ Return a valid JSON object with exactly these 5 keys:
       )
 
       raw_text2 = response2.choices[0].message.content.strip()
-      parsed2 = json.loads(raw_text2)
+      parsed2 = json.loads(clean_json_string(raw_text2))
       combined_result.update(parsed2)
       break
     except Exception as e:
@@ -987,7 +997,7 @@ Return a valid JSON object with exactly these 5 keys:
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב 4 (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
@@ -1030,7 +1040,7 @@ Return a valid JSON object with exactly these 8 keys:
       )
 
       raw_text3 = response3.choices[0].message.content.strip()
-      parsed3 = json.loads(raw_text3)
+      parsed3 = json.loads(clean_json_string(raw_text3))
       combined_result.update(parsed3)
       break
     except Exception as e:
@@ -1238,7 +1248,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='[https://s3-symbol-logo.tradingview.com/](https://s3-symbol-logo.tradingview.com/){clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white" style="text-align: right;">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
@@ -1270,7 +1280,7 @@ def build_market_news_html(market_news_list):
         item.get("news_link")
         or item.get("link")
         or item.get("url")
-        or "https://il.investing.com/"
+        or "[https://il.investing.com/](https://il.investing.com/)"
     )
     p_title = (
         item.get("news_title")
