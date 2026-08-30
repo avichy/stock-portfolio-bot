@@ -152,8 +152,7 @@ def save_ai_cache(data):
 def load_portfolio_buys():
   if GITHUB_TOKEN and GITHUB_REPO:
     try:
-      url = f"[https://api.github.com/repos/](https://api.github.com/repos/){GITHUB_REPO}/contents/{PORTFOLIO_FILE}"
-      headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+      url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{PORTFOLIO_FILE}"      headers = {"Authorization": f"token {GITHUB_TOKEN}"}
       response = requests.get(url, headers=headers)
       if response.status_code == 200:
         file_data = response.json()
