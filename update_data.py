@@ -59,9 +59,6 @@ def clean_text(text):
     return ""
   if not isinstance(text, str):
     text = str(text)
-  # ניקוי בטוח של סלאשים מיותרים רק כשהם שוברים את הטקסט, בלי לפגוע במבנה הכללי
-  text = re.sub(r'\\+(?=["\']|$)', '', text)
-  text = re.sub(r'בארה["\\]ב', 'בארה"ב', text)
   return text
 
 
