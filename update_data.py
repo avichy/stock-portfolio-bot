@@ -14,7 +14,7 @@ from groq import Groq
 import pytz
 import requests
 
-# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)[cite: 5]
+# וידוא שספריית yfinance קיימת (מותקנת אוטומטית במידת הצורך ב-GitHub Actions)
 try:
   import yfinance as yf
 except ImportError:
@@ -74,7 +74,8 @@ def load_portfolio_buys():
       response = requests.get(url, headers=headers)
       if response.status_code == 200:
         file_data = response.json()
-        content = base64.b64decode(file_data["content"]).decode("utf-8")
+        raw_content = file_data.get("content", "").replace("\n", "")
+        content = base64.b64decode(raw_content.encode("utf-8")).decode("utf-8")
         parsed = json.loads(content)
         if isinstance(parsed, dict):
           return parsed
@@ -444,6 +445,9 @@ def format_text_with_conclusion(text, prefix_num=None):
     elif len(sentences) == 2:
       conclusion = sentences[1]
       explanation = sentences[0]
+    elif len(sentences) == 1:
+      conclusion = "מומלץ לעקוב מקרוב אחר ההתפתחויות בשווקים."
+      explanation = sentences[0]
     else:
       conclusion = "מומלץ לעקוב מקרוב אחר ההתפתחויות בשווקים."
 
@@ -689,8 +693,8 @@ def fetch_yahoo_direct(ticker):
     t = yf.Ticker(clean_ticker)
     
     fi = t.fast_info
-    current_price = getattr(fi, 'last_price', None)
-    prev_close = getattr(fi, 'previous_close', None)
+    current_price = fi.get('last_price', None) if fi else None
+    prev_close = fi.get('previous_close', None) if fi else None
 
     info = {}
     try:
@@ -875,7 +879,7 @@ def fetch_ai_insights_split(
           api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
       )
       prompt1 = f"""
-אתה אנליסט מאקרו-كلכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
+אתה אנליסט מאקרו-כלכלי ואסטרטג וול סטריט בכיר ומקצועי ביותר. 
 עליך לספק ניתוחים עמוקים ומקצועיים בעברית תקנית לחלוטין, ללא שגיאות כתיב או תקלדות.
 
 הנחיית אי-המצאת נתונים (Anti-Hallucination): חל איסור מוחלט על ה-AI להמציא נתונים, עובדות, מחירים או תחזיות שאינו בטוח לגביהם או שאינם קיימים בנתוני השוק שסופקו. אם אינך יודע או אינך בטוח לגבי נתון כלשהו, אל תמציא אותו – כתוב במפורש שאין נתונים זמינים.
@@ -1214,7 +1218,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     data = market_data.get(ticker, {})
     price = format_num(data.get("price", 0))
     
-    # שליפת יעד אנליסטים ממוצע (הוחזר לשלב 4 תוך אי-המצאה)
     target_val = data.get("target", 0.0)
     if target_val and float(target_val) > 0:
       target_display = f"${format_num(target_val)}"
@@ -1232,7 +1235,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
-    # כרטיסיית המניה בשלב 4 (ללא טרום פתיחה, עם יעד אנליסטים ממוצע)
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1511,7 +1513,6 @@ if __name__ == "__main__":
         fetched_price_data = base_market_data.get(ticker, {})
         curr_p = fetched_price_data.get("price") or buy_p
         
-        # שליפת יעד אנליסטים ממוצע לתיק האישי (שלב 5)
         target_val = fetched_price_data.get("target", 0.0)
         if target_val and float(target_val) > 0:
           target_str = f"${format_num(target_val)}"
@@ -1533,7 +1534,7 @@ if __name__ == "__main__":
             "shares": shares_count,
             "buyPrice": f"${format_num(buy_p)}",
             "current": f"${format_num(curr_p)}",
-            "target": target_str,  # הוחזר לשלב 5
+            "target": target_str,
             "status": (
                 f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
                 f" display: inline-block;'>{sign}{ret:.2f}%</span>"
