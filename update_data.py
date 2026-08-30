@@ -6,7 +6,6 @@ import time
 import traceback
 import urllib.parse
 import urllib.request
-import xml.etree.ElementTree as ET
 import base64
 from bs4 import BeautifulSoup
 import feedparser
@@ -33,26 +32,6 @@ def clean_url(url_str):
     return match.group(1)
   cleaned = re.sub(r'[\[\]\(\)]', '', url_str)
   return cleaned.strip()
-
-LT_STOCKS_META = [
-    {
-        "ticker": "AAPL",
-        "name": "Apple",
-        "desc": "חברת טכנולוגיה מובילה.",
-        "news": "מעקב שוטף אחרי מוצרי החברה.",
-        "why_invest": "יציבות עסקית ותזרים מזומנים חזק."
-    }
-]
-
-SW_STOCKS_META = [
-    {
-        "ticker": "NVDA",
-        "name": "NVIDIA",
-        "desc": "יצרנית שבבים מובילה.",
-        "news": "ביקוש גבוה לפתרונות AI.",
-        "why_invest": "מומנטום חזק בשוק הסמיקונדקטורס."
-    }
-]
 
 if not os.path.exists(TEMPLATE_FILE):
   with open(TEMPLATE_FILE, "w", encoding="utf-8") as f:
@@ -175,7 +154,7 @@ def fetch_us_market_news():
       summary = clean_text(entry.get("summary", ""))
       link = clean_url(entry.get("link", "[https://news.google.com](https://news.google.com)"))
       if title:
-        news_items.append({"title": title, "summary": summary, "link": link, "source": "Google News RSS"})
+        news_items.append({"title": title, "summary": summary, "link": link})
     return news_items
   except Exception as e:
     print(f"Error fetching US news: {e}")
@@ -346,7 +325,7 @@ def fetch_ai_insights_split(market_data, portfolio_stocks, date_str, day_name, u
   if not isinstance(combined_result, dict):
     combined_result = {}
 
-  SYSTEM_PROMPT = "אתה אנליסט פיננסי בכיר. כתוב בעברית מקצועית בלבד והחזר אך ורק מבנה JSON תקין."
+  SYSTEM_PROMPT = "אתה אנליסט פיננסי בכיר. כתוב בעברית מקצועית בלבד והחזר אך ורק מבנה JSON תקין עם הנתונים המבוקשים."
 
   for key_name, api_key in api_keys:
     base_urls = [
@@ -356,14 +335,17 @@ def fetch_ai_insights_split(market_data, portfolio_stocks, date_str, day_name, u
     success = False
     for b_url in base_urls:
       try:
+        print(f"Calling Groq API (model: openai/gpt-oss-120b) using key {key_name} on {b_url}...")
         client = Groq(api_key=api_key, base_url=b_url)
         prompt = f"""
 {SYSTEM_PROMPT}
 Today is {day_name}, Date: {date_str}.
 Market Data: {json.dumps(market_summary, ensure_ascii=False)}
+US News: {us_market_news_text}
+IL News: {bizportal_headlines_text}
 
 Return a valid JSON object with keys:
-SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, COMMUNITY_SENTIMENT, ANALYST_POINT_1, ANALYST_POINT_2, long_term_stocks, swing_stocks, market_news, CATALYST_EARNINGS, CATALYST_MONETARY, CATALYST_HARDWARE, RISK_MANAGEMENT_TEXT, ACTION_RECOMMENDATIONS_TEXT.
+SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_ILS_EXPLANATION, OIL_EXPLANATION, GOLD_EXPLANATION, BTC_EXPLANATION, US_MARKET_NEWS, IL_MARKET_NEWS, COMMUNITY_SENTIMENT.
 """
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b",
@@ -372,11 +354,15 @@ SP500_ANALYSIS, NASDAQ_ANALYSIS, DOW_ANALYSIS, VIX_ANALYSIS, DXY_ANALYSIS, USD_I
             temperature=0.3,
             max_tokens=4000,
         )
-        parsed = parse_json_safely(response.choices[0].message.content.strip())
+        raw_content = response.choices[0].message.content.strip()
+        parsed = parse_json_safely(raw_content)
         if parsed:
           combined_result.update(parsed)
           success = True
+          print("Successfully received and parsed AI response using GPT OSS 120B!")
           break
+        else:
+          print(f"Warning: Parsed JSON was empty from {b_url}. Raw: {raw_content[:200]}")
       except Exception as e:
         print(f"⚠️ Groq attempt failed with {key_name} on {b_url}: {e}")
         continue
@@ -401,27 +387,6 @@ sector_tickers_map = {
     "INDUSTRIALS": "XLI", "MATERIALS": "XLB", "COMM": "XLC",
     "UTILITIES": "XLU", "REAL_ESTATE": "XLRE"
 }
-
-forbidden_stock_tickers = set(sector_tickers_map.values()).union({
-    "^GSPC", "^NDX", "^DJI", "^VIX", "DX-Y.NYB", "CL=F", "GC=F", "BTC-USD", "USDILS=X", "SPY", "QQQ"
-})
-
-def clean_stocks_list(stocks_list, default_meta):
-  if not isinstance(stocks_list, list) or not stocks_list:
-    return default_meta
-  cleaned = []
-  for s in stocks_list:
-    if isinstance(s, dict):
-      t = clean_text(str(s.get("ticker") or s.get("symbol") or "")).strip().upper()
-      if t and t not in forbidden_stock_tickers:
-        cleaned.append({
-            "ticker": t,
-            "name": clean_text(s.get("name") or s.get("company") or t),
-            "desc": clean_text(s.get("desc") or f"חברה מובילה ({t})."),
-            "news": clean_text(s.get("news") or "מעקב שוטף."),
-            "why_invest": clean_text(s.get("why_invest") or "פוטנציאל תשואה חיובי."),
-        })
-  return cleaned if cleaned else default_meta
 
 if __name__ == "__main__":
   try:
@@ -448,63 +413,51 @@ if __name__ == "__main__":
     with open(TEMPLATE_FILE, "r", encoding="utf-8-sig") as f:
       content = f.read()
 
-    # מיפוי מלא של כל ערכי השווקים וה-AI לתוך תבנית ה-HTML
     replacements = {
         "DAY_NAME": day_name,
         "LAST_UPDATED": now_il_str,
         "AI_LAST_UPDATED": ai_insights.get("ai_updated_at", now_il_str),
         
-        # S&P 500
         "SP500_PRICE": format_num(base_market_data.get("^GSPC", {}).get("price", 0)),
         "SP500_PCT": format_pct_colored(base_market_data.get("^GSPC", {}).get("change", 0)),
         "SP500_ANALYSIS": ai_insights.get("SP500_ANALYSIS", ""),
 
-        # NASDAQ
         "NASDAQ_PRICE": format_num(base_market_data.get("^NDX", {}).get("price", 0)),
         "NASDAQ_PCT": format_pct_colored(base_market_data.get("^NDX", {}).get("change", 0)),
         "NASDAQ_ANALYSIS": ai_insights.get("NASDAQ_ANALYSIS", ""),
 
-        # DOW JONES
         "DOW_PRICE": format_num(base_market_data.get("^DJI", {}).get("price", 0)),
         "DOW_PCT": format_pct_colored(base_market_data.get("^DJI", {}).get("change", 0)),
         "DOW_ANALYSIS": ai_insights.get("DOW_ANALYSIS", ""),
 
-        # VIX
         "VIX_PRICE": format_num(base_market_data.get("^VIX", {}).get("price", 0)),
         "VIX_PCT": format_pct_colored(base_market_data.get("^VIX", {}).get("change", 0)),
         "VIX_ANALYSIS": ai_insights.get("VIX_ANALYSIS", ""),
 
-        # DXY
         "DXY_PRICE": format_num(base_market_data.get("DX-Y.NYB", {}).get("price", 0)),
         "DXY_PCT": format_pct_colored(base_market_data.get("DX-Y.NYB", {}).get("change", 0)),
         "DXY_ANALYSIS": ai_insights.get("DXY_ANALYSIS", ""),
 
-        # USD/ILS
         "USD_ILS": format_num(base_market_data.get("USDILS=X", {}).get("price", 0)),
         "USD_ILS_CHANGE": format_pct_colored(base_market_data.get("USDILS=X", {}).get("change", 0)),
         "USD_ILS_EXPLANATION": ai_insights.get("USD_ILS_EXPLANATION", ""),
 
-        # OIL
         "OIL_PRICE": format_num(base_market_data.get("CL=F", {}).get("price", 0)),
         "OIL_CHANGE": format_pct_colored(base_market_data.get("CL=F", {}).get("change", 0)),
         "OIL_EXPLANATION": ai_insights.get("OIL_EXPLANATION", ""),
 
-        # GOLD
         "GOLD_PRICE": format_num(base_market_data.get("GC=F", {}).get("price", 0)),
         "GOLD_CHANGE": format_pct_colored(base_market_data.get("GC=F", {}).get("change", 0)),
         "GOLD_EXPLANATION": ai_insights.get("GOLD_EXPLANATION", ""),
 
-        # BITCOIN
         "BTC_PRICE": format_num(base_market_data.get("BTC-USD", {}).get("price", 0)),
         "BTC_CHANGE": format_pct_colored(base_market_data.get("BTC-USD", {}).get("change", 0)),
         "BTC_EXPLANATION": ai_insights.get("BTC_EXPLANATION", ""),
 
-        # NEWS
         "US_MARKET_NEWS": ai_insights.get("US_MARKET_NEWS", us_market_news_text),
         "IL_MARKET_NEWS": ai_insights.get("IL_MARKET_NEWS", bizportal_headlines_text),
     }
 
-    # הוספת כל שאר המפתחות מה-AI אוטומטית למקרה שיש עוד
     for k, v in ai_insights.items():
       if k not in replacements and isinstance(v, str):
         replacements[k] = v
