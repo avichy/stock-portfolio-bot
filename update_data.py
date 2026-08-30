@@ -1052,7 +1052,6 @@ Return a valid JSON object with exactly these 8 keys:
       else:
         time.sleep(5)
 
-  # מעדכנים את זמן העדכון אך ורק כאן, כאשר השליפה החדשה הצליחה
   combined_result["ai_updated_at"] = now_il_str
   return combined_result
 
