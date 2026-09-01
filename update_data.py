@@ -313,6 +313,24 @@ def format_num(val, decimals=2):
     return str(val)
 
 
+def is_float(val):
+  try:
+    float(val)
+    return True
+  except (ValueError, TypeError):
+    return False
+
+
+def clean_json_response(text):
+  if not isinstance(text, str):
+    return text
+  text = text.strip()
+  if text.startswith("```"):
+    text = re.sub(r"^```(?:json)?\s*", "", text)
+    text = re.sub(r"\s*```$", "", text)
+  return text.strip()
+
+
 def format_pct_colored(val):
   try:
     num = float(val)
@@ -329,7 +347,6 @@ def format_pct_colored(val):
 def replace_dollar_word(text):
   if not isinstance(text, str):
     return str(text)
-  # החלפת מילת דולר בסימן דולר משמאל למספר ($X)
   text = re.sub(r"([\d,]+\.?\d*)\s*דולר", r"$\1", text, flags=re.IGNORECASE)
   return text
 
@@ -534,7 +551,7 @@ def format_analyst_text(text):
 def get_stock_logo_url(ticker):
   clean_ticker = str(ticker).strip().upper()
   parqet_ticker = clean_ticker.replace("-", ".")
-  return f"https://assets.parqet.com/logos/symbol/{parqet_ticker}"
+  return f"[https://assets.parqet.com/logos/symbol/](https://assets.parqet.com/logos/symbol/){parqet_ticker}"
 
 
 LT_STOCKS_META = [
@@ -690,9 +707,9 @@ def fetch_yahoo_direct(ticker):
   try:
     t = yf.Ticker(clean_ticker)
     
-    fi = t.fast_info
-    current_price = getattr(fi, 'last_price', None)
-    prev_close = getattr(fi, 'previous_close', None)
+    fi = getattr(t, 'fast_info', {})
+    current_price = fi.get('last_price') if hasattr(fi, 'get') else getattr(fi, 'last_price', None)
+    prev_close = fi.get('previous_close') if hasattr(fi, 'get') else getattr(fi, 'previous_close', None)
 
     info = {}
     try:
@@ -705,8 +722,8 @@ def fetch_yahoo_direct(ticker):
     if not prev_close:
       prev_close = info.get("previousClose") or current_price
 
-    if current_price and prev_close and prev_close > 0:
-      change = ((current_price - prev_close) / prev_close) * 100
+    if current_price and prev_close and float(prev_close) > 0:
+      change = ((float(current_price) - float(prev_close)) / float(prev_close)) * 100
     else:
       change = 0.0
 
@@ -718,7 +735,7 @@ def fetch_yahoo_direct(ticker):
     else:
       pre_market_val = "השוק סגור"
 
-    if current_price and current_price > 0:
+    if current_price and float(current_price) > 0:
       return {
           "price": round(float(current_price), 2),
           "change": round(float(change), 2),
@@ -905,7 +922,7 @@ def fetch_ai_insights_split(
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       print(
           f"🤖 Connecting to Groq AI Part 1 using {key_name}"
@@ -953,7 +970,7 @@ Return a valid JSON object with exactly these 9 keys:
           max_tokens=4000,
       )
 
-      raw_text1 = response1.choices[0].message.content.strip()
+      raw_text1 = clean_json_response(response1.choices[0].message.content)
       parsed1 = json.loads(raw_text1)
       combined_result.update(parsed1)
       print("Successfully parsed Part 1 JSON using key:", key_name)
@@ -976,7 +993,7 @@ Return a valid JSON object with exactly these 9 keys:
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       print(
           f"🤖 Connecting to Groq AI Part 2 using {key_name}"
@@ -1019,7 +1036,7 @@ Return a valid JSON object with exactly these 5 keys:
           max_tokens=4000,
       )
 
-      raw_text2 = response2.choices[0].message.content.strip()
+      raw_text2 = clean_json_response(response2.choices[0].message.content)
       parsed2 = json.loads(raw_text2)
       combined_result.update(parsed2)
       print("Successfully parsed Part 2 JSON using key:", key_name)
@@ -1039,7 +1056,7 @@ Return a valid JSON object with exactly these 5 keys:
   for key_name, api_key in api_keys:
     try:
       client = Groq(
-          api_key=api_key, base_url="https://groq-proxy.avichy65.workers.dev"
+          api_key=api_key, base_url="[https://groq-proxy.avichy65.workers.dev](https://groq-proxy.avichy65.workers.dev)"
       )
       print(
           f"🤖 Connecting to Groq AI Part 3 using {key_name}"
@@ -1088,7 +1105,7 @@ Return a valid JSON object with exactly these 8 keys:
           max_tokens=4000,
       )
 
-      raw_text3 = response3.choices[0].message.content.strip()
+      raw_text3 = clean_json_response(response3.choices[0].message.content)
       parsed3 = json.loads(raw_text3)
       combined_result.update(parsed3)
       print("Successfully parsed Part 3 JSON using key:", key_name)
@@ -1280,7 +1297,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     price = format_num(data.get("price", 0))
     
     raw_pre = data.get("pre_market", "השוק סגור")
-    if isinstance(raw_pre, (int, float)) or (isinstance(raw_pre, str) and str(raw_pre).replace('.', '', 1).isdigit()):
+    if is_float(raw_pre):
       pre_market_display = f"${format_num(raw_pre)}"
     else:
       pre_market_display = str(raw_pre)
@@ -1307,7 +1324,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/{clean_symbol_lower}.svg';">
+                <img src="{logo_url}" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="{ticker}" onerror="this.onerror=null; this.src='[https://s3-symbol-logo.tradingview.com/](https://s3-symbol-logo.tradingview.com/){clean_symbol_lower}.svg';">
                 <span class="text-base font-bold text-white" style="text-align: right;">{name} (טיקר: {ticker}):</span>
             </div>
             <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
@@ -1340,7 +1357,7 @@ def build_market_news_html(market_news_list):
         item.get("news_link")
         or item.get("link")
         or item.get("url")
-        or "https://il.investing.com/"
+        or "[https://il.investing.com/](https://il.investing.com/)"
     )
     p_title = (
         item.get("news_title")
@@ -1585,7 +1602,7 @@ if __name__ == "__main__":
         fetched_target = fetched_price_data.get("target") or 0.0
         
         raw_pre_p = fetched_price_data.get("pre_market", "השוק סגור")
-        if isinstance(raw_pre_p, (int, float)) or (isinstance(raw_pre_p, str) and str(raw_pre_p).replace('.', '', 1).isdigit()):
+        if is_float(raw_pre_p):
           pre_str = f"${format_num(raw_pre_p)}"
         else:
           pre_str = str(raw_pre_p)
