@@ -12,14 +12,14 @@
     <header class="bg-gray-800 border-b border-gray-700 py-6 px-4 shadow-lg text-center">
         <div class="container mx-auto">
             <h1 class="text-2xl md:text-3xl font-extrabold text-cyan-400 mb-2">
-                דו"ח סקייל שוק ההון המלא ליום שלישי - מותאם אישית 📊
+                דו"ח סקייל שוק ההון המלא ליום {{DAY_NAME}} - מותאם אישית 📊
             </h1>
             <p class="text-sm md:text-base text-gray-400 mt-2">מעקב אחר תיק ההשקעות, מדדים וחדשות שוק (כולל שערי פתיחה וסגירה אחרונים)</p>
             <div class="text-xs text-gray-400 mt-3">
-             עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">01.09.2026 | 14:10</span>
+             עודכן לאחרונה: <span class="font-semibold text-cyan-300" dir="ltr">01/09/2026 20:22:16</span>
             </div>
             <div class="text-xs text-gray-400 mt-1">
-            עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">01.09.2026 | 10:10</span>
+            עדכון AI לאחרונה: <span class="font-semibold text-purple-400" dir="ltr">{{AI_LAST_UPDATED}}</span>
             </div>
         </div>
     </header>
@@ -52,24 +52,24 @@
                     <h3 class="text-base font-bold text-cyan-400 border-b border-gray-700 pb-2">מדדים מובילים (Indices) 📈</h3>
                     <div class="space-y-3 text-sm">
                         <p class="text-gray-300">
-                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>7,686.14</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.33%</span></span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">הניתוח של מדד S&P 500 (^GSPC) מצביע על מחיר נוכחי של 7,686.14, ירידה של 0.33% ביום המסחר האחרון. הירידה נובעת משילוב של נתוני אינפלציה מתונים אך עדיין גבוהים מהיעד של הפד, יחד עם דוחות רווח של חברות מחזוריות שהציגו תוצאות מתחת לציפיות. המדד מושפע גם מהחוזק של הדולר האמריקאי, שמעלה עלויות ייצוא ומשפיע על חברות תעשייתיות. בנוסף, המשך המדיניות המוניטרית המזהירה של הפד, כולל רמת ריבית גבוהה, מגביל את תזרים ההשקעות במניות. למרות זאת, הרכב המדד כולל חברות בעלות בסיס חזק ויכולת התאמה לשינויים כלכליים, ולכן יש ציפייה לשקם את המגמה בטווח הבינוני.<br><strong>לסיכום:</strong><br>המדד נמצא במגמת ירידה קלה, אך עם פוטנציאל התאוששות בטווח הבינוני עקב חוסן של חברות מובילות.</span></span></span>
+                            <strong>S&P 500:</strong> נסחר סביב רמה של <strong>{{SP500_PRICE}}</strong> (<span class="text-cyan-300">{{SP500_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{SP500_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>29,456.97</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+0.08%</span></span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מדד Nasdaq Composite (^NDX) נסחר במחיר 29,456.97, שינוי של עלייה של 0.08% ביום האחרון. המדד, המורכב מרוב חברות טכנולוגיה, משקף תנודתיות קלה בעקבות דוחות רווח של ענקיות כמו Nvidia, AMD ו-Intel, שהציגו צמיחה חזקה אך גם חשש מהתייקרות עלויות הייצור. רמת הריבית הגבוהה של הפד משפיעה על שוק הטכנולוגיה, אך עדיין יש ביקוש גבוה למוצרים חכמים ולפתרונות ענן, שמספקים תמיכה למחירי המניות. בנוסף, מדד Nasdaq נהנה מתזרים זר של משקיעים מוסדיים המחפשים חשיפה לטכנולוגיה, מה שמסייע לשמור על תנופה חיובית.<br><strong>לסיכום:</strong><br>המדד מציג תנודתיות קלה אך נוטה לעלייה מתונה, עם תמיכה חזקה משוק הטכנולוגיה.</span></span></span>
+                            <strong>NASDAQ:</strong> נסחר סביב רמה של <strong>{{NASDAQ_PRICE}}</strong> (<span class="text-cyan-300">{{NASDAQ_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{NASDAQ_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>53,185.90</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.70%</span></span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מדד Dow Jones Industrial Average (^DJI) נסחר ב-53,185.9, ירידה של 0.7% ביום המסחר. הירידה נובעת משילוב של דוחות רווח של חברות תעשייתיות ומסחריות שהציגו לחץ על מרווחי הרווח עקב עליית עלויות חומרי גלם ושכר. בנוסף, החוזק של הדולר האמריקאי מקשה על ייצוא של חברות תעשייה, מה שמפחית את תחזיות הרווח. עם זאת, מדד Dow כולל חברות בעלות תזרים מזומנים חזק ויכולת התאמה למצב הכלכלי, ולכן יש סיכון מצומצם לירידה משמעותית בטווח הקצר.<br><strong>לסיכום:</strong><br>המדד נמצא במגמת ירידה קלה, אך מבוסס על חברות חזקות שמספקות תמיכה למניעת החמרה משמעותית.</span></span></span>
+                            <strong>Dow Jones (DJI):</strong> נסחר סביב רמה של <strong>{{DOW_PRICE}}</strong> (<span class="text-cyan-300">{{DOW_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DOW_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>15.84</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+9.77%</span></span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מדד התנודתיות VIX (^VIX) נמצא ברמה של 14.92, עלייה של 3.4% ביום האחרון. העלייה מצביעה על עלייה קלה בציפיות השוק לתנודתיות עתידית, ככל הנראה כתוצאה מהחשש מהמשך מדיניות ריבית גבוהה של הפד והאינפלציה המתמשכת. למרות שהרמה עדיין נחשבת נמוכה יחסית לשיאים של 2,022, העלייה מצביעה על חוסר וודאות מוגברת בקרב משקיעים, במיוחד במגזר הטכנולוגיה והסחורות.<br><strong>לסיכום:</strong><br>ה-VIX מצביע על עלייה קלה בתנודתיות, המשקפת חשש משוק מתון אך לא משבר משמעותי.</span></span></span>
+                            <strong>VIX (מדד הפחד):</strong> נסחר סביב רמה של <strong>{{VIX_PRICE}}</strong> (<span class="text-cyan-300">{{VIX_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{VIX_ANALYSIS}}</span></span>
                         </p>
                         <p class="text-gray-300">
-                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>99.62</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+0.19%</span></span>)<br>
-                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">אין נתונים זמינים עבור מדד DXY (מדד הדולר האמריקאי) במידע שסופק.<br><strong>לסיכום:</strong><br>אין אפשרות לבצע ניתוח מקצועי של המדד במועד זה.</span></span></span>
+                            <strong>DXY (מדד הדולר):</strong> נסחר סביב רמה של <strong>{{DXY_PRICE}}</strong> (<span class="text-cyan-300">{{DXY_PCT}}</span>)<br>
+                            <span class="text-xs text-gray-400"><strong>מה זה אומר:</strong> <span class="text-gray-200">{{DXY_ANALYSIS}}</span></span>
                         </p>
                     </div>
                 </div>
@@ -77,28 +77,28 @@
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">שער הדולר (USD/ILS) 💵</h3>
-                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>3.01₪</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+0.64%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>שער חליפין:</strong> נסחר סביב רמה של <strong>{{USD_ILS}}</strong> (<span class="text-cyan-300">{{USD_ILS_CHANGE}}</span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">שער החליפין USD/ILS (USDILS=X) נסחר במחיר 2.99, שינוי של 0.02% ביום האחרון, מה שמצביע על יציבות יחסית של השקל מול הדולר האמריקאי. השינוי הקטן משקף איזון בין מדיניות הפד המגבירה את ערך הדולר לבין מדיניות הבנק המרכזי של ישראל שמנסה לשמור על יציבות מחירים פנימיים. בנוסף, רמת האינפלציה בישראל נותרת מתונה, והכלכלה המקומית מציגה צמיחה יציבה, מה שמסייע לשקל לשמור על ערכו.<br><strong>לסיכום:</strong><br>השקל יציב מול הדולר עם שינוי מינימלי, המשקף איזון בין מדיניות מוניטרית של שני המדינות.</span></div>
+                            <div class="text-gray-200">{{USD_ILS_EXPLANATION}}</div>
                         </div>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">נפט (Crude Oil / Brent) 🛢️</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>$87.81</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+2.39%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר החבית:</strong> נסחר סביב <strong>{{OIL_PRICE}}</strong> (<span class="text-cyan-300">{{OIL_CHANGE}}</span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מחיר נפט (Crude Oil) (CL=F) עומד על $86.5 לברלט, עלייה של 0.86% ביום האחרון. העלייה נובעת מציפיות להקטנת היצע בעקבות החלטות של ארגון המדינות המייצרות נפט (OPEC) לשמירת רמות ייצור קבועות, וכן מתגובות לשוק למתיחות גיאופוליטית במזרח התיכון. עם זאת, רמת המלאי העולמי של נפט נותרת גבוהה, מה שמגביל את העלייה במחיר. בנוסף, חיזוק הדולר האמריקאי מפחית את מחיר הנפט במונחי דולר, אך השפעתו נרשמת במקביל לעלייה בביקוש האסייתי.<br><strong>לסיכום:</strong><br>מחיר הנפט עולה במתינות, אך נותר תחת לחץ של מלאי גבוה ושוק מתון.</span></div>
+                            <div class="text-gray-200">{{OIL_EXPLANATION}}</div>
                         </div>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 h-fit">
                         <h3 class="text-base font-bold text-cyan-400">זהב (Gold) 🪙</h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>$4,426.10</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-1.24%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר האונקיה:</strong> נסחר סביב <strong>{{GOLD_PRICE}}</strong> (<span class="text-cyan-300">{{GOLD_CHANGE}}</span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מחיר הזהב (GC=F) עומד על $4,478.2 לאונקיה, שינוי של -0.07% ביום האחרון, כלומר יציבות קלה. המחיר מושפע משילוב של חיזוק הדולר האמריקאי, שמקטין את ערך הזהב במונחי דולר, וכן מהפחתת חשש מאינפלציה מתונה בארהב. בנוסף, רמת הריבית הגבוהה של הפד מקטינה את האטרקטיביות של נכסים ללא ריבית כמו זהב. עם זאת, המשקיעים עדיין מחזיקים בזהב כמקלט בטוח במצבי אי-ודאות גיאופוליטית, ולכן המחיר נשאר יציב.<br><strong>לסיכום:</strong><br>מחיר הזהב יציב במקצת, עם נטייה קלה לירידה עקב חיזוק הדולר והריבית הגבוהה.</span></div>
+                            <div class="text-gray-200">{{GOLD_EXPLANATION}}</div>
                         </div>
                     </div>
 
@@ -107,10 +107,10 @@
                             <span>ביטקוין (Bitcoin)</span>
                             <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035" alt="Bitcoin" class="w-[22px] h-[22px] inline-block align-middle">
                         </h3>
-                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>$77,942.28</strong> (<span class="text-cyan-300"><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.79%</span></span>)</p>
+                        <p class="text-sm text-gray-300"><strong>מחיר נוכחי:</strong> נסחר סביב אזור ה-<strong>{{BTC_PRICE}}</strong> (<span class="text-cyan-300">{{BTC_CHANGE}}</span>)</p>
                         <div class="text-xs text-gray-300 space-y-1">
                             <strong>מה זה אומר בשפה פשוטה:</strong>
-                            <div class="text-gray-200"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">מחיר הביטקוין (BTC-USD) עומד על $78,727.52, שינוי של 0.21% ביום האחרון. העלייה הקלה משקפת ביקוש מתמשך משוק ההשקעות המוסדיות, לצד חיזוק של תשתיות קריפטו כגון פיתוחים בטכנולוגיית ה-Layer<br>2. עם זאת, הרגולציה העולמית עדיין מהווה גורם מסוכן, במיוחד במדינות עם מדיניות מחמירה. בנוסף, תנודתיות השוק נותרת גבוהה, אך הנטייה הכללית היא של התייצבות סביב רמות גבוהות יותר מאשר לפני חצי השנה האחרונה.<br><strong>לסיכום:</strong><br>הביטקוין מציג עלייה קלה, אך נותר תנודתי עם פוטנציאל המשך עלייה בטווח הבינוני.</span></div>
+                            <div class="text-gray-200">{{BTC_EXPLANATION}}</div>
                         </div>
                     </div>
                 </div>
@@ -122,11 +122,11 @@
                     <div class="text-sm text-gray-300 space-y-3">
                         <div class="flex items-start gap-2">
                             <img src="https://flagcdn.com/w20/us.png" alt="US" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow mt-1">
-                            <div><strong>השפעות על השוק האמריקאי:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">בשלושה דיווחים של Reuters, מדדי וול סטריט סגרו בירידה לאחר שהיוושב ראש הפד, וורש, חיזק את המאבק באינפלציה, וכן לאחר פרסום נתוני אינפלציה חמים לפני פרסום תוצאות Nvidia, והפד החליט להשאיר את הריבית ללא שינוי – כל אלה גרמו ללחץ מכירות על המניות האמריקאיות. (מקור: Google News RSS)<br><strong>לסיכום:</strong><br>המשקיעים צריכים להמשיך לעקוב אחרי מדיניות הפד ולשקול זהירות בתיקי המניות</span></div>
+                            <div><strong>השפעות על השוק האמריקאי:</strong> {{US_MARKET_NEWS}}</div>
                         </div>
                         <div class="flex items-start gap-2">
                             <img src="https://flagcdn.com/w20/il.png" alt="IL" class="inline-block w-5 h-3.5 object-cover rounded-xs shadow mt-1">
-                            <div><strong>השפעות על השוק הישראלי:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">בישראל, אלביט קיבלה חוזה של 270 מיליון דולר למערכות תצפית ואיכון ללקוח בינלאומי, חברת טבע נרשמה בין תשע החברות שחתמו על הסכם עם ממשל טראמפ, ועשיית אשקלון קיבלה 83 מיליון שקל ממשרד הביטחון – סימנים לחיזוק פעילות ההגנה והטכנולוגיה המקומית. (מקור: Bizportal)<br><strong>לסיכום:</strong><br>המשק הישראלי מציג פוטנציאל צמיחה במגזרי ההגנה והתרופות, מומלץ לעקוב אחרי פרויקטים אלו</span></div>
+                            <div><strong>השפעות על השוק הישראלי:</strong> {{IL_MARKET_NEWS}}</div>
                         </div>
                     </div>
                 </div>
@@ -142,17 +142,17 @@
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3">
                 <p class="text-cyan-400 font-bold mb-3 text-sm">📊 פירוט 11 הסקטורים המרכזיים (S&P 500 GICS):</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">💻 <strong>טכנולוגיית מידע</strong>: חומרה, שבבים, תוכנה ושירותי IT. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+0.44%</span></span></div> 
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏦 <strong>פיננסים</strong>: בנקים, ביטוח ואשראי. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.67%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏥 <strong>שירותי בריאות</strong>: פארמה, ביוטכנולוגיה וציוד רפואי. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.36%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛍️ <strong>צרכנות מחזורית</strong>: קמעונאות, רכבים ומלונאות. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.53%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong>: מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.55%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong>: נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+2.04%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong>: תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-1.13%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>: כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.92%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong>: טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-1.35%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong>: חשמל ומים. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-1.17%</span></span></div>
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong>: קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" ''><span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.83%</span></span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">💻 <strong>טכנולוגיית מידע</strong>: חומרה, שבבים, תוכנה ושירותי IT. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INFO_TECH_CLASS}}>{{SECTOR_INFO_TECH_PCT}}</span></div> 
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏦 <strong>פיננסים</strong>: בנקים, ביטוח ואשראי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_FINANCIALS_CLASS}}>{{SECTOR_FINANCIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏥 <strong>שירותי בריאות</strong>: פארמה, ביוטכנולוגיה וציוד רפואי. <span dir="ltr" class="inline-block font-bold" {{SECTOR_HEALTH_CLASS}}>{{SECTOR_HEALTH_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛍️ <strong>צרכנות מחזורית</strong>: קמעונאות, רכבים ומלונאות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_DISC_CLASS}}>{{SECTOR_CONS_DISC_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛒 <strong>צרכנות בסיסית</strong>: מזון, משקאות ורשתות שיווק. <span dir="ltr" class="inline-block font-bold" {{SECTOR_CONS_STAPLES_CLASS}}>{{SECTOR_CONS_STAPLES_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🛢️ <strong>אנרגיה</strong>: נפט, גז ואנרגיה מתחדשת. <span dir="ltr" class="inline-block font-bold" {{SECTOR_ENERGY_CLASS}}>{{SECTOR_ENERGY_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🏭 <strong>תעשייה</strong>: תעופה, ביטחון ומכונות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_INDUSTRIALS_CLASS}}>{{SECTOR_INDUSTRIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">🧪 <strong>חומרים</strong>: כימיקלים ומתכות. <span dir="ltr" class="inline-block font-bold" {{SECTOR_MATERIALS_CLASS}}>{{SECTOR_MATERIALS_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">📡 <strong>שירותי תקשורת</strong>: טלקום ומדיה חברתית. <span dir="ltr" class="inline-block font-bold" {{SECTOR_COMM_CLASS}}>{{SECTOR_COMM_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300">⚡ <strong>תשתיות ציבוריות</strong>: חשמל ומים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_UTILITIES_CLASS}}>{{SECTOR_UTILITIES_PCT}}</span></div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-gray-300 md:col-span-2">🏢 <strong>נדל"ן</strong>: קרנות REITs ונכסים מניבים. <span dir="ltr" class="inline-block font-bold" {{SECTOR_REAL_ESTATE_CLASS}}>{{SECTOR_REAL_ESTATE_PCT}}</span></div>
                 </div>
             </div>
         </div>
@@ -161,9 +161,9 @@
         <div id="tab-3" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 3: אירועים וזרזים מרכזיים (Catalysts) ⚡</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">דיווחי רבעון של חברות טכנולוגיה מובילות מצביעים על עלייה ברווחיות, בעיקר בשל ביקוש למוצרי ענן ו-AI.<br><strong>לסיכום:</strong><br>הרווחים הצפויים תומכים בעליית המניות בטווח הקצר.</span></p>
-                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">הפחתת ריבית צפויה של הפד בארהב עשויה לתמוך בשווקים האקווי, במיוחד במניות טכנולוגיה.<br><strong>לסיכום:</strong><br>מדיניות מוניטרית רכה תורמת לתמיכה במחירי המניות.</span></p>
-                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">הקצאת תקציבים ממשלתיים למערכות הגנה וביטחון מגדילה את הביקוש למעבדים מתקדמים ולחומרה צבאית.<br><strong>לסיכום:</strong><br>ביקוש לחומרה מתקדמת מגביר פוטנציאל עליית המניות.</span></p>
+                <p>📑 <strong>דיווחי תוצאות לרבעון:</strong> {{CATALYST_EARNINGS}}</p>
+                <p>🏦 <strong>הודעות מדיניות מוניטרית:</strong> {{CATALYST_MONETARY}}</p>
+                <p>🎮 <strong>השקות חומרה ועדכוני תוכנה:</strong> {{CATALYST_HARDWARE}}</p>
             </div>
         </div>
 
@@ -173,101 +173,11 @@
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-cyan-400">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core) - מניות נבחרות 🏆</h3>
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right" dir="rtl" style="text-align: right;">קבוצה א': מניות להשקעה ארוכת טווח (Long-Term Core)</div>
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/META" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="META" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/meta.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">Meta Platforms Inc. (טיקר: META):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $572.34</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $754.77</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-0.98%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> Meta Platforms ממשיכה לבסס את מעמדה בתחום הרשתות החברתיות והמציאות המדומה, עם צמיחה מתמשכת במשתמשים פעילים והרחבת שירותי פרסום מתקדמים. היעד הממוצע של האנליסטים הוא 754.77405 דולר, המשקף ציפייה לעלייה משמעותית במחיר המניה בטווח הבינוני. לסיכום: Meta מציגה פוטנציאל צמיחה חזק והיעד משקף זאת.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה נהנית ממקורות הכנסה מגוונים, כולל פרסום, מציאות מדומה (Meta Quest) ושירותי ענן. בנוסף, השקעות משמעותיות במחקר ופיתוח צפויות לתרום לחדשנות ולשיפור הרווחיות. לסיכום: Meta היא בחירה מתאימה להשקעה ארוכת טווח עם פוטנציאל רווח גבוה.</div>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/NVDA" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="NVDA" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/nvda.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">NVIDIA Corp. (טיקר: NVDA):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $220.78</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $323.42</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+1.48%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> NVIDIA מובילה בתחום המעבדים הגרפיים ובינה מלאכותית, עם ביקוש גבוה למוצרי GPU לשימושים בתעשיית המשחקים, מרכזי נתונים ולמידת מכונה. היעד הממוצע של האנליסטים הוא 323.41898 דולר, המשקף ציפייה להמשך עלייה במחיר המניה. לסיכום: NVIDIA מציגה צמיחה חזקה במגזרים מרכזיים.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה משקיעה במרכזי נתונים, רכבי חשמל וטכנולוגיות AI, מה שמבטיח זרם הכנסות יציב וגדול. בנוסף, שותפויות אסטרטגיות עם חברות ענק מחזקות את המעמד התחרותי. לסיכום: NVIDIA היא בחירה בטוחה להשקעה ארוכת טווח עם פוטנציאל רווח גבוה.</div>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/AMZN" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="AMZN" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/amzn.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">Amazon.com Inc. (טיקר: AMZN):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $259.77</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $327.67</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-2.50%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> אמזון ממשיכה להרחיב את פעילותה בתחום המסחר האלקטרוני, שירותי ענן (AWS) ולוגיסטיקה, עם צמיחה מתמדת במכירות ובשירותי מנויים. היעד הממוצע של האנליסטים הוא 327.6707 דולר, המשקף ציפייה לעלייה משמעותית במחיר המניה. לסיכום: Amazon מציגה פוטנציאל צמיחה רחב במגוון תחומים.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה נהנית משירותי ענן מובילים, רשת לוגיסטיקה מתקדמת וחדשנות במוצרים ובשירותים, מה שמבטיח יציבות והזדמנויות צמיחה בטווח הארוך. לסיכום: Amazon היא בחירה מצוינת להשקעה ארוכת טווח עם פוטנציאל רווח גבוה.</div>
-            </div>
-        </div>
-        
+                    {{LONG_TERM_STOCKS_SECTION}}
                 </div>
                 <h3 class="text-lg font-semibold text-cyan-400">קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading) - מניות נבחרות 🔄</h3>
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                    <div class="text-lg font-bold text-cyan-400 mb-4 mt-2 text-right" dir="rtl" style="text-align: right;">קבוצה ב': מניות למסחר סווינג לטווח קצר (Swing Trading)</div>
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/TTWO" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="TTWO" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/ttwo.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">Take-Two Interactive Software Inc. (טיקר: TTWO):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $219.70</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $286.89</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-6.67%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> Take-Two מתמקדת בפיתוח והפצת משחקי וידאו מובילים, כולל סדרת Grand Theft Auto ו-Red Dead Redemption. היעד הממוצע של האנליסטים הוא 286.89 דולר, המשקף ציפייה לעלייה במחיר המניה בטווח הקצר-בינוני. לסיכום: TTWO מציגה פוטנציאל תנודתיות גבוה עם אפשרות לרווחים מהירים.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה משיקה תכנים חדשים באופן קבוע, עם צפי להגדלת מכירות דיגיטליות והרחבת מודל המנויים. תנודתיות גבוהה מאפשרת ניהול סיכון גמיש. לסיכום: TTWO מתאימה למשקיעים שמחפשים תנודות קצרת טווח ורווחים פוטנציאליים.</div>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/BE" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="BE" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/be.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">Bloom Energy Corp. (טיקר: BE):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $206.30</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $275.08</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #e74c3c; font-weight: bold; display: inline-block;">-2.12%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> Bloom Energy מפתחת מערכות ייצור חשמל מבוססות דלק דלקת (SOFC) עם פוטנציאל להפחתת פליטות פחמן. היעד הממוצע של האנליסטים הוא 275.08463 דולר, המשקף ציפייה לעלייה במחיר המניה בטווח הקצר-בינוני. לסיכום: BE מציגה פוטנציאל תנודתיות גבוה עם אפשרות לרווחים מהירים.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה מקבלת חוזים חדשים בתחום האנרגיה המתחדשת, כולל פרויקטים ממשלתיים ופרטיים, מה שמגביר את ההזדמנויות לצמיחה מהירה. לסיכום: BE מתאימה למשקיעים שמחפשים תנודות קצרת טווח ורווחים פוטנציאליים.</div>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <div class="flex items-center gap-3 mb-3" style="text-align: right;">
-                <img src="https://assets.parqet.com/logos/symbol/SNDK" width="28" height="28" class="rounded-full bg-white p-0.5 object-contain" alt="SNDK" onerror="this.onerror=null; this.src='https://s3-symbol-logo.tradingview.com/sndk.svg';">
-                <span class="text-base font-bold text-white" style="text-align: right;">SunDog, Inc. (טיקר: SNDK):</span>
-            </div>
-            <div class="text-sm text-gray-300 space-y-1 break-words" style="text-align: right;">
-                <div style="text-align: right;"><strong>מחיר נוכחי:</strong> $1,566.70</div>
-                <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> $2,125.09</div>
-                <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> <span dir="ltr" style="color: #2ecc71; font-weight: bold; display: inline-block;">+5.50%</span></div>
-                <div style="text-align: right;"><strong>עיסוק החברה:</strong> SunDog מתמחה בטכנולוגיות חישה מתקדמות למערכות בטחון ותעשייה. היעד הממוצע של האנליסטים הוא 2125.087 דולר, המשקף ציפייה לעלייה משמעותית במחיר המניה בטווח הקצר-בינוני. לסיכום: SNDK מציגה פוטנציאל תנודתיות גבוה עם אפשרות לרווחים מהירים.</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> עדכון שוטף וניתוח טכני של תנועת המחיר.</div>
-                <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> החברה זכתה בחוזה קצבה שוויצרי לשלוש שנים, מה שמבטיח זרם הכנסות יציב וגדול. תנודתיות גבוהה מאפשרת ניהול סיכון גמיש. לסיכום: SNDK מתאימה למשקיעים שמחפשים תנודות קצרת טווח ורווחים פוטנציאליים.</div>
-            </div>
-        </div>
-        
+                    {{SWING_STOCKS_SECTION}}
                 </div>
             </div>
         </div>
@@ -318,7 +228,7 @@
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 6: סנטימנט בקהילות המסחר ותחזית אנליסטים לשוק 🔮</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-right" dir="rtl">
                 <div class="text-lg font-bold text-cyan-400">💬 סנטימנט קהילות המסחר:</div>
-                <div class="text-xs md:text-sm text-gray-300 leading-relaxed"><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">הקהילה המשקית משדרת זהירות בעקבות ההודעות של הפד בארהב, בעוד שבישראל יש תחושת אופטימיות סביב חוזים גדולים בתחום ההגנה והתרופות.<br><strong>לסיכום:</strong><br>יש לשקול איזון בין חשש מאינפלציה גלובלית לבין הזדמנויות מקומיות במגזרי ההגנה והבריאות</span></div>
+                <div class="text-xs md:text-sm text-gray-300 leading-relaxed">{{COMMUNITY_SENTIMENT}}</div>
                 <div class="mt-4 space-y-2">
                     <div class="text-lg font-bold text-cyan-400">📊 מה האנליסטים אומרים בקשר להמשך כיוון השוק:</div>
                     <div class="space-y-2 text-xs md:text-sm text-gray-300 leading-relaxed">
@@ -326,7 +236,7 @@
 <div class="analyst-item mb-4 text-right" dir="rtl">
     <div class="text-content flex items-start gap-2" dir="rtl">
         <strong style="color: #3b82f6;" class="shrink-0">1.</strong>
-        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">אין נתון אנליסטים מהימן לגבי יעד מחיר ממוצע למניות המוזכרות; לכן אין אפשרות לספק תחזית מדויקת.<br><strong>לסיכום:</strong><br>מומלץ להמתין לפרסומי אנליסטים רשמיים לפני קביעת יעדים</span></span>
+        <span>{{ANALYST_POINT_1}}</span>
     </div>
 </div>
 
@@ -334,7 +244,7 @@
 <div class="analyst-item mb-4 text-right" dir="rtl">
     <div class="text-content flex items-start gap-2" dir="rtl">
         <strong style="color: #3b82f6;" class="shrink-0">2.</strong>
-        <span><span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">אין מידע זמין על תחזיות רווח או דירוגים עדכניים של חברות האלו.<br><strong>לסיכום:</strong><br>יש לבצע ניתוח פנימי או לחכות לדוחות אנליסטים לפני קבלת החלטות השקעה</span></span>
+        <span>{{ANALYST_POINT_2}}</span>
     </div>
 </div>
                     </div>
@@ -346,111 +256,21 @@
         <div id="tab-7" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 7: סיכום והנחיות עבודה אסטרטגיות 🎯</h2>
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-3 text-sm text-gray-300">
-                <p>🛡️ <strong>ניהול סיכונים:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">הסיכון העיקרי הוא תנודתיות גבוהה במניות טכנולוגיה, חשיפה לשינויים בריבית ובתנאי שוק גלובליים, וכן סיכון רגולטורי בתחום האנרגיה והטכנולוגיה. מומלץ להקצות מקסימום 15% מהתיק למניות תנודתיות ולשמור על פיזור גאוגרפי וענפי.<br><strong>לסיכום:</strong><br>ניהול סיכון קפדני והקצאת משקל מוגבל למניות תנודתיות יפחיתו את החשיפה לתנודות קיצוניות.</span></p>
-                <p>📋 <strong>המלצות פעולה:</strong> <span class="leading-relaxed text-sm text-gray-200 block mt-1 mb-3" dir="rtl" style="text-align: right;">1. להוסיף חשיפה ארוכת טווח ל-META, NVDA ו-AMZN בהתאם ליעדים האנליסטיים.<br>2. לבצע קנייה של TTWO, BE ו-SNDK במצב של תיקון של 5‑10% מהמחיר הנוכחי, במטרה לנצל תנודתיות קצרת טווח.<br>3. לשמור על פוזיציות קיימות במניות עם יעד אנליסטי גבוה ולבצע סטופ‑לוס של 12% לכל פוזיציה תנודתית.<br>4. לעקוב אחרי פרסומי רווחים רבעוניים של חברות טכנולוגיה ולתאם התאמות בתיק בהתאם לתוצאות.<br><strong>לסיכום:</strong><br>הפעולות המומלצות מתמקדות בחיזוק החשיפה לטכנולוגיה עם ניהול סיכון קפדני.</span></p>
+                <p>🛡️ <strong>ניהול סיכונים:</strong> {{RISK_MANAGEMENT_TEXT}}</p>
+                <p>📋 <strong>המלצות פעולה:</strong> {{ACTION_RECOMMENDATIONS_TEXT}}</p>
             </div>
         </div>
 
         <!-- שלב 8: חדשות -->
         <div id="tab-8" class="tab-content hidden space-y-4">
             <h2 class="text-xl font-bold text-gray-200 border-r-4 border-cyan-400 pr-3">שלב 8: חדשות שכולות לעניין אותך (מניות התיק והמעקב) 📰</h2>
-            
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">סמנכ"ל הכספים של ARM Holdings מכר מניות בשווי $2.65 מיליון</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/insider-trading-news/article-93CH-955399" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/insider-trading-news/article-93CH-955399</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">קבוצת Headlam מגישה הודעת כוונה למינוי מנהלים מורשים</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/company-news/article-93CH-955396" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/company-news/article-93CH-955396</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">אשטד טכנולוגיה מדווחת על ירידה ברווחי המחצית הראשונה בשל שיבושים במזרח התיכון</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/earnings/article-955398" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/earnings/article-955398</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">אנהרטו זוכה באישור האיחוד האירופי לטיפול קו ראשון בסרטן שד HER2-חיובי</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/company-news/article-93CH-955395" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/company-news/article-93CH-955395</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">יחידת Anemoi, ID4 AG, זוכה בחוזה קצבה שוויצרי לשלוש שנים</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/company-news/article-93CH-955393" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/company-news/article-93CH-955393</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">ביטקוין עולה ל-$79,000 כשסטרטג’י חוזרת לקנות; חששות מריבית ואיראן נמשכים</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/cryptocurrency-news/article-955394" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/cryptocurrency-news/article-955394</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">דירקטור ב-Camp4 Therapeutics מכר מניות סטוק בשווי $1.6 מיליון</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/insider-trading-news/article-93CH-955391" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/insider-trading-news/article-93CH-955391</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">מדדי המניות באוסטרליה ירדו בנעילת המסחר; מדד S&P/ASX 200 אוסטרליה השיל 0.10%</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/stock-market-news/article-955389" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/stock-market-news/article-955389</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">מילקי מיסט דיירי רושמת צמיחה של 44% בהכנסות ברבעון הראשון של 2027</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/transcripts/article-93CH-955388" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/transcripts/article-93CH-955388</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">המכירות הקמעונאיות בגרמניה ירדו ב-3.4% ביולי</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://il.investing.com/news/economic-indicators/article-93CH-955387" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://il.investing.com/news/economic-indicators/article-93CH-955387</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">Morgan Stanley upgrades Robinhood stock rating on product expansion</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://www.investing.com/news/analyst-ratings/morgan-stanley-upgrades-robinhood-stock-rating-on-product-expansion-93CH-4883544" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://www.investing.com/news/analyst-ratings/morgan-stanley-upgrades-robinhood-stock-rating-on-product-expansion-93CH-4883544</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">RBC Capital initiates Mettler-Toledo stock coverage with Sector Perform rating</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://www.investing.com/news/analyst-ratings/rbc-capital-initiates-mettlertoledo-stock-coverage-with-sector-perform-rating-93CH-4883543" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://www.investing.com/news/analyst-ratings/rbc-capital-initiates-mettlertoledo-stock-coverage-with-sector-perform-rating-93CH-4883543</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">270 מיליון דולר לאלביט: תספק מערכות תצפית ואיכון ללקוח בינלאומי</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://www.bizportal.co.il/capitalmarket/news/article/20040925" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://www.bizportal.co.il/capitalmarket/news/article/20040925</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">טבע בין 9 החברות שחתמו על הסכם עם ממשל טראמפ</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://www.bizportal.co.il/globalmarkets/news/article/20040910" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://www.bizportal.co.il/globalmarkets/news/article/20040910</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow space-y-2 text-sm text-gray-300 text-right overflow-hidden" dir="rtl" style="text-align: right;">
-            <h3 class="text-cyan-400 font-semibold text-base break-words" style="text-align: right;">עשות אשקלון מקבלת עוד 83 מיליון שקל ממשרד הביטחון</h3>
-            <p class="mt-1 break-words" style="text-align: right;">קישור לכתבה 🔗: <a href="https://www.bizportal.co.il/general/news/article/20040928" target="_blank" class="text-cyan-400 hover:underline" style="word-break: break-all;">https://www.bizportal.co.il/general/news/article/20040928</a></p>
-            <p class="mt-2 break-words" style="text-align: right;"><strong>סיכום הכתבה:</strong><br></p>
-        </div>
-        
+            {{PORTFOLIO_NEWS_SECTION}}
         </div>
 
     </main>
 
     <script>
-        let portfolioStocks = [{"name": "NVIDIA", "symbol": "NVDA", "shares": 3, "buyPrice": "$184.90", "current": "$220.78", "target": "$323.42", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+19.41%</span>", "note": ""}, {"name": "Advanced Micro Devices", "symbol": "AMD", "shares": 20, "buyPrice": "$211.34", "current": "$470.72", "target": "$613.84", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+122.73%</span>", "note": ""}, {"name": "Micron Technology", "symbol": "MU", "shares": 6, "buyPrice": "$316.32", "current": "$958.73", "target": "$1,513.41", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+203.09%</span>", "note": ""}, {"name": "SanDisk", "symbol": "SNDK", "shares": 4, "buyPrice": "$630.26", "current": "$1,566.70", "target": "$2,125.09", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+148.58%</span>", "note": ""}, {"name": "Western Digital", "symbol": "WDC", "shares": 6, "buyPrice": "$223.23", "current": "$450.55", "target": "$664.92", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+101.83%</span>", "note": ""}, {"name": "Intel", "symbol": "INTC", "shares": 20, "buyPrice": "$43.05", "current": "$89.51", "target": "$114.88", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+107.92%</span>", "note": ""}, {"name": "Silicon Motion", "symbol": "SIMO", "shares": 30, "buyPrice": "$131.32", "current": "$246.84", "target": "$369.70", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+87.97%</span>", "note": ""}, {"name": "Iris Energy", "symbol": "IREN", "shares": 54, "buyPrice": "$52.75", "current": "$37.12", "target": "$78.19", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-29.63%</span>", "note": ""}, {"name": "Cipher Mining", "symbol": "CIFR", "shares": 28, "buyPrice": "$17.50", "current": "$15.50", "target": "$32.18", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-11.43%</span>", "note": ""}, {"name": "Meta Platforms", "symbol": "META", "shares": 2, "buyPrice": "$661.00", "current": "$572.34", "target": "$754.77", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-13.41%</span>", "note": ""}, {"name": "Amazon", "symbol": "AMZN", "shares": 6, "buyPrice": "$229.29", "current": "$259.77", "target": "$327.67", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+13.29%</span>", "note": ""}, {"name": "Alphabet / Google", "symbol": "GOOG", "shares": 4, "buyPrice": "$317.95", "current": "$335.41", "target": "$422.34", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+5.49%</span>", "note": ""}, {"name": "Take-Two Interactive", "symbol": "TTWO", "shares": 5, "buyPrice": "$235.50", "current": "$219.70", "target": "$286.89", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-6.71%</span>", "note": ""}, {"name": "Walmart", "symbol": "WMT", "shares": 16, "buyPrice": "$119.45", "current": "$104.87", "target": "$127.72", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-12.21%</span>", "note": ""}, {"name": "Netflix", "symbol": "NFLX", "shares": 14, "buyPrice": "$94.03", "current": "$81.05", "target": "$93.66", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-13.80%</span>", "note": ""}, {"name": "Mastercard", "symbol": "MA", "shares": 4, "buyPrice": "$503.99", "current": "$589.31", "target": "$669.46", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+16.93%</span>", "note": ""}, {"name": "iShares Bitcoin Trust", "symbol": "IBIT", "shares": 14, "buyPrice": "$60.48", "current": "$44.67", "target": "אין נתון זמין", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-26.14%</span>", "note": ""}, {"name": "Greenland Technologies", "symbol": "GTEC", "shares": 260, "buyPrice": "$1.27", "current": "$0.89", "target": "$6.00", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-29.92%</span>", "note": ""}, {"name": "ProShares UltraPro QQQ", "symbol": "TQQQ", "shares": 28, "buyPrice": "$56.53", "current": "$71.92", "target": "אין נתון זמין", "status": "רווח: <span dir='ltr' style='color: #2ecc71; font-weight: bold; display: inline-block;'>+27.22%</span>", "note": ""}, {"name": "Bloom Energy Corp", "symbol": "BE", "shares": 6, "buyPrice": "$214.56", "current": "$206.30", "target": "$275.08", "status": "רווח: <span dir='ltr' style='color: #e74c3c; font-weight: bold; display: inline-block;'>-3.85%</span>", "note": ""}];
+        let portfolioStocks = {{PORTFOLIO_STOCKS_JSON}};
 
         document.addEventListener('DOMContentLoaded', () => {
             const tabButtons = document.querySelectorAll('.tab-btn');
@@ -477,7 +297,7 @@
 
             const sectorCtx = document.getElementById('sectorChart');
             if (sectorCtx) {
-                const sectorData = [{"name": "INFO_TECH", "change": 0.44, "price": 186.5, "value": 186.5}, {"name": "FINANCIALS", "change": -0.67, "price": 57.71, "value": 57.71}, {"name": "HEALTH", "change": -0.36, "price": 170.54, "value": 170.54}, {"name": "CONS_DISC", "change": -0.53, "price": 116.59, "value": 116.59}, {"name": "CONS_STAPLES", "change": -0.55, "price": 84.98, "value": 84.98}, {"name": "ENERGY", "change": 2.04, "price": 63.96, "value": 63.96}, {"name": "INDUSTRIALS", "change": -1.13, "price": 175.13, "value": 175.13}, {"name": "MATERIALS", "change": -0.92, "price": 52.69, "value": 52.69}, {"name": "COMM", "change": -1.35, "price": 111.46, "value": 111.46}, {"name": "UTILITIES", "change": -1.17, "price": 42.23, "value": 42.23}, {"name": "REAL_ESTATE", "change": -0.83, "price": 44.11, "value": 44.11}];
+                const sectorData = {{SECTORS_CHART_JSON}};
                 const labels = ['טכנולוגיה', 'פיננסים', 'בריאות', 'צרכנות מחזורית', 'צרכנות בסיסית', 'אנרגיה', 'תעשייה', 'חומרים', 'תקשורת', 'תשתיות', 'נדל"ן'];
                 const rawValues = sectorData.map(item => typeof item.change === 'number' ? item.change : 0);
                 const barColors = rawValues.map(val => val >= 0 ? '#22c55e' : '#dc2626');
