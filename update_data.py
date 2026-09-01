@@ -183,7 +183,7 @@ def fetch_stock_prices(symbols):
 
 
 def generate_ai_analysis(news_items, stocks_data):
-    """יצירת ניתוח AI באמצעות מפתחות Groq הזמינים"""
+    """יצירת ניתוח AI באמצעות מפתחות Groq הזמינים ומודל gpt-oss-120b"""
     groq_keys = get_all_groq_keys()
     if not groq_keys:
         print("No Groq API keys found. Skipping AI analysis.")
@@ -201,7 +201,7 @@ def generate_ai_analysis(news_items, stocks_data):
         try:
             client = Groq(api_key=api_key)
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.5,
                 max_tokens=600,
@@ -254,7 +254,6 @@ def render_html(stocks_data, news_items, ai_summary, last_updated):
 </body>
 </html>"""
 
-    # החלפת תגיות מפתח בתבנית
     output_html = template_content.replace("{{LAST_UPDATED}}", last_updated)
     output_html = output_html.replace("{{AI_SUMMARY}}", ai_summary.replace("\n", "<br>"))
     output_html = output_html.replace("{{STOCKS_DATA}}", json.dumps(stocks_data, ensure_ascii=False, indent=2))
