@@ -1,83 +1,108 @@
 {
-    "SP500_ANALYSIS": "הניתוח של מדד S&P 500 מצביע על עלייה של 0.61% במחיר הסגירה של 7,713.94 נקודות. התנועה נובעת משילוב של דוחות רווחים חיוביים במגזר הטכנולוגיה והצרכנות, וכן תמיכה של מדיניות מוניטרית מרגיעה. עם זאת, מדד ה-VIX מצביע על ירידה במתנדבות, מה שמרמז על סיכון מתון. אין תחזית אנליסטים זמינה (Target 0.0). לסיכום: המדד S&P 500 נמצא במגמת עלייה קלה של 0.61% והצפי הוא שמחירי המניות יישארו יציבים בטווח הקצר.",
-    "NASDAQ_ANALYSIS": "מדד Nasdaq Composite נסגר על 29,297.14 נקודות, עלייה של 0.53% לעומת היום הקודם. המגמה החיובית מונעת בעיקר על ידי מניות טכנולוגיה מובילות כגון NVDA, AMD ו-AMD. השינוי מתון, והפחתת מתנדבות ב-VIX תומכת באופטימיות. אין תחזית אנליסטים זמינה. לסיכום: Nasdaq מציג עלייה מתונה של 0.53% והצפי הוא המשך תנופה חיובית בטווח הקצר.",
-    "DOW_ANALYSIS": "מדד Dow Jones Industrial Average נסגר על 53,427.43 נקודות, עלייה של 0.68%. המגמה נובעת מתמיכה של מניות תעשייה וצרכנות, כולל WMT. השוק מגיב לחוזק הדולר והפחתת מתנדבות. אין תחזית אנליסטים זמינה. לסיכום: Dow מציג עלייה של 0.68% והצפי הוא המשך תנופה חיובית בטווח הקצר.",
-    "VIX_ANALYSIS": "מדד התנודתיות VIX נסגר על 15.02, ירידה של 1.38% לעומת היום הקודם, מה שמצביע על ירידה בפחד המשקיעים והפחתת מתנדבות. רמת VIX מתחת ל-20 נחשבת לתקופה של שקט יחסי. אין תחזית אנליסטים זמינה. לסיכום: VIX מצביע על תנודתיות נמוכה יותר, מה שמחזק את האופטימיות בשוק.",
+    "SP500_ANALYSIS": "המדד S&P 500 (^GSPC) נסגר היום על עלייה של 1.06% למחיר של 7,747.71 נקודות, מה שמצביע על תנופה חיובית רחבה בשוק האמריקאי. העלייה מונעת בעיקר על ידי מגמת הרווחיות הגבוהה במגזר הטכנולוגיה (MSFT עלייה של 2.49% עם יעד אנליסטים 571.38, NVDA עלייה של 1.38% ו‑AMD כמעט ללא שינוי) וכן חיזוק במגזר הצרכנות (WMT עלייה של 2.28% ו‑AMZN עלייה של 0.98%). בנוסף, מדדי סקטורים כמו XLK (טכנולוגיה) ו‑XLY (צרכנות) מציגים עליות של כ‑1% כל אחד, מה שמחזק את המגמה. עם זאת, מדדים מסורתיים כגון XLP (מוצרי צריכה בסיסיים) ו‑XLB (חומרי גלם) מציגים ירידות קלים, מה שמרמז על העדפה של משקיעים למניות צמיחה על פני ערך. לסיכום: השוק האמריקאי נמצא במגמת עלייה מתמשכת, מונעת בעיקר על ידי טכנולוגיה ו‑צרכנות, והסיכון למתון נשאר מוגבל.",
+    "NASDAQ_ANALYSIS": "המדד Nasdaq Composite (^NDX) נסגר על עלייה של 1.16% למחיר של 29,482.32 נקודות, המשקף תנופה חזקה במגזר הטכנולוגיה. מניות מובילות כגון MSFT (מחיר 510.12, שינוי +2.49%) ו‑NVDA (מחיר 228.45, שינוי +1.38%) משמרות תנופה חיובית, בעוד ש‑AMD (מחיר 456.16) חווה שינוי שלילי מזערי של -0.13% אך עדיין נמצא ברמת מחיר גבוהה. מדדי סקטורים טכנולוגיים (XLK) עלו ב‑1.15%, והקצב של מניות צמיחה כמו META (+2.12%) ו‑GOOG (+1.26%) תורמים לתמיכה במגמה. עלייה של 5.47% במניות רכב חשמלי (TSLA) מוסיפה לתחושת האופטימיות. לסיכום: ניודק המשקף תנופה רחבה בטכנולוגיה, עם דגש על מניות גדולות שמובילות את המדד למעלה.",
+    "DOW_ANALYSIS": "המדד Dow Jones Industrial Average (^DJI) נסגר על עלייה של 1.18% למחיר של 53,686.11 נקודות, מה שמצביע על תנופה כללית במגזר התעשייה והפיננסים. מניות מובילות כגון BA (מחיר 210.51, שינוי +0.81%) מציגות חיזוק, בעוד שמניות אנרגיה כמו CVX (מחיר 211.32, שינוי -0.23%) ו‑XOM (מחיר 162.21, שינוי -1.38%) חוו ירידות קלים, אך לא השפיעו משמעותית על המדד. מדד XLF (פיננסים) עלה ב‑1.54% והדגים חיזוק במגזר הבנקאות (JPM עלייה של 1.62%). בנוסף, מדדי תשתיות (XLRE) ו‑XLE (אנרגיה) מציגים תנודות מינוריות. לסיכום: המדד Dow מציג תנופה חיובית רחבה, מונעת בעיקר על ידי תעשייה ופיננסים, עם השפעה מוגבלת של מגזר האנרגיה.",
+    "VIX_ANALYSIS": "מדד התנודתיות VIX (^VIX) נסגר על ירידה של 5.98% למחיר של 14.32, מה שמצביע על הפחתת חשש המשקיעים והפחתת תנודתיות בשווקים. הירידה משמעותית במדד משקפת את האמון הגובר במגמות החיוביות של S&P 500, Nasdaq ו‑Dow, וכן את חוסר המתח במקורות חיצוניים כגון מדיניות מוניטרית. עם זאת, יש לעקוב אחרי אירועים גאופוליטיים ושינויים במדיניות הריבית שיכולים לשנות את המגמה. לסיכום: תנודתיות השוק מצטמצמת, מה שמחזק את האווירה האופטימית במניות.",
     "DXY_EXPLANATION": "מדד הדולר (DXY) אינו מסופק במפורש, אך ניתן להסיק מהשער USD/ILS (USDILS=X) שהדולר חזק, כאשר המחיר עומד על ‎3.04‎ והשתנה ‎+1.44%‎. החוזק של הדולר נובע מהציפיות למדיניות פד מחמירה, מדיניות ריבית גבוהה יותר ונתוני אינפלציה מתונים בארה\"ב. חוזק הדולר משפיע על מחירי סחורות כמו נפט וזהב, וכן על שווקים מתפתחים. אין תחזית אנליסטים (Target 0.0). \nלסיכום: הדולר מציג חוזק משמעותי, המשפיע על סחורות ושווקים גלובליים.",
-    "USD_ILS_EXPLANATION": "שער החליפין USD/ILS נסגר על 3.01, ירידה של 0.51% מול היום הקודם, מה שמעיד על התחזקות של השקל הישראלי מול הדולר. השינוי נובע משיפור במאזן המסחרי ובמדיניות הריבית של בנק ישראל. אין תחזית אנליסטים זמינה. לסיכום: השקל מתחזק במקצת והצפי הוא המשך תנודתיות מתונה.",
-    "OIL_EXPLANATION": "מחיר הנפט (WTI) CL=F נסגר על 91.87 דולר לחבית, עלייה של 0.89% ביום האחרון. העלייה נגרמת ממגבלות ייצור של OPEC+ והביקוש המתחדש בתעשייה האמריקאית. אין תחזית אנליסטים זמינה. לסיכום: המחיר מצביע על עלייה קלה של כ-0.9% והצפי הוא המשך תנופה חיובית בטווח הקצר.",
-    "GOLD_EXPLANATION": "מחיר הזהב (GC=F) נסגר על 4,523.4 דולר לאונקיה, עלייה של 1.03% ביום האחרון. העלייה נובעת מביקוש בטוח במצב של תנודתיות מתונה במט\"ח והפחתת מתנדבות. אין תחזית אנליסטים זמינה. לסיכום: זהב מציג עלייה של 1.03% והצפי הוא שמחירי הזהב ימשיכו לעלות במקצת.",
-    "BTC_EXPLANATION": "מחיר הביטקוין (BTC-USD) נסגר על 78,815.42 דולר, עלייה של 1.94% ביום האחרון. העלייה מונעת משיפור באמון המשקיעים, כניסת משקיעים מוסדיים והפחתת מתנדבות בשוק המניות. אין תחזית אנליסטים זמינה. לסיכום: ביטקוין מציג עלייה של 1.94% והצפי הוא המשך תנופה חיובית בטווח הקצר.",
-    "US_MARKET_NEWS": "שוקי ארה\"ב מציגים תנודתיות גבוהה: וול סטריט ירד בעקבות ירידת מניית Nvidia והחשש שהפד יאט את קיצוץ הריביות; מדדי Dow Jones ו‑S&P 500 ירדו בעוד Nasdaq עלה, מה שמצביע על פיזור בתגובות המשקיעים; S&P 500 נסגר בירידה כאשר מניות AI כגון Nvidia ו‑Oracle חוו תנודות. לסיכום: המשק מצופה להמשיך בתנודתיות, משקיעים צריכים לשקול זהירות ולנטר עדכונים נוספים. (מקור: Google News RSS)",
-    "IL_MARKET_NEWS": "אין חדשות זמינות לשוק הישראלי היום. לסיכום: אין מידע משמעותי לשוק המקומי, מומלץ לעקוב אחרי עדכונים נוספים. (מקור: Bizportal)",
-    "COMMUNITY_SENTIMENT": "הקהילה המשקית מגיבה ברגישות של חשש וקפדנות, עם נטייה למכירות בטווח הקצר בשל חוסר וודאות סביב מדיניות הפד והשפעת מניות AI. לסיכום: קהילת המשק משדרת זהירות ונטייה למכירות בטווח הקצר.",
-    "ANALYST_POINT_1": "אין נתוני יעד אנליסטים מהימנים זמינים. לסיכום: אין בסיס לקבלת החלטות על בסיס יעדי אנליסטים.",
-    "ANALYST_POINT_2": "אין נתוני יעד אנליסטים מהימנים זמינים. לסיכום: אין בסיס לקבלת החלטות על בסיס יעדי אנליסטים.",
-    "CATALYST_EARNINGS": "הניתוח מתמקד בחברות שהדיווחים הרבעוניים שלהן צפויים בחודש הקרוב, כולל AMZN, META, NVDA, MU, AMD, INTC, WMT ו‑NFLX. רוב המניות מציגות שינוי חיובי קטן (לדוגמה AMZN +1.0%, META +3.17%, NVDA +0.9%) והמחיר הנוכחי נמוך משמעותית מהיעד האנליסטי (לדוגמה MU 932.75 מול יעד 1513.11, NVDA 227.38 מול יעד 325.99). המשמעות היא שהשוק עדיין מתעלם מהפוטנציאל הצמיחה המוגבר, ולכן הדיווחים עשויים להוות מנוף משמעותי לתזוזות חדשות. עם זאת, חברות כמו WDC ו‑WMT מציגות ירידה קלה במחיר והיעד עדיין גבוה, מה שמרמז על אפשרות לתיקון חיובי לאחר הדיווחים. \nלסיכום: הדיווחים הרבעוניים של חברות הטכנולוגיה והקמעונאות מציגים פוטנציאל עלייה משמעותי, במיוחד למניות עם פער גדול בין מחיר ליעד האנליסטי.",
-    "CATALYST_MONETARY": "המדדים המקרו-כלכליים מצביעים על תנאי שוק מתונים: מדד ה‑VIX ירד ל‑15.02 (-1.38%), מה שמצביע על ירידה ברמת הפחד והפחתת תנודתיות. שער ה‑USD/ILS עלה ל‑3.01 (-0.51%), מה שמחזק את הדולר מול השקל ומפחית את עלות הייבוא של חברות טכנולוגיה. בנוסף, מדדי המניות האמריקאיים (^GSPC, ^DJI, ^NDX) מציגים עלייה קלה (0.5‑0.7%). עם זאת, רמת האינפלציה עדיין גבוהה והפוליסה המוניטרית של הפד עשויה להישאר נוקשה, מה שעלול להגביל את תנופת השווקים בטווח הקצר. \nלסיכום: תנאי השוק המקרו-כלכליים נראים יציבים עם תנודתיות נמוכה, אך סיכון מדיניות מוניטרית נוקשה נשאר קיים.",
-    "CATALYST_HARDWARE": "מגזר החומרה והחצי‑מוליכים נמצא במרכז תשומת הלב: MU, NVDA, AMD, INTC, SNDK ו‑GTEC מציגים פערים משמעותיים בין מחיר נוכחי ליעד האנליסטי (לדוגמה MU 932.75 מול יעד 1513.11, AMD 448.57 מול יעד 613.84, SNDK 1525.67 מול יעד 2125.09). למרות ירידה קלה במחירי MU (-2.31%) ו‑AMD (-1.79%), היעדים משקפים ציפיות לצמיחה חזקה בתשואות משנת 2024‑2025, בעיקר בשל ביקוש למעבדים מתקדמים, AI ו‑data centers. שינוי המחיר של INTC שלילי (-1.08%) אך היעד גבוה (114.88), מה שמצביע על פוטנציאל תיקון. GTEC, למרות מחיר נמוך (0.89) והיעד 6.0, מצביע על אפשרות לצמיחה משמעותית במגזר האנרגיה המתחדשת. \nלסיכום: מגזר החומרה מציג פוטנציאל עלייה גבוה עם פערים גדולים בין מחיר ליעד, במיוחד במניות MU, NVDA, AMD ו‑SNDK.",
-    "RISK_MANAGEMENT_TEXT": "בהתאם למצב השוק, יש ליישם ניהול סיכונים קפדני: 1) פיזור בין מגזרים – לא להתרכז רק במניות טכנולוגיה, אלא לכלול מדדי סחורות (GC=F, CL=F) ומניות קמעונאיות (WMT). 2) קביעת רמות עצירת הפסד (stop‑loss) של 5‑7% למניות עם תנודתיות גבוהה (NVDA, AMD, MU). 3) ניטור מדד ה‑VIX והנתונים המוניטריים – עלייה פתאומית ב‑VIX או שינוי חד במטבע עשויה להצביע על צורך בצמצום החשיפה. 4) בחינת יחס רווח‑הפסד (risk‑reward) לפני כניסה – רק פוזיציות עם פוטנציאל רווח של לפחות 2‑3 פעמים הסיכון המוגדר יתקבלו. 5) עדכון תרחישי תרחישים של משבר נזילות או שינוי מדיניות פד. \nלסיכום: ניהול סיכונים דורש פיזור, עצירת הפסד קפדנית, ניטור מדדים מקרו‑כלכליים והקפדה על יחס רווח‑הפסד גבוה.",
-    "ACTION_RECOMMENDATIONS_TEXT": "1. לקנות במקצת MU, NVDA ו‑AMD במצב של קנייה ממוצעת (average‑cost) בשל פער משמעותי בין מחיר ליעד האנליסטי, עם עצירת הפסד 6% ומטרה רווח של 20‑25%. 2. להוסיף חשיפה קטנה ל‑SNDK ו‑GTEC, אך לשמור על משקל כולל של לא יותר מ‑5% מהפורטפוליו לכל אחת, עקב תנודתיות גבוהה. 3. לשקול קנייה של AMZN ו‑META רק לאחר הדיווחים הרבעוניים, במידה והמחיר יישאר מתחת ל‑יעד האנליסטי (328 ו‑754 בהתאמה). 4. להקטין חשיפה ל‑WDC ו‑XLF, שכן הם מציגים ירידה משמעותית במחיר והיעד גבוה, מה שמעלה את רמת הסיכון. 5. לשמור על חלק מהקופה במזומן או באגרות חוב קצרות טווח כדי להתמודד עם תנודתיות פתאומית במדדים המקרו‑כלכליים. \nלסיכום: המלצתנו היא להגדיל משקל בחברות חצי‑מוליכים עם פוטנציאל עלייה, לשמור על פיזור, ולבצע קנייה ממוצעת עם עצירת הפסד קפדנית.",
-    "ai_updated_at": "03.09.2026 | 16:40",
-    "DXY_ANALYSIS": "אין נתונים זמינים עבור מדד DXY.",
+    "USD_ILS_EXPLANATION": "שער החליפין USD/ILS (USDILS=X) נסגר על מחיר של 3.01, שינוי של -0.59% לעומת היום הקודם, מה שמצביע על החלשה קלה של הדולר מול השקל. הירידה נובעת בעיקר משילוב של מדיניות מוניטרית מרגיעה בארה\"ב והעדפה של משקיעים למטבעות מתפתחים, יחד עם תמיכה במצב הפיננסי של ישראל. עם זאת, ההשפעה של מחירי נפט (91.68 דולר לברון) והאינפלציה המקומית עשויה לשנות את המגמה בטווח הקצר. לסיכום: הדולר נחלש במקצת מול השקל, והמשך המגמה תלוי במדיניות המוניטרית ובתנודות מחירי האנרגיה.",
+    "OIL_EXPLANATION": "מחיר נפט ברנט (CL=F) נסגר על 91.68 דולר לחבית, שינוי של +0.68% לעומת היום הקודם. העלייה הקלה משקפת ביקוש מתמשך מהשוק האסייתי והפחתת המלאי בארה\"ב, יחד עם ציפיות ליציבות במחירי האנרגיה בטווח הבינוני. עם זאת, חוסר יציבות גאופוליטית במזרח התיכון והמדיניות של OPEC+ עשויים לגרום לתנודות משמעותיות בטווח הקצר. לסיכום: נפט נמצא במגמת עלייה מתונה, אך רגיש לשינויים גאופוליטיים ולמדיניות האספקה.",
+    "GOLD_EXPLANATION": "מחיר זהב (GC=F) נסגר על 4,519.4 דולר לאונקיה, שינוי של +0.94% לעומת היום הקודם. העלייה נובעת מביקוש בטוח של משקיעים למזומן בטוח במצב של תנודתיות נמוכה במדדים (VIX ירד) והפחתת הריבית האמריקאית הצפויה. עם זאת, חיזוק הדולר (למרות החלשה קלה מול השקל) והיציבות הכלכלית עשויים להגביל את המשך העלייה. לסיכום: זהב מציג עלייה מתונה, המונעת על ידי ביקוש בטוח במצב של תנודתיות מופחתת.",
+    "BTC_EXPLANATION": "מחיר ביטקוין (BTC-USD) נסגר על 81,563.01 דולר, שינוי של +5.5% לעומת היום הקודם. העלייה משמעותית נגרמת משיפור באמון המשקיעים במטבעות דיגיטליים, כניסת משקיעים מוסדיים חדשים, וכן תזמון של אירועים רגולטוריים חיוביים במקומות שונים. יחד עם זאת, תנודתיות גבוהה עדיין קיימת, והמחיר רגיש לשינויים במדיניות הרגולציה ובתנועות השוק הפיננסי הרחב. לסיכום: ביטקוין חווה תנופה חזקה, אך המשך העלייה תלוי במצב הרגולציה ובקבלה של משקיעים מוסדיים.",
+    "US_MARKET_NEWS": "U.S. stocks sink on worries about a possible hike to interest rates this year by the Federal Reserve; Dow Jones, S&P 500 and Nasdaq plunge amid strong jobs report; High oil prices knock down stocks and erase Wall Street’s hopes for a rate‑cut. לסיכום: המשקיעים צריכים לנקוט זהירות, לעקוב אחרי הודעות ה‑Fed ולשקול גיוון בתיק לפני קבלת החלטות השקעה. (מקור: Google News RSS)",
+    "IL_MARKET_NEWS": "אין חדשות זמינות על השוק הישראלי היום. לסיכום: יש להמתין לעדכונים נוספים ולשמור על מעקב שוטף אחרי פרסומי משרד האוצר והבנק המרכזי. (מקור: Bizportal)",
+    "COMMUNITY_SENTIMENT": "הקהל המשקיע מציג חשש משמעותי מהעלייה האפשרית בריבית ובמחירי הנפט, מה שמוביל לנטייה למכירות בטווח הקצר. לסיכום: מומלץ לשמור על פרופיל סיכון מתון ולחכות לאינדיקציות ברורות יותר לפני קבלת החלטות קנייה משמעותיות.",
+    "ANALYST_POINT_1": "אין נתון אנליסטים מהימן לגבי יעד ממוצע לשוק האמריקאי או הישראלי במועד זה. לסיכום: אין להשתמש בנתוני יעד ממוצע עד לקבלת מידע מאומת.",
+    "ANALYST_POINT_2": "אין תחזית מדויקת או הערכות אנליסטים מהימנות זמינות כעת. לסיכום: יש להמתין לדוחות אנליסטים רשמיים לפני קביעת אסטרטגיית השקעה.",
+    "CATALYST_EARNINGS": "הניתוח מתמקד בחברות שהצגת שינוי משמעותי במחיר ובמטרה אנליסטית המצביעה על פוטנציאל תזוזה משמעותית.  BE (ביו-אנרג'י) עלה 8.65% והאנליסט מציב יעד של 275.08, מה שמעיד על צפי רווחיות גבוה וייתכן שהחברה תפרסם תוצאות רבעון מרשימות הקשורות להרחבת פעילות במקורות אנרגיה מתחדשת.  CIFR (סייבר) חווה עלייה של 14.65% עם יעד של 32.18 – רמת תנופה גבוהה שמצביעה על אפשרות הכרזת שותפויות חדשות או קבלת חוזים משמעותיים.  PLTR (פאלנטיר) עלה 7.4% והיעד הוא 191.68, מה שמרמז על צפי לשיפור בביצועים תפעוליים או השקת מוצר חדש.  COIN (קוין) עלה 9.81% והיעד 198.97, מה שמצביע על אפשרות להרחבת פעילות או שיפור במודלים העסקיים של מטבעות דיגיטליים.  NVDA (נוידיה) עלה 1.38% והיעד 325.99 – למרות שהמחיר עדיין רחוק מהיעד, יש ציפייה להמשך עלייה בעקבות מכירות של שבבי AI ו‑GPU.  TSLA (טסלה) עלה 5.47% והיעד 390.09, מה שמרמז על צפי להגדלת מכירות רכב חשמלי או שיפור ברווחיות.  בנוסף, חברות כמו PG, JNJ ו‑WMT מציגות שינוי שלילי במחיר אך היעד האנליסטי גבוה מהמחיר הנוכחי, מה שמצביע על פוטנציאל תיקון חיובי במידה והן מדווחות תוצאות רבעון חזקות.  לסיכום: ישנם מספר מניות עם תנופת מחיר חיובית ויעדים אנליסטיים גבוהים המצביעות על אפשרות קפיצה משמעותית בתוצאות הרווחיות, ולכן הן מהוות קאטליסט רווחי משמעותי לשבוע הקרוב.",
+    "CATALYST_MONETARY": "המדד VIX מציג ירידה של 5.98% ל‑14.32, מה שמעיד על תנודתיות נמוכה בשוק והעדפה של משקיעים לסיכון מוגבל.  שער הדולר מול השקל (USDILS) ירד ב‑0.59% ל‑3.01, מה שמרמז על חיזוק השקל שיכול להקטין את עלויות הייבוא של חברות תעשייתיות.  מדד האינפלציה והמדיניות המוניטרית של הפד עדיין משאירים את הריבית ברמה גבוהה, אך הירידה ב‑VIX והחוזק של השקל עשויים לתמוך במניות טכנולוגיה ובמניות ערך.  בנוסף, מחירי הסחורות נעים בטווחים צנועים: זהב (GC) עלה 0.94% ל‑4519.4, נפט (CL) עלה 0.68% ל‑91.68, בעוד שמחירי האנרגיה (XLE) ירדו 0.83% ל‑64.62, מה שמצביע על חוסר תמריץ משמעותי לשוק האנרגיה.  לסיכום: תנודתיות נמוכה, שקל חזק ושוק סחורות יציב יוצרים סביבת מסחר נוחה למניות טכנולוגיה אך מציבים אתגר למגזר האנרגיה.",
+    "CATALYST_HARDWARE": "הסקטור החומרה מציג כמה מניות בעלות פוטנציאל משמעותי.  NVDA (נוידיה) עלתה 1.38% והיעד 325.99, משקפת ציפייה להמשך ביקוש גבוה לשבבי AI ו‑GPU.  AMD (AMD) ירדה 0.13% אך היעד 613.84 גבוה משמעותית מהמחיר, מה שמצביע על צפי לשיפור במכירות של מעבדים ו‑GPU, במיוחד עם השקת דורות חדשים.  MU (מיקרון) עלה 0.35% והיעד 1513.11, משקפת ציפייה להרחבת פעילות בתחום הזיכרון NAND והקשר ל‑AI.  INTC (אינטל) עלה 1.55% והיעד 114.88, מצביע על פוטנציאל לשיפור בתחרותיות של מוצרי הליבה והמעבדים החדשים.  בנוסף, TTWO (טווין) ירד 1.29% אך היעד 286.89 גבוה מהמחיר, מה שמרמז על אפשרות לשיפור במכירות של משחקים וקונסולות.  סיכום: המגמה הכללית בחומרה היא חיובית עם יעדים אנליסטיים גבוהים משמעותיים, ולכן המשקיעים צריכים לשקול חשיפה מוגברת למניות NVDA, AMD, MU ו‑INTC.",
+    "RISK_MANAGEMENT_TEXT": "הסיכון העיקרי נובע מהתלות במגזר הטכנולוגיה, שבו רוב המניות המובילות מציגות תנודות גבוהות ויעדים מרחיקי לכת.  על אף שה‑VIX נמוך, יש להישאר ערניים לשינויים פתאומיים במדיניות הריבית של הפד, שעלולים לגרום לתיקון פתאומי במניות טכנולוגיה.  בנוסף, תנודתיות השקל יכולה להשפיע על חברות ייצואיות כמו CVX ו‑XOM, ולכן יש לכלול בחשבון חשיפה למטבע.  מומלץ להשתמש ב‑stop‑loss ברמת 3‑5% מתחת למחיר הקנייה, לגוון את הפורטפוליו עם נכסים בטוחים כגון אג\"ח ממשלתי ארה״ב או זהב, ולבצע ניטור יומי של מדד VIX ושערי החליפין.  לסיכום: ניהול סיכון קפדני כולל קביעת רמות stop‑loss, גיוון נכסים ומעקב אחרי מדדי תנודתיות ומדיניות מוניטרית.",
+    "ACTION_RECOMMENDATIONS_TEXT": "1. להגדיל משקל במניות טכנולוגיה בעלות פוטנציאל גבוה – NVDA, AMD, MU, INTC – עם פקודות קנייה חלקיות ולמקם stop‑loss ברמת 4% מתחת למחיר הקנייה. 2. לשקול קנייה של BE, CIFR ו‑PLTR בעקבות תנופת מחיר חזקה ויעדים אנליסטיים גבוהים, אך להקפיד על גודל פוזיציה מוגבל (עד 5% מהפורטפוליו). 3. להפחית חשיפה למניות אנרגיה (XLE, XOM) עד לקבלת תנאי שוק משופרים, ולשקול רכישת חוזים עתידיים של נפט במידה והמחיר יעלה מעל 95 דולר. 4. לשמור על חלק מהקצבה במזומן (10‑15%) למקרה של תנודתיות פתאומית במניות טכנולוגיה. 5. לבצע ניטור יומי של VIX, USDILS, ו‑נתוני רווח רבעוניים של חברות מפתח, ולהתאים את הפוזיציות בהתאם לשינויים.  לסיכום: מומלץ להתמקד במניות טכנולוגיה עם פוטנציאל עלייה, לשמור על חשיפה מוגבלת למניות אנרגיה, וליישם ניהול סיכון קפדני עם ניטור שוטף של תנאי השוק.",
+    "ai_updated_at": "03.09.2026 | 23:40",
+    "DXY_ANALYSIS": "אין נתונים זמינים עבור מדד DXY (מדד הדולר האמריקאי) במידע שסופק.",
     "long_term_stocks": [],
     "swing_stocks": [],
     "market_news": [
         {
-            "news_title": "Wall Street tumbles as Nvidia slides, investors fret that Fed may slow rate cuts",
-            "news_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPbUV6VGN6TzlyTG12SlBmSkNYWTlZRUFEdHFOejVXRzkxVExtNWpBbHlTQlVfVTA3eTdGb2JtSXNPeE5hZjVISW1lVUZNcjMtd0x2SWtrcXpwdFJXUC01RDlYUzJiNldpT1NTUFVtdVhHa2JWcWNlSWszQ0dmX0x1MER0NlFNaGVvQU9yMUd5dzlUQmdVR0dQOUYtNTNrWUwxLXhJ?oc=5",
-            "news_desc": "Wall Street experiences a pull‑back as Nvidia shares decline, raising concerns that the Federal Reserve may pause rate cuts."
+            "news_title": "Samsara היכו את תחזיות הרווחים וההכנסות ברבעון",
+            "news_link": "https://il.investing.com/news/earnings/article-958546",
+            "news_desc": ""
         },
         {
-            "news_title": "Stock market today: S&P 500 closes lower as Oracle, Nvidia lead wobble in AI trade",
-            "news_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNLXAzaE44M0FTV2dydXlidlpULTRKaEF4Sk9WZ1FSSnliU1MwR2tnYmF0MHozcl9Pdm4wLUNsRWxlVnQzeTk3UV8za0J5LW5JM1RKbkJMVHJIUVFXWjh6YUtpcXR5bjhPamJtQ0lyeE5xTDU5aDU4T3FFcEJja0tVUkcycXBOX0lLNEFsdkRHeUVELUcza3FSNWtmbXJZMmttNVpndmNtUS1ueDhsYi1VVEVGZ1hBOVlWb00xUDhaaXJSUHNLR1NtWkJR?oc=5",
-            "news_desc": "The S&P 500 fell, led by weakness in Oracle and Nvidia, indicating a wobble in the AI‑driven rally."
+            "news_title": "גיידווייר סופטוור היכו את תחזיות הרווחים וההכנסות ברבעון",
+            "news_link": "https://il.investing.com/news/earnings/article-958547",
+            "news_desc": ""
         },
         {
-            "news_title": "מדוע מנית אנבידיה עולה היום?",
-            "news_link": "https://il.investing.com/news/stock-market-news/article-93CH-958190",
-            "news_desc": "מאמר המתאר עלייה במחיר מניית Nvidia ביום זה."
+            "news_title": "נט פאואר משלימה רכישת זכויות לייצור חשמל של 123 מגה-וואט",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958545",
+            "news_desc": ""
         },
         {
-            "news_title": "סמנכ\"ל בכיר של אנבידיה מכר מניות בשווי $6.5 מיליון",
-            "news_link": "https://il.investing.com/news/insider-trading-news/article-93CH-958192",
-            "news_desc": "דיווח על מכירת מניות פנימית של מנהל בכיר בחברת Nvidia, סכום של 6.5 מיליון דולר."
+            "news_title": "Samsara מדווחת על צמיחה של 30% בהכנסות שנתיות חוזרות ושיא בלקוחות גדולים",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958544",
+            "news_desc": ""
         },
         {
-            "news_title": "StoneX פותחת כיסוי על מנית סטוק של Monolithic Power Systems עם דירוג קנייה",
-            "news_link": "https://il.investing.com/news/analyst-ratings/article-93CH-958193",
-            "news_desc": "החברה StoneX מעניקה דירוג קנייה ל‑Monolithic Power Systems."
+            "news_title": "זיסקיילר היכו את תחזיות הרווחים וההכנסות ברבעון",
+            "news_link": "https://il.investing.com/news/earnings/article-958542",
+            "news_desc": ""
         },
         {
-            "news_title": "StoneX חוזרת על המלצת קנייה למניית ברודקום על רקע תחזית ה‑AI",
-            "news_link": "https://il.investing.com/news/analyst-ratings/article-93CH-958195",
-            "news_desc": "החברה StoneX ממליצה לקנות מניית Broadcom בהתבסס על תחזיות בתחום הבינה המלאכותית."
+            "news_title": "דוקו-סיין היכו את תחזיות הרווחים וההכנסות ברבעון",
+            "news_link": "https://il.investing.com/news/earnings/article-958543",
+            "news_desc": ""
         },
         {
-            "news_title": "StoneX חוזרת על דירוג קנייה למנית טסלה עם השקת Cybercab",
-            "news_link": "https://il.investing.com/news/analyst-ratings/article-93CH-958196",
-            "news_desc": "StoneX מחזיקה בדירוג קנייה למניית Tesla עם השקת מוצר Cybercab."
+            "news_title": "UiPath מקדמת את רמאני לתפקיד סמנכ\"ל כספים וממנה את באגלי לדירקטוריון",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958541",
+            "news_desc": ""
         },
         {
-            "news_title": "תוצאות רבעון 2 של Lands’ End עולות על התחזיות, המניה יורדת במסחר המוקדם",
-            "news_link": "https://il.investing.com/news/transcripts/article-93CH-958198",
-            "news_desc": "למרות תוצאות רבעון טובות, מניית Lands’ End ירדה במוקדם."
+            "news_title": "Lianhe Sowell סוגרת הנפקת המשך של $11 מיליון",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958540",
+            "news_desc": ""
         },
         {
-            "news_title": "מדוע מניית Climb Bio צונחת היום?",
-            "news_link": "https://il.investing.com/news/stock-market-news/article-93CH-958199",
-            "news_desc": "מאמר המסביר את הירידה במניית Climb Bio."
+            "news_title": "IQVIA משיקה פלטפורמת בינה מלאכותית לפיתוח ניסויים קליניים",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958538",
+            "news_desc": ""
         },
         {
-            "news_title": "Why are US stock market indexes, Dow Jones and S&P 500, down while Nasdaq is up today, and will S&P 500 an",
-            "news_link": "https://news.google.com/rss/articles/CBMiqgNBVV95cUxOUnZscmhzZkRzSUk5ckVEaFFTdzd2UzVod0dQVWtLcU9TWDdiblYxb1lHdDVSeW14TUpneVI0SUp0c3ZVUzU3eXhMbU82RHV4VHFDSEtHajYxdTh1MEsycFlJRmh1V2xpb0FfZ21HZm5pMzUteWFmVGJMZVNyWWFzOUxfbU93ZEgyOGpka2JZbzZYVDQzQXhIdVpzdnNnNU92MVJzVVZDR216MEpzeHl5UTl3cGZvdW4tZm15YkhLTV9oXzF5cEdzdlJKSzhFc3phODh5dFFOaWQ1RV9LTXR2QzczWUZJQ0tzbjdaRmR6Q2lNSDAxWUZsMWVnYVAxU05pZlY5VWI4c0p0bm5DOHZ4T3N5VTA5Tl9kd09ULUQ1emZmX002OGZ2ZHVuTW9sc1l6WDEtUUdhVXJJZU9Xb0prVzlkX3JCLUJocFl0UFBiOHBOaVoyMF9RN0trWUNCcmlkUnBHRGxwZWZIVjVUUkxaYVE0Uk9uQ2haNG0xV2pQUzlJRUIwV2k3eHJZNHBsbUNQTHI5dXFjcmtaRXdXOGhUSzI5R05hQWtWZ3fSAa8DQVVfeXFMT3Rhb3Y0Q2paUW43MmMtU25TcUVHSURQNXYtVWV0RS1scURlMU9qV0ViWGNRWEcwMlMtcDdBUTJWbk9EX1JDbVF0WWxZLVpWb3o2R0lhOEdVUi0tNnlXMGNTZnJuUWk5Rks5OVFEWmprZXc3T01ELU1WalhXYmNXZF83VHVBaU9tUksyazFBLTdyeVpyV1RWdGhwM2dnWUR5VmtKSndOZzhaN0VTMURJcW5QeTlheW1rdG9mWUVnTnplNVRUWFNDMjFmUk1GVzF5ZTBKVmdzRzBmVkc4RkkxQTR1MjNGR3ZlbGNrTGRCM21XblN1WFBaTlpBSk9rRHNjR19GT3FYQlRDWGVNOEVGZDJiTjZVVWFoYUl4ei1wbm10RHJpWjJtRkRMNmRvc1hpLW9wbGhlRjlJd2piSnFhNXFOZmZZS0tJbTZrUER4dk9OQnBSUmdvWjcwbTkyMmFIMGNZOVY1SER6RFdUeEhSTm9ZSmt1OWtCMnlzTXhQWDQyaHFnWTdWQS1jYTh6bzliXzBnSWRQdWhrY050QW9aS0tZc3pKaGVrMklEN3RhejQ?oc=5",
-            "news_desc": "מאמר המתאר תנודות במדדים האמריקאים: ירידה ב‑Dow וב‑S&P 500 בעוד Nasdaq עולה."
+            "news_title": "טנסנט מיוזיק מתמחרת הנפקת שטרות בכירים בהיקף של $1 מיליארד",
+            "news_link": "https://il.investing.com/news/company-news/article-93CH-958539",
+            "news_desc": ""
+        },
+        {
+            "news_title": "FingerMotion signs MOU with Lyken.AI for AI compute capacity",
+            "news_link": "https://www.investing.com/news/company-news/fingermotion-signs-mou-with-lykenai-for-ai-compute-capacity-93CH-4888534",
+            "news_desc": ""
+        },
+        {
+            "news_title": "Asana earnings beat by $0.01, revenue topped estimates",
+            "news_link": "https://www.investing.com/news/earnings/asana-earnings-beat-by-001-revenue-topped-estimates-4888533",
+            "news_desc": ""
+        },
+        {
+            "news_title": "U.S. stocks sink on worries about a possible hike to interest rates this year by the Federal Reserve - BNN Bloomberg",
+            "news_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOMDBLUHdaY1ZEekROWGtZTWtSOUJUcW9EMU10V250VEoxQzBhbkNITGpfMlpKNy1GNjR5RExNemlhei1nQ214bDU3VHV3V1gtelpzVzVseU1kc3ZLRm1GRHNrdTdPdW96TFotZ19ObmtHeHNBanBrWmY4ZkZzR1UxSk8ySXhmVGlhbXE0Z3FZYlMwWkFvOFBFUU41eFdURUJ1SFhiRWI4SDJzWmltSldRcWo4eklJenVYYmVzdw?oc=5",
+            "news_desc": ""
+        },
+        {
+            "news_title": "Why is the US stock market down today? Dow Jones, S&P 500 and Nasdaq crash big as strong jobs report, risi - The Economic Times",
+            "news_link": "https://news.google.com/rss/articles/CBMijwNBVV95cUxORGhtNmZXaVRPbXRBWUEwZ3lSa1pxMEllSmtpbkVreXMwaGxDZmx0WmNWbTk2NnhXTzViMjZ5MWFzczUwS0docnM0TFhaVjBSbnFCbUdFOUttYWRteHI0RmhsdE44d2Nha0JjazdhS1VUM1dqekxtcU93LW9HNEhadTZQczZYRFNxZHRuNFNwN1R3VHFoTy1kd2ZvYm03bGZCLVEwNV9SUE5qcFNpOFBFNXFmeXpOUF9Ea3lMSHFsX0pFQkt1blhZOEtCZXR6NnFFcm5ScGhoZUk4RFFYeDhESm5sNDRPSURTRXRza2NVU3pkUGNNUjJ4WnZvX3JIbmJ2VE5qUjRiaFBYbFB3ZHItd09pcWppMFNtMzM3UTJzX3ZBYWRKM0RPRlE2cS0wOVZVbEY3dXdwUVlzYndjX1ktOG8tY2prQ2xmcmdTQktORTBuMzBZMUpjUlR5SVd6eW1LNFNJZlF6SWlOZHpyWkRmTGtIa3dmQUZOdEdlQmRIcmlSaWNTVXo0aFUtS1Q4MDjSAZQDQVVfeXFMUHhZX0xrLWhJOFNYXzVYZDdzV3M2dThXak53MzRHUjhDa1JLWllLUmVBVHpEUC1pTW1Db2JRZ1RZbkQ5YWJlQ2lmcG5yUkxVb2sxRFNQMnRsQVZHMXFjQ2dlNkRVdDVvWm5HYzktd3JrNm1aVDE4ZTdBVnUzOFJWdDIxV2RIOUZxWjhaMEVlTEJhRTdFWC0tUkctbnZmZ3VlNG5SUExjdTFvOHdja3k5dnZDbWRrQjRpMWxkVFpxcGE3bTJWZ2R1WGRsWk9JZEt4VXRhOW40M2RKaVdDRnFjOUZZdk9GeHRiaXB3UTZCdXZzM0ZuSEkxT0FTQWh5cGx6djUwYmN0cFE2UkFwQWcxZ2Joc250WUQtS3RfeHhfcnltZm1RVFd3WWtQS3VkUnNYSW1qLXpYNnBhUjZwd3RtOU1sZHhOcHc4MG11T08xd2RhdHhWenpFbGVBR2RRYm1Sa3U0Z2NLUU5qN2tyekgzVDFNbEdTMmx1dlBUQVhCb21BMTdhbEswNjNTN0xYQ1dSR0dZdVQ?oc=5",
+            "news_desc": ""
+        },
+        {
+            "news_title": "High oil prices knock down stocks and erase Wall Street’s hopes for a cut to interest rates - BNN Bloomberg",
+            "news_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxObEFtWjlTMGFpcVY3RWc4ZFZnaWRWMUNzRzBxVDNQNklLQzIzLWFmRFY2djVuUmVTZS0wdVJ2YUJTVFdXWGw4QUxFSGtJZ2Z3b0pBV29EV29BSkZRRHVnQmt2bW1QdVZZS0IxMTJxU1ZYY25RMlVJRzhKNTJSLTZOMWh3M1VlR0NaR01DQVR1QnJGYmp2Y1N4ZFdobDJnNWFWcEhTUHA4R1Q3emNwNkZzNEVkVkdlZUdzOWdR?oc=5",
+            "news_desc": ""
         }
     ],
     "portfolio_news": {
         "NVDA": {
-            "news": "המאמרים מצביעים על ירידת מניית Nvidia (Wall Street tumbles, S&P 500 falls) לצד דיון על עלייתה היום; המגמה הכללית שלילית.",
-            "sentiment": "red"
+            "news": "אין חדשות עדכניות.",
+            "sentiment": "green"
         },
         "AMD": {
             "news": "אין חדשות עדכניות.",
@@ -112,46 +137,6 @@
             "sentiment": "green"
         },
         "META": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "AMZN": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "GOOG": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "TTWO": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "WMT": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "NFLX": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "MA": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "IBIT": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "GTEC": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "TQQQ": {
-            "news": "אין חדשות עדכניות.",
-            "sentiment": "green"
-        },
-        "BE": {
             "news": "אין חדשות עדכניות.",
             "sentiment": "green"
         }
