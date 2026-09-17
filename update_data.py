@@ -1575,11 +1575,9 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        # חדשות ה-AI ובדיקה האם יש חדשות אמיתיות או שאין חדשות
         p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
         p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
         
-        # אם אין חדשות, לא מציגים נקודה (🟢/🔴) כלל
         if not p_news_text or "אין חדשות" in p_news_text or "אין נתונים" in p_news_text:
             news_content_str = p_news_text
         else:
