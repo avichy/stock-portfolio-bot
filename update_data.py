@@ -988,22 +988,22 @@ Return a valid JSON object with exactly these 5 keys:
       )
       prompt3 = f"""
 אתה אנליסט בכיר ומנהל תיקים. עליך לספק ניתוחים מפורטים בעברית הכוללים את יעד האנליסטים הממוצע עבור המניות בשלב זה (במידה וידוע ומבוסס, ואם לאו – ציין זאת ואל תמציא).
-הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק.
+הנחיית אי-המצאת נתונים (Anti-Hallucination): אל תמציא מחירי יעד, חדשות או נתונים שאינם ודאיים. עליך להתבסס אך ורק על המקורות והחדשות המסופקים למטה עבור ניתוח החדשות של מניות התיק (מ-https://il.investing.com/).
 
 Output a valid JSON object ONLY.
 
 1. STOCK FORMAT (`long_term_stocks`, `swing_stocks`): JSON array of objects with `ticker`, `name`, `desc`, `news`, `why_invest`.
-2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
-   - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
+2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס אך ורק על המקורות מ-https://il.investing.com/ המסופקים. לכל טיקר ספק אובייקט עם השדות:
+   - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על חדשות Investing.com (אם אין חדשות רלוונטיות ב-Investing.com, ציין שאין חדשות עדכניות).
    - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
-3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`. For each news item, `news_desc` MUST contain a comprehensive AI-generated summary of the specific article (do NOT leave it empty; write a detailed summary based on the article's title/content).
+3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc` (שנלקחים ישירות או מסוכמים מחדשות https://il.investing.com/).
 
 Today is {day_name}, Date: {date_str}.
 
 --- Portfolio Tickers to Analyze ---
 {json.dumps(portfolio_tickers, ensure_ascii=False)}
 
---- News Sources for Reference ---
+--- News Sources for Stage 8 (Investing.com & General) ---
 {investing_news}
 {us_market_news_text}
 {bizportal_headlines_text}
