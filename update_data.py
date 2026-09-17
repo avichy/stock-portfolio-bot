@@ -1,4 +1,4 @@
-[source: 6]from datetime import datetime
+from datetime import datetime
 import json
 import os
 import re
@@ -1332,7 +1332,6 @@ def build_market_news_html(market_news_list):
         or ""
     )
     
-    # וידוא שסיכום הכתבה מופיע כראוי ואם הוא ריק משתמשים בברירת מחדל מבוססת כותרת
     if not p_desc or not str(p_desc).strip():
       p_desc = f"כתבה זו עוסקת בהתפתחויות האחרונות בנושא: {p_title}, ומשפיעה על סנטימנט המשקיעים בשווקים הפיננסיים."
 
