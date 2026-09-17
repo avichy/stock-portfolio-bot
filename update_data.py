@@ -853,19 +853,18 @@ def fetch_ai_insights_split(
     now_il_str,
 ):
   api_keys = get_all_groq_keys()
+  combined_result = load_ai_cache()
+  if not isinstance(combined_result, dict):
+    combined_result = {}
+
   if not api_keys:
     print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
-    cached = load_ai_cache()
-    return cached if cached else {}
+    return combined_result
 
   market_summary = {
       t: f"Price: {d.get('price')}, Change: {d.get('change')}%, Analyst Target: {d.get('target', 0)}"
       for t, d in market_data.items()
   }
-
-  combined_result = load_ai_cache()
-  if not isinstance(combined_result, dict):
-    combined_result = {}
 
   # --- PART 1: Indices & Macro Explanations ---
   print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
@@ -911,7 +910,8 @@ Return a valid JSON object with exactly these 9 keys:
 
       raw_text1 = response1.choices[0].message.content.strip()
       parsed1 = json.loads(raw_text1)
-      combined_result.update(parsed1)
+      if isinstance(parsed1, dict):
+        combined_result.update(parsed1)
       break
     except Exception as e:
       print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
@@ -967,7 +967,8 @@ Return a valid JSON object with exactly these 5 keys:
 
       raw_text2 = response2.choices[0].message.content.strip()
       parsed2 = json.loads(raw_text2)
-      combined_result.update(parsed2)
+      if isinstance(parsed2, dict):
+        combined_result.update(parsed2)
       break
     except Exception as e:
       print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
@@ -1028,7 +1029,8 @@ Return a valid JSON object with exactly these 4 keys:
 
       raw_text3 = response3.choices[0].message.content.strip()
       parsed3 = json.loads(raw_text3)
-      combined_result.update(parsed3)
+      if isinstance(parsed3, dict):
+        combined_result.update(parsed3)
       break
     except Exception as e:
       print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
@@ -1077,7 +1079,8 @@ Return a valid JSON object with exactly these 5 keys:
 
       raw_text4 = response4.choices[0].message.content.strip()
       parsed4 = json.loads(raw_text4)
-      combined_result.update(parsed4)
+      if isinstance(parsed4, dict):
+        combined_result.update(parsed4)
       break
     except Exception as e:
       print(f"⚠️ Part 4 attempt failed with {key_name}: {e}")
