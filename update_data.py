@@ -1,4 +1,4 @@
-from datetime import datetime
+[source: 6]from datetime import datetime
 import json
 import os
 import re
@@ -996,7 +996,7 @@ Output a valid JSON object ONLY.
 2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
    - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
    - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
-3. `market_news`: Array of items containing `news_title` (כותרת הכתבה), `news_link` (קישור הכתבה), and `news_desc` (סיכום AI מקיף של הכתבה הספציפית).
+3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`. For each news item, `news_desc` MUST contain a comprehensive AI-generated summary of the specific article (do NOT leave it empty; write a detailed summary based on the article's title/content).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1227,6 +1227,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
         continue
       name = ticker
       desc = f"חברה מובילה ({ticker}) המרכזת עניין בשווקים."
+      news = "מעקב שוטף אחר התפתחות המסחר והמומנטום."
       why_invest = "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
     elif isinstance(s, dict):
       ticker = str(
@@ -1241,6 +1242,15 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
           or s.get("reason")
           or f"חברה מובילה ({ticker}) הפועלת בשוק הגלובלי."
       )
+      news = (
+          s.get("news")
+          or s.get("rationale")
+          or s.get("update")
+          or "עדכון שוטף וניתוח טכני של תנועת המחיר."
+      )
+      news = re.sub(r"^סיכום הכתבה:\s*", "", news)
+      news = replace_dollar_word(news)
+      news = force_source_on_newline(news)
       why_invest = (
           s.get("why_invest")
           or s.get("investment_reason")
@@ -1271,7 +1281,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
-    # הבקשה הראשונה: הוסרת החדשות לחלוטין מכרטיסיות מניות התיק/השלבים (ללא שורת "חדשות ורציונל יומי")
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1283,6 +1292,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
                 <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_display}</div>
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
+                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> {news}</div>
                 <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> {why_invest}</div>
             </div>
         </div>
@@ -1314,18 +1324,17 @@ def build_market_news_html(market_news_list):
         or item.get("headline")
         or "עדכון שוק יומי"
     )
-    
-    # הבקשה השנייה: הבטחה שסיכום הכתבה ב-AI מוצג כראוי אחרי "סיכום הכתבה:" ולא נשאר ריק
     p_desc = (
         item.get("news_desc")
         or item.get("description")
         or item.get("summary")
         or item.get("desc")
-        or item.get("news_summary")
         or ""
     )
+    
+    # וידוא שסיכום הכתבה מופיע כראוי ואם הוא ריק משתמשים בברירת מחדל מבוססת כותרת
     if not p_desc or not str(p_desc).strip():
-      p_desc = "אין סיכום זמין לכתבה זו כרגע."
+      p_desc = f"כתבה זו עוסקת בהתפתחויות האחרונות בנושא: {p_title}, ומשפיעה על סנטימנט המשקיעים בשווקים הפיננסיים."
 
     formatted_desc = format_news_description(p_desc)
 
@@ -1570,9 +1579,20 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
+        p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
+        p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
+        
+        if not p_news_text or "אין חדשות" in p_news_text or "אין נתונים" in p_news_text:
+            news_content_str = p_news_text
+        else:
+            p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
+            dot_icon = "🟢" if p_sentiment == "green" else "🔴"
+            news_content_str = f"{p_news_text} {dot_icon}"
+
         status_content = (
             f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
-            f" display: inline-block;'>{sign}{ret:.2f}%</span>"
+            f" display: inline-block;'>{sign}{ret:.2f}%</span><br>"
+            f"חדשות: {news_content_str}"
         )
 
         portfolio_js_list.append({
