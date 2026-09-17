@@ -853,18 +853,19 @@ def fetch_ai_insights_split(
     now_il_str,
 ):
   api_keys = get_all_groq_keys()
-  combined_result = load_ai_cache()
-  if not isinstance(combined_result, dict):
-    combined_result = {}
-
   if not api_keys:
     print("❌ ERROR: No Groq API keys found! Using cached/defaults.")
-    return combined_result
+    cached = load_ai_cache()
+    return cached if cached else {}
 
   market_summary = {
       t: f"Price: {d.get('price')}, Change: {d.get('change')}%, Analyst Target: {d.get('target', 0)}"
       for t, d in market_data.items()
   }
+
+  combined_result = load_ai_cache()
+  if not isinstance(combined_result, dict):
+    combined_result = {}
 
   # --- PART 1: Indices & Macro Explanations ---
   print("🔄 Starting Groq AI Part 1 (Indices & Macro Explanations)...")
@@ -910,8 +911,7 @@ Return a valid JSON object with exactly these 9 keys:
 
       raw_text1 = response1.choices[0].message.content.strip()
       parsed1 = json.loads(raw_text1)
-      if isinstance(parsed1, dict):
-        combined_result.update(parsed1)
+      combined_result.update(parsed1)
       break
     except Exception as e:
       print(f"⚠️ Part 1 attempt failed with {key_name}: {e}")
@@ -967,8 +967,7 @@ Return a valid JSON object with exactly these 5 keys:
 
       raw_text2 = response2.choices[0].message.content.strip()
       parsed2 = json.loads(raw_text2)
-      if isinstance(parsed2, dict):
-        combined_result.update(parsed2)
+      combined_result.update(parsed2)
       break
     except Exception as e:
       print(f"⚠️ Part 2 attempt failed with {key_name}: {e}")
@@ -997,7 +996,7 @@ Output a valid JSON object ONLY.
 2. PORTFOLIO NEWS (`portfolio_news`): אובייקט JSON הממפה כל טיקר מהתיק האישי ({json.dumps(portfolio_tickers, ensure_ascii=False)}) לניתוח חדשות מבוסס על המקורות המסופקים. לכל טיקר ספק אובייקט עם השדות:
    - `news`: סיכום חדשותי קצר ותמציתי למניה המתבסס על המקורות בלבד (אם אין חדשות רלוונטיות, ציין שאין חדשות עדכניות).
    - `sentiment`: מחרוזת ששווה בדיוק `"green"` אם החדשות חיוביות למניה או `"red"` אם החדשות שליליות למניה.
-3. `market_news`: Array of items containing `news_title`, `news_link`, and `news_desc`.
+3. `market_news`: Array of items containing `news_title` (כותרת הכתבה), `news_link` (קישור הכתבה), and `news_desc` (סיכום AI מקיף של הכתבה הספציפית).
 
 Today is {day_name}, Date: {date_str}.
 
@@ -1029,8 +1028,7 @@ Return a valid JSON object with exactly these 4 keys:
 
       raw_text3 = response3.choices[0].message.content.strip()
       parsed3 = json.loads(raw_text3)
-      if isinstance(parsed3, dict):
-        combined_result.update(parsed3)
+      combined_result.update(parsed3)
       break
     except Exception as e:
       print(f"⚠️ Part 3 attempt failed with {key_name}: {e}")
@@ -1079,8 +1077,7 @@ Return a valid JSON object with exactly these 5 keys:
 
       raw_text4 = response4.choices[0].message.content.strip()
       parsed4 = json.loads(raw_text4)
-      if isinstance(parsed4, dict):
-        combined_result.update(parsed4)
+      combined_result.update(parsed4)
       break
     except Exception as e:
       print(f"⚠️ Part 4 attempt failed with {key_name}: {e}")
@@ -1230,7 +1227,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
         continue
       name = ticker
       desc = f"חברה מובילה ({ticker}) המרכזת עניין בשווקים."
-      news = "מעקב שוטף אחר התפתחות המסחר והמומנטום."
       why_invest = "יחס סיכון-סיכוי אטרקטיבי לטווח המסחר הנוכחי."
     elif isinstance(s, dict):
       ticker = str(
@@ -1245,15 +1241,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
           or s.get("reason")
           or f"חברה מובילה ({ticker}) הפועלת בשוק הגלובלי."
       )
-      news = (
-          s.get("news")
-          or s.get("rationale")
-          or s.get("update")
-          or "עדכון שוטף וניתוח טכני של תנועת המחיר."
-      )
-      news = re.sub(r"^סיכום הכתבה:\s*", "", news)
-      news = replace_dollar_word(news)
-      news = force_source_on_newline(news)
       why_invest = (
           s.get("why_invest")
           or s.get("investment_reason")
@@ -1284,6 +1271,7 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
     logo_url = get_stock_logo_url(ticker)
     clean_symbol_lower = ticker.lower().replace("-", "").replace(".", "")
 
+    # הבקשה הראשונה: הוסרת החדשות לחלוטין מכרטיסיות מניות התיק/השלבים (ללא שורת "חדשות ורציונל יומי")
     card_html = f"""
         <div class="bg-gray-800/80 border border-gray-700/60 rounded-xl p-4 mb-4 shadow-md text-right overflow-hidden" dir="rtl" style="text-align: right;">
             <div class="flex items-center gap-3 mb-3" style="text-align: right;">
@@ -1295,7 +1283,6 @@ def build_structured_stocks_html(stocks_meta, market_data, section_title):
                 <div style="text-align: right;"><strong>יעד אנליסטים ממוצע:</strong> {target_display}</div>
                 <div style="text-align: right;"><strong>רווח יום מסחר אחרון:</strong> {change_str}</div>
                 <div style="text-align: right;"><strong>עיסוק החברה:</strong> {desc}</div>
-                <div style="text-align: right;"><strong>חדשות ורציונל יומי:</strong> {news}</div>
                 <div style="text-align: right;"><strong>למה כדאי להשקיע במניה:</strong> {why_invest}</div>
             </div>
         </div>
@@ -1327,13 +1314,18 @@ def build_market_news_html(market_news_list):
         or item.get("headline")
         or "עדכון שוק יומי"
     )
+    
+    # הבקשה השנייה: הבטחה שסיכום הכתבה ב-AI מוצג כראוי אחרי "סיכום הכתבה:" ולא נשאר ריק
     p_desc = (
         item.get("news_desc")
         or item.get("description")
         or item.get("summary")
         or item.get("desc")
+        or item.get("news_summary")
         or ""
     )
+    if not p_desc or not str(p_desc).strip():
+      p_desc = "אין סיכום זמין לכתבה זו כרגע."
 
     formatted_desc = format_news_description(p_desc)
 
@@ -1578,20 +1570,9 @@ if __name__ == "__main__":
             info.get("name") or fetched_price_data.get("name") or ticker
         )
 
-        p_news_item = portfolio_ai_news.get(ticker, {}) if isinstance(portfolio_ai_news, dict) else {}
-        p_news_text = p_news_item.get("news", "אין חדשות עדכניות זמינות למניה זו.") if isinstance(p_news_item, dict) else "אין חדשות עדכניות זמינות למניה זו."
-        
-        if not p_news_text or "אין חדשות" in p_news_text or "אין נתונים" in p_news_text:
-            news_content_str = p_news_text
-        else:
-            p_sentiment = p_news_item.get("sentiment", "green") if isinstance(p_news_item, dict) else "green"
-            dot_icon = "🟢" if p_sentiment == "green" else "🔴"
-            news_content_str = f"{p_news_text} {dot_icon}"
-
         status_content = (
             f"רווח: <span dir='ltr' style='color: {color}; font-weight: bold;"
-            f" display: inline-block;'>{sign}{ret:.2f}%</span><br>"
-            f"חדשות: {news_content_str}"
+            f" display: inline-block;'>{sign}{ret:.2f}%</span>"
         )
 
         portfolio_js_list.append({
